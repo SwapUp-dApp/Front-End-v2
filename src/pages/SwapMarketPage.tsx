@@ -8,6 +8,7 @@ import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@
 import { Button } from "@/components/ui/button";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import { toast } from "sonner";
+import FilterButton from "@/components/custom/shared/FilterButton";
 
 export interface IMember {
   id: string;
@@ -279,11 +280,11 @@ const SwapMarketPage = () => {
         if (index < 3)
           return (
             <div className="relative w-8 h-8" key={image}>
-              <img className="w-full h-full object-cover rounded-sm border-[1.5px] border-white/20" src={image} alt="nft" />
+              <img className="w-full h-full object-cover rounded-xs border-[1.5px] border-white/20" src={image} alt="nft" />
               {
                 (index === 2) &&
                   nfts.length > 3 ?
-                  <div className="absolute w-full h-full rounded-sm bg-black/50 top-0 flex justify-center items-center font-semibold" >
+                  <div className="absolute w-full h-full rounded-xs bg-black/50 top-0 flex justify-center items-center font-semibold" >
                     +{nfts.length - 3}
                   </div> : ''
               }
@@ -444,8 +445,9 @@ const SwapMarketPage = () => {
                     <TableHead className="font-semibold px-4" >Trending chain</TableHead>
                     <TableHead className="font-semibold px-4" >Creation date</TableHead>
                     <TableHead className="w-[130px] pr-2" >
-                      <div
-                        className="flex items-center justify-end gap-2 text-text cursor-pointer"
+                      <FilterButton
+                        className="text-white !text-sm"
+                        iconClasses="text-white"
                         onClick={() =>
                           toast.info("Filter", {
                             duration: 2000,
@@ -458,12 +460,8 @@ const SwapMarketPage = () => {
                             descriptionClassName: '!text-white',
                           })
                         }
-                      >
-                        <svg className="w-4" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M8.74997 14V7.48276L13.7681 1.93103C13.8427 1.84874 13.9016 1.75083 13.9414 1.64306C13.9812 1.53529 14.0011 1.41982 14 1.30345V0.482759C14 0.354723 13.9539 0.231932 13.8718 0.141397C13.7898 0.050862 13.6785 0 13.5625 0H0.437498C0.321467 0 0.210187 0.050862 0.12814 0.141397C0.0460934 0.231932 0 0.354723 0 0.482759V1.28897C8.18042e-05 1.40299 0.0206123 1.51586 0.0604084 1.62109C0.100204 1.72631 0.158479 1.82181 0.231874 1.90207L5.24998 7.52138V12.4455L8.74997 14Z" fill="white" />
-                        </svg>
-                        Filter
-                      </div>
+
+                      />
                     </TableHead>
                   </TableRow>
                 </TableHeader>

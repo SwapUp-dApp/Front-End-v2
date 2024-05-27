@@ -81,7 +81,7 @@
   }
 
   .nav-link.active {
-    @apply px-4 py-2 dark:bg-su_active_bg rounded-sm;
+    @apply px-4 py-2 dark:bg-su_active_bg rounded-xs;
   }
 
   .gradient-button {

@@ -34,7 +34,7 @@ const NewMembersCard = ({ cardType = 'member', users }: IProp) => {
             </p>
           </div>
 
-          {cardType === 'member' && <span className="font-semibold bg-su_enable_bg rounded-sm text-sm px-4 py-2">Last 24h</span>}
+          {cardType === 'member' && <span className="font-semibold bg-su_enable_bg rounded-xs text-sm px-4 py-2">Last 24h</span>}
         </div>
 
         <div className="flex gap-3 items-center">

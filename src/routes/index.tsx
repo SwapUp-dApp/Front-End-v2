@@ -1,5 +1,6 @@
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import MainLayout from "@/layouts/MainLayout";
+import PrivateRoom from "@/pages/PrivateRoom";
 import SwapMarketPage from "@/pages/SwapMarketPage";
 import { ReactNode } from "react";
 
@@ -31,6 +32,12 @@ export const clientSideRoutes: IRoutesType[] = [
         title: "Swap Market Page",
         path: "",
         element: <SwapMarketPage />,
+      },
+      {
+        id: 'private-room',
+        title: "Private Room Page",
+        path: "/private-room",
+        element: <PrivateRoom />,
       },
       {
         id: 'not-found-page',

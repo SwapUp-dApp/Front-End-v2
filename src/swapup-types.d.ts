@@ -1,0 +1,1 @@
+export type SUT_GridViewType = 'detailed' | 'overview';

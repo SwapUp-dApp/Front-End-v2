@@ -58,8 +58,11 @@ module.exports = {
         su_secondary_bg: "rgba(37, 37, 57, 1)",
         su_blue: "#51C0FF",
         su_purple: "#9452FF",
+        su_primary: "rgba(255, 255, 255, 1)",
         su_positive: "rgba(117, 255, 193, 1)",
         su_secondary: "rgba(182, 182, 189, 1)",
+        su_ternary: "rgba(134, 134, 145, 1)",
+        su_disabled: "rgba(86, 86, 101, 1)"
       },
       backgroundImage: (theme) => ({
         "gradient-primary": `linear-gradient(to right, ${theme(
@@ -69,11 +72,14 @@ module.exports = {
       borderRadius: {
         lg: "var(--radius)",
         md: "16px",
-        sm: "8px",
+        sm: "12px",
+        xs: "8px"
       },
       fontSize: {
         '2xs': '10px',
-        '3xs': '8px'
+        '3xs': '8px',
+        '4xs': '6px',
+        "1.5xl": '22px'
       },
       keyframes: {
         "accordion-down": {
@@ -89,6 +95,11 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      screens: {
+        '3xl': '1680px',
+        '4xl': '1780px',
+        '5xl': '1920px',
+      }
     },
     fontFamily: {
       "Urbanist": ['Urbanist', 'sans-serif'],
