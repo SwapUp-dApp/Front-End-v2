@@ -28,8 +28,7 @@ const RoomLayoutCard = () => {
           </div>
         </div>
 
-        <Separator className="border-t-[2px] border-su_enable_bg" />
-
+        <Separator className="border-t-[1px] border-su_enable_bg" />
 
         <div className={`flex gap-4 items-center`} >
           <Input
@@ -45,7 +44,7 @@ const RoomLayoutCard = () => {
 
           <div className="flex items-center gap-2" >
             <GridToggleButton activeGridView={activeGridView} toggleView={toggleGridView} />
-            <FilterButton filterSelected />
+            <FilterButton />
           </div>
         </div>
       </CardHeader>
