@@ -54,6 +54,7 @@ module.exports = {
         su_primary_bg: "rgba(13, 13, 35, 1)",
         su_active_bg: "rgba(255, 255, 255, 0.15)",
         su_enable_bg: "rgba(255, 255, 255, 0.08)",
+        su_overlay_bg: "rgba(13, 13, 35, 0.8)",
         su_least_bg: "rgba(46, 46, 65, 1)",
         su_secondary_bg: "rgba(37, 37, 57, 1)",
         su_blue: "#51C0FF",
@@ -62,7 +63,7 @@ module.exports = {
         su_positive: "rgba(117, 255, 193, 1)",
         su_secondary: "rgba(182, 182, 189, 1)",
         su_ternary: "rgba(134, 134, 145, 1)",
-        su_disabled: "rgba(86, 86, 101, 1)"
+        su_disabled: "rgba(86, 86, 101, 1)",
       },
       backgroundImage: (theme) => ({
         "gradient-primary": `linear-gradient(to right, ${theme(

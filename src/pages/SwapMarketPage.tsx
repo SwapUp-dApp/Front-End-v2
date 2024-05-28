@@ -317,7 +317,7 @@ const SwapMarketPage = () => {
           <h2 className="text-2xl font-semibold" >Swap Market</h2>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="gradient-button gap-4">
+            <DropdownMenuTrigger className="gradient-button px-5 py-3 gap-4">
               Create Swap
 
               <svg className={`w-4 rotate-180`} viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">

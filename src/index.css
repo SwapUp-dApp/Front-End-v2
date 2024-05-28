@@ -85,6 +85,6 @@
   }
 
   .gradient-button {
-    @apply bg-gradient-primary !rounded-full px-5 py-3 !font-semibold flex items-center dark:text-white;
+    @apply bg-gradient-primary !rounded-full !font-semibold flex items-center dark:text-white;
   }
 }
