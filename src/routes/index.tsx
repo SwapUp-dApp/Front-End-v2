@@ -2,7 +2,9 @@ import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import MainLayout from "@/layouts/MainLayout";
 import PrivateRoom from "@/pages/PrivateRoom";
 import SwapMarketPage from "@/pages/SwapMarketPage";
+import MySwapsPage from "@/pages/MySwapsPage";
 import { ReactNode } from "react";
+
 
 interface IRoutesType {
   id: string;
@@ -32,6 +34,12 @@ export const clientSideRoutes: IRoutesType[] = [
         title: "Swap Market Page",
         path: "",
         element: <SwapMarketPage />,
+      },
+      {
+        id: 'my-swaps',
+        title: "My Swaps Page",
+        path: "/my-swaps",
+        element: <MySwapsPage />,
       },
       {
         id: 'private-room',

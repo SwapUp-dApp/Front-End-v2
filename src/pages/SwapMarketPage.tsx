@@ -441,8 +441,8 @@ const SwapMarketPage = () => {
                     <TableHead className="font-semibold min-w-[288px]">Assets</TableHead>
                     <TableHead className="font-semibold min-w-[150px] pl-8" >Unique trade ID</TableHead>
                     <TableHead className="font-semibold px-4" >Status</TableHead>
-                    <TableHead className="font-semibold px-4" >Counter party wallet</TableHead>
-                    <TableHead className="font-semibold px-4" >Trending chain</TableHead>
+                    <TableHead className="font-semibold px-4" >Counterparty wallet</TableHead>
+                    <TableHead className="font-semibold px-4" >Trading chain</TableHead>
                     <TableHead className="font-semibold px-4" >Creation date</TableHead>
                     <TableHead className="w-[130px] pr-2" >
                       <FilterButton
