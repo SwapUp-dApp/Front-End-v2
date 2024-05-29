@@ -72,7 +72,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
           activeGridView === "detailed" &&
           <div className="p-3 flex flex-col gap-2" >
             <div className="flex items-center justify-between" >
-              <p className="text-sm font-semibold capitalize">{data.title} #{data.id}</p>
+              <p className="text-xs lg:text-sm font-semibold capitalize w-4/5 line-clamp-1">{data.title} #{data.id}</p>
 
               {data.isTopRated &&
                 <svg className="w-4" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,27 +1,9 @@
-import { INetwork, INFTItem, SUT_GridViewType } from '@/swapup-types';
+import { INetwork, INFTItem, IPrivateRoomState, SUT_GridViewType } from '@/swapup-types';
 import { create } from 'zustand';
 
 interface IPrivateRoomFilterItem {
   collection: string;
   rarityRank: string;
-}
-
-interface IPrivateRoomState {
-  activeGridView: SUT_GridViewType;
-  toggleGridView: (value: SUT_GridViewType) => void;
-  profile: {
-    title: string;
-    image: string;
-    isPremium?: boolean;
-    walletAddress: string;
-    ensAddress: string;
-  };
-  network: INetwork;
-  filters?: IPrivateRoomFilterItem[];
-  nfts?: INFTItem[];
-  filteredNfts?: INFTItem[];
-  nftsSelectedForSwap: INFTItem[] | [];
-  setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => void;
 }
 
 interface IPrivateRoomStoreState {
@@ -318,7 +300,7 @@ const tempReceiverNfts: INFTItem[] = [
 
 
 const initialState: IPrivateRoomStoreState = {
-  uniqueTradeId: '#46Aic2o',
+  uniqueTradeId: '46Aic2o',
   sender: {
     activeGridView: 'detailed',
     toggleGridView: () => { },

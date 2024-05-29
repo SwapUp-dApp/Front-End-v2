@@ -7,18 +7,28 @@ interface IProp {
   isPremium?: boolean;
   className?: string;
   sizeClasses?: string;
+  textSizeClasses?: string;
 }
 
-const CustomAvatar = ({ imageSrc, fallbackName, className, isPremium = false, sizeClasses = "w-6 h-6 lg:w-10 lg:h-10" }: IProp) => {
+const CustomAvatar = ({
+  imageSrc,
+  fallbackName,
+  className,
+  isPremium = false,
+  sizeClasses = "w-6 h-6 lg:w-10 lg:h-10",
+  textSizeClasses = "text-xs lg:text-sm"
+}: IProp) => {
   return (
     <Avatar
       className={cn(
-        `relative ${sizeClasses}`,
-        className
+        `relative`,
+        className,
+        sizeClasses,
+        textSizeClasses
       )}
     >
       <AvatarImage src={imageSrc} alt="@shadcn" />
-      <AvatarFallback className={`uppercase text-sm font-semibold rounded-full dark:bg-su_enable_bg ${sizeClasses} flex justify-center items-center`}>
+      <AvatarFallback className={`uppercase text-sm font-semibold rounded-full dark:bg-su_enable_bg ${sizeClasses} ${textSizeClasses} flex justify-center items-center`}>
         {getNameInitials(fallbackName)}
       </AvatarFallback>
 

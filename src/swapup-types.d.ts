@@ -16,3 +16,21 @@ export interface INFTItem {
   amount: number;
   rarityRank: number;
 }
+
+export interface IPrivateRoomState {
+  activeGridView: SUT_GridViewType;
+  toggleGridView: (value: SUT_GridViewType) => void;
+  profile: {
+    title: string;
+    image: string;
+    isPremium?: boolean;
+    walletAddress: string;
+    ensAddress: string;
+  };
+  network: INetwork;
+  filters?: IPrivateRoomFilterItem[];
+  nfts?: INFTItem[];
+  filteredNfts?: INFTItem[];
+  nftsSelectedForSwap: INFTItem[] | [];
+  setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => void;
+}
