@@ -8,7 +8,7 @@ interface IProp extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const FilterButton = ({ filterSelected = false, className, iconClasses, ...props }: IProp) => {
   return (
-    <button
+    <span
       className={cn(
         `flex items-center gap-2 px-4 py-2 rounded-xs font-semibold text-lg ${filterSelected ? "bg-su_active_bg hover:bg-transparent" : 'hover:bg-su_active_bg'}`,
         className
@@ -38,7 +38,7 @@ const FilterButton = ({ filterSelected = false, className, iconClasses, ...props
       }
 
       <span className="hidden lg:block capitalize">filter</span>
-    </button>
+    </span>
   );
 };
 

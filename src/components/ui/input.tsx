@@ -11,15 +11,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, icon, ...props }, ref) => {
     return (
       <div className={cn(
-        "flex items-center rounded-md  bg-white text-sm ring-offset-background focus-within:ring-1 focus-within:ring-ring focus-within:ring-offset-2",
+        "flex items-center gap-3 rounded-md text-xs lg:text-sm ring-offset-su_active_bg focus-within:ring-1 focus-within:ring-su_active_bg focus-within:ring-offset-1",
         className,
       )}>
         {icon}
         <input
           type={type}
-          className="w-full placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 bg-transparent ml-[-4rem]"
+          className={cn(
+            "w-full placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 bg-transparent",
+          )
+
+          }
           ref={ref}
-          style={{ paddingLeft: icon ? "5rem" : "1rem" }}
           {...props}
         />
       </div>

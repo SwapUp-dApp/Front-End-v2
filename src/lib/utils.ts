@@ -21,3 +21,14 @@ export const getNameInitials = (name = '') => {
   const nameWords = name.split(' ');
   return `${nameWords[0].charAt(0)}${nameWords[nameWords.length - 1].charAt(0)}`;
 };
+
+export const getShortenWalletAddress = (address: string) => {
+  if (!address || address.length < 12) {
+    return address;
+  }
+
+  const firstPart = address.slice(0, 6);
+  const lastPart = address.slice(-5);
+
+  return `${firstPart}...${lastPart}`;
+};

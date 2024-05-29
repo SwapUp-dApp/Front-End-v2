@@ -85,6 +85,33 @@
   }
 
   .gradient-button {
-    @apply bg-gradient-primary !rounded-full !font-semibold flex items-center dark:text-white;
+    @apply bg-gradient-primary !rounded-full !font-bold flex items-center text-white disabled:text-su_disabled disabled:bg-gradient-to-r disabled:from-su_button_disabled disabled:to-su_button_disabled disabled:border-[1.5px] disabled:border-su_disabled;
+  }
+
+  .disabled-gradient{
+    @apply bg-gradient-to-r from-su_disabled to-su_disabled
+  }
+}
+
+.animate-bounce-once {
+  animation: bounce 1s ease-in-out forwards;
+}
+
+@keyframes bounce {
+  0%{
+    transform: translateY(-25%) translateX(0); 
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0) translateX(0); 
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+  75%{
+    transform: translateY(-25%) translateX(0); 
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  100%{
+    transform: translateY(0%) translateX(0); 
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
   }
 }

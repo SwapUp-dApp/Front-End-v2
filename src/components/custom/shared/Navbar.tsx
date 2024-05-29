@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer } from "@/components/ui/drawer";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Link, useLocation } from "react-router-dom";
@@ -70,13 +69,13 @@ const Navbar = () => {
 
         <Drawer direction="left" >
           <DrawerTrigger>
-            <Button className="relative w-10 h-10 rounded-full flex justify-center items-center bg-gradient-primary" >
-              <div className="absolute w-9 h-9 rounded-full flex justify-center items-center bg-su_primary_bg" >
+            <div className="relative w-10 h-10 rounded-full flex justify-center items-center bg-gradient-primary" >
+              <span className="absolute w-9 h-9 rounded-full flex justify-center items-center bg-su_primary_bg" >
                 <svg className="w-3" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M0 6.00015V4.33349H12V6.00015H0ZM0.000162601 1.66682V0.000152588H12.0002V1.66682H0.000162601Z" fill="white" />
                 </svg>
-              </div>
-            </Button>
+              </span>
+            </div>
 
           </DrawerTrigger>
           <DrawerContent className="h-screen w-3/4" >
