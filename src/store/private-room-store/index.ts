@@ -1,7 +1,7 @@
-import { INFTItem, SUT_GridViewType } from '@/swapup-types';
+import { INFTItem, IRarityRankItem } from '@/swapup-types';
 import { create } from 'zustand';
-import { IPrivateRoomStoreState } from './types';
-import { setSelectedNftsForSwapHelper, tempReceiverNfts, tempSenderNfts, toggleGridViewHelper } from './helpers';
+import { IPrivateRoomStoreState, SUT_GridViewType } from './types';
+import { setFilteredNftsByFiltersHelper, setFilteredNftsBySearchHelper, setSelectedNftsForSwapHelper, tempReceiverNfts, tempSenderNfts, toggleGridViewHelper } from './helpers';
 
 
 
@@ -24,7 +24,9 @@ const initialState: IPrivateRoomStoreState = {
     },
     nfts: tempSenderNfts,
     filteredNfts: tempSenderNfts,
-    setSelectedNftsForSwap: () => { },
+    setSelectedNftsForSwap: () => void {},
+    setFilteredNftsBySearch: () => { },
+    setFilteredNftsByFilters: () => { },
     nftsSelectedForSwap: []
   },
   receiver: {
@@ -45,6 +47,8 @@ const initialState: IPrivateRoomStoreState = {
     nfts: tempReceiverNfts,
     filteredNfts: tempReceiverNfts,
     setSelectedNftsForSwap: () => { },
+    setFilteredNftsBySearch: () => { },
+    setFilteredNftsByFilters: () => { },
     nftsSelectedForSwap: []
   }
 };
@@ -54,12 +58,17 @@ export const usePrivateRoomStore = create<IPrivateRoomStoreState>((set) => ({
   sender: {
     ...initialState.sender,
     toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'sender', value)),
-    setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'sender', selectedNfts))
+    setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'sender', selectedNfts)),
+    setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'sender', searchValue)),
+    setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'sender', collectionTitle, selectedRarityRank)),
+
   },
   receiver: {
     ...initialState.receiver,
     toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'receiver', value)),
-    setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'receiver', selectedNfts))
+    setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'receiver', selectedNfts)),
+    setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'receiver', searchValue)),
+    setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'receiver', collectionTitle, selectedRarityRank)),
   }
 }));
 

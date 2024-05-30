@@ -1,5 +1,5 @@
-import { SUT_GridViewType, INFTItem } from "@/swapup-types";
-import { IPrivateRoomStoreState } from "./types";
+import { INFTItem, IRarityRankItem } from "@/swapup-types";
+import { IPrivateRoomStoreState, SUT_GridViewType } from "./types";
 
 export const toggleGridViewHelper = (
   state: IPrivateRoomStoreState,
@@ -27,8 +27,50 @@ export const setSelectedNftsForSwapHelper = (
   }
 });
 
+export const setFilteredNftsBySearchHelper = (
+  state: IPrivateRoomStoreState,
+  key: 'sender' | 'receiver',
+  searchValue: string
+): IPrivateRoomStoreState => {
+  const lowerCaseSearchValue = searchValue.toLowerCase();
 
+  return {
+    ...state,
+    [key]: {
+      ...state[key],
+      filteredNfts: searchValue
+        ? state[key].nfts?.filter((nft) =>
+          nft.id.toLowerCase().includes(lowerCaseSearchValue) ||
+          nft.title.toLowerCase().includes(lowerCaseSearchValue)
+        )
+        : state[key].nfts,
+    },
+  };
+};
 
+export const setFilteredNftsByFiltersHelper = (
+  state: IPrivateRoomStoreState,
+  key: 'sender' | 'receiver',
+  collectionTitle: string,
+  selectedRarityRank: IRarityRankItem
+): IPrivateRoomStoreState => {
+  const lowerCaseCollectionTitle = collectionTitle.toLowerCase();
+
+  console.log("flitered items--->", state[key].nfts?.filter(nft => (nft.rarityRank >= selectedRarityRank.from && nft.rarityRank <= selectedRarityRank.to)));
+
+  return {
+    ...state,
+    [key]: {
+      ...state[key],
+      filteredNfts: (collectionTitle && selectedRarityRank)
+        ? state[key].nfts?.filter((nft) =>
+          nft.collection.toLowerCase().includes(lowerCaseCollectionTitle) &&
+          (nft.rarityRank >= selectedRarityRank.from && nft.rarityRank <= selectedRarityRank.to)
+        )
+        : state[key].nfts,
+    },
+  };
+};
 
 export const tempSenderNfts: INFTItem[] = [
   {
@@ -69,7 +111,7 @@ export const tempSenderNfts: INFTItem[] = [
       image: 'src/assets/svgs/ethereum.svg',
       title: 'ethereum',
     },
-    rarityRank: 8,
+    rarityRank: 25,
     title: 'cool elephant',
     isTopRated: true
   },
@@ -111,7 +153,7 @@ export const tempSenderNfts: INFTItem[] = [
       image: 'src/assets/svgs/ethereum.svg',
       title: 'ethereum',
     },
-    rarityRank: 9,
+    rarityRank: 12,
     title: 'cool panda',
     isTopRated: false
   },
@@ -153,7 +195,7 @@ export const tempSenderNfts: INFTItem[] = [
       image: 'src/assets/svgs/ethereum.svg',
       title: 'ethereum',
     },
-    rarityRank: 2,
+    rarityRank: 80,
     title: 'cool snake',
     isTopRated: true
   },
@@ -198,7 +240,7 @@ export const tempReceiverNfts: INFTItem[] = [
       image: 'src/assets/svgs/ethereum.svg',
       title: 'ethereum',
     },
-    rarityRank: 4,
+    rarityRank: 17,
     title: 'uncool dog',
     isTopRated: false
   },
@@ -240,7 +282,7 @@ export const tempReceiverNfts: INFTItem[] = [
       image: 'src/assets/svgs/ethereum.svg',
       title: 'ethereum',
     },
-    rarityRank: 6,
+    rarityRank: 30,
     title: 'uncool monkey',
     isTopRated: true
   },
@@ -268,7 +310,7 @@ export const tempReceiverNfts: INFTItem[] = [
       image: 'src/assets/svgs/ethereum.svg',
       title: 'ethereum',
     },
-    rarityRank: 10,
+    rarityRank: 77,
     title: 'uncool parrot',
     isTopRated: false
   },
@@ -288,7 +330,7 @@ export const tempReceiverNfts: INFTItem[] = [
   },
   {
     id: '9',
-    amount: 2,
+    amount: 10,
     collection: 'uncool animals',
     image: 'src/assets/nfts/uncool-snake.jpg',
     network: {
@@ -310,7 +352,7 @@ export const tempReceiverNfts: INFTItem[] = [
       image: 'src/assets/svgs/ethereum.svg',
       title: 'ethereum',
     },
-    rarityRank: 2,
+    rarityRank: 105,
     title: 'uncool turtle',
     isTopRated: true
   }

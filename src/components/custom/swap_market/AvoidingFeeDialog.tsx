@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 interface IProp {

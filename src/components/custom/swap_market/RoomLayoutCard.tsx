@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import WalletAddressTile from "../tiles/WalletAddressTile";
 import CustomAvatar from "../shared/CustomAvatar";
@@ -9,25 +9,10 @@ import { Input } from "@/components/ui/input";
 import NftCard from "../shared/NftCard";
 import { usePrivateRoomStore } from "@/store/private-room-store";
 import { Separator } from "@/components/ui/separator";
-import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import CustomOutlineButton from "../shared/CustomOutlineButton";
-import { SUI_PrivateRoomLayoutType } from "@/swapup-types";
+import { SUI_PrivateRoomLayoutType } from "@/store/private-room-store/types";
+import EmptyDataset from "../shared/EmptyDataset";
+import PrivateRoomFilterDrawer from "./PrivateRoomFilterDrawer";
 
-const FormSchema = z.object({
-  collection: z.string({
-    required_error: "Please select an preferred collection.",
-  }),
-  rarityRank: z.string({
-    required_error: "Please select an preferred rarity rank.",
-  }),
-
-});
 
 interface IProp {
   layoutType: SUI_PrivateRoomLayoutType;
@@ -35,27 +20,20 @@ interface IProp {
 
 const RoomLayoutCard = ({ layoutType }: IProp) => {
 
-  const { activeGridView, toggleGridView, profile, network, filteredNfts, setSelectedNftsForSwap, nftsSelectedForSwap } = usePrivateRoomStore((state) => layoutType === "sender" ? state.sender : state.receiver);
-  const [formKey, setFormKey] = useState(0);
+  const {
+    activeGridView,
+    toggleGridView,
+    profile,
+    network,
+    filteredNfts,
+    setSelectedNftsForSwap,
+    nftsSelectedForSwap,
+    setFilteredNftsBySearch,
+    setFilteredNftsByFilters
+  } = usePrivateRoomStore((state) => layoutType === "sender" ? state.sender : state.receiver);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      collection: '',
-      rarityRank: ''
-    }
-  });
-
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-  }
-
-  const handleResetFilters = () => {
-    form.reset({
-      collection: "",
-      rarityRank: "",
-    });
-    setFormKey(Math.random());
+  const handleSearchNfts = (searchValue: string) => {
+    setFilteredNftsBySearch(searchValue);
   };
 
   return (
@@ -79,7 +57,7 @@ const RoomLayoutCard = ({ layoutType }: IProp) => {
           <Input
             className="w-3/4 bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
             placeholder="Search by asset name or ID"
-            // onChange={handleFilterData}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => handleSearchNfts(event.target.value)}
             icon={
               <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
@@ -90,137 +68,9 @@ const RoomLayoutCard = ({ layoutType }: IProp) => {
           <div className="flex items-center gap-2" >
             <GridToggleButton activeGridView={activeGridView} toggleView={toggleGridView} />
 
-            <Drawer direction="right" >
-              <DrawerTrigger>
-                <FilterButton />
-              </DrawerTrigger>
-
-              <DrawerContent className="p-3 h-screen w-1/3 right-0 bg-transparent" >
-
-                <div className="rounded-sm h-full w-full bg-su_secondary_bg flex flex-col gap-4 p-4" >
-                  <DrawerTitle className="text-su_primary" >
-                    <div className="flex justify-between items-start">
-                      <h2 className="font-semibold text-xl pt-2" >Filter options</h2>
-                      <DrawerClose className="p-1 rounded-xs hover:bg-su_active_bg" >
-                        <svg className="w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                          <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-                        </svg>
-                      </DrawerClose>
-                    </div>
-
-                    <p className="text-su_secondary text-base font-medium" >Refine your search with custom filters:</p>
-                  </DrawerTitle>
-
-                  <div className="h-full space-y-2">
-                    <div className="flex justify-between items-center text-sm" >
-                      <p>Attributes</p>
-                      <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
-                        <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M6 12C4.46667 12 3.13067 11.4918 1.992 10.4753C0.853333 9.45889 0.200444 8.18933 0.0333333 6.66667H1.4C1.55556 7.82222 2.06956 8.77778 2.942 9.53333C3.81444 10.2889 4.83378 10.6667 6 10.6667C7.3 10.6667 8.40289 10.214 9.30867 9.30867C10.2144 8.40333 10.6671 7.30045 10.6667 6C10.6662 4.69956 10.2136 3.59689 9.30867 2.692C8.40378 1.78711 7.30089 1.33422 6 1.33333C5.23333 1.33333 4.51667 1.51111 3.85 1.86667C3.18333 2.22222 2.62222 2.71111 2.16667 3.33333H4V4.66667H0V0.666667H1.33333V2.23333C1.9 1.52222 2.59178 0.972222 3.40867 0.583333C4.22556 0.194444 5.08933 0 6 0C6.83333 0 7.614 0.158445 8.342 0.475333C9.07 0.792222 9.70333 1.21978 10.242 1.758C10.7807 2.29622 11.2084 2.92956 11.5253 3.658C11.8422 4.38645 12.0004 5.16711 12 6C11.9996 6.83289 11.8413 7.61356 11.5253 8.342C11.2093 9.07045 10.7816 9.70378 10.242 10.242C9.70244 10.7802 9.06911 11.208 8.342 11.5253C7.61489 11.8427 6.83422 12.0009 6 12Z" fill="#B6B6BD" />
-                        </svg>
-
-                        Reset
-                      </button>
-                    </div>
-
-                    <Form {...form} key={formKey}>
-                      <form onSubmit={form.handleSubmit(onSubmit)} className="h-full pb-9 flex flex-col justify-between" >
-
-                        <div className="space-y-3" >
-                          <FormField
-                            control={form.control}
-                            name="collection"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Preferred collection:</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger className="bg-su_enable_bg py-3 px-4 rounded-sm" >
-                                      <SelectValue className="" placeholder="Select collection" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="normlady">normlady</SelectItem>
-                                    <SelectItem value="example">example</SelectItem>
-                                    <SelectItem value="example2">example2</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-
-                          <FormField
-                            control={form.control}
-                            name="rarityRank"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Preferred rarity rank:</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl >
-                                    <SelectTrigger className="bg-su_enable_bg py-3 px-4 rounded-sm" >
-                                      <SelectValue className="" placeholder={
-                                        <span className="flex items-center gap-2" >
-                                          <svg className="w-3" viewBox="0 0 16 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M10.29 4L8 0L5.71 4H10.29ZM2.29 10L0 14H16L13.71 10H2.29ZM13.14 9L10.86 5H5.14L2.86 9H13.14Z" fill="#868691" />
-                                          </svg>
-
-                                          Any
-                                        </span>
-                                      } />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    <SelectItem value="1" >
-                                      <span className="flex items-center gap-2" >
-                                        <svg className="w-3" viewBox="0 0 16 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M10.29 4L8 0L5.71 4H10.29ZM2.29 10L0 14H16L13.71 10H2.29ZM13.14 9L10.86 5H5.14L2.86 9H13.14Z" fill="#868691" />
-                                        </svg>
-
-                                        1
-                                      </span>
-                                    </SelectItem>
-                                    <SelectItem value="10" >
-                                      <span className="flex items-center gap-2" >
-                                        <svg className="w-3" viewBox="0 0 16 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M10.29 4L8 0L5.71 4H10.29ZM2.29 10L0 14H16L13.71 10H2.29ZM13.14 9L10.86 5H5.14L2.86 9H13.14Z" fill="#868691" />
-                                        </svg>
-
-                                        10
-                                      </span>
-                                    </SelectItem>
-                                    <SelectItem value="100" >
-                                      <span className="flex items-center gap-2" >
-                                        <svg className="w-3" viewBox="0 0 16 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M10.29 4L8 0L5.71 4H10.29ZM2.29 10L0 14H16L13.71 10H2.29ZM13.14 9L10.86 5H5.14L2.86 9H13.14Z" fill="#868691" />
-                                        </svg>
-
-                                        100
-                                      </span>
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-
-                        <div className="w-full grid grid-cols-2 gap-4" >
-                          <CustomOutlineButton onClick={handleResetFilters} >
-                            Clear filters
-                          </CustomOutlineButton>
-                          <Button variant={"default"} type="submit" >Apply filters</Button>
-                        </div>
-
-                      </form>
-                    </Form>
-                  </div>
-
-
-                </div>
-              </DrawerContent>
-            </Drawer>
+            <PrivateRoomFilterDrawer setFilteredNftsByFilters={setFilteredNftsByFilters} >
+              <FilterButton />
+            </PrivateRoomFilterDrawer>
 
           </div>
         </div>
@@ -232,15 +82,30 @@ const RoomLayoutCard = ({ layoutType }: IProp) => {
           "grid-cols-3 md:grid-cols-4 lg:grid-cols-5 3xl:grid-cols-6 5xl:grid-cols-8"} p-0`}
       >
         {
-          filteredNfts?.map(nft => (
-            <NftCard key={nft.id}
-              className="col-span-1"
-              activeGridView={activeGridView}
-              data={nft}
-              setSelectedNftsForSwap={setSelectedNftsForSwap}
-              nftsSelectedForSwap={nftsSelectedForSwap}
-            />
-          ))
+          filteredNfts && filteredNfts.length > 0
+            ? filteredNfts?.map(nft => (
+              <NftCard key={nft.id}
+                className="col-span-1"
+                activeGridView={activeGridView}
+                data={nft}
+                setSelectedNftsForSwap={setSelectedNftsForSwap}
+                nftsSelectedForSwap={nftsSelectedForSwap}
+              />
+            ))
+            :
+            <div className="col-span-full" >
+              <EmptyDataset
+                showBackgroundPicture={false}
+                className="lg:h-[200px]"
+                title="No Results Found"
+                description="We couldn't find any results matching your search query. Please try again with a different keyword or refine your search criteria."
+                icon={
+                  <svg className="w-8" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5706 2.67447L23.7935 8.45832L18.4991 10.7735L5.3523 5.02231C5.64832 4.71198 6.01034 4.46699 6.42237 4.30366L10.5706 2.67447ZM13.2448 1.62509L16.345 0.408294C17.7316 -0.136098 19.2667 -0.136098 20.6533 0.408294L30.5779 4.30366C30.9804 4.46205 31.3447 4.70717 31.6459 5.02231L26.3336 7.34565L13.2448 1.62509ZM32.486 6.87608L19.4992 12.5558V27.7678C19.8934 27.6998 20.2801 27.5917 20.6533 27.4452L30.5779 23.5478C31.1437 23.3254 31.6302 22.9333 31.9733 22.423C32.3165 21.9128 32.5001 21.3084 32.5 20.6895V7.1619C32.5 7.06663 32.4953 6.97135 32.486 6.87608ZM17.4991 12.5579V21.0713C17.4991 15.9979 13.0208 11.8841 7.49844 11.8841C6.44637 11.8841 5.43831 12.0679 4.49825 12.4088V7.1619C4.49964 7.06649 4.50431 6.97116 4.51225 6.87608L17.4991 12.5579ZM11.6907 26.7939C10.5226 27.6861 9.07053 28.2169 7.49844 28.2169C5.92196 28.2165 4.3918 27.6729 3.15569 26.6742C1.91959 25.6754 1.04992 24.2801 0.687503 22.714C0.325087 21.148 0.49114 19.5029 1.15878 18.0452C1.82641 16.5874 2.95655 15.4024 4.36618 14.6819C5.77582 13.9615 7.38243 13.7478 8.92587 14.0754C10.4693 14.4031 11.8592 15.2529 12.8706 16.4873C13.8819 17.7217 14.4554 19.2684 14.4983 20.877C14.5412 22.4856 14.0509 24.0618 13.1068 25.3505L18.2071 30.5566L16.7841 31.9929L11.6907 26.7939ZM3.96268 24.6804C4.90042 25.6376 6.17227 26.1753 7.49844 26.1753C8.8246 26.1753 10.0964 25.6376 11.0342 24.6804C11.9719 23.7232 12.4987 22.425 12.4987 21.0713C12.4987 19.7177 11.9719 18.4194 11.0342 17.4622C10.0964 16.5051 8.8246 15.9673 7.49844 15.9673C6.17227 15.9673 4.90042 16.5051 3.96268 17.4622C3.02494 18.4194 2.49812 19.7177 2.49812 21.0713C2.49812 22.425 3.02494 23.7232 3.96268 24.6804Z" fill="#565665" />
+                  </svg>
+                }
+              />
+            </div>
         }
       </CardContent>
     </Card >
