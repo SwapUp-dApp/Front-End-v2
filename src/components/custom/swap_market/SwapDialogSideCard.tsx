@@ -24,7 +24,7 @@ const SwapDialogSideCard = ({ className, data, ...props }: IProp) => {
   return (
     <div
       className={cn(
-        "border-[1.5px] border-su_active_bg rounded-md p-2 lg:p-3 space-y-2",
+        "custom-border-card space-y-2 w-full lg:w-auto",
         className
       )}
       {...props}
@@ -39,8 +39,8 @@ const SwapDialogSideCard = ({ className, data, ...props }: IProp) => {
         <h2 className="font-semibold text-xs lg:text-sm line-clamp-1 w-2/3 lg:w-auto">{data.profile.ensAddress}</h2>
       </div>
 
-      <WalletAddressTile walletAddress={data.profile.walletAddress} className="text-2xs lg:text-xs" >
-        <ChainTile imageSrc={data.network.image} title={data.network.title} className="text-2xs lg:text-xs" />
+      <WalletAddressTile walletAddress={data.profile.walletAddress} className="text-2xs lg:text-xs">
+        <ChainTile imageSrc={data.network.image} title={data.network.title} showChainTitleOnMobileScreen className="text-2xs lg:text-xs" />
       </WalletAddressTile>
 
       <div className="text-xs lg:text-sm text-su_secondary flex items-center justify-between" >

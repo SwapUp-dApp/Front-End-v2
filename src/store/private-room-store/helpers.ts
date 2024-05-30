@@ -1,18 +1,36 @@
-import { INetwork, INFTItem, IPrivateRoomState, SUT_GridViewType } from '@/swapup-types';
-import { create } from 'zustand';
+import { SUT_GridViewType, INFTItem } from "@/swapup-types";
+import { IPrivateRoomStoreState } from "./types";
 
-interface IPrivateRoomFilterItem {
-  collection: string;
-  rarityRank: string;
-}
+export const toggleGridViewHelper = (
+  state: IPrivateRoomStoreState,
+  key: 'sender' | 'receiver',
+  value: SUT_GridViewType
+): IPrivateRoomStoreState => {
+  return ({
+    ...state,
+    [key]: {
+      ...state[key],
+      activeGridView: value,
+    },
+  });
+};
 
-interface IPrivateRoomStoreState {
-  uniqueTradeId: string;
-  sender: IPrivateRoomState;
-  receiver: IPrivateRoomState;
-}
+export const setSelectedNftsForSwapHelper = (
+  state: IPrivateRoomStoreState,
+  key: 'sender' | 'receiver',
+  selectedNftsParams: INFTItem[] | []
+): IPrivateRoomStoreState => ({
+  ...state,
+  [key]: {
+    ...state[key],
+    nftsSelectedForSwap: selectedNftsParams,
+  }
+});
 
-const tempSenderNfts: INFTItem[] = [
+
+
+
+export const tempSenderNfts: INFTItem[] = [
   {
     id: '1',
     amount: 10,
@@ -155,7 +173,7 @@ const tempSenderNfts: INFTItem[] = [
   }
 ];
 
-const tempReceiverNfts: INFTItem[] = [
+export const tempReceiverNfts: INFTItem[] = [
   {
     id: '1',
     amount: 8,
@@ -297,90 +315,3 @@ const tempReceiverNfts: INFTItem[] = [
     isTopRated: true
   }
 ];
-
-
-const initialState: IPrivateRoomStoreState = {
-  uniqueTradeId: '46Aic2o',
-  sender: {
-    activeGridView: 'detailed',
-    toggleGridView: () => { },
-    network: {
-      id: '1',
-      image: 'src/assets/svgs/ethereum.svg',
-      title: 'ethereum'
-    },
-    profile: {
-      ensAddress: 'sender.swapup.eth',
-      image: 'src/assets/images/avatar.png',
-      isPremium: false,
-      title: 'sender',
-      walletAddress: '0x13374200C2CF752eCeAa9a0eC6Ac099aF9D6D3D1'
-    },
-    nfts: tempSenderNfts,
-    filteredNfts: tempSenderNfts,
-    setSelectedNftsForSwap: () => { },
-    nftsSelectedForSwap: []
-  },
-  receiver: {
-    activeGridView: 'detailed',
-    toggleGridView: () => { },
-    network: {
-      id: '9090',
-      image: 'src/assets/svgs/solana.svg',
-      title: 'solana'
-    },
-    profile: {
-      ensAddress: 'receiver.swapup.eth',
-      image: '',
-      isPremium: true,
-      title: 'sender',
-      walletAddress: '0xabCdeF1234567890AbCdEf123456789012345678'
-    },
-    nfts: tempReceiverNfts,
-    filteredNfts: tempReceiverNfts,
-    setSelectedNftsForSwap: () => { },
-    nftsSelectedForSwap: []
-  }
-};
-
-const toggleGridViewHelper = (
-  state: IPrivateRoomStoreState,
-  key: 'sender' | 'receiver',
-  value: SUT_GridViewType
-): IPrivateRoomStoreState => {
-  return ({
-    ...state,
-    [key]: {
-      ...state[key],
-      activeGridView: value,
-    },
-  });
-};
-
-const setSelectedNftsForSwapHelper = (
-  state: IPrivateRoomStoreState,
-  key: 'sender' | 'receiver',
-  selectedNftsParams: INFTItem[] | []
-): IPrivateRoomStoreState => ({
-  ...state,
-  [key]: {
-    ...state[key],
-    nftsSelectedForSwap: selectedNftsParams,
-  }
-});
-
-export const usePrivateRoomStore = create<IPrivateRoomStoreState>((set) => ({
-  ...initialState,
-  sender: {
-    ...initialState.sender,
-    toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'sender', value)),
-    setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'sender', selectedNfts))
-  },
-  receiver: {
-    ...initialState.receiver,
-    toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'receiver', value)),
-    setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'receiver', selectedNfts))
-  }
-}));
-
-

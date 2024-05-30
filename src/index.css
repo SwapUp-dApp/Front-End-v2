@@ -91,6 +91,20 @@
   .disabled-gradient{
     @apply bg-gradient-to-r from-su_disabled to-su_disabled
   }
+
+  .link-style{
+    @apply font-semibold dark:text-su_primary hover:underline
+  }
+
+  .custom-border-card{
+    @apply border-[1.5px] border-su_active_bg rounded-md p-2 lg:p-3 space-y-1
+  }
+
+  /* Debug Classes Start for dev */
+  .debug{
+    @apply border border-red-500
+  }
+  /* Debug Classes End for dev */
 }
 
 .animate-bounce-once {
