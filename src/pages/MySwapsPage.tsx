@@ -1,4 +1,3 @@
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -15,7 +14,7 @@ export interface IPendingSwapTableItem {
     from: string[];
     to: string[];
   };
-  unique_trade_id: string;  
+  unique_trade_id: string;
   status: 'sent' | 'received';
   swap_mode: 'open market' | 'private';
   offer_type: 'primary offer' | 'counter offer';
@@ -32,7 +31,7 @@ export interface ISwapHistoryTableItem {
     from: string[];
     to: string[];
   };
-  unique_trade_id: string;  
+  unique_trade_id: string;
   swap_mode: 'open market' | 'private';
   status: 'completed' | 'declined';
   counter_party_wallet: string,
@@ -128,7 +127,7 @@ const pendingSwapTableData: IPendingSwapTableItem[] = [
     offer_type: 'primary offer',
     counter_party_wallet: '0x6723F...4E1A2',
     request_date: 'Jun 08, 2024',
-    trading_chain:{
+    trading_chain: {
       icon: <svg className="w-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00002C12 9.31374 9.31374 12 6.00002 12C2.6863 12 0 9.31374 0 6.00002C0 2.6863 2.6863 0 6.00002 0C9.31374 0 12 2.6863 12 6.00002ZM3.87761 7.3189C3.81937 7.31884 3.76345 7.34175 3.72199 7.38265L2.65773 8.43828C2.64228 8.45355 2.63174 8.47307 2.62745 8.49436C2.62316 8.51566 2.62533 8.53774 2.63366 8.5578C2.642 8.57785 2.65613 8.59496 2.67425 8.60694C2.69236 8.61892 2.71364 8.62522 2.73536 8.62503H8.12263C8.18093 8.625 8.23685 8.60195 8.27826 8.56091L9.34251 7.50528C9.35802 7.49007 9.36861 7.47056 9.37293 7.44927C9.37725 7.42798 9.3751 7.40588 9.36675 7.38583C9.35839 7.36578 9.34423 7.34868 9.32607 7.33676C9.30792 7.32483 9.28661 7.31861 9.26488 7.3189H3.87761ZM3.87761 3.37501C3.81937 3.37495 3.76345 3.39786 3.72199 3.43876L2.65773 4.49477C2.64241 4.51005 2.63198 4.52955 2.62777 4.55077C2.62356 4.572 2.62575 4.594 2.63407 4.61398C2.64239 4.63395 2.65646 4.65101 2.6745 4.66297C2.69253 4.67492 2.71372 4.68125 2.73536 4.68114H8.12263C8.18087 4.68121 8.23679 4.6583 8.27826 4.61739L9.34251 3.56176C9.41189 3.49276 9.36276 3.37501 9.26488 3.37501H3.87761ZM8.12263 5.3344C8.18087 5.33433 8.23679 5.35724 8.27826 5.39815L9.34251 6.45377C9.35796 6.46904 9.3685 6.48857 9.37279 6.50986C9.37708 6.53115 9.37492 6.55323 9.36658 6.57329C9.35825 6.59334 9.34412 6.61046 9.326 6.62243C9.30788 6.63441 9.2866 6.64071 9.26488 6.64053H3.87761C3.81949 6.64053 3.76324 6.61765 3.72199 6.57678L2.65773 5.52115C2.64228 5.50588 2.63174 5.48636 2.62745 5.46506C2.62316 5.44377 2.62533 5.42169 2.63366 5.40163C2.642 5.38158 2.65613 5.36447 2.67425 5.35249C2.69236 5.34051 2.71364 5.33421 2.73536 5.3344H8.12263Z" fill="#66F9A1" />
       </svg>,
@@ -252,7 +251,7 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
     status: 'declined',
     counter_party_wallet: '0x6723F...4E1A2',
     offerreview_date: 'Jun 08, 2024',
-    trading_chain:{
+    trading_chain: {
       icon: <svg className="w-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00002C12 9.31374 9.31374 12 6.00002 12C2.6863 12 0 9.31374 0 6.00002C0 2.6863 2.6863 0 6.00002 0C9.31374 0 12 2.6863 12 6.00002ZM3.87761 7.3189C3.81937 7.31884 3.76345 7.34175 3.72199 7.38265L2.65773 8.43828C2.64228 8.45355 2.63174 8.47307 2.62745 8.49436C2.62316 8.51566 2.62533 8.53774 2.63366 8.5578C2.642 8.57785 2.65613 8.59496 2.67425 8.60694C2.69236 8.61892 2.71364 8.62522 2.73536 8.62503H8.12263C8.18093 8.625 8.23685 8.60195 8.27826 8.56091L9.34251 7.50528C9.35802 7.49007 9.36861 7.47056 9.37293 7.44927C9.37725 7.42798 9.3751 7.40588 9.36675 7.38583C9.35839 7.36578 9.34423 7.34868 9.32607 7.33676C9.30792 7.32483 9.28661 7.31861 9.26488 7.3189H3.87761ZM3.87761 3.37501C3.81937 3.37495 3.76345 3.39786 3.72199 3.43876L2.65773 4.49477C2.64241 4.51005 2.63198 4.52955 2.62777 4.55077C2.62356 4.572 2.62575 4.594 2.63407 4.61398C2.64239 4.63395 2.65646 4.65101 2.6745 4.66297C2.69253 4.67492 2.71372 4.68125 2.73536 4.68114H8.12263C8.18087 4.68121 8.23679 4.6583 8.27826 4.61739L9.34251 3.56176C9.41189 3.49276 9.36276 3.37501 9.26488 3.37501H3.87761ZM8.12263 5.3344C8.18087 5.33433 8.23679 5.35724 8.27826 5.39815L9.34251 6.45377C9.35796 6.46904 9.3685 6.48857 9.37279 6.50986C9.37708 6.53115 9.37492 6.55323 9.36658 6.57329C9.35825 6.59334 9.34412 6.61046 9.326 6.62243C9.30788 6.63441 9.2866 6.64071 9.26488 6.64053H3.87761C3.81949 6.64053 3.76324 6.61765 3.72199 6.57678L2.65773 5.52115C2.64228 5.50588 2.63174 5.48636 2.62745 5.46506C2.62316 5.44377 2.62533 5.42169 2.63366 5.40163C2.642 5.38158 2.65613 5.36447 2.67425 5.35249C2.69236 5.34051 2.71364 5.33421 2.73536 5.3344H8.12263Z" fill="#66F9A1" />
       </svg>,
@@ -280,8 +279,8 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
 
 const MySwapsPage = () => {
   const [activeTab, setActiveTab] = useState<"pending-swaps" | "swap-history">("swap-history");
-  const [filteredSwapHistoryData, setFilteredSwapHistoryData] = useState<ISwapHistoryTableItem [] | []>(swapHistoryTableData);
-  const [filteredPendingSwapData, setFilteredPendingSwapData] = useState<IPendingSwapTableItem [] | []>(pendingSwapTableData);
+  const [filteredSwapHistoryData, setFilteredSwapHistoryData] = useState<ISwapHistoryTableItem[] | []>(swapHistoryTableData);
+  const [filteredPendingSwapData, setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
 
 
 
@@ -336,19 +335,19 @@ const MySwapsPage = () => {
         <div className="flex items-center justify-between" >
           <h2 className="text-2xl font-semibold" >My Swaps</h2>
           <Input
-                  className="w-1/3 bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
-                  placeholder="Search by asset name or wallet address..."
-                  onChange={handleFilterData}
-                  icon={
-                    <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
-                    </svg>
-                  }
-                />
+            className="w-1/3 bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
+            placeholder="Search by asset name or wallet address..."
+            onChange={handleFilterData}
+            icon={
+              <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
+              </svg>
+            }
+          />
         </div>
 
         {/* leaderboard */}
-      
+
 
         <div className="overflow-x-scroll lg:overflow-hidden" >
           <Tabs defaultValue="swap-history" className="w-full">
@@ -356,7 +355,7 @@ const MySwapsPage = () => {
               <TabsTrigger value="pending-swaps" onClick={() => handleSwitchTab("pending-swaps")} >
                 Pending
                 <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'pending-swaps' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                {filteredPendingSwapData.length}
+                  {filteredPendingSwapData.length}
                 </span>
               </TabsTrigger>
               <TabsTrigger value="swap-history" onClick={() => handleSwitchTab("swap-history")}>
@@ -368,15 +367,15 @@ const MySwapsPage = () => {
             </TabsList>
 
             <TabsContent value="pending-swaps" className="w-full flex justify-center">
-                     {/* Title */}
-            <Table className="min-w-full">
+              {/* Title */}
+              <Table className="min-w-full">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="font-semibold min-w-[288px]">Assets</TableHead>
                     <TableHead className="font-semibold min-w-[150px] pl-8" >Unique trade ID</TableHead>
                     <TableHead className="font-semibold px-4" >Status</TableHead>
                     <TableHead className="font-semibold px-4" >Swap mode</TableHead>
-                    <TableHead className="font-semibold px-4" >Counterparty wallet address</TableHead>                    
+                    <TableHead className="font-semibold px-4" >Counterparty wallet address</TableHead>
                     <TableHead className="font-semibold px-4" >Trading chain</TableHead>
                     <TableHead className="font-semibold px-4" >Request date</TableHead>
                     <TableHead className="font-semibold px-4" >Type</TableHead>
@@ -442,7 +441,7 @@ const MySwapsPage = () => {
 
                           }</div>
                         </TableCell>
-                       
+
                         <TableCell className="font-medium px-4">
                           <div className="w-auto flex justify-start" >{
                             data.swap_mode === "private" ?
@@ -452,7 +451,7 @@ const MySwapsPage = () => {
                               </span>
                               :
                               <span className="flex items-center justify-center gap-2 p-2 rounded-full bg-su_enable_bg capitalize" >
-                               
+
                                 {data.swap_mode}
                               </span>
 
@@ -466,7 +465,7 @@ const MySwapsPage = () => {
                         </TableCell>
                         <TableCell className="font-medium px-4">{data.request_date}</TableCell>
                         <TableCell className="font-medium px-4 capitalize">{data.offer_type}</TableCell>
-                       
+
                         <TableCell className="font-medium flex pr-8 justify-end">
                           <svg
                             onClick={() =>
@@ -491,13 +490,13 @@ const MySwapsPage = () => {
                 </TableBody>
               </Table>
 
-            {
-            !filteredPendingSwapData.length &&
-              <EmptyDataset
-                title="No Pending Swaps Offers Yet"
-                description="Your pending swap inbox is empty create your own swap!"
-              >
-                <Button
+              {
+                !filteredPendingSwapData.length &&
+                <EmptyDataset
+                  title="No Pending Swaps Offers Yet"
+                  description="Your pending swap inbox is empty create your own swap!"
+                >
+                  <Button
                     className="gradient-button"
                     onClick={() =>
                       toast.info("Private party swap", {
@@ -514,14 +513,14 @@ const MySwapsPage = () => {
                   >Create private swaps</Button>
                 </EmptyDataset>
 
-                  }
+              }
 
             </TabsContent>
 
             <TabsContent value="swap-history" className="w-full flex flex-col gap-4">
-          
+
               {/* Title */}
-            
+
               <Table className="min-w-full">
                 <TableHeader>
                   <TableRow>
@@ -581,13 +580,13 @@ const MySwapsPage = () => {
                               </span>
                               :
                               <span className="flex items-center justify-center gap-2 p-2 rounded-full bg-su_enable_bg capitalize" >
-                               
+
                                 {data.swap_mode}
                               </span>
 
                           }</div>
                         </TableCell>
-                     
+
                         <TableCell className="font-medium px-4 flex justify-start">
                           <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
                             {data.trading_chain.icon} {data.trading_chain.title}
@@ -621,10 +620,10 @@ const MySwapsPage = () => {
               {
                 !filteredSwapHistoryData.length &&
                 <EmptyDataset
-                title="Waiting for Swap Activity"
-                description="Your swap history is currently empty"
+                  title="Waiting for Swap Activity"
+                  description="Your swap history is currently empty"
                 >
-                  
+
                 </EmptyDataset>
               }
 

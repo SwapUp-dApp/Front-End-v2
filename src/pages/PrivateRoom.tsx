@@ -79,7 +79,6 @@ const PrivateRoom = () => {
         <RoomLayoutCard layoutType={"receiver"} />
       </div>
 
-
       <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full h-[112px] lg:h-[104px] flex justify-between" >
 
         <div className="absolute -top-14 flex justify-center w-full" >

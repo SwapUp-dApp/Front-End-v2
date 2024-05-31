@@ -5,7 +5,7 @@ export type SUI_PrivateRoomLayoutType = "sender" | "receiver";
 
 export interface IPrivateRoomFilterItem {
   collection: string;
-  rarityRank: string;
+  rarityRank: IRarityRankItem;
 }
 
 export interface IPrivateRoomState {
@@ -19,13 +19,14 @@ export interface IPrivateRoomState {
     ensAddress: string;
   };
   network: INetwork;
-  filters?: IPrivateRoomFilterItem[];
+  filters?: IPrivateRoomFilterItem;
   nfts?: INFTItem[];
   filteredNfts?: INFTItem[];
   nftsSelectedForSwap: INFTItem[] | [];
   setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => void;
   setFilteredNftsBySearch: (searchValue: string) => void;
   setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => void;
+  removeAllFilters: () => void;
 }
 
 export interface IPrivateRoomStoreState {

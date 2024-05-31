@@ -1,8 +1,7 @@
 import { INFTItem, IRarityRankItem } from '@/swapup-types';
 import { create } from 'zustand';
 import { IPrivateRoomStoreState, SUT_GridViewType } from './types';
-import { setFilteredNftsByFiltersHelper, setFilteredNftsBySearchHelper, setSelectedNftsForSwapHelper, tempReceiverNfts, tempSenderNfts, toggleGridViewHelper } from './helpers';
-
+import { removeAllFiltersHelper, setFilteredNftsByFiltersHelper, setFilteredNftsBySearchHelper, setSelectedNftsForSwapHelper, tempReceiverNfts, tempSenderNfts, toggleGridViewHelper } from './helpers';
 
 
 const initialState: IPrivateRoomStoreState = {
@@ -27,6 +26,7 @@ const initialState: IPrivateRoomStoreState = {
     setSelectedNftsForSwap: () => void {},
     setFilteredNftsBySearch: () => { },
     setFilteredNftsByFilters: () => { },
+    removeAllFilters: () => { },
     nftsSelectedForSwap: []
   },
   receiver: {
@@ -49,6 +49,7 @@ const initialState: IPrivateRoomStoreState = {
     setSelectedNftsForSwap: () => { },
     setFilteredNftsBySearch: () => { },
     setFilteredNftsByFilters: () => { },
+    removeAllFilters: () => { },
     nftsSelectedForSwap: []
   }
 };
@@ -61,6 +62,7 @@ export const usePrivateRoomStore = create<IPrivateRoomStoreState>((set) => ({
     setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'sender', selectedNfts)),
     setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'sender', searchValue)),
     setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'sender', collectionTitle, selectedRarityRank)),
+    removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'sender')),
 
   },
   receiver: {
@@ -69,6 +71,7 @@ export const usePrivateRoomStore = create<IPrivateRoomStoreState>((set) => ({
     setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'receiver', selectedNfts)),
     setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'receiver', searchValue)),
     setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'receiver', collectionTitle, selectedRarityRank)),
+    removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'receiver')),
   }
 }));
 

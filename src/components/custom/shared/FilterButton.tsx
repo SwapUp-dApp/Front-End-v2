@@ -1,22 +1,22 @@
 import { cn } from "@/lib/utils";
 
 interface IProp extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  filterSelected?: boolean;
+  filterApplied?: boolean;
   className?: string;
   iconClasses?: string;
 }
 
-const FilterButton = ({ filterSelected = false, className, iconClasses, ...props }: IProp) => {
+const FilterButton = ({ filterApplied = false, className, iconClasses, ...props }: IProp) => {
   return (
     <span
       className={cn(
-        `flex items-center gap-2 px-4 py-2 rounded-xs font-semibold text-lg ${filterSelected ? "bg-su_active_bg hover:bg-transparent" : 'hover:bg-su_active_bg'}`,
+        `flex items-center gap-2 px-4 py-2 rounded-xs font-semibold text-lg ${filterApplied ? "bg-su_active_bg px-3" : 'hover:bg-su_active_bg'}`,
         className
       )}
       {...props}
     >
       {
-        filterSelected ?
+        filterApplied ?
           <svg
             className={cn(
               `w-6`,
