@@ -13,7 +13,7 @@ export const navItemsData: INavItem[] = [
   },
   {
     key: "Profile",
-    title: "profile",
+    title: "Profile",
     path: "/swap-up/profile"
   }
 ];
