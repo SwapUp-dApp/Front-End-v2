@@ -35,7 +35,6 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-
     navigate("/swap-up/swap-market/private-room");
   }
 
@@ -92,6 +91,7 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
                   </FormItem>
                 )}
               />
+
 
               <div className="w-full grid grid-cols-2 gap-4 py-2" >
                 <DialogClose >

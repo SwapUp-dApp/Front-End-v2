@@ -22,9 +22,10 @@ const FormSchema = z.object({
 interface IProp {
   children: any;
   setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => void;
+  removeAllFilters: () => void;
 }
 
-const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters }: IProp) => {
+const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAllFilters }: IProp) => {
   const [formKey, setFormKey] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -48,6 +49,7 @@ const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters }: IProp) 
       rarityRank: "",
     });
     setFormKey(Math.random());
+    removeAllFilters();
   };
 
   const availableRarityRanking: IRarityRankItem[] = [

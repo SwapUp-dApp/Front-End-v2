@@ -68,14 +68,14 @@ export const setFilteredNftsByFiltersHelper = (
     ...state,
     [key]: {
       ...state[key],
-      filteredNfts: (filteredNfts && filteredNfts?.length > 0) ? filteredNfts : state[key].nfts,
-      filters: (filteredNfts && filteredNfts?.length > 0) ? {
+      filteredNfts: (filteredNfts && filteredNfts?.length > 0) ? filteredNfts : [],
+      filters: {
         collection: collectionTitle,
         rarityRank: {
           from: selectedRarityRank.from,
           to: selectedRarityRank.to
         }
-      } : state[key].filters
+      }
     },
   };
 };

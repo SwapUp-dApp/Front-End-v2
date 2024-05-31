@@ -12,6 +12,8 @@ import { Separator } from "@/components/ui/separator";
 import { SUI_PrivateRoomLayoutType } from "@/store/private-room-store/types";
 import EmptyDataset from "../shared/EmptyDataset";
 import PrivateRoomFilterDrawer from "./PrivateRoomFilterDrawer";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ScrollBar } from "@/components/ui/scroll-area";
 
 
 interface IProp {
@@ -70,47 +72,50 @@ const RoomLayoutCard = ({ layoutType }: IProp) => {
           <div className="flex items-center gap-2" >
             <GridToggleButton activeGridView={activeGridView} toggleView={toggleGridView} />
 
-            <PrivateRoomFilterDrawer setFilteredNftsByFilters={setFilteredNftsByFilters} >
+            <PrivateRoomFilterDrawer setFilteredNftsByFilters={setFilteredNftsByFilters} removeAllFilters={removeAllFilters} >
               <FilterButton filterApplied={filters ? true : false} />
             </PrivateRoomFilterDrawer>
 
           </div>
         </div>
       </CardHeader>
+
       {
         filters &&
-        <div className="flex justify-between items-start" >
-          <div className="flex flex-col-reverse gap-2 lg:flex-row lg:items-center lg:gap-6 ">
-            <p className="text-xs text-text dark:text-su_secondary flex items-center gap-2 " >
-              Preferred rarity rank:
-              <span className="flex gap-2 items-center bg-su_enable_bg rounded-xs px-3 py-2 capitalize text-primary font-semibold" >
-                <svg className="w-4" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M7.7175 2.85714L6 0L4.2825 2.85714H7.7175ZM1.7175 7.14286L0 10H12L10.2825 7.14286H1.7175ZM9.855 6.42857L8.145 3.57143H3.855L2.145 6.42857H9.855Z" fill="white" />
-                </svg>
+        <ScrollArea className="w-[300px] overflow-scroll py-2 mx-auto" >
+          <div className="w-[500px] flex justify-between items-start " >
+            <div className="flex items-center gap-2 lg:gap-6">
+              <p className="text-xs text-text dark:text-su_secondary flex items-center gap-2" >
+                Preferred rarity rank:
+                <span className="flex gap-2 items-center bg-su_enable_bg rounded-xs px-3 py-2 capitalize text-primary font-semibold" >
+                  <svg className="w-3" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.7175 2.85714L6 0L4.2825 2.85714H7.7175ZM1.7175 7.14286L0 10H12L10.2825 7.14286H1.7175ZM9.855 6.42857L8.145 3.57143H3.855L2.145 6.42857H9.855Z" fill="white" />
+                  </svg>
 
-                <>{filters.rarityRank.from} - {filters.rarityRank.to}</>
-              </span>
-            </p>
+                  <>{filters.rarityRank.from} - {filters.rarityRank.to}</>
+                </span>
+              </p>
 
-            <p className="text-xs text-text dark:text-su_secondary flex items-center gap-2 " >
-              Collection:
-              <span className="flex gap-2 items-center bg-su_enable_bg rounded-xs px-3 py-2 capitalize text-primary font-semibold" >
-                {filters.collection}
-              </span>
-            </p>
+              <p className="text-xs text-text dark:text-su_secondary flex items-center gap-2 " >
+                Collection:
+                <span className="flex gap-2 items-center bg-su_enable_bg rounded-xs px-3 py-2 capitalize text-primary font-semibold" >
+                  {filters.collection}
+                </span>
+              </p>
+            </div>
+            <span
+              className="text-sm font-semibold py-2 px-3 hover:bg-su_enable_bg cursor-pointer flex items-center gap-2 rounded-xs"
+              onClick={removeAllFilters}
+            >
+              Clear all
+
+              <svg className="w-3" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.1194 1.94157L11.6497 1.41124L10.5891 0.350586L10.0587 0.880919L6.00069 4.939L1.94265 0.880919L1.41232 0.350586L0.351652 1.41124L0.88198 1.94157L4.94003 5.99967L0.88189 10.0578L0.351562 10.5882L1.41223 11.6488L1.94256 11.1185L6.00069 7.06033L10.0588 11.1185L10.5891 11.6488L11.6498 10.5882L11.1195 10.0578L7.06134 5.99967L11.1194 1.94157Z" fill="#B6B6BD" />
+              </svg>
+            </span>
           </div>
-
-          <span
-            className="text-sm font-semibold py-2 px-3 hover:bg-su_enable_bg cursor-pointer flex items-center gap-2 rounded-xs"
-            onClick={removeAllFilters}
-          >
-            Clear all
-
-            <svg className="w-3" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M11.1194 1.94157L11.6497 1.41124L10.5891 0.350586L10.0587 0.880919L6.00069 4.939L1.94265 0.880919L1.41232 0.350586L0.351652 1.41124L0.88198 1.94157L4.94003 5.99967L0.88189 10.0578L0.351562 10.5882L1.41223 11.6488L1.94256 11.1185L6.00069 7.06033L10.0588 11.1185L10.5891 11.6488L11.6498 10.5882L11.1195 10.0578L7.06134 5.99967L11.1194 1.94157Z" fill="#B6B6BD" />
-            </svg>
-          </span>
-        </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       }
 
       <CardContent
