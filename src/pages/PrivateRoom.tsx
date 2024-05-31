@@ -73,7 +73,7 @@ const PrivateRoom = () => {
 
   return (
     <div className="flex flex-col gap-4" >
-      <RoomHeader backClickNavigateTo="/" tardeId={state.uniqueTradeId} />
+      <RoomHeader tardeId={state.uniqueTradeId} />
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-12" >
         <RoomLayoutCard layoutType={"sender"} />
         <RoomLayoutCard layoutType={"receiver"} />
@@ -276,7 +276,7 @@ const PrivateRoom = () => {
                 <SelectTrigger className="bg-transparent border-none flex items-center gap-2">
                   <SelectValue className="uppercase" placeholder={
                     <span className=" flex items-center gap-2" >
-                      <img className="w-4 h-4 rounded-full" src={'src/assets/svgs/ethereum.svg'} alt="" />
+                      <img className="w-4 h-4 rounded-full" src={'/src/assets/svgs/ethereum.svg'} alt="" />
                       Eth
                     </span>
                   } />
@@ -285,14 +285,14 @@ const PrivateRoom = () => {
                 <SelectContent className="bg-su_primary_bg border-none right-0" >
                   <SelectItem className="hover:bg-su_active_bg" value="eth">
                     <span className=" flex items-center gap-2" >
-                      <img className="w-4 h-4 rounded-full" src={'src/assets/svgs/ethereum.svg'} alt="" />
+                      <img className="w-4 h-4 rounded-full" src={'/src/assets/svgs/ethereum.svg'} alt="" />
 
                       Eth
                     </span>
                   </SelectItem>
                   <SelectItem className="hover:bg-su_active_bg" value="sol">
                     <span className=" flex items-center gap-2" >
-                      <img className="w-4 h-4 rounded-full" src={'src/assets/svgs/solana.svg'} alt="" />
+                      <img className="w-4 h-4 rounded-full" src={'/src/assets/svgs/solana.svg'} alt="" />
 
                       Sol
                     </span>
@@ -368,7 +368,7 @@ const PrivateRoom = () => {
                 <SelectTrigger className="bg-transparent border-none flex items-center gap-2">
                   <SelectValue className="uppercase" placeholder={
                     <span className="flex items-center gap-2" >
-                      <img className="w-4 h-4 rounded-full" src={'src/assets/svgs/ethereum.svg'} alt="" />
+                      <img className="w-4 h-4 rounded-full" src={'/src/assets/svgs/ethereum.svg'} alt="" />
                       Eth
                     </span>
                   } />
@@ -376,14 +376,14 @@ const PrivateRoom = () => {
                 <SelectContent className="border-none" >
                   <SelectItem className="" value="eth">
                     <span className="flex items-center gap-2" >
-                      <img className="w-4 h-4 rounded-full" src={'src/assets/svgs/ethereum.svg'} alt="" />
+                      <img className="w-4 h-4 rounded-full" src={'/src/assets/svgs/ethereum.svg'} alt="" />
 
                       Eth
                     </span>
                   </SelectItem>
                   <SelectItem className="" value="sol">
                     <span className="flex items-center gap-2" >
-                      <img className="w-4 h-4 rounded-full" src={'src/assets/svgs/solana.svg'} alt="" />
+                      <img className="w-4 h-4 rounded-full" src={'/src/assets/svgs/solana.svg'} alt="" />
 
                       Sol
                     </span>

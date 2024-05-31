@@ -3,14 +3,18 @@ import { ButtonHTMLAttributes, ReactElement } from "react";
 
 interface IProp extends ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;
+  containerClasses?: string;
   children?: ReactElement | string;
 }
 
-const CustomOutlineButton = ({ className, children, ...props }: IProp) => {
+const CustomOutlineButton = ({ className, children, containerClasses, ...props }: IProp) => {
   return (
     <button
       type="reset"
-      className="group bg-gradient-primary p-[2px] rounded-full disabled:text-su_disabled disabled:disabled-gradient"
+      className={cn(
+        `group bg-gradient-primary p-[2px] rounded-full disabled:text-su_disabled disabled:disabled-gradient`,
+        containerClasses
+      )}
       {...props}
     >
       <div

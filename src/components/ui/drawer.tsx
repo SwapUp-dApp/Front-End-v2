@@ -5,29 +5,39 @@ import { cn } from "@/lib/utils";
 
 const Drawer = ({
   shouldScaleBackground = true,
+  onClose,
+  direction = "right",
+  open,
   ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
+}: React.ComponentProps<typeof DrawerPrimitive.Root> & { onClose?: () => void; direction?: string; open: boolean; }) => (
   <DrawerPrimitive.Root
     shouldScaleBackground={shouldScaleBackground}
+    onClose={onClose}
+    open={open}
+    direction={direction}
     {...props}
   />
 );
 Drawer.displayName = "Drawer";
 
 const DrawerTrigger = DrawerPrimitive.Trigger;
-
 const DrawerPortal = DrawerPrimitive.Portal;
-
-const DrawerClose = DrawerPrimitive.Close;
-
+const DrawerClose = React.forwardRef<
+  React.ElementRef<typeof DrawerPrimitive.Close>,
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Close> & { onClose?: () => void; }
+>(({ onClose, ...props }, ref) => (
+  <DrawerPrimitive.Close ref={ref} onClick={onClose} {...props} />
+));
+DrawerClose.displayName = DrawerPrimitive.Close.displayName;
 
 const DrawerOverlay = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay> & { onClose?: () => void; }
+>(({ onClose, className, ...props }, ref) => (
   <DrawerPrimitive.Overlay
     ref={ref}
     className={cn("fixed inset-0 z-50 bg-black/80", className)}
+    onClick={onClose} // Add onClick handler here
     {...props}
   />
 ));
@@ -42,12 +52,11 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed bottom-0 z-50 mt-24 flex h-auto flex-col rounded-sm bg-su_secondary_bg text-su_secondary",
+        "fixed bottom-0 z-50 mt-24 flex h-auto flex-col rounded-sm bg-transparent text-su_secondary",
         className
       )}
       {...props}
     >
-      {/* <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" /> */}
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>

@@ -17,6 +17,10 @@ export const applyThemeClass = (theme: 'dark' | 'light' | 'system') => {
   );
 };
 
+export const getIsActiveNav = (path: string, pathname: string) => {
+  return pathname.toLowerCase().startsWith(path.toLowerCase());
+};
+
 export const getNameInitials = (name = '') => {
   const nameWords = name.split(' ');
   return `${nameWords[0].charAt(0)}${nameWords[nameWords.length - 1].charAt(0)}`;

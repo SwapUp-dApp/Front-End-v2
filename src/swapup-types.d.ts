@@ -1,3 +1,8 @@
+export interface INavItem {
+  key: string;
+  title: string;
+  path: string;
+}
 export interface INetwork {
   id: string;
   title: string;

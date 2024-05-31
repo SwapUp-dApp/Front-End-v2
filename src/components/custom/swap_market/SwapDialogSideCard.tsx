@@ -1,8 +1,9 @@
 import { cn } from "@/lib/utils";
 import CustomAvatar from "../shared/CustomAvatar";
 import WalletAddressTile from "../tiles/WalletAddressTile";
-import { INFTItem, IPrivateRoomState } from "@/swapup-types";
+import { INFTItem } from "@/swapup-types";
 import ChainTile from "../tiles/ChainTile";
+import { IPrivateRoomState } from "@/store/private-room-store/types";
 
 interface IProp {
   className?: string;

@@ -8,6 +8,8 @@ interface IProp {
 }
 
 const ChainTile = ({ title, imageSrc, className, showChainTitleOnMobileScreen = false, ...props }: IProp) => {
+  // Temprary ligic of static data
+  const imageURL = imageSrc.startsWith('/') ? imageSrc : '/' + imageSrc;
   return (
     <div
       className={cn(
@@ -16,7 +18,7 @@ const ChainTile = ({ title, imageSrc, className, showChainTitleOnMobileScreen = 
       )}
       {...props}
     >
-      <img src={imageSrc} alt="" className="w-4 h-4 rounded-full birder border-white" />
+      <img src={imageURL} alt="" className="w-4 h-4 rounded-full birder border-white" />
       <span className={`${showChainTitleOnMobileScreen ? '' : 'hidden'} lg:block`}>
         {title}
       </span>

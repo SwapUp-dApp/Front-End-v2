@@ -64,7 +64,8 @@ module.exports = {
         su_secondary: "rgba(182, 182, 189, 1)",
         su_ternary: "rgba(134, 134, 145, 1)",
         su_disabled: "rgba(86, 86, 101, 1)",
-        su_button_disabled: "rgb(49, 49, 68)"
+        su_button_disabled: "rgb(49, 49, 68)",
+        su_negative: "rgba(255, 117, 133, 1)"
       },
       backgroundImage: (theme) => ({
         "gradient-primary": `linear-gradient(to right, ${theme(

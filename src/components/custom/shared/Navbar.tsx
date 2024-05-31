@@ -1,20 +1,28 @@
 import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer } from "@/components/ui/drawer";
+import { navItemsData } from "@/constants";
+import { getIsActiveNav } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 
 const Navbar = () => {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   return (
     <div className="w-full p-4 flex justify-between lg:justify-start lg:gap-16" >
-      <img onClick={() => window.location.href = "http://localhost:3000"} src="/swapup.png" alt="SwapUp" className="w-24 cursor-pointer" />
+      <img onClick={() => navigate('/swap-up/swap-market')} src="/swapup.png" alt="SwapUp" className="w-24 cursor-pointer" />
 
       {/* Desktop navbar */}
       <div className="w-full hidden lg:flex items-center justify-between">
         <ol className="flex gap-4 items-center" >
-          <Link to={'/'}><li className={`nav-link font-semibold text-sm ${pathname === '/' ? "active" : ""}`} >Swap Market</li></Link>
-          <Link to="/my-swaps"><li className={`nav-link font-semibold text-sm ${pathname.toLowerCase().includes('/my-swaps') ? "active" : ""}`} >My Swaps</li></Link>
-          <Link to="/profile"><li className={`nav-link font-semibold text-sm ${pathname.toLowerCase().includes('/profile') ? "active" : ""}`} >Profile</li></Link>
+          {
+            navItemsData.map(navItem => (
+              <Link to={navItem.path} key={navItem.key}>
+                <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path, pathname) ? "active" : ""}`} >{navItem.title}</li>
+              </Link>
+            ))
+          }
         </ol>
 
         <div className="flex items-center gap-4" >

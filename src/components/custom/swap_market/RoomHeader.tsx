@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import CopyTile from "../tiles/CopyTile";
+import { defaultFallbackRoute } from "@/routes";
 
 interface IProp {
-  backClickNavigateTo: string;
+  backClickNavigateTo?: string;
   tardeId: string;
 }
 
@@ -12,8 +13,10 @@ const RoomHeader = ({ backClickNavigateTo, tardeId }: IProp) => {
   return (
     <div className="flex justify-between lg:justify-start lg:gap-6" >
       <span
-        className="text-sm dark:text-su_secondary flex items-center gap-2"
-        onClick={() => navigate(backClickNavigateTo)}
+        className="text-sm dark:text-su_secondary flex items-center gap-2 cursor-pointer py-2 px-3 hover:rounded-sm hover:bg-su_secondary_bg"
+        onClick={() => navigate({
+          pathname: backClickNavigateTo ? backClickNavigateTo : defaultFallbackRoute
+        })}
       >
         <svg className="w-3" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M6 0L7.0575 1.0575L2.8725 5.25H12V6.75H2.8725L7.0575 10.9425L6 12L0 6L6 0Z" fill="#B6B6BD" />

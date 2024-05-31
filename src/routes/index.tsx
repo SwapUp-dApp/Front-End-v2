@@ -1,10 +1,10 @@
+
+import { ReactNode } from "react";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import MainLayout from "@/layouts/MainLayout";
 import PrivateRoom from "@/pages/PrivateRoom";
 import SwapMarketPage from "@/pages/SwapMarketPage";
 import MySwapsPage from "@/pages/MySwapsPage";
-import { ReactNode } from "react";
-
 
 interface IRoutesType {
   id: string;
@@ -17,34 +17,36 @@ interface IRoutesType {
 
 const NotFoundPage = () => (
   <div className="min-h-[420px] flex items-center">
-    <EmptyDataset navigateTo="/"></EmptyDataset>
+    <EmptyDataset navigateTo="/swap-up/swap-market" showBackgroundPicture={false} />
   </div >
 );
+
+export const defaultFallbackRoute = "/swap-up/swap-market";
 
 export const clientSideRoutes: IRoutesType[] = [
   {
     id: 'swapup-main-layout',
     title: "SwapUp Main layout",
-    path: "/",
+    path: "/swap-up",
     element: <SwapMarketPage />,
     layout: <MainLayout />,
     child_routes: [
       {
         id: 'swap-market-page',
         title: "Swap Market Page",
-        path: "",
+        path: "swap-market",
         element: <SwapMarketPage />,
       },
       {
         id: 'my-swaps',
         title: "My Swaps Page",
-        path: "/my-swaps",
+        path: "my-swaps",
         element: <MySwapsPage />,
       },
       {
         id: 'private-room',
         title: "Private Room Page",
-        path: "/private-room",
+        path: "swap-market/private-room",
         element: <PrivateRoom />,
       },
       {
@@ -55,4 +57,13 @@ export const clientSideRoutes: IRoutesType[] = [
       }
     ]
   },
+  {
+    id: 'not-found-page',
+    title: "Not found Page",
+    path: "*",
+    element: <NotFoundPage />,
+  }
 ];
+
+
+
