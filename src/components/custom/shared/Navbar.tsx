@@ -2,11 +2,13 @@ import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, D
 import { navItemsData } from "@/constants";
 import { getIsActiveNav } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 
 const Navbar = () => {
   const { pathname } = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
@@ -75,8 +77,8 @@ const Navbar = () => {
         </svg>
 
 
-        <Drawer direction="left" >
-          <DrawerTrigger>
+        <Drawer direction="left" open={isOpen} onClose={() => setIsOpen(false)} >
+          <DrawerTrigger onClick={() => setIsOpen(true)}>
             <div className="relative w-10 h-10 rounded-full flex justify-center items-center bg-gradient-primary" >
               <span className="absolute w-9 h-9 rounded-full flex justify-center items-center bg-su_primary_bg" >
                 <svg className="w-3" viewBox="0 0 12 6" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -86,13 +88,14 @@ const Navbar = () => {
             </div>
 
           </DrawerTrigger>
-          <DrawerContent className="h-screen w-3/4" >
+
+          <DrawerContent className="h-screen w-3/4 !bg-su_least_bg" >
 
             <DrawerHeader>
               <DrawerTitle className="flex justify-between" >
                 <img src="/swapup.png" alt="SwapUp" className="w-24" />
 
-                <DrawerClose>
+                <DrawerClose onClick={() => setIsOpen(false)}>
                   <svg className="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
                   </svg>

@@ -56,21 +56,43 @@ export const setFilteredNftsByFiltersHelper = (
 ): IPrivateRoomStoreState => {
   const lowerCaseCollectionTitle = collectionTitle.toLowerCase();
 
-  console.log("flitered items--->", state[key].nfts?.filter(nft => (nft.rarityRank >= selectedRarityRank.from && nft.rarityRank <= selectedRarityRank.to)));
+  let filteredNfts: INFTItem[] | undefined = [];
+
+  if (collectionTitle && selectedRarityRank) {
+    filteredNfts = state[key].nfts?.filter((nft) =>
+      nft.collection.toLowerCase().includes(lowerCaseCollectionTitle) &&
+      (nft.rarityRank >= selectedRarityRank.from && nft.rarityRank <= selectedRarityRank.to));
+  }
 
   return {
     ...state,
     [key]: {
       ...state[key],
-      filteredNfts: (collectionTitle && selectedRarityRank)
-        ? state[key].nfts?.filter((nft) =>
-          nft.collection.toLowerCase().includes(lowerCaseCollectionTitle) &&
-          (nft.rarityRank >= selectedRarityRank.from && nft.rarityRank <= selectedRarityRank.to)
-        )
-        : state[key].nfts,
+      filteredNfts: (filteredNfts && filteredNfts?.length > 0) ? filteredNfts : state[key].nfts,
+      filters: (filteredNfts && filteredNfts?.length > 0) ? {
+        collection: collectionTitle,
+        rarityRank: {
+          from: selectedRarityRank.from,
+          to: selectedRarityRank.to
+        }
+      } : state[key].filters
     },
   };
 };
+
+export const removeAllFiltersHelper = (state: IPrivateRoomStoreState, key: 'sender' | 'receiver',) => {
+  return ({
+    ...state,
+    [key]: {
+      ...state[key],
+      filteredNfts: state[key].nfts,
+      filters: undefined
+    }
+  });
+};
+
+
+
 
 export const tempSenderNfts: INFTItem[] = [
   {

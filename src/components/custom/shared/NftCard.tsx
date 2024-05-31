@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { INFTItem, SUT_GridViewType } from "@/swapup-types";
+import { SUT_GridViewType } from "@/store/private-room-store/types";
+import { INFTItem } from "@/swapup-types";
 import { useEffect, useState } from "react";
 
 interface IProp {
