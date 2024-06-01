@@ -82,8 +82,8 @@ const RoomLayoutCard = ({ layoutType }: IProp) => {
 
       {
         filters &&
-        <ScrollArea className="w-[300px] overflow-scroll py-2 mx-auto" >
-          <div className="w-[500px] flex justify-between items-start " >
+        <ScrollArea className="w-[300px] md:w-auto overflow-x-scroll md:overflow-hidden py-2 mx-auto md:mx-0" >
+          <div className="w-[500px] md:w-auto flex justify-between items-start " >
             <div className="flex items-center gap-2 lg:gap-6">
               <p className="text-xs text-text dark:text-su_secondary flex items-center gap-2" >
                 Preferred rarity rank:
