@@ -1,11 +1,11 @@
 import { INFTItem, IRarityRankItem } from '@/swapup-types';
 import { create } from 'zustand';
 import { IPrivateRoomStoreState, SUT_GridViewType } from './types';
-import { removeAllFiltersHelper, setFilteredNftsByFiltersHelper, setFilteredNftsBySearchHelper, setSelectedNftsForSwapHelper, tempReceiverNfts, tempSenderNfts, toggleGridViewHelper } from './helpers';
+import { coinsDataset, removeAllFiltersHelper, setAddedAmountHelper, setFilteredNftsByFiltersHelper, setFilteredNftsBySearchHelper, setSelectedNftsForSwapHelper, setValuesOnCreatingPrivateRoomHelper, tempReceiverNfts, tempSenderNfts, toggleGridViewHelper } from './helpers';
 
 
 const initialState: IPrivateRoomStoreState = {
-  uniqueTradeId: '46Aic2o',
+  uniqueTradeId: '',
   sender: {
     activeGridView: 'detailed',
     toggleGridView: () => { },
@@ -22,12 +22,14 @@ const initialState: IPrivateRoomStoreState = {
       walletAddress: '0x13374200C2CF752eCeAa9a0eC6Ac099aF9D6D3D1'
     },
     nfts: tempSenderNfts,
+    availableCoins: coinsDataset,
     filteredNfts: tempSenderNfts,
+    nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => void {},
     setFilteredNftsBySearch: () => { },
     setFilteredNftsByFilters: () => { },
     removeAllFilters: () => { },
-    nftsSelectedForSwap: []
+    setAddedAmount: () => { },
   },
   receiver: {
     activeGridView: 'detailed',
@@ -45,13 +47,17 @@ const initialState: IPrivateRoomStoreState = {
       walletAddress: '0xabCdeF1234567890AbCdEf123456789012345678'
     },
     nfts: tempReceiverNfts,
+    availableCoins: coinsDataset,
     filteredNfts: tempReceiverNfts,
+    nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
     setFilteredNftsBySearch: () => { },
     setFilteredNftsByFilters: () => { },
     removeAllFilters: () => { },
-    nftsSelectedForSwap: []
-  }
+    setAddedAmount: () => { },
+
+  },
+  setValuesOnCreatingRoom: () => { }
 };
 
 export const usePrivateRoomStore = create<IPrivateRoomStoreState>((set) => ({
@@ -63,7 +69,7 @@ export const usePrivateRoomStore = create<IPrivateRoomStoreState>((set) => ({
     setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'sender', searchValue)),
     setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'sender', collectionTitle, selectedRarityRank)),
     removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'sender')),
-
+    setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'sender', selectedAmount, selectedCoin)),
   },
   receiver: {
     ...initialState.receiver,
@@ -72,7 +78,7 @@ export const usePrivateRoomStore = create<IPrivateRoomStoreState>((set) => ({
     setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'receiver', searchValue)),
     setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'receiver', collectionTitle, selectedRarityRank)),
     removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'receiver')),
-  }
+    setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'receiver', selectedAmount, selectedCoin)),
+  },
+  setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, tradeId, counterPartyWalletAddress)),
 }));
-
-

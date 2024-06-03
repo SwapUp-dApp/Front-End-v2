@@ -6,36 +6,24 @@ import { Dialog, DialogTrigger, DialogContent, DialogClose } from "@/components/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
+import { amountConvertFormSchema } from "./RoomFooterSide";
+import { ICoinItem } from "@/swapup-types";
 
 
 interface IProp {
   children: any;
+  availableCoins: ICoinItem[];
+  handleFormSubmit: (values: z.infer<typeof amountConvertFormSchema>) => void,
+  form: UseFormReturn<{
+    amount: string;
+    chain: string;
+  }, any, undefined>;
 }
 
-const formSchema = z.object({
-  amount: z.string().min(1, {
-    message: "Amount is required.",
-  }),
-  chain: z.string().min(1, {
-    message: "CHain is required.",
-  }),
-});
+const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableCoins }: IProp) => {
 
-const AddCurrencyModalDialog = ({ children }: IProp) => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      amount: '',
-      chain: 'eth'
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
 
   return (
     <Dialog>
@@ -61,7 +49,7 @@ const AddCurrencyModalDialog = ({ children }: IProp) => {
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
 
               <div
                 className={cn(
@@ -99,7 +87,10 @@ const AddCurrencyModalDialog = ({ children }: IProp) => {
                   name="chain"
                   render={({ field }) => (
                     <FormItem>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} >
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger className="bg-transparent border-none flex items-center gap-2 w-[100px]">
                             <SelectValue className="uppercase" placeholder={
@@ -110,21 +101,17 @@ const AddCurrencyModalDialog = ({ children }: IProp) => {
                             } />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="bg-su_primary_bg border-none right-0 w-[80vw] absolute -left-[55vw] top-2 p-0.5" >
-                          <SelectItem className="hover:bg-su_active_bg py-3" value="eth">
-                            <span className=" flex items-center gap-2" >
-                              <img className="w-4 h-4 rounded-full" src={'/src/assets/svgs/ethereum.svg'} alt="" />
-                              Eth
-                            </span>
-                          </SelectItem>
-                          <SelectItem className="hover:bg-su_active_bg py-3" value="sol">
-                            <span className=" flex items-center gap-2" >
-                              <img className="w-4 h-4 rounded-full" src={'/src/assets/svgs/solana.svg'} alt="" />
-
-                              Sol
-                            </span>
-                          </SelectItem>
-
+                        <SelectContent className="bg-su_primary_bg border-none right-0 w-[80vw] h-[160px] absolute -left-[55vw] top-2 p-0.5" >
+                          {
+                            availableCoins.map(coin => (
+                              <SelectItem key={coin.uuid} className="hover:bg-su_active_bg py-3" value={coin.uuid}>
+                                <span className="flex items-center gap-2"  >
+                                  <img className="w-4 h-4 rounded-full" src={coin.iconUrl} alt="" />
+                                  {coin.symbol}
+                                </span>
+                              </SelectItem>
+                            ))
+                          }
                         </SelectContent>
                       </Select>
                       <FormMessage className="absolute -bottom-6 right-0" />

@@ -20,13 +20,17 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           type={type}
           className={cn(
-            "w-full placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 bg-transparent",
+            "w-full caret-su_brand placeholder:text-su_secondary dark:text-su_primary focus-visible:outline-none disabled:cursor-not-allowed bg-transparent",
+            type === 'number' && "hide-number-input-buttons"
           )
 
           }
           ref={ref}
           {...props}
         />
+        {/* <span
+          className="absolute top-0 left-0 h-full w-[2px] bg-su_brand animate-ping"
+        /> */}
       </div>
 
     );

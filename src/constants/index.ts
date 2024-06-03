@@ -1,4 +1,4 @@
-import { INavItem } from "@/swapup-types";
+import {  INavItem } from "@/swapup-types";
 
 export const navItemsData: INavItem[] = [
   {

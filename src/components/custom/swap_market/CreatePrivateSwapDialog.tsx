@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, generateRandomTradeId } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
+import { usePrivateRoomStore } from "@/store/private-room-store";
 
 const formSchema = z.object({
   walletAddress: z.string().min(1, {
@@ -25,6 +26,7 @@ interface IProp {
 
 const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
   const navigate = useNavigate();
+  const setValuesOnCreatingRoom = usePrivateRoomStore(state => state.setValuesOnCreatingRoom);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,8 +36,14 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    const { walletAddress } = values;
+    const uniqueTradeId = generateRandomTradeId();
+
+    setValuesOnCreatingRoom(uniqueTradeId, walletAddress);
+
     navigate("/swap-up/swap-market/private-room");
+    // setTimeout(() => {
+    // }, 3000);
   }
 
   return (
