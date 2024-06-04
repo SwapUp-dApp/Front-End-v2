@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
-import { IRarityRankItem } from "@/swapup-types";
+import { SUI_RarityRankItem } from "@/swapup-types";
 
 const FormSchema = z.object({
   collection: z.string().min(1, {
@@ -21,7 +21,7 @@ const FormSchema = z.object({
 
 interface IProp {
   children: any;
-  setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => void;
+  setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
   removeAllFilters: () => void;
 }
 
@@ -52,7 +52,7 @@ const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAll
     removeAllFilters();
   };
 
-  const availableRarityRanking: IRarityRankItem[] = [
+  const availableRarityRanking: SUI_RarityRankItem[] = [
     {
       from: 1,
       to: 10

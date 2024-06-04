@@ -1,6 +1,6 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage, } from "@/components/ui/form";
-import { IChainItem, INFTItem } from "@/swapup-types";
+import { SUI_ChainItem, INFTItem } from "@/swapup-types";
 import AddCurrencyModalDialog from "./AddCurrencyModalDialog";
 
 import { z } from "zod";
@@ -98,7 +98,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
 
   const getSelectedChain = () => {
     const selectedChainId = form.getValues("chain");
-    const chain: IChainItem | undefined = availableChains.find(chain => chain.uuid === selectedChainId);
+    const chain: SUI_ChainItem | undefined = availableChains.find(chain => chain.uuid === selectedChainId);
 
     return chain || availableChains[1];
   };

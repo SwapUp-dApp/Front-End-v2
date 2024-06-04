@@ -1,5 +1,5 @@
 import { ISwapMarketStore, SUT_GridViewType } from "./swap-market-types";
-import { IChainItem, INFTItem, IRarityRankItem } from "@/swapup-types";
+import { SUI_ChainItem, INFTItem, SUI_RarityRankItem } from "@/swapup-types";
 
 export const toggleGridViewHelper = (
   state: ISwapMarketStore,
@@ -86,7 +86,7 @@ export const setFilteredNftsByFiltersHelper = (
   roomKey: 'openRoom' | 'privateRoom',
   side: 'sender' | 'receiver',
   collectionTitle: string,
-  selectedRarityRank: IRarityRankItem
+  selectedRarityRank: SUI_RarityRankItem
 ): ISwapMarketStore => {
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;
@@ -518,7 +518,7 @@ export const tempReceiverNfts: INFTItem[] = [
   }
 ];
 
-export const chainsDataset: IChainItem[] = [
+export const chainsDataset: SUI_ChainItem[] = [
   {
     "uuid": "Qwsogvtv82FCd",
     "symbol": "BTC",

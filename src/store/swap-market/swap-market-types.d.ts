@@ -1,4 +1,4 @@
-import { IChainItem, INetwork, INFTItem, IRarityRankItem } from "@/swapup-types";
+import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem } from "@/swapup-types";
 
 export type SUT_GridViewType = 'detailed' | 'overview';
 export type SUT_PrivateRoomLayoutType = "sender" | "receiver";
@@ -7,12 +7,12 @@ export type SUT_RoomKeyType = "privateRoom" | "openRoom";
 
 export interface IPrivateRoomFilterItem {
   collection: string;
-  rarityRank: IRarityRankItem;
+  rarityRank: SUI_RarityRankItem;
 }
 
 export interface IAddedAmount {
   usdAmount: number;
-  coin: IChainItem;
+  coin: SUI_ChainItem;
 }
 
 export interface IPrivateRoomsLayoutSide {
@@ -26,7 +26,7 @@ export interface IPrivateRoomsLayoutSide {
     ensAddress: string;
   };
   addedAmount?: IAddedAmount;
-  availableChains: IChainItem[];
+  availableChains: SUI_ChainItem[];
   network: INetwork;
   filters?: IPrivateRoomFilterItem;
   nfts?: INFTItem[];
@@ -34,7 +34,7 @@ export interface IPrivateRoomsLayoutSide {
   nftsSelectedForSwap: INFTItem[] | [];
   setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => void;
   setFilteredNftsBySearch: (searchValue: string) => void;
-  setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => void;
+  setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
   removeAllFilters: () => void;
 }
@@ -48,6 +48,7 @@ export interface IPrivateRoom {
 
 export interface ISwapMarketStore {
   openMarket: {
+    // transaction history
     openRoom: IPrivateRoom;
   },
   privateMarket: {

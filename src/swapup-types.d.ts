@@ -1,4 +1,4 @@
-export interface INavItem {
+export interface SUI_NavItem {
   key: string;
   title: string;
   path: string;
@@ -20,13 +20,13 @@ export interface INFTItem {
   rarityRank: number;
 }
 
-export interface IRarityRankItem {
+export interface SUI_RarityRankItem {
   from: number;
   to: number;
 }
 
 
-export interface IChainItem {
+export interface SUI_ChainItem {
   uuid: string;
   symbol: string;
   name: string;
@@ -44,4 +44,58 @@ export interface IChainItem {
   "24hVolume": string;
   btcPrice: string;
   contractAddresses: any[];
+}
+
+
+interface SUI_NFTContract {
+  address: string;
+  name: string;
+  symbol?: string;
+  tokenType: string;
+  openSea: Record<string, any>;
+}
+
+interface SUI_NFTAttribute {
+  value: string;
+  trait_type: string;
+}
+
+interface SUI_NFTPoints {
+  [key: string]: number;
+}
+
+interface SUI_NFTRawMetadata {
+  image: string;
+  name: string;
+  description: string;
+  attributes: SUI_NFTAttribute[] | [];
+  google_image?: string;
+  ipfs_image?: string;
+  image?: string;
+  points?: SUI_NFTPoints;
+}
+
+interface SUI_NFTTokenUri {
+  gateway: string;
+  raw: string;
+}
+
+interface SUI_NFTMedia {
+  gateway: string;
+  raw: string;
+}
+
+interface SUI_NFTItem {
+  contract: SUI_NFTContract;
+  tokenId: string;
+  tokenType: string;
+  title: string;
+  description: string;
+  timeLastUpdated: string;
+  metadataError?: string;
+  rawMetadata: SUI_NFTRawMetadata;
+  tokenUri: SUI_NFTTokenUri;
+  media: SUI_NFTMedia[];
+  balance: number;
+  rarityRank: number;
 }
