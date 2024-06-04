@@ -3,15 +3,21 @@ import { cn } from "@/lib/utils";
 interface IProp {
   variant?: "default" | "success" | "error" | "info";
   icon?: React.ReactNode;
-  title: string;
-  description: string;
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  className?: string;
 }
 
-const ToastLookCard = ({ variant = "default", title, description, icon, ...props }: IProp) => {
+const ToastLookCard = ({ variant = "default", title, description, icon, subtitle, className, ...props }: IProp) => {
   return (
     <div
       className={cn(
         "custom-border-card flex items-start gap-3",
+        variant === 'default' && "",
+        variant === 'success' && "border-su_positive bg-su_positive_week",
+
+        className
       )}
       {...props}
     >
@@ -28,7 +34,8 @@ const ToastLookCard = ({ variant = "default", title, description, icon, ...props
 
       <div>
         <h2 className="text-sm text-primary font-bold text-text dark:text-su_primary" >{title}</h2>
-        <p className="text-xs dark:text-su_secondary" >
+        <p className="text-xs lg:text-sm dark:text-su_secondary" >{subtitle}</p>
+        <p className="text-xs lg:text-sm dark:text-su_secondary" >
           {description}
         </p>
       </div>

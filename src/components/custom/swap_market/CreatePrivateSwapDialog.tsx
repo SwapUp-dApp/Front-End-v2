@@ -11,6 +11,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 import { usePrivateRoomStore } from "@/store/private-room-store";
+import ToastLookCard from "../shared/ToastLookCard";
+import { useState } from "react";
 
 const formSchema = z.object({
   walletAddress: z.string().min(1, {
@@ -25,6 +27,7 @@ interface IProp {
 
 
 const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
+  const [showSuccessCard, setShowSuccessCard] = useState(false);
   const navigate = useNavigate();
   const setValuesOnCreatingRoom = usePrivateRoomStore(state => state.setValuesOnCreatingRoom);
 
@@ -40,10 +43,10 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
     const uniqueTradeId = generateRandomTradeId();
 
     setValuesOnCreatingRoom(uniqueTradeId, walletAddress);
-
-    navigate("/swap-up/swap-market/private-room");
-    // setTimeout(() => {
-    // }, 3000);
+    setShowSuccessCard(true);
+    setTimeout(() => {
+      navigate("/swap-up/swap-market/private-room");
+    }, 2000);
   }
 
   return (
@@ -100,6 +103,20 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
                 )}
               />
 
+              {
+                (form.getValues('walletAddress') && showSuccessCard) &&
+                < ToastLookCard
+                  className="animate-bounce-once"
+                  variant="success"
+                  icon={
+                    <svg className="w-4" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7.83268 12.3333L13.7077 6.45833L12.541 5.29166L7.83268 10L5.45768 7.625L4.29102 8.79167L7.83268 12.3333ZM8.99935 16.8333C7.84657 16.8333 6.76324 16.6144 5.74935 16.1767C4.73546 15.7389 3.85352 15.1453 3.10352 14.3958C2.35352 13.6464 1.75991 12.7644 1.32268 11.75C0.885461 10.7356 0.666572 9.65222 0.666017 8.5C0.665461 7.34778 0.88435 6.26444 1.32268 5.25C1.76102 4.23555 2.35463 3.35361 3.10352 2.60416C3.85241 1.85472 4.73435 1.26111 5.74935 0.823331C6.76435 0.385553 7.84768 0.166664 8.99935 0.166664C10.151 0.166664 11.2343 0.385553 12.2493 0.823331C13.2643 1.26111 14.1463 1.85472 14.8952 2.60416C15.6441 3.35361 16.238 4.23555 16.6768 5.25C17.1157 6.26444 17.3344 7.34778 17.3327 8.5C17.331 9.65222 17.1121 10.7356 16.676 11.75C16.2399 12.7644 15.6463 13.6464 14.8952 14.3958C14.1441 15.1453 13.2621 15.7392 12.2493 16.1775C11.2366 16.6158 10.1532 16.8344 8.99935 16.8333Z" fill="#75FFC1" />
+                    </svg>
+                  }
+                  subtitle={"ENS connected to "}
+                  description={form.getValues('walletAddress') + ' ' + 'wallet address'}
+                />
+              }
 
               <div className="w-full grid grid-cols-2 gap-4 py-2" >
                 <DialogClose >
@@ -111,22 +128,6 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
             </form>
           </Form>
 
-
-
-          {/* <div className="custom-border-card flex items-start gap-3" >
-            <div className="pt-1" >
-              <svg className="w-3" viewBox="0 0 12 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9.75 10.5433V15.6298C9.75001 15.6953 9.73242 15.7596 9.69902 15.8162C9.66563 15.8728 9.61761 15.9196 9.55989 15.9519C9.50217 15.9842 9.43679 16.0008 9.37045 16C9.30411 15.9992 9.23916 15.981 9.18225 15.9474L6 14.0628L2.81775 15.9474C2.76078 15.9811 2.69577 15.9992 2.62936 16C2.56295 16.0007 2.49753 15.9841 2.43978 15.9517C2.38204 15.9193 2.33404 15.8724 2.30069 15.8157C2.26735 15.759 2.24985 15.6946 2.25 15.6291V10.544C1.27961 9.77722 0.574494 8.73192 0.232094 7.55254C-0.110306 6.37317 -0.0730831 5.11795 0.338618 3.96036C0.75032 2.80277 1.51617 1.79995 2.53034 1.0905C3.5445 0.381054 4.75691 0 6 0C7.24309 0 8.4555 0.381054 9.46966 1.0905C10.4838 1.79995 11.2497 2.80277 11.6614 3.96036C12.0731 5.11795 12.1103 6.37317 11.7679 7.55254C11.4255 8.73192 10.7204 9.77722 9.75 10.544M6 10.3619C7.19347 10.3619 8.33807 9.894 9.18198 9.06113C10.0259 8.22825 10.5 7.09863 10.5 5.92077C10.5 4.74291 10.0259 3.61329 9.18198 2.78041C8.33807 1.94754 7.19347 1.47964 6 1.47964C4.80653 1.47964 3.66193 1.94754 2.81802 2.78041C1.97411 3.61329 1.5 4.74291 1.5 5.92077C1.5 7.09863 1.97411 8.22825 2.81802 9.06113C3.66193 9.894 4.80653 10.3619 6 10.3619ZM6 8.88153C5.20435 8.88153 4.44129 8.56959 3.87868 8.01434C3.31607 7.45909 3 6.70601 3 5.92077C3 5.13553 3.31607 4.38245 3.87868 3.8272C4.44129 3.27195 5.20435 2.96001 6 2.96001C6.79565 2.96001 7.55871 3.27195 8.12132 3.8272C8.68393 4.38245 9 5.13553 9 5.92077C9 6.70601 8.68393 7.45909 8.12132 8.01434C7.55871 8.56959 6.79565 8.88153 6 8.88153Z" fill="#868691" />
-              </svg>
-            </div>
-
-            <div>
-              <h2 className="text-sm text-primary font-bold text-text dark:text-su_primary" >Earn More</h2>
-              <p className="text-xs dark:text-su_secondary" >
-                Connect multiple wallets to earn points across all our supported networks for your SwapUp trading activity.
-              </p>
-            </div>
-          </div> */}
         </div>
       </DialogContent>
     </Dialog >

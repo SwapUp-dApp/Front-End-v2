@@ -22,7 +22,7 @@ const initialState: IPrivateRoomStoreState = {
       walletAddress: '0x13374200C2CF752eCeAa9a0eC6Ac099aF9D6D3D1'
     },
     nfts: tempSenderNfts,
-    availableCoins: coinsDataset,
+    availableChains: coinsDataset,
     filteredNfts: tempSenderNfts,
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => void {},
@@ -47,7 +47,7 @@ const initialState: IPrivateRoomStoreState = {
       walletAddress: '0xabCdeF1234567890AbCdEf123456789012345678'
     },
     nfts: tempReceiverNfts,
-    availableCoins: coinsDataset,
+    availableChains: coinsDataset,
     filteredNfts: tempReceiverNfts,
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },

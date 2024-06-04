@@ -1,4 +1,4 @@
-import { ICoinItem, INFTItem, IRarityRankItem } from "@/swapup-types";
+import { IChainItem, INFTItem, IRarityRankItem } from "@/swapup-types";
 import { IPrivateRoomStoreState, SUT_GridViewType } from "./types";
 
 export const toggleGridViewHelper = (
@@ -98,7 +98,7 @@ export const setAddedAmountHelper = (
   selectedCoin: string
 ): Partial<IPrivateRoomStoreState> => {
 
-  const coin = state[key].availableCoins.find(c => c.uuid === selectedCoin);
+  const coin = state[key].availableChains.find(c => c.uuid === selectedCoin);
 
   if (!coin) {
     return state;
@@ -442,7 +442,7 @@ export const tempReceiverNfts: INFTItem[] = [
   }
 ];
 
-export const coinsDataset: ICoinItem[] = [
+export const coinsDataset: IChainItem[] = [
   {
     "uuid": "Qwsogvtv82FCd",
     "symbol": "BTC",

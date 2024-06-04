@@ -39,7 +39,7 @@ const SwapDialogSideCard = ({ className, data, ...props }: IProp) => {
         <CustomAvatar
           imageSrc={data.profile.image}
           fallbackName={data.profile.title}
-          sizeClasses="w-3 h-3 lg:w-6 lg:h-6"
+          sizeClasses="w-4 h-4 lg:w-6 lg:h-6"
           textSizeClasses="text-2xs lg:text-xs"
         />
         <h2 className="font-semibold text-xs lg:text-sm line-clamp-1 w-2/3 lg:w-auto">{data.profile.ensAddress}</h2>

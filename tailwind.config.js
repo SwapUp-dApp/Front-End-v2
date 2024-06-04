@@ -61,6 +61,7 @@ module.exports = {
         su_purple: "#9452FF",
         su_primary: "rgba(255, 255, 255, 1)",
         su_positive: "rgba(117, 255, 193, 1)",
+        su_positive_week: "rgba(117, 255, 193, 0.2)",
         su_secondary: "rgba(182, 182, 189, 1)",
         su_ternary: "rgba(134, 134, 145, 1)",
         su_disabled: "rgba(86, 86, 101, 1)",

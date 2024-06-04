@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import NftCard from "../shared/NftCard";
 import { usePrivateRoomStore } from "@/store/private-room-store";
 import { Separator } from "@/components/ui/separator";
-import { SUI_PrivateRoomLayoutType } from "@/store/private-room-store/types";
+import { SUT_PrivateRoomLayoutType } from "@/store/private-room-store/types";
 import EmptyDataset from "../shared/EmptyDataset";
 import PrivateRoomFilterDrawer from "./PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
@@ -17,7 +17,7 @@ import { ScrollBar } from "@/components/ui/scroll-area";
 
 
 interface IProp {
-  layoutType: SUI_PrivateRoomLayoutType;
+  layoutType: SUT_PrivateRoomLayoutType;
 }
 
 const RoomLayoutCard = ({ layoutType }: IProp) => {

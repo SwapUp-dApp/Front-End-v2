@@ -9,12 +9,12 @@ import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { amountConvertFormSchema } from "./RoomFooterSide";
-import { ICoinItem } from "@/swapup-types";
+import { IChainItem } from "@/swapup-types";
 
 
 interface IProp {
   children: any;
-  availableCoins: ICoinItem[];
+  availableChains: IChainItem[];
   handleFormSubmit: (values: z.infer<typeof amountConvertFormSchema>) => void,
   form: UseFormReturn<{
     amount: string;
@@ -22,7 +22,7 @@ interface IProp {
   }, any, undefined>;
 }
 
-const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableCoins }: IProp) => {
+const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableChains }: IProp) => {
 
 
   return (
@@ -103,7 +103,7 @@ const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableCoi
                         </FormControl>
                         <SelectContent className="bg-su_primary_bg border-none right-0 w-[80vw] h-[160px] absolute -left-[55vw] top-2 p-0.5" >
                           {
-                            availableCoins.map(coin => (
+                            availableChains.map(coin => (
                               <SelectItem key={coin.uuid} className="hover:bg-su_active_bg py-3" value={coin.uuid}>
                                 <span className="flex items-center gap-2"  >
                                   <img className="w-4 h-4 rounded-full" src={coin.iconUrl} alt="" />
