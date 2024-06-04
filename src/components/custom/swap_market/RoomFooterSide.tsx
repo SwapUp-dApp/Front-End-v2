@@ -1,7 +1,5 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage, } from "@/components/ui/form";
-import { usePrivateRoomStore } from "@/store/private-room-store";
-import { SUT_PrivateRoomLayoutType } from "@/store/private-room-store/types";
 import { IChainItem, INFTItem } from "@/swapup-types";
 import AddCurrencyModalDialog from "./AddCurrencyModalDialog";
 
@@ -11,6 +9,8 @@ import { useForm } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
+import { useSwapMarketStore } from "@/store/swap-market";
+import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-types";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
@@ -34,7 +34,10 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
     nftsSelectedForSwap,
     availableChains,
     setAddedAmount
-  } = usePrivateRoomStore((state) => layoutType === "sender" ? state.sender : state.receiver);
+  } = useSwapMarketStore((state) => layoutType === "sender" ?
+    state.privateMarket.privateRoom.sender :
+    state.privateMarket.privateRoom.receiver
+  );
 
   const removeSelectedNftById = (paramId: string) => {
     const filteredNfts = nftsSelectedForSwap.filter(nft => nft.id !== paramId);

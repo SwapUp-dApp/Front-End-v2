@@ -3,7 +3,7 @@ import { IChainItem, INetwork, INFTItem, IRarityRankItem } from "@/swapup-types"
 export type SUT_GridViewType = 'detailed' | 'overview';
 export type SUT_PrivateRoomLayoutType = "sender" | "receiver";
 export type SUT_MarketKeyType = "privateMarket" | "openMarket";
-export type SUT_RoomKeyType = "privateRoom";
+export type SUT_RoomKeyType = "privateRoom" | "openRoom";
 
 export interface IPrivateRoomFilterItem {
   collection: string;
@@ -37,7 +37,6 @@ export interface IPrivateRoomsLayoutSide {
   setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => void;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
   removeAllFilters: () => void;
-
 }
 
 export interface IPrivateRoom {
@@ -47,9 +46,10 @@ export interface IPrivateRoom {
   setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => void;
 }
 
-
 export interface ISwapMarketStore {
-  openMarket: {},
+  openMarket: {
+    openRoom: IPrivateRoom;
+  },
   privateMarket: {
     privateRoom: IPrivateRoom;
   };

@@ -2,7 +2,6 @@ import RoomHeader from "@/components/custom/swap_market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
-import { usePrivateRoomStore } from "@/store/private-room-store";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import CopyTile from "@/components/custom/tiles/CopyTile";
@@ -12,9 +11,10 @@ import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton"
 import StaySafeDialog from "@/components/custom/swap_market/StaySafeDialog";
 import AvoidingFeeDialog from "@/components/custom/swap_market/AvoidingFeeDialog";
 import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
+import { useSwapMarketStore } from "@/store/swap-market";
 
 const PrivateRoom = () => {
-  const state = usePrivateRoomStore(state => state);
+  const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
 
   useEffect(() => {
@@ -31,7 +31,8 @@ const PrivateRoom = () => {
   return (
     <div className="flex flex-col gap-4" >
       <RoomHeader tardeId={state.uniqueTradeId} />
-      <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-12" >
+
+      <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
         <RoomLayoutCard layoutType={"sender"} />
         <RoomLayoutCard layoutType={"receiver"} />
       </div>

@@ -7,13 +7,13 @@ import FilterButton from "../shared/FilterButton";
 import GridToggleButton from "../shared/GridToggleButton";
 import { Input } from "@/components/ui/input";
 import NftCard from "../shared/NftCard";
-import { usePrivateRoomStore } from "@/store/private-room-store";
 import { Separator } from "@/components/ui/separator";
-import { SUT_PrivateRoomLayoutType } from "@/store/private-room-store/types";
 import EmptyDataset from "../shared/EmptyDataset";
 import PrivateRoomFilterDrawer from "./PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
+import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-types";
+import { useSwapMarketStore } from "@/store/swap-market";
 
 
 interface IProp {
@@ -34,7 +34,10 @@ const RoomLayoutCard = ({ layoutType }: IProp) => {
     setFilteredNftsByFilters,
     filters,
     removeAllFilters
-  } = usePrivateRoomStore((state) => layoutType === "sender" ? state.sender : state.receiver);
+  } = useSwapMarketStore((state) => layoutType === "sender" ?
+    state.privateMarket.privateRoom.sender :
+    state.privateMarket.privateRoom.receiver
+  );
 
   const handleSearchNfts = (searchValue: string) => {
     setFilteredNftsBySearch(searchValue);

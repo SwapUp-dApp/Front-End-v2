@@ -1,4 +1,4 @@
-var api = {
+export const api = {
     // apiUrl: (_global.isProd ? "https://swapup-prod-api.azurewebsites.net" : "https://swapup-api-dev.azurewebsites.net"),
     apiUrl: "http://localhost:8800",
 

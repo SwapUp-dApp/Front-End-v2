@@ -10,9 +10,9 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { usePrivateRoomStore } from "@/store/private-room-store";
 import ToastLookCard from "../shared/ToastLookCard";
 import { useState } from "react";
+import { useSwapMarketStore } from "@/store/swap-market";
 
 const formSchema = z.object({
   walletAddress: z.string().min(1, {
@@ -29,7 +29,7 @@ interface IProp {
 const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
   const [showSuccessCard, setShowSuccessCard] = useState(false);
   const navigate = useNavigate();
-  const setValuesOnCreatingRoom = usePrivateRoomStore(state => state.setValuesOnCreatingRoom);
+  const setValuesOnCreatingRoom = useSwapMarketStore(state => state.privateMarket.privateRoom.setValuesOnCreatingRoom);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
