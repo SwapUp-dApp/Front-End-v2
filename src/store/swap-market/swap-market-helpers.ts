@@ -1,5 +1,5 @@
 import { ISwapMarketStore, SUT_GridViewType } from "./swap-market-types";
-import { SUI_ChainItem, INFTItem, SUI_RarityRankItem } from "@/swapup-types";
+import { SUI_ChainItem, INFTItem, SUI_RarityRankItem } from "@/types/swapup.types";
 
 export const toggleGridViewHelper = (
   state: ISwapMarketStore,

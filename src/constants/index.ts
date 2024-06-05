@@ -1,4 +1,4 @@
-import { SUI_NavItem } from "@/swapup-types";
+import { SUI_NavItem } from "@/types/swapup.types";
 
 export const navItemsData: SUI_NavItem[] = [
   {
@@ -18,6 +18,7 @@ export const navItemsData: SUI_NavItem[] = [
   }
 ];
 
+export const testWalletAddress: string = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
 
 
 const testNft = {

@@ -1,4 +1,4 @@
-import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem } from "@/swapup-types";
+import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem } from "@/types/swapup.types";
 
 export type SUT_GridViewType = 'detailed' | 'overview';
 export type SUT_PrivateRoomLayoutType = "sender" | "receiver";

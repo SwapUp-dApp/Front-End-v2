@@ -13,7 +13,7 @@ import {
   tempReceiverNfts
 } from './swap-market-helpers';
 import { IPrivateRoom } from './swap-market-types';
-import { INFTItem, SUI_RarityRankItem } from '@/swapup-types';
+import { INFTItem, SUI_RarityRankItem } from '@/types/swapup.types';
 
 const initialPrivateRoomState: IPrivateRoom = {
   uniqueTradeId: '',
