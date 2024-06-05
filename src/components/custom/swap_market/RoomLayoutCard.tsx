@@ -49,11 +49,9 @@ const RoomLayoutCard = ({ layoutType }: IProp) => {
     setFilteredNftsBySearch(searchValue);
   };
 
-  const myWalletAddress = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
-
   const { counterPartyWallet } = useParams();
-  const walletAddress = layoutType === "sender" ? myWalletAddress : counterPartyWallet;
-
+  const myWalletAddress = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
+  const walletAddress = ((layoutType === "receiver") && (counterPartyWallet)) ? counterPartyWallet : myWalletAddress;
   const { isLoading, data, isSuccess } = useNFTsByWallet(walletAddress);
 
   useEffect(() => {

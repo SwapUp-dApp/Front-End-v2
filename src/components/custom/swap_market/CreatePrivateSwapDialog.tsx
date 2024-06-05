@@ -1,4 +1,4 @@
-import { cn, generateRandomTradeId } from "@/lib/utils";
+import { cn, generateRandomTradeId, isValidWalletAddress } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
@@ -10,13 +10,13 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import ToastLookCard from "../shared/ToastLookCard";
-import { useState } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
 
 const formSchema = z.object({
   walletAddress: z.string().min(1, {
     message: "Required field missed",
+  }).refine((address) => isValidWalletAddress(address), {
+    message: "Invalid wallet address",
   }),
 });
 
@@ -27,7 +27,6 @@ interface IProp {
 
 
 const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
-  const [showSuccessCard, setShowSuccessCard] = useState(false);
   const navigate = useNavigate();
   const setValuesOnCreatingRoom = useSwapMarketStore(state => state.privateMarket.privateRoom.setValuesOnCreatingRoom);
 
@@ -42,13 +41,8 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
     const { walletAddress } = values;
     const uniqueTradeId = generateRandomTradeId();
 
-
     setValuesOnCreatingRoom(uniqueTradeId, walletAddress);
-    setShowSuccessCard(true);
     navigate(`/swap-up/swap-market/private-room/${walletAddress}`);
-
-    // setTimeout(() => {
-    // }, 2000);
   }
 
   return (

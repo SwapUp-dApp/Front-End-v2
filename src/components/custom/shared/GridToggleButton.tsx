@@ -1,5 +1,4 @@
-import { SUT_GridViewType } from "@/store/private-room-store/types";
-
+import { SUT_GridViewType } from "@/store/swap-market/swap-market-types";
 
 interface IProp {
   activeGridView?: SUT_GridViewType;
