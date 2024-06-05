@@ -52,6 +52,9 @@ interface SUI_NFTContract {
   name: string;
   symbol?: string;
   tokenType: string;
+  totalSupply?: string;
+  contractDeployer?: string;
+  deployedBlockNumber?: number;
   openSea: Record<string, any>;
 }
 
@@ -64,15 +67,28 @@ interface SUI_NFTPoints {
   [key: string]: number;
 }
 
+
 interface SUI_NFTRawMetadata {
-  image: string;
-  name: string;
-  description: string;
-  attributes: SUI_NFTAttribute[] | [];
+  image?: string;
+  name?: string;
+  description?: string;
+  attributes?: SUI_NFTAttribute[] | [];
   google_image?: string;
   ipfs_image?: string;
+  image_url?: string;
   image?: string;
   points?: SUI_NFTPoints;
+  image_details?: {
+    format: string;
+    width: number;
+    sha256: string;
+    bytes: number;
+    height: number;
+  };
+  created_by?: string;
+  metadata?: [];
+  attributes?: [];
+
 }
 
 interface SUI_NFTTokenUri {
@@ -97,5 +113,5 @@ interface SUI_NFTItem {
   tokenUri: SUI_NFTTokenUri;
   media: SUI_NFTMedia[];
   balance: number;
-  rarityRank: number;
+  rarityRank?: number;
 }

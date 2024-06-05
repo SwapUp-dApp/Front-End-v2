@@ -28,6 +28,7 @@ const PrivateRoom = () => {
 
   }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap, state.sender.addedAmount, state.receiver.addedAmount]);
 
+
   return (
     <div className="flex flex-col gap-4" >
       <RoomHeader tardeId={state.uniqueTradeId} />

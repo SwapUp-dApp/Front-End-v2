@@ -1,23 +1,23 @@
 import { cn } from "@/lib/utils";
 import CustomAvatar from "../shared/CustomAvatar";
 import WalletAddressTile from "../tiles/WalletAddressTile";
-import { INFTItem } from "@/types/swapup.types";
 import ChainTile from "../tiles/ChainTile";
-import { IPrivateRoomState } from "@/store/private-room-store/types";
+import { IPrivateRoomsLayoutSide } from "@/store/swap-market/swap-market-types";
+import { SUI_NFTItem } from "@/types/swapup.types";
 
 interface IProp {
   className?: string;
-  data: IPrivateRoomState;
+  data: IPrivateRoomsLayoutSide;
 }
 
 const SwapDialogSideCard = ({ className, data, ...props }: IProp) => {
 
-  const nftsImageMapper = (nfts: INFTItem[],) => (
+  const nftsImageMapper = (nfts: SUI_NFTItem[],) => (
     nfts.map((nft) => (
       <div
         className="group relative w-8 h-8 rounded-xs lg:w-12 lg:h-12 object-cover lg:rounded-sm border-[1.5px] border-white/20"
-        key={nft.image}>
-        <img className="w-full h-full object-cover rounded-xs lg:rounded-sm" src={nft.image} alt="nft" />
+        key={nft.tokenId}>
+        <img className="w-full h-full object-cover rounded-xs lg:rounded-sm" src={nft.media[0].gateway} alt="nft" />
       </div>
     ))
   );

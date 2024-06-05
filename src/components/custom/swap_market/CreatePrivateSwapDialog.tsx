@@ -42,11 +42,13 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
     const { walletAddress } = values;
     const uniqueTradeId = generateRandomTradeId();
 
+
     setValuesOnCreatingRoom(uniqueTradeId, walletAddress);
     setShowSuccessCard(true);
-    setTimeout(() => {
-      navigate("/swap-up/swap-market/private-room");
-    }, 2000);
+    navigate(`/swap-up/swap-market/private-room/${walletAddress}`);
+
+    // setTimeout(() => {
+    // }, 2000);
   }
 
   return (
@@ -84,7 +86,7 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
                 name="walletAddress"
                 render={({ field }) => (
                   <FormItem className="space-y-2" >
-                    <FormLabel className="text-su_secondary text-sm font-semibold" >Counterparty wallet address</FormLabel>
+                    <FormLabel className="text-su_secondary text-sm font-semibold">Counterparty wallet address</FormLabel>
                     <FormControl>
                       <Input
                         icon={
@@ -103,7 +105,8 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
                 )}
               />
 
-              {
+              {/* We will display this while entering ens address */}
+              {/* {
                 (form.getValues('walletAddress') && showSuccessCard) &&
                 < ToastLookCard
                   className="animate-bounce-once"
@@ -116,7 +119,7 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
                   subtitle={"ENS connected to "}
                   description={form.getValues('walletAddress') + ' ' + 'wallet address'}
                 />
-              }
+              } */}
 
               <div className="w-full grid grid-cols-2 gap-4 py-2" >
                 <DialogClose >

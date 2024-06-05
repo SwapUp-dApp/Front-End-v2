@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
+import { Environment } from "@/config";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -51,7 +52,17 @@ export const generateRandomTradeId = (length: number = 7): string => {
   return result;
 };
 
+export const getEtherScanContractNftUrl = (token: string, nftId: string) => {
+  const baseUrl = Environment.ETHERSCAN_BASE_URL;
+  return `${baseUrl}/token/${token}?a=${nftId}`;
+};
 
+export const getOpenSeaNftUrl = (token: string, nftId: string) => {
+  const baseUrl = Environment.OPENSEA_BASE_URL;
+  const network = Environment.NETWORK;
+
+  return `${baseUrl}/assets/${network}/${token}/${nftId}`;
+};
 
 const options = {
   method: 'GET',

@@ -1,5 +1,5 @@
 import { ISwapMarketStore, SUT_GridViewType } from "./swap-market-types";
-import { SUI_ChainItem, INFTItem, SUI_RarityRankItem } from "@/types/swapup.types";
+import { SUI_ChainItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 
 export const toggleGridViewHelper = (
   state: ISwapMarketStore,
@@ -30,7 +30,7 @@ export const setSelectedNftsForSwapHelper = (
   marketKey: 'openMarket' | 'privateMarket',
   roomKey: 'openRoom' | 'privateRoom',
   side: 'sender' | 'receiver',
-  selectedNfts: INFTItem[] | []
+  selectedNfts: SUI_NFTItem[] | []
 ): ISwapMarketStore => {
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;
@@ -69,8 +69,8 @@ export const setFilteredNftsBySearchHelper = (
         [side]: {
           ...room[side],
           filteredNfts: searchValue
-            ? room[side].nfts?.filter((nft: INFTItem) =>
-              nft.id.toLowerCase().includes(lowerCaseSearchValue) ||
+            ? room[side].nfts?.filter((nft: SUI_NFTItem) =>
+              nft.tokenId.toLowerCase().includes(lowerCaseSearchValue) ||
               nft.title.toLowerCase().includes(lowerCaseSearchValue)
             )
             : room[side].nfts,
@@ -92,12 +92,12 @@ export const setFilteredNftsByFiltersHelper = (
   const room = market[roomKey] as Record<string, any>;
   const lowerCaseCollectionTitle = collectionTitle.toLowerCase();
 
-  let filteredNfts: INFTItem[] | undefined = [];
+  let filteredNfts: SUI_NFTItem[] | undefined = [];
 
   if (collectionTitle && selectedRarityRank) {
-    filteredNfts = room[side].nfts?.filter((nft: INFTItem) =>
-      nft.collection.toLowerCase().includes(lowerCaseCollectionTitle) &&
-      (nft.rarityRank >= selectedRarityRank.from && nft.rarityRank <= selectedRarityRank.to)
+    filteredNfts = room[side].nfts?.filter((nft: SUI_NFTItem) =>
+      nft.contract.name.toLowerCase().includes(lowerCaseCollectionTitle) &&
+      (nft.rarityRank && (nft.rarityRank >= selectedRarityRank.from && nft.rarityRank <= selectedRarityRank.to))
     );
   }
 
@@ -209,313 +209,1202 @@ export const setValuesOnCreatingPrivateRoomHelper = (
   };
 };
 
+export const setNftsDatasetHelper = (
+  state: ISwapMarketStore,
+  marketKey: 'openMarket' | 'privateMarket',
+  roomKey: 'openRoom' | 'privateRoom',
+  side: 'sender' | 'receiver',
+  dataset: SUI_NFTItem[]
+): ISwapMarketStore => {
+  const market = state[marketKey] as Record<string, any>;
+  const room = market[roomKey] as Record<string, any>;
+
+  const collections: string[] | [] = [...new Set(dataset.map(item => item.contract.name))];
+
+
+  return {
+    ...state,
+    [marketKey]: {
+      ...market,
+      [roomKey]: {
+        ...room,
+        [side]: {
+          ...room[side],
+          filteredNfts: dataset.length > 0 ? dataset : [],
+          nfts: dataset.length > 0 ? dataset : [],
+          collections
+        },
+      },
+    },
+  };
+};
 
 
 
-export const tempSenderNfts: INFTItem[] = [
+export const tempSenderNfts: SUI_NFTItem[] = [
   {
-    id: '1',
-    amount: 10,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-cat.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 10,
-    title: 'cool cat',
-    isTopRated: false
+    "tokenId": "15",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #15",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2023-11-14T18:23:38.254Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmRiwJtPoPcRckxXDWu7THoCz4JLVikf4oM7D96acW48e2",
+      "name": "Cool Cat #15",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "antlers",
+          "trait_type": "hats"
+        },
+        {
+          "value": "tanktop white",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "unamused",
+          "trait_type": "face"
+        },
+        {
+          "value": "cool_1",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=1bfrD7uh2LhtH0pMt0afpcg_uUMhbQ1bV",
+      "ipfs_image": "https://ipfs.io/ipfs/QmRiwJtPoPcRckxXDWu7THoCz4JLVikf4oM7D96acW48e2",
+      "points": {
+        "Hats": 1,
+        "Shirt": 1,
+        "Face": 1,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/15",
+      "raw": "https://api.coolcatsnft.com/cat/15"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmRiwJtPoPcRckxXDWu7THoCz4JLVikf4oM7D96acW48e2",
+        "raw": "https://ipfs.io/ipfs/QmRiwJtPoPcRckxXDWu7THoCz4JLVikf4oM7D96acW48e2"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 15
   },
   {
-    id: '2',
-    amount: 3,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-dog.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 1,
-    title: 'cool dog',
-    isTopRated: true
+    "tokenId": "268",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #268",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:19.059Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmQAAXgJ3isYvjKbzoqEYSrWKtDDQdcNNM3fn4y8dJ8nRo",
+      "name": "Cool Cat #268",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "mohawk green",
+          "trait_type": "hats"
+        },
+        {
+          "value": "buttondown blue flannel",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "angry scar",
+          "trait_type": "face"
+        },
+        {
+          "value": "cool_2",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=1fzqRyLV10P0lfsGbOP6HgZgALRzd61nQ",
+      "ipfs_image": "https://ipfs.io/ipfs/QmQAAXgJ3isYvjKbzoqEYSrWKtDDQdcNNM3fn4y8dJ8nRo",
+      "points": {
+        "Hats": 1,
+        "Shirt": 1,
+        "Face": 2,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/268",
+      "raw": "https://api.coolcatsnft.com/cat/268"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmQAAXgJ3isYvjKbzoqEYSrWKtDDQdcNNM3fn4y8dJ8nRo",
+        "raw": "https://ipfs.io/ipfs/QmQAAXgJ3isYvjKbzoqEYSrWKtDDQdcNNM3fn4y8dJ8nRo"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 268
   },
   {
-    id: '3',
-    amount: 5,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-elephant.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 25,
-    title: 'cool elephant',
-    isTopRated: true
+    "tokenId": "269",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #269",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:19.020Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmajmkKdWSzTHMZD6ezWvLfBouuhTabm8sNi7KFi6XVk4B",
+      "name": "Cool Cat #269",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "afro black",
+          "trait_type": "hats"
+        },
+        {
+          "value": "labcoat",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "unamused",
+          "trait_type": "face"
+        },
+        {
+          "value": "wild_1",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=1MGgLRkco6Oa9_DNv05DdMUlexnA87KId",
+      "ipfs_image": "https://ipfs.io/ipfs/QmajmkKdWSzTHMZD6ezWvLfBouuhTabm8sNi7KFi6XVk4B",
+      "points": {
+        "Hats": 2,
+        "Shirt": 2,
+        "Face": 1,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/269",
+      "raw": "https://api.coolcatsnft.com/cat/269"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmajmkKdWSzTHMZD6ezWvLfBouuhTabm8sNi7KFi6XVk4B",
+        "raw": "https://ipfs.io/ipfs/QmajmkKdWSzTHMZD6ezWvLfBouuhTabm8sNi7KFi6XVk4B"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 269
   },
   {
-    id: '4',
-    amount: 7,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-lion.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 6,
-    title: 'cool lion',
-    isTopRated: false
+    "tokenId": "270",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #270",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:18.992Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmfTzZAgrZ8wmbrCwrwEwEFVtgfv2dwbBJ26NijeS1ygdQ",
+      "name": "Cool Cat #270",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "wreath",
+          "trait_type": "hats"
+        },
+        {
+          "value": "buttondown green",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "glossy",
+          "trait_type": "face"
+        },
+        {
+          "value": "cool_1",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=1jlRhCtETxgdqgecXeQRpBsm-m0zDEkRb",
+      "ipfs_image": "https://ipfs.io/ipfs/QmfTzZAgrZ8wmbrCwrwEwEFVtgfv2dwbBJ26NijeS1ygdQ",
+      "points": {
+        "Hats": 1,
+        "Shirt": 1,
+        "Face": 1,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/270",
+      "raw": "https://api.coolcatsnft.com/cat/270"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmfTzZAgrZ8wmbrCwrwEwEFVtgfv2dwbBJ26NijeS1ygdQ",
+        "raw": "https://ipfs.io/ipfs/QmfTzZAgrZ8wmbrCwrwEwEFVtgfv2dwbBJ26NijeS1ygdQ"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 270
   },
   {
-    id: '5',
-    amount: 4,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-monkey.png',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 3,
-    title: 'cool monkey',
-    isTopRated: true
+    "tokenId": "271",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #271",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:18.998Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmXoWQN17cjSZyYcEFzAapj8FAPmVFGsVuu1MF8kaefngu",
+      "name": "Cool Cat #271",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "costume gorilla",
+          "trait_type": "hats"
+        },
+        {
+          "value": "labcoat",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "dizzy",
+          "trait_type": "face"
+        },
+        {
+          "value": "classy_1",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=1ocVP5rqWs3lOBCpFckhdGLBHrVi-iDZR",
+      "ipfs_image": "https://ipfs.io/ipfs/QmXoWQN17cjSZyYcEFzAapj8FAPmVFGsVuu1MF8kaefngu",
+      "points": {
+        "Hats": 4,
+        "Shirt": 2,
+        "Face": 1,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/271",
+      "raw": "https://api.coolcatsnft.com/cat/271"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmXoWQN17cjSZyYcEFzAapj8FAPmVFGsVuu1MF8kaefngu",
+        "raw": "https://ipfs.io/ipfs/QmXoWQN17cjSZyYcEFzAapj8FAPmVFGsVuu1MF8kaefngu"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 271
   },
   {
-    id: '6',
-    amount: 2,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-panada.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 12,
-    title: 'cool panda',
-    isTopRated: false
+    "tokenId": "272",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #272",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:18.995Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmRvPQXLT5Z2isgXHDMpoRQJQa9WqYVft4DHu9GF6S5yAd",
+      "name": "Cool Cat #272",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "goggles seaweed",
+          "trait_type": "hats"
+        },
+        {
+          "value": "shirt yellow",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "sunglasses squad",
+          "trait_type": "face"
+        },
+        {
+          "value": "wild_2",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=17Aet1HZxXnU_-X3LmzQ9BQ79BqQADqnV",
+      "ipfs_image": "https://ipfs.io/ipfs/QmRvPQXLT5Z2isgXHDMpoRQJQa9WqYVft4DHu9GF6S5yAd",
+      "points": {
+        "Hats": 3,
+        "Shirt": 1,
+        "Face": 2,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/272",
+      "raw": "https://api.coolcatsnft.com/cat/272"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmRvPQXLT5Z2isgXHDMpoRQJQa9WqYVft4DHu9GF6S5yAd",
+        "raw": "https://ipfs.io/ipfs/QmRvPQXLT5Z2isgXHDMpoRQJQa9WqYVft4DHu9GF6S5yAd"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 272
   },
   {
-    id: '7',
-    amount: 6,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-parrot.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 4,
-    title: 'cool parrot',
-    isTopRated: true
+    "tokenId": "273",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #273",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:19.024Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmS1bfZxG8u9NHCtnd96yTA2N1Wb5FRasSTqgYWnLY6qz6",
+      "name": "Cool Cat #273",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "beanie orange",
+          "trait_type": "hats"
+        },
+        {
+          "value": "bandana green",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "smirk",
+          "trait_type": "face"
+        },
+        {
+          "value": "cool_1",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=1GdgN4YSMsWp7QJz7SD0w6MyOCQGLjetv",
+      "ipfs_image": "https://ipfs.io/ipfs/QmS1bfZxG8u9NHCtnd96yTA2N1Wb5FRasSTqgYWnLY6qz6",
+      "points": {
+        "Hats": 1,
+        "Shirt": 1,
+        "Face": 1,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/273",
+      "raw": "https://api.coolcatsnft.com/cat/273"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmS1bfZxG8u9NHCtnd96yTA2N1Wb5FRasSTqgYWnLY6qz6",
+        "raw": "https://ipfs.io/ipfs/QmS1bfZxG8u9NHCtnd96yTA2N1Wb5FRasSTqgYWnLY6qz6"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 273
   },
   {
-    id: '8',
-    amount: 8,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-pigeon.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 7,
-    title: 'cool pigeon',
-    isTopRated: false
+    "tokenId": "274",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #274",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:18.994Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmQbgbAB6kvuXz1dpb2yGzDYKuvK4Luij649YfXeDWy7Ri",
+      "name": "Cool Cat #274",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "piercings",
+          "trait_type": "hats"
+        },
+        {
+          "value": "epaulette black",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "mummy",
+          "trait_type": "face"
+        },
+        {
+          "value": "wild_2",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=17NtY3iIXmdsF0Qz6HJLjwoFG24Nw2Oma",
+      "ipfs_image": "https://ipfs.io/ipfs/QmQbgbAB6kvuXz1dpb2yGzDYKuvK4Luij649YfXeDWy7Ri",
+      "points": {
+        "Hats": 1,
+        "Shirt": 3,
+        "Face": 2,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/274",
+      "raw": "https://api.coolcatsnft.com/cat/274"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmQbgbAB6kvuXz1dpb2yGzDYKuvK4Luij649YfXeDWy7Ri",
+        "raw": "https://ipfs.io/ipfs/QmQbgbAB6kvuXz1dpb2yGzDYKuvK4Luij649YfXeDWy7Ri"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 274
   },
   {
-    id: '9',
-    amount: 1,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-snake.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 80,
-    title: 'cool snake',
-    isTopRated: true
+    "tokenId": "275",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #275",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:19.007Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmVfwMPQ5DnNcLewk9HzR5eKcE4fdgwR8Xmp21tiDJGrWN",
+      "name": "Cool Cat #275",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "hat skull",
+          "trait_type": "hats"
+        },
+        {
+          "value": "bandana purple",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "angry",
+          "trait_type": "face"
+        },
+        {
+          "value": "cool_2",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=1K5K0IL5mFLGa8KcvTbIMG_pl4Kk7tl7X",
+      "ipfs_image": "https://ipfs.io/ipfs/QmVfwMPQ5DnNcLewk9HzR5eKcE4fdgwR8Xmp21tiDJGrWN",
+      "points": {
+        "Hats": 2,
+        "Shirt": 1,
+        "Face": 1,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/275",
+      "raw": "https://api.coolcatsnft.com/cat/275"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmVfwMPQ5DnNcLewk9HzR5eKcE4fdgwR8Xmp21tiDJGrWN",
+        "raw": "https://ipfs.io/ipfs/QmVfwMPQ5DnNcLewk9HzR5eKcE4fdgwR8Xmp21tiDJGrWN"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 275
   },
   {
-    id: '10',
-    amount: 9,
-    collection: 'cool animals',
-    image: '/src/assets/nfts/cool-turtle.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 5,
-    title: 'cool turtle',
-    isTopRated: false
-  }
+    "tokenId": "276",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #276",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:18.999Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmNsK29s92tpHLFDZGTMvBzCzRvNkVjs6fGZXKcgWrwiGm",
+      "name": "Cool Cat #276",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "cowboy brown",
+          "trait_type": "hats"
+        },
+        {
+          "value": "ninja blue",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "double face",
+          "trait_type": "face"
+        },
+        {
+          "value": "wild_2",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=11c3tnOljpkIOYDVASs7Rts0BzP4QuPZn",
+      "ipfs_image": "https://ipfs.io/ipfs/QmNsK29s92tpHLFDZGTMvBzCzRvNkVjs6fGZXKcgWrwiGm",
+      "points": {
+        "Hats": 2,
+        "Shirt": 2,
+        "Face": 2,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/276",
+      "raw": "https://api.coolcatsnft.com/cat/276"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmNsK29s92tpHLFDZGTMvBzCzRvNkVjs6fGZXKcgWrwiGm",
+        "raw": "https://ipfs.io/ipfs/QmNsK29s92tpHLFDZGTMvBzCzRvNkVjs6fGZXKcgWrwiGm"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 276
+  },
 ];
 
-export const tempReceiverNfts: INFTItem[] = [
+export const tempReceiverNfts: SUI_NFTItem[] = [
   {
-    id: '1',
-    amount: 8,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-cat.png',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x3d7e741b5e806303adbe0706c827d3acf0696516",
+      "name": "Cool Cats NFT",
+      "symbol": "Cool Cats NFT",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 5,
-    title: 'uncool cat',
-    isTopRated: true
+    "tokenId": "277",
+    "tokenType": "ERC721",
+    "title": "Cool Cat #277",
+    "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+    "timeLastUpdated": "2024-05-20T11:01:18.996Z",
+    "rawMetadata": {
+      "image": "https://ipfs.io/ipfs/QmW9pm7mDArgpQZQVZ6AvFGTNV8Gigvfqk5CBirYKRqvg8",
+      "name": "Cool Cat #277",
+      "description": "Cool Cats is a collection of 9,999 randomly generated and stylistically curated NFTs that exist on the Ethereum Blockchain. Cool Cat holders can participate in exclusive events such as NFT claims, raffles, community giveaways, and more. Remember, all cats are cool, but some are cooler than others. Visit [www.coolcatsnft.com](https://www.coolcatsnft.com/) to learn more.",
+      "attributes": [
+        {
+          "value": "blue cat skin",
+          "trait_type": "body"
+        },
+        {
+          "value": "pirate black",
+          "trait_type": "hats"
+        },
+        {
+          "value": "buttondown black flannel",
+          "trait_type": "shirt"
+        },
+        {
+          "value": "wink",
+          "trait_type": "face"
+        },
+        {
+          "value": "wild_1",
+          "trait_type": "tier"
+        }
+      ],
+      "google_image": "https://drive.google.com/uc?id=1X2uohNrYglHGb8AYMlXBHespqKaPLpsM",
+      "ipfs_image": "https://ipfs.io/ipfs/QmW9pm7mDArgpQZQVZ6AvFGTNV8Gigvfqk5CBirYKRqvg8",
+      "points": {
+        "Hats": 3,
+        "Shirt": 1,
+        "Face": 1,
+        "Body": 0
+      }
+    },
+    "tokenUri": {
+      "gateway": "https://api.coolcatsnft.com/cat/277",
+      "raw": "https://api.coolcatsnft.com/cat/277"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmW9pm7mDArgpQZQVZ6AvFGTNV8Gigvfqk5CBirYKRqvg8",
+        "raw": "https://ipfs.io/ipfs/QmW9pm7mDArgpQZQVZ6AvFGTNV8Gigvfqk5CBirYKRqvg8"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 277
   },
   {
-    id: '2',
-    amount: 8,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-dog.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x49d3b3c0d5252e8c8b4331885479880847287a92",
+      "name": "Doodles",
+      "symbol": "Doodles",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 17,
-    title: 'uncool dog',
-    isTopRated: false
+    "tokenId": "320",
+    "tokenType": "ERC721",
+    "title": "Doodle #320",
+    "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+    "timeLastUpdated": "2024-05-20T11:01:19.321Z",
+    "rawMetadata": {
+      "name": "Doodle #320",
+      "image": "ipfs://QmYnjDZofuSon8TdXT4WViSsPehnMBY3Eih7FG4yEsXKW7",
+      "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+      "attributes": [
+        {
+          "value": "happy",
+          "trait_type": "face"
+        },
+        {
+          "value": "green mullet",
+          "trait_type": "hair"
+        },
+        {
+          "value": "pink and green jacket",
+          "trait_type": "body"
+        },
+        {
+          "value": "orange",
+          "trait_type": "background"
+        },
+        {
+          "value": "tan",
+          "trait_type": "head"
+        }
+      ]
+    },
+    "tokenUri": {
+      "gateway": "https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/320",
+      "raw": "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/320"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmYnjDZofuSon8TdXT4WViSsPehnMBY3Eih7FG4yEsXKW7",
+        "raw": "ipfs://QmYnjDZofuSon8TdXT4WViSsPehnMBY3Eih7FG4yEsXKW7"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 320
   },
   {
-    id: '3',
-    amount: 6,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-elephant.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x49d3b3c0d5252e8c8b4331885479880847287a92",
+      "name": "Doodles",
+      "symbol": "Doodles",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 9,
-    title: 'uncool elephant',
-    isTopRated: false
+    "tokenId": "321",
+    "tokenType": "ERC721",
+    "title": "Doodle #321",
+    "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+    "timeLastUpdated": "2024-05-20T11:01:19.369Z",
+    "rawMetadata": {
+      "name": "Doodle #321",
+      "image": "ipfs://QmUL4uTKWZVVEqgWMV7q6EQ49cDy5UThcirGHPvzmT4GkV",
+      "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+      "attributes": [
+        {
+          "value": "default",
+          "trait_type": "face"
+        },
+        {
+          "value": "purple cap",
+          "trait_type": "hair"
+        },
+        {
+          "value": "pink fleece",
+          "trait_type": "body"
+        },
+        {
+          "value": "gradient 2",
+          "trait_type": "background"
+        },
+        {
+          "value": "gradient 2",
+          "trait_type": "head"
+        },
+        {
+          "value": "pearl",
+          "trait_type": "piercing"
+        }
+      ]
+    },
+    "tokenUri": {
+      "gateway": "https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/321",
+      "raw": "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/321"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmUL4uTKWZVVEqgWMV7q6EQ49cDy5UThcirGHPvzmT4GkV",
+        "raw": "ipfs://QmUL4uTKWZVVEqgWMV7q6EQ49cDy5UThcirGHPvzmT4GkV"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 321
   },
   {
-    id: '4',
-    amount: 7,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-lion.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x49d3b3c0d5252e8c8b4331885479880847287a92",
+      "name": "Doodles",
+      "symbol": "Doodles",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 1,
-    title: 'uncool lion',
-    isTopRated: true
+    "tokenId": "322",
+    "tokenType": "ERC721",
+    "title": "Doodle #322",
+    "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+    "timeLastUpdated": "2024-05-20T11:01:19.222Z",
+    "rawMetadata": {
+      "name": "Doodle #322",
+      "image": "ipfs://QmSrZyLqY16kG79xx22eMX8eFBqXz2E5Rb9z4hJUxQJwfB",
+      "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+      "attributes": [
+        {
+          "value": "aviators with mustache",
+          "trait_type": "face"
+        },
+        {
+          "value": "blue messy",
+          "trait_type": "hair"
+        },
+        {
+          "value": "pink and green jacket",
+          "trait_type": "body"
+        },
+        {
+          "value": "orange",
+          "trait_type": "background"
+        },
+        {
+          "value": "gradient 2",
+          "trait_type": "head"
+        }
+      ]
+    },
+    "tokenUri": {
+      "gateway": "https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/322",
+      "raw": "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/322"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmSrZyLqY16kG79xx22eMX8eFBqXz2E5Rb9z4hJUxQJwfB",
+        "raw": "ipfs://QmSrZyLqY16kG79xx22eMX8eFBqXz2E5Rb9z4hJUxQJwfB"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 322
   },
   {
-    id: '5',
-    amount: 5,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-monkey.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x49d3b3c0d5252e8c8b4331885479880847287a92",
+      "name": "Doodles",
+      "symbol": "Doodles",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 30,
-    title: 'uncool monkey',
-    isTopRated: true
+    "tokenId": "323",
+    "tokenType": "ERC721",
+    "title": "Doodle #323",
+    "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+    "timeLastUpdated": "2024-05-20T11:01:19.429Z",
+    "rawMetadata": {
+      "name": "Doodle #323",
+      "image": "ipfs://QmcNurt5GtMLppdJwHLf9MtG9c6rQrFJaccVftUQMZgi9d",
+      "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+      "attributes": [
+        {
+          "value": "3d glasses",
+          "trait_type": "face"
+        },
+        {
+          "value": "brown mullet",
+          "trait_type": "hair"
+        },
+        {
+          "value": "purple chain",
+          "trait_type": "body"
+        },
+        {
+          "value": "gradient 4",
+          "trait_type": "background"
+        },
+        {
+          "value": "yellow",
+          "trait_type": "head"
+        }
+      ]
+    },
+    "tokenUri": {
+      "gateway": "https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/323",
+      "raw": "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/323"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmcNurt5GtMLppdJwHLf9MtG9c6rQrFJaccVftUQMZgi9d",
+        "raw": "ipfs://QmcNurt5GtMLppdJwHLf9MtG9c6rQrFJaccVftUQMZgi9d"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 323
   },
   {
-    id: '6',
-    amount: 9,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-panda.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x49d3b3c0d5252e8c8b4331885479880847287a92",
+      "name": "Doodles",
+      "symbol": "Doodles",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 7,
-    title: 'uncool panda',
-    isTopRated: false
+    "tokenId": "324",
+    "tokenType": "ERC721",
+    "title": "Doodle #324",
+    "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+    "timeLastUpdated": "2024-05-20T11:01:19.673Z",
+    "rawMetadata": {
+      "name": "Doodle #324",
+      "image": "ipfs://QmWco6qjMWy6PNJK94fZha4zNHKvGnjmLQFKeeVm4gNQYz",
+      "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+      "attributes": [
+        {
+          "value": "chill cig",
+          "trait_type": "face"
+        },
+        {
+          "value": "brown mullet",
+          "trait_type": "hair"
+        },
+        {
+          "value": "white sweater",
+          "trait_type": "body"
+        },
+        {
+          "value": "space",
+          "trait_type": "background"
+        },
+        {
+          "value": "yellow",
+          "trait_type": "head"
+        }
+      ]
+    },
+    "tokenUri": {
+      "gateway": "https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/324",
+      "raw": "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/324"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmWco6qjMWy6PNJK94fZha4zNHKvGnjmLQFKeeVm4gNQYz",
+        "raw": "ipfs://QmWco6qjMWy6PNJK94fZha4zNHKvGnjmLQFKeeVm4gNQYz"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 324
   },
   {
-    id: '7',
-    amount: 4,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-parrot.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x49d3b3c0d5252e8c8b4331885479880847287a92",
+      "name": "Doodles",
+      "symbol": "Doodles",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 77,
-    title: 'uncool parrot',
-    isTopRated: false
+    "tokenId": "325",
+    "tokenType": "ERC721",
+    "title": "Doodle #325",
+    "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+    "timeLastUpdated": "2024-05-20T11:01:19.403Z",
+    "rawMetadata": {
+      "name": "Doodle #325",
+      "image": "ipfs://QmPYSnPwnr1tqry14RXzPE7q8JyuUb5aJtkeqynLyrdsxX",
+      "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+      "attributes": [
+        {
+          "value": "surprised",
+          "trait_type": "face"
+        },
+        {
+          "value": "yellow toque",
+          "trait_type": "hair"
+        },
+        {
+          "value": "blue fleece",
+          "trait_type": "body"
+        },
+        {
+          "value": "gradient 1",
+          "trait_type": "background"
+        },
+        {
+          "value": "purple",
+          "trait_type": "head"
+        }
+      ]
+    },
+    "tokenUri": {
+      "gateway": "https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/325",
+      "raw": "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/325"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmPYSnPwnr1tqry14RXzPE7q8JyuUb5aJtkeqynLyrdsxX",
+        "raw": "ipfs://QmPYSnPwnr1tqry14RXzPE7q8JyuUb5aJtkeqynLyrdsxX"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 325
   },
   {
-    id: '8',
-    amount: 3,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-pigeon.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x49d3b3c0d5252e8c8b4331885479880847287a92",
+      "name": "Doodles",
+      "symbol": "Doodles",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 3,
-    title: 'uncool pigeon',
-    isTopRated: true
+    "tokenId": "326",
+    "tokenType": "ERC721",
+    "title": "Doodle #326",
+    "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+    "timeLastUpdated": "2024-05-20T11:01:19.615Z",
+    "rawMetadata": {
+      "name": "Doodle #326",
+      "image": "ipfs://QmVVUQBkzASbJDKpUwUHWV7GHkFFJbPfEMZHJEgpPMvY4a",
+      "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+      "attributes": [
+        {
+          "value": "designer glasses",
+          "trait_type": "face"
+        },
+        {
+          "value": "blue puffballs",
+          "trait_type": "hair"
+        },
+        {
+          "value": "blue fleece",
+          "trait_type": "body"
+        },
+        {
+          "value": "gradient 2",
+          "trait_type": "background"
+        },
+        {
+          "value": "med",
+          "trait_type": "head"
+        },
+        {
+          "value": "hoop",
+          "trait_type": "piercing"
+        }
+      ]
+    },
+    "tokenUri": {
+      "gateway": "https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/326",
+      "raw": "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/326"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmVVUQBkzASbJDKpUwUHWV7GHkFFJbPfEMZHJEgpPMvY4a",
+        "raw": "ipfs://QmVVUQBkzASbJDKpUwUHWV7GHkFFJbPfEMZHJEgpPMvY4a"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 326
   },
   {
-    id: '9',
-    amount: 10,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-snake.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x49d3b3c0d5252e8c8b4331885479880847287a92",
+      "name": "Doodles",
+      "symbol": "Doodles",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 8,
-    title: 'uncool snake',
-    isTopRated: false
+    "tokenId": "327",
+    "tokenType": "ERC721",
+    "title": "Doodle #327",
+    "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+    "timeLastUpdated": "2024-05-20T11:01:19.274Z",
+    "rawMetadata": {
+      "name": "Doodle #327",
+      "image": "ipfs://QmVCKbz5Hn9EXvUxfPiVYbAKo24gYjwLKwGZVU1j9Jj8xN",
+      "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+      "attributes": [
+        {
+          "value": "in love",
+          "trait_type": "face"
+        },
+        {
+          "value": "green brushcut",
+          "trait_type": "hair"
+        },
+        {
+          "value": "blue and yellow jacket",
+          "trait_type": "body"
+        },
+        {
+          "value": "purple",
+          "trait_type": "background"
+        },
+        {
+          "value": "pink",
+          "trait_type": "head"
+        },
+        {
+          "value": "hoop",
+          "trait_type": "piercing"
+        }
+      ]
+    },
+    "tokenUri": {
+      "gateway": "https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/327",
+      "raw": "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/327"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmVCKbz5Hn9EXvUxfPiVYbAKo24gYjwLKwGZVU1j9Jj8xN",
+        "raw": "ipfs://QmVCKbz5Hn9EXvUxfPiVYbAKo24gYjwLKwGZVU1j9Jj8xN"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 327
   },
   {
-    id: '10',
-    amount: 1,
-    collection: 'uncool animals',
-    image: '/src/assets/nfts/uncool-turtle.jpg',
-    network: {
-      id: '1',
-      image: "/src/assets/svgs/ethereum.svg",
-      title: 'ethereum',
-      shortTitle: 'eth'
+    "contract": {
+      "address": "0x49d3b3c0d5252e8c8b4331885479880847287a92",
+      "name": "Doodles",
+      "symbol": "Doodles",
+      "tokenType": "ERC721",
+      "openSea": {}
     },
-    rarityRank: 105,
-    title: 'uncool turtle',
-    isTopRated: true
-  }
+    "tokenId": "328",
+    "tokenType": "ERC721",
+    "title": "Doodle #328",
+    "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+    "timeLastUpdated": "2024-05-20T11:01:19.242Z",
+    "rawMetadata": {
+      "name": "Doodle #328",
+      "image": "ipfs://QmSpepsvZ9owxSEVsZsU7gwpLFRPGkBQwkz84B4TZQhSmK",
+      "description": "A community-driven collectibles project featuring art by Burnt Toast. Doodles come in a joyful range of colors, traits and sizes with a collection size of 10,000. Each Doodle allows its owner to vote for experiences and activations paid for by the Doodles Community Treasury. Burnt Toast is the working alias for Scott Martin, a Canadian–based illustrator, designer, animator and muralist.",
+      "attributes": [
+        {
+          "value": "sunglasses",
+          "trait_type": "face"
+        },
+        {
+          "value": "pink long",
+          "trait_type": "hair"
+        },
+        {
+          "value": "white collar",
+          "trait_type": "body"
+        },
+        {
+          "value": "grey",
+          "trait_type": "background"
+        },
+        {
+          "value": "gradient 1",
+          "trait_type": "head"
+        }
+      ]
+    },
+    "tokenUri": {
+      "gateway": "https://ipfs.io/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/328",
+      "raw": "https://cloudflare-ipfs.com/ipfs/QmPMc4tcBsMqLRuCQtPmPe84bpSjrC3Ky7t3JWuHXYB4aS/328"
+    },
+    "media": [
+      {
+        "gateway": "https://ipfs.io/ipfs/QmSpepsvZ9owxSEVsZsU7gwpLFRPGkBQwkz84B4TZQhSmK",
+        "raw": "ipfs://QmSpepsvZ9owxSEVsZsU7gwpLFRPGkBQwkz84B4TZQhSmK"
+      }
+    ],
+    "balance": 1,
+    "rarityRank": 328
+  },
 ];
 
 export const chainsDataset: SUI_ChainItem[] = [

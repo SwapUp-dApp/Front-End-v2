@@ -46,7 +46,7 @@ export const clientSideRoutes: IRoutesType[] = [
       {
         id: 'private-room',
         title: "Private Room Page",
-        path: "swap-market/private-room",
+        path: "swap-market/private-room/:counterPartyWallet",
         element: <PrivateRoom />,
       },
       {

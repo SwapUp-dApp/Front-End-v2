@@ -1,4 +1,6 @@
-const tempNftsData = [
+import { SUI_NFTItem } from "@/types/swapup.types";
+
+export const tempNftsData: SUI_NFTItem[] = [
   {
     "contract": {
       "address": "0x0635513f179d50a207757e05759cbd106d7dfce8",
@@ -10,7 +12,7 @@ const tempNftsData = [
     "tokenType": "ERC1155",
     "title": "",
     "description": "",
-    "timeLastUpdated": "2024-06-04T08:56:32.931Z",
+    "timeLastUpdated": "2024-06-05T15:06:52.509Z",
     "metadataError": "Malformed token uri, do not retry",
     "rawMetadata": {
       "metadata": [],

@@ -2,6 +2,9 @@ export type SUT_EnvironmentKey = "local" | "dev" | "qa" | "prod";
 
 export interface SUI_ConfigEnvironment {
   API_BASE_URL: string;
+  OPENSEA_BASE_URL: string;
+  ETHERSCAN_BASE_URL: string;
+  NETWORK: string;
 }
 export interface SUI_Config {
   local: SUI_ConfigEnvironment;

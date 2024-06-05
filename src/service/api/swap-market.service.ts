@@ -2,7 +2,6 @@ import { AxiosResponse } from "axios";
 import API from "../Axios";
 
 export const getNftsForWallet = (walletId: string): Promise<AxiosResponse> => {
-  console.log(`/api/nfts/${walletId}`);
   return API.get(`/api/nfts/${walletId}`);
 };
 

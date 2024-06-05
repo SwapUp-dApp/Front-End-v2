@@ -23,9 +23,10 @@ interface IProp {
   children: any;
   setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
   removeAllFilters: () => void;
+  collections: [] | string[];
 }
 
-const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAllFilters }: IProp) => {
+const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAllFilters, collections }: IProp) => {
   const [formKey, setFormKey] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -137,8 +138,9 @@ const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAll
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="cool animals">cool animals</SelectItem>
-                              <SelectItem value="uncool animals">uncool animals</SelectItem>
+                              {collections.map(collection => (
+                                <SelectItem key={collection} value={collection}>{collection}</SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage />
