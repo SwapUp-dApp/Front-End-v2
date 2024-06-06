@@ -180,7 +180,7 @@ const PrivateRoom = () => {
                     <Button
                       variant={"default"}
                       onClick={state.createSwap}
-                    >Proceeds</Button>
+                    >Proceed</Button>
                   </div>
                 </div>
               </ScrollArea>

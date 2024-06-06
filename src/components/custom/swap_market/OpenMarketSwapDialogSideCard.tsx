@@ -30,7 +30,7 @@ const OpenMarketSwapDialogSideCard = ({ className, data, ...props }: IProp) => {
   return (
     <div
       className={cn(
-        "custom-border-card space-y-2 w-full lg:w-auto",
+        "space-y-2 w-full lg:w-auto",
         className
       )}
       {...props}

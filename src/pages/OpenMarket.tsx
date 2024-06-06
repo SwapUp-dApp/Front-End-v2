@@ -53,7 +53,7 @@ const OpenMarket = () => {
     if ((state.sender.nftsSelectedForSwap.length) && (state.sender.addedAmount)) {
       setEnableApproveButtonCriteria(true);      
     } else {
-      setEnableApproveButtonCriteria(false);     
+      setEnableApproveButtonCriteria(true);     
     }
   }, [state.sender.nftsSelectedForSwap, state.sender.addedAmount]);
 
@@ -202,14 +202,8 @@ const OpenMarket = () => {
                   </div>
 
                   {/* side cards*/}
-                  <div className="flex flex-col lg:flex-row items-center gap-4" >
-                    <OpenMarketSwapDialogSideCard data={state.sender} />
-
-                    <svg className="w-3.5" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M7.72844 0L12 4.15863H0.238525V3.0368H9.21836L6.91377 0.793135L7.72844 0ZM11.7615 5.84137V6.9632H2.78164L5.08623 9.20687L4.27156 10L0 5.84137H11.7615Z" fill="#B6B6BD" />
-                    </svg>
-
-                   
+                  <div className="custom-border-card" >
+                    <OpenMarketSwapDialogSideCard data={state.sender} />                   
                   </div>
 
                   {/* Fee section*/}
@@ -277,7 +271,7 @@ const OpenMarket = () => {
                       <CustomOutlineButton className="px-5 py-2.5">Cancel</CustomOutlineButton>
                       <DialogClose className="absolute w-full h-full top-0 left-0" ></DialogClose>
                     </div>
-                    <Button variant={"default"}>Proceeds</Button>
+                    <Button variant={"default"}>Proceed</Button>
                   </div>
                 </div>
               </ScrollArea>
