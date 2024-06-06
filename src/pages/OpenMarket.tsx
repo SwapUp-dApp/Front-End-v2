@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import * as React from "react"
 
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
@@ -16,8 +16,36 @@ import OpenMarketRoomFooter from "@/components/custom/swap_market/OpenMarketRoom
 import OpenMarketSwapDialogSideCard from "@/components/custom/swap_market/OpenMarketSwapDialogSideCard";
 import OpenMarketHeader from "@/components/custom/swap_market/OpenMarketHeader";
 import OpenMarketRoomLayoutCard from "@/components/custom/swap_market/OpenMarketRoomLayoutCard";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@/components/ui/toggle-group";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "lucide-react";
+import { addDays, format } from "date-fns";
+import { DateRange } from "react-day-picker";
+
+interface IProp {
+  children: any;
+  setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
+  removeAllFilters: () => void;
+  collections: [] | string[];
+}
 
 const OpenMarket = () => {
+  const [date, setDate] = React.useState<DateRange | undefined>({
+    from: new Date(2024, 0, 20),
+    to: addDays(new Date(2024, 0, 20), 1),
+  });
+
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
 
@@ -37,8 +65,91 @@ const OpenMarket = () => {
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
         <OpenMarketRoomLayoutCard layoutType={"sender"} />
-      
+      <div className="rounded-lg border bg-card text-card-foreground shadow-sm border-none flex flex-col gap-4 dark:bg-su_secondary_bg p-2 lg:p-6" >
+
+      <div className="font-semibold text-sm lg:text-lg w-2/3 lg:w-auto">
+      <p>Swap parameters</p>
       </div>
+      
+      <div className="" >
+      <p>Request date:</p>
+      </div>
+      <div className="" >
+
+      <Popover>
+      <PopoverTrigger asChild>
+      <Button
+      id="date"
+      variant={"outline"}
+      className={cn(
+      "w-[300px] justify-start text-left font-normal",
+      !date && "text-muted-foreground"
+      )}
+      >
+      <CalendarIcon className="mr-2 h-4 w-4" />
+      {date?.from ? (
+      date.to ? (
+      <>
+      {format(date.from, "LLL dd, y")} -{" "}
+      {format(date.to, "LLL dd, y")}
+      </>
+      ) : (
+      format(date.from, "LLL dd, y")
+      )
+      ) : (
+      <span>Pick a date</span>
+      )}
+      </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+      <Calendar
+      initialFocus
+      mode="range"
+      defaultMonth={date?.from}
+      selected={date}
+      onSelect={setDate}
+      numberOfMonths={2}
+      />
+      </PopoverContent>
+      </Popover>
+
+
+
+
+
+
+      </div>
+
+      <div className="h-full space-y-2">
+      <div className="flex justify-between items-center text-sm" >
+      <p>Preferred asset:</p>
+      
+
+      </div>
+
+      <div className="flex justify-between items-center text-sm" >
+      <ToggleGroup type="single">
+      <ToggleGroupItem value="any" aria-label="Toggle bold">Any</ToggleGroupItem>
+      <ToggleGroupItem value="nft" aria-label="Toggle bold" >NFT</ToggleGroupItem>
+      <ToggleGroupItem value="received" aria-label="Toggle bold">Currency</ToggleGroupItem>
+      </ToggleGroup>
+      </div>
+
+
+      
+      
+
+      
+
+      </div>
+
+     
+      
+
+      </div>
+      </div>
+
+
 
       <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
 
