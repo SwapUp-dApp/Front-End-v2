@@ -1,5 +1,5 @@
-import { SUI_Swap, SUI_SwapToken } from "@/types/swap-market.types";
-import { IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-types";
+import { SUI_Swap,SUI_OpenSwap } from "@/types/swap-market.types";
+import { IOpenMarket, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-types";
 import { SUI_ChainItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 
 // Room side helpers start
@@ -296,7 +296,63 @@ const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]) => {
 // Room helpers end
 
 
+//=== Open Market Room helpers start====
+export const setValuesOnCreatingOpenSwapRoomHelper = (
+  state: ISwapMarketStore,
+  marketKey: 'openMarket' | 'privateMarket',
+  roomKey: 'openRoom' | 'privateRoom',
+  tradeId: string,
+): ISwapMarketStore => {
+  const market = state[marketKey] as Record<string, any>;
+  const room = market[roomKey] as Record<string, any>;
+  return {
+    ...state,
+    [marketKey]: {
+      ...market,
+      [roomKey]: {
+        ...room,
+        uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
+      },
+    },
+  };
+};
 
+export const createOpenSwapHelper = (
+  state: ISwapMarketStore,
+  marketKey: 'openMarket' | 'privateMarket',
+  roomKey: 'openRoom' | 'privateRoom',
+): ISwapMarketStore => {
+  const market = state[marketKey] as Record<string, any>;
+  const room = (roomKey === "openRoom" ? state.openMarket.openRoom : state.openMarket.openRoom) as IOpenMarket;
+
+  const swap: SUI_OpenSwap = {
+    init_address: room.sender.profile.walletAddress,
+    accept_address: '',
+    accept_sign: '',
+    init_sign: '',
+    metadata: {
+      init: {
+        tokens: room.sender.nftsSelectedForSwap ?
+          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) : []
+      },
+    }
+  };
+
+  return {
+    ...state,
+    [marketKey]: {
+      ...market,
+      [roomKey]: {
+        ...room,
+        swap,
+        nftsLength: swap.metadata.init.tokens.length
+      },
+    },
+  };
+};
+
+
+//==========================================
 
 
 export const tempSenderNfts: SUI_NFTItem[] = [

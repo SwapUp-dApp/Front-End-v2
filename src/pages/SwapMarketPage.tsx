@@ -1,6 +1,6 @@
 import LeaderboardCard from "@/components/custom/swap_market/LeaderboardCard";
 import NewMembersCard from "@/components/custom/swap_market/NewMembersCard";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,10 @@ import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import { toast } from "sonner";
 import FilterButton from "@/components/custom/shared/FilterButton";
 import CreatePrivateSwapDialog from "@/components/custom/swap_market/CreatePrivateSwapDialog";
+import { generateRandomTradeId } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { useSwapMarketStore } from "@/store/swap-market";
+
 
 export interface IMember {
   id: string;
@@ -133,6 +137,11 @@ const privatePartyTableData: IPrivatePartyTableItem[] = [
 ];
 
 const SwapMarketPage = () => {
+  const navigate = useNavigate();
+  const uniqueTradeId = generateRandomTradeId();
+  const setValuesOnCreatingRoom = useSwapMarketStore(state => state.openMarket.openRoom.setValuesOnCreatingOpenMarket);
+  setValuesOnCreatingRoom(uniqueTradeId);
+
   const [activeTab, setActiveTab] = useState<"open-market" | "private-party">("private-party");
   const [filteredPrivatePartyData, setFilteredPrivatePartyData] = useState<IPrivatePartyTableItem[] | []>(privatePartyTableData);
 
@@ -327,27 +336,14 @@ const SwapMarketPage = () => {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent className="dark:bg-su_least_bg rounded-md min-w-full px-6 py-4 mt-1 flex flex-col gap-2 z-50">
-              <DropdownMenuItem
-                className="text-sm flex items-center gap-4 cursor-pointer hover:bg-su_enable_bg py-2 px-4 rounded-md"
-                onClick={() =>
-                  toast.info("Open market swap", {
-                    duration: 2000,
-                    description: "This feature is under construction!",
-                    action: {
-                      label: "Close",
-                      onClick: () => console.log("Close"),
-                    },
-                    className: '!bg-gradient-primary border-none',
-                    descriptionClassName: '!text-white',
-                  })
-                }
-              >
-                <svg className="w-5" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div
+                  className="relative text-sm flex items-center gap-4 cursor-pointer hover:bg-su_enable_bg py-2 px-4 rounded-md" onClick={() => navigate(`/swap-up/swap-market/open-market`)}
+                >
+                   <svg className="w-5" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M8 0C8.61884 0 9.21233 0.25431 9.64992 0.706984C10.0875 1.15966 10.3333 1.77362 10.3333 2.41379C10.3333 3.05397 10.0875 3.66793 9.64992 4.1206C9.21233 4.57328 8.61884 4.82759 8 4.82759C7.38116 4.82759 6.78767 4.57328 6.35008 4.1206C5.9125 3.66793 5.66667 3.05397 5.66667 2.41379C5.66667 1.77362 5.9125 1.15966 6.35008 0.706984C6.78767 0.25431 7.38116 0 8 0ZM3.33333 1.72414C3.70667 1.72414 4.05333 1.82759 4.35333 2.01379C4.25333 3 4.53333 3.97931 5.10667 4.74483C4.77333 5.4069 4.10667 5.86207 3.33333 5.86207C2.8029 5.86207 2.29419 5.64409 1.91912 5.25608C1.54405 4.86808 1.33333 4.34183 1.33333 3.7931C1.33333 3.24438 1.54405 2.71813 1.91912 2.33012C2.29419 1.94212 2.8029 1.72414 3.33333 1.72414ZM12.6667 1.72414C13.1971 1.72414 13.7058 1.94212 14.0809 2.33012C14.456 2.71813 14.6667 3.24438 14.6667 3.7931C14.6667 4.34183 14.456 4.86808 14.0809 5.25608C13.7058 5.64409 13.1971 5.86207 12.6667 5.86207C11.8933 5.86207 11.2267 5.4069 10.8933 4.74483C11.4743 3.96843 11.7441 2.99046 11.6467 2.01379C11.9467 1.82759 12.2933 1.72414 12.6667 1.72414ZM3.66667 8.7931C3.66667 7.36552 5.60667 6.2069 8 6.2069C10.3933 6.2069 12.3333 7.36552 12.3333 8.7931V10H3.66667V8.7931ZM0 10V8.96552C0 8.0069 1.26 7.2 2.96667 6.96552C2.57333 7.43448 2.33333 8.08276 2.33333 8.7931V10H0ZM16 10H13.6667V8.7931C13.6667 8.08276 13.4267 7.43448 13.0333 6.96552C14.74 7.2 16 8.0069 16 8.96552V10Z" fill="#B6B6BD" />
                 </svg>
-
-                Open Market
-              </DropdownMenuItem>
+                  Open Market
+                </div>
 
               <CreatePrivateSwapDialog >
                 <div

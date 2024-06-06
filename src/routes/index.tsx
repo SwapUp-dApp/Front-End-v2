@@ -5,6 +5,8 @@ import MainLayout from "@/layouts/MainLayout";
 import PrivateRoom from "@/pages/PrivateRoom";
 import SwapMarketPage from "@/pages/SwapMarketPage";
 import MySwapsPage from "@/pages/MySwapsPage";
+import OpenMarket from "@/pages/OpenMarket";
+
 
 interface IRoutesType {
   id: string;
@@ -48,6 +50,12 @@ export const clientSideRoutes: IRoutesType[] = [
         title: "Private Room Page",
         path: "swap-market/private-room/:counterPartyWallet",
         element: <PrivateRoom />,
+      },
+      {
+        id: 'open-market',
+        title: "Create open market swap",
+        path: "swap-market/open-market",
+        element: <OpenMarket />,
       },
       {
         id: 'not-found-page',

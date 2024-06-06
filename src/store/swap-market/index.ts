@@ -10,12 +10,58 @@ import {
   setValuesOnCreatingPrivateRoomHelper,
   chainsDataset,
   setNftsDatasetHelper,
-  createSwapHelper
+  createSwapHelper,
+  setValuesOnCreatingOpenSwapRoomHelper,
+  createOpenSwapHelper
 } from './swap-market-helpers';
 import { IPrivateRoom } from './swap-market-types';
+import { IOpenMarket } from './swap-market-types';
 import { SUI_NFTItem, SUI_RarityRankItem } from '@/types/swapup.types';
 import { testWalletAddress } from '@/constants';
 import { Environment } from '@/config';
+
+const initialOpenMarketRoomState: IOpenMarket = {
+  swapUpOpenContract: Environment.SWAPUP_CONTRACT,
+  chainId: Environment.CHAIN_ID,
+  uniqueTradeId: '',
+  nftsLength: 0,
+  sign: '',
+  swapEncodedMsg: '',
+  sender: {
+    activeGridView: 'detailed',
+    toggleGridView: () => { },
+    network: {
+      id: '1',
+      image: 'src/assets/svgs/ethereum.svg',
+      title: 'ethereum',
+      shortTitle: "eth"
+    },
+    profile: {
+      ensAddress: 'sender.swapup.eth',
+      image: 'src/assets/images/avatar.png',
+      isPremium: false,
+      title: 'sender',
+      walletAddress: testWalletAddress
+    },
+    collections: [],
+    nfts: [],
+    availableChains: chainsDataset,
+    filteredNfts: [],
+    nftsSelectedForSwap: [],
+    setSelectedNftsForSwap: () => { },
+    setFilteredNftsBySearch: () => { },
+    setFilteredNftsByFilters: () => { },
+    removeAllFilters: () => { },
+    setAddedAmount: () => { },
+    setNftsDataset: () => { },
+
+  },
+  setValuesOnCreatingOpenMarket: () => { },
+  createOpenSwap: () => { }
+};
+
+
+
 
 const initialPrivateRoomState: IPrivateRoom = {
   swapUpContract: Environment.SWAPUP_CONTRACT,
@@ -89,7 +135,7 @@ const initialPrivateRoomState: IPrivateRoom = {
 
 const initialState: ISwapMarketStore = {
   openMarket: {
-    openRoom: initialPrivateRoomState,
+    openRoom: initialOpenMarketRoomState,
   },
   privateMarket: {
     privateRoom: initialPrivateRoomState,
@@ -100,9 +146,9 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
   ...initialState,
   openMarket: {
     openRoom: {
-      ...initialPrivateRoomState,
+      ...initialOpenMarketRoomState,
       sender: {
-        ...initialPrivateRoomState.sender,
+        ...initialOpenMarketRoomState.sender,
         toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'openMarket', 'openRoom', 'sender', value)),
         setSelectedNftsForSwap: (selectedNfts: SUI_NFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'openMarket', 'openRoom', 'sender', selectedNfts)),
         setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'openMarket', 'openRoom', 'sender', searchValue)),
@@ -112,19 +158,8 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
         setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'openMarket', 'privateRoom', 'sender', dataset)),
 
       },
-      receiver: {
-        ...initialPrivateRoomState.receiver,
-        toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'openMarket', 'openRoom', 'receiver', value)),
-        setSelectedNftsForSwap: (selectedNfts: SUI_NFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'openMarket', 'openRoom', 'receiver', selectedNfts)),
-        setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'openMarket', 'openRoom', 'receiver', searchValue)),
-        setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'openMarket', 'openRoom', 'receiver', collectionTitle, selectedRarityRank)),
-        removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'openMarket', 'openRoom', 'receiver')),
-        setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'openMarket', 'openRoom', 'receiver', selectedAmount, selectedCoin)),
-        setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'openMarket', 'openRoom', 'receiver', dataset)),
-
-      },
-      setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'openMarket', 'openRoom', tradeId, counterPartyWalletAddress)),
-      createSwap: () => set((state) => createSwapHelper(state, 'openMarket', 'openRoom')),
+      setValuesOnCreatingOpenMarket: (tradeId: string) => set((state) => setValuesOnCreatingOpenSwapRoomHelper(state, 'openMarket', 'openRoom', tradeId)),
+      createOpenSwap: () => set((state) => createOpenSwapHelper(state, 'openMarket', 'openRoom')),
     }
   },
   privateMarket: {

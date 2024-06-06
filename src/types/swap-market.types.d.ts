@@ -11,6 +11,21 @@ export interface SUI_Swap {
   metadata: SUI_SwapMetadata;
 }
 
+export interface SUI_OpenSwap {
+  init_address: string;
+  accept_address: string;
+  init_sign: string;
+  accept_sign: string;
+  metadata: SUI_OpenSwapMetadata;
+}
+
+export interface SUI_OpenSwapMetadata {
+  init: {
+    tokens: SUI_SwapToken[];
+  }
+}
+
+
 export interface SUI_SwapMetadata {
   init: {
     tokens: SUI_SwapToken[];

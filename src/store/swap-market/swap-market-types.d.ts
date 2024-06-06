@@ -3,8 +3,69 @@ import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem } fr
 
 export type SUT_GridViewType = 'detailed' | 'overview';
 export type SUT_PrivateRoomLayoutType = "sender" | "receiver";
+export type SUT_OpenMarketLayoutType = "sender" | "parameters";
 export type SUT_MarketKeyType = "privateMarket" | "openMarket";
 export type SUT_RoomKeyType = "privateRoom" | "openRoom";
+
+
+//====OpenMarket Specific Types=====
+export interface IOpenMarketFilterItem {
+  collection: string;
+  rarityRank: SUI_RarityRankItem;
+}
+
+export interface IOpenMarketAddedAmount {
+  usdAmount: number;
+  coin: SUI_ChainItem;
+}
+
+export interface IOpenMarket {
+  uniqueTradeId: string;
+  sender: IOpenMarketLayoutSide;
+  setValuesOnCreatingOpenMarket: (tradeId: string) => void;  
+  swap?: SUI_OpenSwap;
+  swapEncodedMsg: string;
+  sign: string;
+  nftsLength: number;
+  swapUpOpenContract: string;
+  chainId: number;
+  setValuesOnCreatingOpenMarket: (tradeId: string) => void;
+  createOpenSwap: () => void;
+
+}
+
+
+export interface IOpenMarketLayoutSide {
+  activeGridView: SUT_GridViewType;
+  toggleGridView: (value: SUT_GridViewType) => void;
+  profile: {
+    title: string;
+    image: string;
+    isPremium?: boolean;
+    walletAddress: string;
+    ensAddress: string;
+  };
+  collections: string[] | [];
+  addedAmount?: IOpenMarketAddedAmount;
+  availableChains: SUI_ChainItem[];
+  network: INetwork;
+  filters?: IOpenMarketFilterItem;
+  nfts?: SUI_NFTItem[];
+  filteredNfts?: SUI_NFTItem[];
+  nftsSelectedForSwap: SUI_NFTItem[] | [];
+  setSelectedNftsForSwap: (selectedNfts: SUI_NFTItem[] | []) => void;
+  setFilteredNftsBySearch: (searchValue: string) => void;
+  setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
+  setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
+  setNftsDataset: (selectedNfts: SUI_NFTItem[]) => void;
+  removeAllFilters: () => void;
+
+}
+
+
+//====================================
+
+
 
 export interface IPrivateRoomFilterItem {
   collection: string;
@@ -58,15 +119,15 @@ export interface IPrivateRoom {
   createSwap: () => void;
 }
 
-interface IOpenMarket {
-  openRoom: IPrivateRoom;
-}
+// interface IOpenMarket {
+//   openRoom: IPrivateRoom;
+// }
 
 
 export interface ISwapMarketStore {
   openMarket: {
     // transaction history
-    openRoom: IPrivateRoom;
+    openRoom: IOpenMarket;
   },
   privateMarket: {
     privateRoom: IPrivateRoom;

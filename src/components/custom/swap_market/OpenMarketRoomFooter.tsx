@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-types";
+import { SUT_OpenMarketLayoutType} from "@/store/swap-market/swap-market-types";
 
 interface IProp {
-  layoutType: SUT_PrivateRoomLayoutType;
+  layoutType: SUT_OpenMarketLayoutType;
   setEnableApproveButtonCriteria: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -27,7 +27,7 @@ export const amountConvertFormSchema = z.object({
   }),
 });
 
-const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) => {
+const OpenMarketRoomFooter = ({ layoutType, setEnableApproveButtonCriteria }: IProp) => {
 
   const {
     setSelectedNftsForSwap,
@@ -36,7 +36,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
     setAddedAmount
   } = useSwapMarketStore((state) => layoutType === "sender" ?
     state.privateMarket.privateRoom.sender :
-    state.privateMarket.privateRoom.receiver
+    state.privateMarket.privateRoom.sender
   );
 
   const removeSelectedNftById = (paramId: string) => {
@@ -118,7 +118,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
   }, [form.getValues('chain'), form.getValues('amount')]);
 
   return (
-    <aside className="space-y-2.5 lg:space-y-2 w-1/2 p-4 border border-su_disabled"  >
+    <aside className="space-y-2.5 lg:space-y-2 w-full p-4 border border-su_disabled"  >
       <div className="flex justify-between items-center text-su_secondary " >
         <h2 className="dark:text-white text-xs">You offer:</h2>
 
@@ -284,4 +284,4 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
   );
 };
 
-export default RoomFooterSide;
+export default OpenMarketRoomFooter;
