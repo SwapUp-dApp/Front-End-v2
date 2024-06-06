@@ -71,7 +71,8 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet }: IProp) => {
       })));
     }
 
-    if (isError && error?.message) {
+    if (isError) {
+      setNftsDataset([]);
       toast.custom(
         (id) => (
           <ToastLookCard
@@ -89,7 +90,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet }: IProp) => {
       );
     }
 
-  }, [data, isSuccess, isError, error?.message]);
+  }, [data, isSuccess, isError]);
 
   return (
     <Card className="border-none flex flex-col gap-4 dark:bg-su_secondary_bg p-2 lg:p-6" >

@@ -7,7 +7,7 @@ export const useNFTsByWallet = (walletId: string) => {
     queryFn: async () => {
       try {
         const response = await getNftsForWallet(walletId);
-        return response.data;
+        return response;
       } catch (error) {
         throw error;
       }
