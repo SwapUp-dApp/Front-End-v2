@@ -214,7 +214,7 @@ export const setNftsDatasetHelper = (
   marketKey: 'openMarket' | 'privateMarket',
   roomKey: 'openRoom' | 'privateRoom',
   side: 'sender' | 'receiver',
-  dataset: SUI_NFTItem[]
+  dataset: SUI_NFTItem[] | []
 ): ISwapMarketStore => {
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;

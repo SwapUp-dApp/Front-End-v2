@@ -28,7 +28,7 @@ API.interceptors.response.use(
       "Error in Response Interceptor:",
       JSON.stringify(error?.response || error?.message),
     );
-    return Promise.resolve(error);
+    return Promise.reject(error);
   }
 );
 

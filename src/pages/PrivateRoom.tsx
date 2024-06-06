@@ -12,6 +12,10 @@ import StaySafeDialog from "@/components/custom/swap_market/StaySafeDialog";
 import AvoidingFeeDialog from "@/components/custom/swap_market/AvoidingFeeDialog";
 import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
 import { useSwapMarketStore } from "@/store/swap-market";
+import { useNavigate, useParams } from "react-router-dom";
+import { isValidWalletAddress } from "@/lib/utils";
+
+
 
 const PrivateRoom = () => {
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
@@ -28,6 +32,14 @@ const PrivateRoom = () => {
 
   }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap, state.sender.addedAmount, state.receiver.addedAmount]);
 
+  const { counterPartyWallet } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (counterPartyWallet && !isValidWalletAddress(counterPartyWallet)) {
+      navigate(-1);
+    }
+  }, [counterPartyWallet]);
 
   return (
     <div className="flex flex-col gap-4" >
@@ -35,8 +47,9 @@ const PrivateRoom = () => {
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
         <RoomLayoutCard layoutType={"sender"} />
-        <RoomLayoutCard layoutType={"receiver"} />
+        {counterPartyWallet && <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} />}
       </div>
+
 
       <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
 

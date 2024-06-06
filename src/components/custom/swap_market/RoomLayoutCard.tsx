@@ -17,14 +17,16 @@ import { useSwapMarketStore } from "@/store/swap-market";
 import LoadingDataset from "../shared/LoadingDataset";
 import { useNFTsByWallet } from "@/service/queries/swap-market.query";
 import { SUI_NFTItem } from "@/types/swapup.types";
-import { useParams } from "react-router-dom";
 import { defaultNftImageFallbackURL } from "@/constants";
+import { toast } from "sonner";
+import ToastLookCard from "../shared/ToastLookCard";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
+  counterPartyWallet?: string;
 }
 
-const RoomLayoutCard = ({ layoutType }: IProp) => {
+const RoomLayoutCard = ({ layoutType, counterPartyWallet }: IProp) => {
 
   const {
     activeGridView,
@@ -49,12 +51,13 @@ const RoomLayoutCard = ({ layoutType }: IProp) => {
     setFilteredNftsBySearch(searchValue);
   };
 
-  const { counterPartyWallet } = useParams();
   const myWalletAddress = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
+
   const walletAddress = ((layoutType === "receiver") && (counterPartyWallet)) ? counterPartyWallet : myWalletAddress;
-  const { isLoading, data, isSuccess } = useNFTsByWallet(walletAddress);
+  const { isLoading, data, isSuccess, isError, error } = useNFTsByWallet(walletAddress);
 
   useEffect(() => {
+
     if (data && isSuccess) {
       setNftsDataset((data.data as SUI_NFTItem[]).map(item => ({
         ...item,
@@ -68,7 +71,25 @@ const RoomLayoutCard = ({ layoutType }: IProp) => {
       })));
     }
 
-  }, [data, isSuccess]);
+    if (isError && error?.message) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Request failed!"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 3000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+    }
+
+  }, [data, isSuccess, isError, error?.message]);
 
   return (
     <Card className="border-none flex flex-col gap-4 dark:bg-su_secondary_bg p-2 lg:p-6" >
