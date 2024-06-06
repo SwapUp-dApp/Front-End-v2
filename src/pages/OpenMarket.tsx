@@ -16,8 +16,13 @@ import OpenMarketRoomFooter from "@/components/custom/swap_market/OpenMarketRoom
 import OpenMarketSwapDialogSideCard from "@/components/custom/swap_market/OpenMarketSwapDialogSideCard";
 import OpenMarketHeader from "@/components/custom/swap_market/OpenMarketHeader";
 import OpenMarketRoomLayoutCard from "@/components/custom/swap_market/OpenMarketRoomLayoutCard";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -32,15 +37,67 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { addDays, format } from "date-fns";
 import { DateRange } from "react-day-picker";
+import { SUI_RarityRankItem } from "@/types/swapup.types";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
-interface IProp {
-  children: any;
-  setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
-  removeAllFilters: () => void;
-  collections: [] | string[];
-}
+const availableRarityRanking: SUI_RarityRankItem[] = [
+  {
+    from: 1,
+    to: 10
+  },
+  {
+    from: 11,
+    to: 20
+  },
+  {
+    from: 21,
+    to: 50
+  },
+  {
+    from: 51,
+    to: 100
+  },
+  {
+    from: 101,
+    to: 1000
+  },
+  {
+    from: 1001,
+    to: 10000
+  },
+];
+
+
+
+
+const FormSchema = z.object({
+  collection: z.string().min(1, {
+    message: "Please select an preferred collection."
+  }),
+  rarityRank: z.string().min(1, {
+    message: "Please select an preferred rarity rank."
+  })
+
+});
 
 const OpenMarket = () => {
+
+
+  const [formKey] = useState(0);
+
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      collection: '',
+      rarityRank: ''
+    }
+  });
+
+  
+
+
+
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(2024, 0, 20),
     to: addDays(new Date(2024, 0, 20), 1),
@@ -71,7 +128,7 @@ const OpenMarket = () => {
       <p>Swap parameters</p>
       </div>
       
-      <div className="" >
+      <div className="flex justify-between items-center text-sm" >
       <p>Request date:</p>
       </div>
       <div className="" >
@@ -114,13 +171,7 @@ const OpenMarket = () => {
       </Popover>
 
 
-
-
-
-
-      </div>
-
-      <div className="h-full space-y-2">
+      <div className=" ">
       <div className="flex justify-between items-center text-sm" >
       <p>Preferred asset:</p>
       
@@ -136,12 +187,65 @@ const OpenMarket = () => {
       </div>
 
 
-      
-      
+      </div>
 
-      
+      <Form {...form} key={formKey}>
+                
+
+                  <div className="space-y-3" >
+                    
+
+                    <FormField
+                      control={form.control}
+                      name="rarityRank"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preferred rarity rank:</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl >
+                              <SelectTrigger className="bg-su_enable_bg py-3 px-4 rounded-sm" >
+                                <SelectValue className="" placeholder={
+                                  <span className="flex items-center gap-2" >
+                                    <svg className="w-3" viewBox="0 0 16 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M10.29 4L8 0L5.71 4H10.29ZM2.29 10L0 14H16L13.71 10H2.29ZM13.14 9L10.86 5H5.14L2.86 9H13.14Z" fill="#868691" />
+                                    </svg>
+
+                                    Any
+                                  </span>
+                                } />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {
+                                availableRarityRanking.map((rarityRank, index) => (
+                                  <SelectItem key={index + rarityRank.from} value={JSON.stringify(rarityRank)} >
+                                    <span className="flex items-center gap-2" >
+                                      <svg className="w-3" viewBox="0 0 16 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M10.29 4L8 0L5.71 4H10.29ZM2.29 10L0 14H16L13.71 10H2.29ZM13.14 9L10.86 5H5.14L2.86 9H13.14Z" fill="#868691" />
+                                      </svg>
+
+                                      {rarityRank.from} - {rarityRank.to}
+                                    </span>
+                                  </SelectItem>
+                                ))
+                              }
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                 
+                
+              </Form>
+
+
 
       </div>
+
+     
 
      
       
