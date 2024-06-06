@@ -1,3 +1,4 @@
+import { SUI_Swap } from "@/types/swap-market.types";
 import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 
 export type SUT_GridViewType = 'detailed' | 'overview';
@@ -47,8 +48,20 @@ export interface IPrivateRoom {
   uniqueTradeId: string;
   sender: IPrivateRoomsLayoutSide;
   receiver: IPrivateRoomsLayoutSide;
+  swap?: SUI_Swap;
+  swapEncodedMsg: string;
+  sign: string;
+  nftsLength: number;
+  swapUpContract: string;
+  chainId: number;
   setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => void;
+  createSwap: () => void;
 }
+
+interface IOpenMarket {
+  openRoom: IPrivateRoom;
+}
+
 
 export interface ISwapMarketStore {
   openMarket: {

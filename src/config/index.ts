@@ -7,28 +7,36 @@ const config: SUI_Config = {
     API_BASE_URL: "http://localhost:8800",
     ETHERSCAN_BASE_URL: "https://sepolia.etherscan.io",
     OPENSEA_BASE_URL: "https://testnets.opensea.io",
-    NETWORK: "sepolia"
+    NETWORK: "sepolia",
+    CHAIN_ID: 11155111,
+    SWAPUP_CONTRACT: "0x608ab31e043b78e69a818ce47a145ca40419c362"
   },
 
   dev: {
     API_BASE_URL: "http://localhost:8800",
     ETHERSCAN_BASE_URL: "https://sepolia.etherscan.io",
     OPENSEA_BASE_URL: "https://testnets.opensea.io",
-    NETWORK: "sepolia"
+    NETWORK: "sepolia",
+    CHAIN_ID: 11155111,
+    SWAPUP_CONTRACT: "0x608ab31e043b78e69a818ce47a145ca40419c362"
   },
 
   qa: {
     API_BASE_URL: "http://localhost:8800",
     ETHERSCAN_BASE_URL: "https://sepolia.etherscan.io",
     OPENSEA_BASE_URL: "https://testnets.opensea.io",
-    NETWORK: "sepolia"
+    NETWORK: "sepolia",
+    CHAIN_ID: 11155111,
+    SWAPUP_CONTRACT: "0x608ab31e043b78e69a818ce47a145ca40419c362"
   },
 
   prod: {
     API_BASE_URL: "http://localhost:8800",
     ETHERSCAN_BASE_URL: "https://etherscan.io",
     OPENSEA_BASE_URL: "https://opensea.io",
-    NETWORK: "ethereum"
+    NETWORK: "homestead",
+    CHAIN_ID: 1,
+    SWAPUP_CONTRACT: "0x608ab31e043b78e69a818ce47a145ca40419c362"
   },
 };
 

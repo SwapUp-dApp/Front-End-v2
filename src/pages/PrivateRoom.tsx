@@ -177,7 +177,10 @@ const PrivateRoom = () => {
                       <CustomOutlineButton className="px-5 py-2.5">Cancel</CustomOutlineButton>
                       <DialogClose className="absolute w-full h-full top-0 left-0" ></DialogClose>
                     </div>
-                    <Button variant={"default"}>Proceeds</Button>
+                    <Button
+                      variant={"default"}
+                      onClick={state.createSwap}
+                    >Proceeds</Button>
                   </div>
                 </div>
               </ScrollArea>

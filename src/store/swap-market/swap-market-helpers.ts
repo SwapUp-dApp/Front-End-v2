@@ -1,6 +1,8 @@
-import { ISwapMarketStore, SUT_GridViewType } from "./swap-market-types";
+import { SUI_Swap, SUI_SwapToken } from "@/types/swap-market.types";
+import { IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-types";
 import { SUI_ChainItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 
+// Room side helpers start
 export const toggleGridViewHelper = (
   state: ISwapMarketStore,
   marketKey: 'openMarket' | 'privateMarket',
@@ -181,34 +183,6 @@ export const setAddedAmountHelper = (
   };
 };
 
-export const setValuesOnCreatingPrivateRoomHelper = (
-  state: ISwapMarketStore,
-  marketKey: 'openMarket' | 'privateMarket',
-  roomKey: 'openRoom' | 'privateRoom',
-  tradeId: string,
-  counterPartyWalletAddress: string
-): ISwapMarketStore => {
-  const market = state[marketKey] as Record<string, any>;
-  const room = market[roomKey] as Record<string, any>;
-  return {
-    ...state,
-    [marketKey]: {
-      ...market,
-      [roomKey]: {
-        ...room,
-        uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
-        receiver: {
-          ...room.receiver,
-          profile: {
-            ...room.receiver.profile,
-            walletAddress: counterPartyWalletAddress ? counterPartyWalletAddress : room.receiver.profile.walletAddress,
-          },
-        },
-      },
-    },
-  };
-};
-
 export const setNftsDatasetHelper = (
   state: ISwapMarketStore,
   marketKey: 'openMarket' | 'privateMarket',
@@ -238,6 +212,90 @@ export const setNftsDatasetHelper = (
     },
   };
 };
+// Room side helpers start
+
+
+// Room helpers start
+export const setValuesOnCreatingPrivateRoomHelper = (
+  state: ISwapMarketStore,
+  marketKey: 'openMarket' | 'privateMarket',
+  roomKey: 'openRoom' | 'privateRoom',
+  tradeId: string,
+  counterPartyWalletAddress: string
+): ISwapMarketStore => {
+  const market = state[marketKey] as Record<string, any>;
+  const room = market[roomKey] as Record<string, any>;
+  return {
+    ...state,
+    [marketKey]: {
+      ...market,
+      [roomKey]: {
+        ...room,
+        uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
+        receiver: {
+          ...room.receiver,
+          profile: {
+            ...room.receiver.profile,
+            walletAddress: counterPartyWalletAddress ? counterPartyWalletAddress : room.receiver.profile.walletAddress,
+          },
+        },
+      },
+    },
+  };
+};
+
+export const createSwapHelper = (
+  state: ISwapMarketStore,
+  marketKey: 'openMarket' | 'privateMarket',
+  roomKey: 'openRoom' | 'privateRoom',
+): ISwapMarketStore => {
+  const market = state[marketKey] as Record<string, any>;
+  const room = (roomKey === "privateRoom" ? state.privateMarket.privateRoom : state.openMarket.openRoom) as IPrivateRoom;
+
+  const swap: SUI_Swap = {
+    init_address: room.sender.profile.walletAddress,
+    accept_address: room.receiver.profile.walletAddress,
+    accept_sign: '',
+    init_sign: '',
+    metadata: {
+      init: {
+        tokens: room.sender.nftsSelectedForSwap ?
+          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) : []
+      },
+      accept: {
+        tokens: room.receiver.nftsSelectedForSwap ?
+          getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap) : []
+      },
+    }
+  };
+
+  return {
+    ...state,
+    [marketKey]: {
+      ...market,
+      [roomKey]: {
+        ...room,
+        swap,
+        nftsLength: swap.metadata.init.tokens.length + swap.metadata.accept.tokens.length
+      },
+    },
+  };
+};
+
+
+const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]) => {
+
+  return nfts.map(nft => ({
+    id: nft.tokenId,
+    address: nft.contract.address,
+    type: nft.tokenType
+  }));
+
+};
+
+// Room helpers end
+
+
 
 
 

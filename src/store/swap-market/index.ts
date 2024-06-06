@@ -9,14 +9,21 @@ import {
   setAddedAmountHelper,
   setValuesOnCreatingPrivateRoomHelper,
   chainsDataset,
-  setNftsDatasetHelper
+  setNftsDatasetHelper,
+  createSwapHelper
 } from './swap-market-helpers';
 import { IPrivateRoom } from './swap-market-types';
 import { SUI_NFTItem, SUI_RarityRankItem } from '@/types/swapup.types';
 import { testWalletAddress } from '@/constants';
+import { Environment } from '@/config';
 
 const initialPrivateRoomState: IPrivateRoom = {
+  swapUpContract: Environment.SWAPUP_CONTRACT,
+  chainId: Environment.CHAIN_ID,
   uniqueTradeId: '',
+  nftsLength: 0,
+  sign: '',
+  swapEncodedMsg: '',
   sender: {
     activeGridView: 'detailed',
     toggleGridView: () => { },
@@ -77,6 +84,7 @@ const initialPrivateRoomState: IPrivateRoom = {
 
   },
   setValuesOnCreatingRoom: () => { },
+  createSwap: () => { }
 };
 
 const initialState: ISwapMarketStore = {
@@ -116,6 +124,7 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
 
       },
       setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'openMarket', 'openRoom', tradeId, counterPartyWalletAddress)),
+      createSwap: () => set((state) => createSwapHelper(state, 'openMarket', 'openRoom')),
     }
   },
   privateMarket: {
@@ -144,6 +153,7 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
 
       },
       setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'privateMarket', 'privateRoom', tradeId, counterPartyWalletAddress)),
+      createSwap: () => set((state) => createSwapHelper(state, 'privateMarket', 'openRoom')),
     }
   }
 }));
