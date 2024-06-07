@@ -1,16 +1,32 @@
 import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer } from "@/components/ui/drawer";
 import { navItemsData } from "@/constants";
-import { getIsActiveNav } from "@/lib/utils";
+import { getIsActiveNav, getNameInitials, getNetworkImageById, getShortenWalletAddress } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ConnectWalletButton from "./ConnectWalletButton";
+import { useSwapMarketStore } from "@/store/swap-market";
+import CustomAvatar from "./CustomAvatar";
 
 
 const Navbar = () => {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const navigate = useNavigate();
+
+  const [connectWallet, wallet] = useSwapMarketStore(state => [state.connectWallet, state.wallet]);
+  const [profile, network] = useSwapMarketStore(state => [
+    state.privateMarket.privateRoom.sender.profile,
+    state.privateMarket.privateRoom.sender.network,
+  ]);
+
+  const handleConnectionToWallet = async () => {
+    setIsConnecting(true);
+    await connectWallet();
+
+    setIsConnecting(false);
+  };
 
   return (
     <div className="w-full p-4 flex justify-between lg:justify-start lg:gap-16" >
@@ -38,35 +54,48 @@ const Navbar = () => {
               <path d="M7 16C7.53043 16 8.03914 15.7893 8.41421 15.4142C8.78929 15.0392 9 14.5305 9 14.0001H5C5 14.5305 5.21071 15.0392 5.58579 15.4142C5.96086 15.7893 6.46957 16 7 16ZM7.995 1.09981C8.00896 0.960776 7.99362 0.820356 7.94997 0.687611C7.90632 0.554865 7.83533 0.432741 7.74158 0.329115C7.64783 0.225489 7.5334 0.142662 7.40567 0.0859748C7.27794 0.0292879 7.13975 0 7 0C6.86026 0 6.72206 0.0292879 6.59433 0.0859748C6.4666 0.142662 6.35217 0.225489 6.25842 0.329115C6.16467 0.432741 6.09368 0.554865 6.05003 0.687611C6.00638 0.820356 5.99104 0.960776 6.005 1.09981C4.87455 1.32935 3.85823 1.94268 3.12831 2.83585C2.39839 3.72902 1.99977 4.84708 2 6.00055C2 7.09849 1.5 12.0002 0 13.0002H14C12.5 12.0002 12 7.09849 12 6.00055C12 3.58068 10.28 1.56079 7.995 1.09981Z" fill="white" />
             </svg>
           </span>
-
-          <ConnectWalletButton />
-          {/* <div className="flex items-center gap-4" >
-            <div className="border-2 rounded-md py-2 px-4 flex items-center gap-4" >
-              <span className="flex items-center gap-4">
-                <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M11.6667 8C11.0478 8 10.4543 8.24583 10.0168 8.68342C9.57917 9.121 9.33333 9.71449 9.33333 10.3333C9.33333 10.9522 9.57917 11.5457 10.0168 11.9832C10.4543 12.4208 11.0478 12.6667 11.6667 12.6667H16V16H0V4.66667H16V8H11.6667ZM12.3333 11.3333H11.6667C11.4015 11.3333 11.1471 11.228 10.9596 11.0404C10.772 10.8529 10.6667 10.5985 10.6667 10.3333C10.6667 10.0681 10.772 9.81376 10.9596 9.62623C11.1471 9.43869 11.4015 9.33333 11.6667 9.33333H12.3333C12.5985 9.33333 12.8529 9.43869 13.0404 9.62623C13.228 9.81376 13.3333 10.0681 13.3333 10.3333C13.3333 10.5985 13.228 10.8529 13.0404 11.0404C12.8529 11.228 12.5985 11.3333 12.3333 11.3333ZM10.6667 0L13.3333 3.33333H5.33333L10.6667 0Z" fill="#868691" />
-                </svg>
-                <p>0x1431F...23f83</p>
-              </span>
-
-              <span className="h-6 border-r-2"></span>
-
+          {
+            !wallet.isConnected ?
+              <ConnectWalletButton
+                onClick={handleConnectionToWallet}
+                isLoading={isConnecting}
+              /> :
               <div className="flex items-center gap-4" >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" clipRule="evenodd" d="M16 8.00002C16 12.4183 12.4183 16 8.00002 16C3.58173 16 0 12.4183 0 8.00002C0 3.58173 3.58173 0 8.00002 0C12.4183 0 16 3.58173 16 8.00002ZM5.17015 9.75853C5.09249 9.75844 5.01793 9.78899 4.96265 9.84353L3.54364 11.251C3.52304 11.2714 3.50898 11.2974 3.50326 11.3258C3.49755 11.3542 3.50043 11.3836 3.51154 11.4104C3.52266 11.4371 3.5415 11.4599 3.56566 11.4759C3.58981 11.4919 3.61818 11.5003 3.64714 11.5H10.8302C10.9079 11.5 10.9825 11.4693 11.0377 11.4145L12.4567 10.007C12.4773 9.98674 12.4915 9.96073 12.4972 9.93235C12.503 9.90396 12.5001 9.8745 12.489 9.84776C12.4778 9.82102 12.459 9.79823 12.4347 9.78233C12.4105 9.76642 12.3821 9.75813 12.3532 9.75853H5.17015ZM5.17015 4.50001C5.09249 4.49993 5.01793 4.53047 4.96265 4.58501L3.54364 5.99302C3.52321 6.0134 3.50931 6.03939 3.50369 6.06769C3.49807 6.09599 3.501 6.12532 3.51209 6.15196C3.52319 6.1786 3.54195 6.20133 3.566 6.21728C3.59004 6.23323 3.61829 6.24166 3.64714 6.24152H10.8302C10.9078 6.2416 10.9824 6.21106 11.0377 6.15652L12.4567 4.74901C12.5492 4.65701 12.4837 4.50001 12.3532 4.50001H5.17015ZM10.8302 7.11252C10.9078 7.11244 10.9824 7.14298 11.0377 7.19752L12.4567 8.60502C12.4773 8.62537 12.4913 8.65141 12.497 8.6798C12.5028 8.70819 12.4999 8.73763 12.4888 8.76437C12.4776 8.79111 12.4588 8.81393 12.4346 8.8299C12.4105 8.84587 12.3821 8.85427 12.3532 8.85402H5.17015C5.09265 8.85402 5.01764 8.82352 4.96265 8.76902L3.54364 7.36152C3.52304 7.34117 3.50898 7.31513 3.50326 7.28674C3.49755 7.25836 3.50043 7.22891 3.51154 7.20217C3.52266 7.17543 3.5415 7.15261 3.56566 7.13664C3.58981 7.12067 3.61818 7.11227 3.64714 7.11252H10.8302Z" fill="#66F9A1" />
-                </svg>
-                <p>Solana</p>
-                <svg className="w-4 ml-2" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10 2L6 6L2 2" stroke="white" strokeWidth="1.5" strokeLinecap="square" />
-                </svg>
-              </div>
+                <div className="border-2 rounded-md py-2 px-4 flex items-center gap-4" >
+                  <span className="flex items-center gap-4">
+                    <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M11.6667 8C11.0478 8 10.4543 8.24583 10.0168 8.68342C9.57917 9.121 9.33333 9.71449 9.33333 10.3333C9.33333 10.9522 9.57917 11.5457 10.0168 11.9832C10.4543 12.4208 11.0478 12.6667 11.6667 12.6667H16V16H0V4.66667H16V8H11.6667ZM12.3333 11.3333H11.6667C11.4015 11.3333 11.1471 11.228 10.9596 11.0404C10.772 10.8529 10.6667 10.5985 10.6667 10.3333C10.6667 10.0681 10.772 9.81376 10.9596 9.62623C11.1471 9.43869 11.4015 9.33333 11.6667 9.33333H12.3333C12.5985 9.33333 12.8529 9.43869 13.0404 9.62623C13.228 9.81376 13.3333 10.0681 13.3333 10.3333C13.3333 10.5985 13.228 10.8529 13.0404 11.0404C12.8529 11.228 12.5985 11.3333 12.3333 11.3333ZM10.6667 0L13.3333 3.33333H5.33333L10.6667 0Z" fill="#868691" />
+                    </svg>
+                    <p>{getShortenWalletAddress(profile.walletAddress)}</p>
+                  </span>
 
-            </div>
-            <Avatar className="w-10 h-10" >
-              <AvatarImage src={'/src/assets/images/avatar.png'} alt="@shadcn" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </div> */}
+                  <span className="h-6 border-r-2"></span>
+
+                  <div className="flex items-center gap-4" >
+                    <img
+                      className="w-4 h-4 rounded-full object-cover"
+                      src={getNetworkImageById(network.id)}
+                      alt=""
+                    />
+
+                    <p className="capitalize" >{network.title}</p>
+                    <svg className="w-4 ml-2" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10 2L6 6L2 2" stroke="white" strokeWidth="1.5" strokeLinecap="square" />
+                    </svg>
+                  </div>
+
+                </div>
+                <CustomAvatar
+                  imageSrc={profile.image}
+                  fallbackName="profile.title"
+                />
+                {/* <Avatar className="w-10 h-10" >
+                  <AvatarImage src={profile.image} alt="@shadcn" />
+                  <AvatarFallback>{getNameInitials(profile.title)}</AvatarFallback>
+                </Avatar> */}
+              </div>
+          }
+
         </div>
       </div>
 

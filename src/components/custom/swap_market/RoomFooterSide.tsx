@@ -10,7 +10,7 @@ import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-types";
+import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-store.types";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;

@@ -2,7 +2,7 @@ import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import CustomAvatar from "../shared/CustomAvatar";
 import WalletAddressTile from "../tiles/WalletAddressTile";
 import ChainTile from "../tiles/ChainTile";
-import { IPrivateRoomsLayoutSide } from "@/store/swap-market/swap-market-types";
+import { IPrivateRoomsLayoutSide } from "@/store/swap-market/swap-market-store.types";
 import { SUI_NFTItem } from "@/types/swapup.types";
 
 interface IProp {

@@ -61,7 +61,7 @@ const ToastLookCard = ({ variant = "default", title, description, icon, subtitle
       )}
       {...props}
     >
-      <div className="pt-0.5" >
+      <div className="pt-1" >
         {icon ? icon : getDefaultIcon()}
       </div>
 
@@ -70,7 +70,7 @@ const ToastLookCard = ({ variant = "default", title, description, icon, subtitle
           {title}
 
           <span
-            className="cursor-pointer hover:bg-su_active_bg p-1 rounded-full"
+            className="cursor-pointer hover:bg-su_active_bg rounded-full p-1"
             onClick={onClose ? onClose : () => { }}
           >
             <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">

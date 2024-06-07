@@ -12,7 +12,7 @@ import EmptyDataset from "../shared/EmptyDataset";
 import PrivateRoomFilterDrawer from "./PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
-import { SUT_OpenMarketLayoutType } from "@/store/swap-market/swap-market-types";
+import { SUT_OpenMarketLayoutType } from "@/store/swap-market/swap-market-store.types";
 import { useSwapMarketStore } from "@/store/swap-market";
 import LoadingDataset from "../shared/LoadingDataset";
 import { useNFTsByWallet } from "@/service/queries/swap-market.query";

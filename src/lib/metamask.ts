@@ -1,5 +1,6 @@
+import { Environment } from "@/config";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUT_RoomKeyType } from "@/store/swap-market/swap-market-types";
+import { SUT_RoomKeyType } from "@/store/swap-market/swap-market-store.types";
 import { SUI_Swap } from "@/types/swap-market.types";
 import { ethers, JsonRpcSigner } from 'ethers';
 
@@ -10,11 +11,11 @@ const state = useSwapMarketStore(state => state);
 const getUserSignature = async (
   swap: SUI_Swap,
   swapEncodedMsg: string,
-  chainId: number,
-  swapUpContract: string,
+  signerAddress: string,
   signer: JsonRpcSigner,
-  roomKey: SUT_RoomKeyType) => {
+  roomKey?: SUT_RoomKeyType
 
+) => {
 
   //return "cancel" or "error" in case user does not sign OR there is an error
   let swapEncodedBytes = await getSwapEncodedBytes(swap);
@@ -22,7 +23,8 @@ const getUserSignature = async (
   if (swapEncodedBytes !== swapEncodedMsg) {
     console.log("bytes", swapEncodedBytes);
 
-    const sign = await getMetamaskSignature(swap, chainId, swapUpContract, signer);
+    const sign = await getMetamaskSignature(swap, signer, signerAddress);
+
     if (sign) {
       swapEncodedMsg = swapEncodedBytes;
     }
@@ -80,15 +82,15 @@ export const getSwapEncodedBytes = async (swap: SUI_Swap) => {
 
 export const getMetamaskSignature = async (
   swap: SUI_Swap,
-  chainId: number,
-  swapUpContract: string,
-  signer: JsonRpcSigner) => {
+  signer: JsonRpcSigner,
+  signerAddress: string
+) => {
 
   const domain = {
     name: "swap up",
     version: "1.0",
-    chainId: chainId,
-    verifyingContract: swapUpContract
+    chainId: Environment.CHAIN_ID,
+    verifyingContract: Environment.SWAPUP_CONTRACT
   };
 
   const types = {
@@ -97,8 +99,6 @@ export const getMetamaskSignature = async (
       { name: "msg", type: "string" }
     ]
   };
-
-  let signerAddress = await signer.getAddress();
 
   try {
     let sign = await signer.signTypedData(domain, types, {
@@ -120,12 +120,12 @@ export const generateSignString = async (swap: SUI_Swap) => {
     return i === swap.metadata.init.tokens.length - 1
       ? `[
         id: ${tkn.id}, 
-        type: ${tkn.type.substr(3)}, 
+        type: ${tkn.type.substring(3)}, 
         contract address: ${tkn.address}
       ]`
       : `[
         id: ${tkn.id}, 
-        type: ${tkn.type.substr(3)}, 
+        type: ${tkn.type.substring(3)}, 
         contract address: ${tkn.address}
       ]`;
   });
@@ -134,12 +134,12 @@ export const generateSignString = async (swap: SUI_Swap) => {
     return i === swap.metadata.accept.tokens.length - 1
       ? `[
         id: ${tkn.id}, 
-        type: ${tkn.type.substr(3)}, 
+        type: ${tkn.type.substring(3)}, 
         contract address: ${tkn.address}
       ]`
       : `[
         id: ${tkn.id}, 
-        type: ${tkn.type.substr(3)}, 
+        type: ${tkn.type.substring(3)}, 
         contract address: ${tkn.address}
       ]`;
   });

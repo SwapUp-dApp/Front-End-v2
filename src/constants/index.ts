@@ -20,4 +20,4 @@ export const navItemsData: SUI_NavItem[] = [
 
 export const testWalletAddress: string = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
 
-export const defaultNftImageFallbackURL = "/src/assets/nfts/card-nft-1.png";
+export const defaultNftImageFallbackURL = "/src/assets/nfts/default.svg";

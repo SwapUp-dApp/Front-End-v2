@@ -1,6 +1,7 @@
 import { SUI_Swap, SUI_OpenSwap } from "@/types/swap-market.types";
-import { IOpenMarket, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-types";
+import { IOpenMarket, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-store.types";
 import { SUI_ChainItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
+import { ethers } from "ethers";
 
 // Room side helpers start
 export const toggleGridViewHelper = (
@@ -349,15 +350,71 @@ export const createOpenSwapHelper = (
 
 
 // Wallet connect helpers start
-export const connectToWalletHelper = (
-  state: ISwapMarketStore,
-): ISwapMarketStore => {
+export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<ISwapMarketStore> => {
+  if (typeof window.ethereum !== 'undefined') {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
 
+      const address = await signer.getAddress();
+      const ensAddress = await provider.lookupAddress(address) || '';
+      const network = await provider.getNetwork();
 
-  return {
-    ...state,
-  };
+      let image = '/src/assets/images/avatar.png';
+
+      if (ensAddress) {
+        // Fetch ENS avatar if available
+        const ensResolver = await provider.getResolver(ensAddress);
+        if (ensResolver) {
+          const avatar = await ensResolver._getAvatar();
+
+          if (avatar && avatar.url) {
+            image = avatar.url;
+          }
+        }
+      }
+
+      return {
+        ...state,
+        wallet: {
+          isConnected: true,
+          address,
+          provider,
+          signer
+        },
+        privateMarket: {
+          ...state.privateMarket,
+          privateRoom: {
+            ...state.privateMarket.privateRoom,
+            sender: {
+              ...state.privateMarket.privateRoom.sender,
+              profile: {
+                ...state.privateMarket.privateRoom.sender.profile,
+                image,
+                ensAddress,
+                walletAddress: address,
+              },
+              network: {
+                ...state.privateMarket.privateRoom.sender.network,
+                title: network.name,
+                id: String(network.chainId)
+              }
+            }
+          }
+        }
+      };
+    } catch (error) {
+      console.error("Failed to connect wallet:", error);
+    }
+  } else {
+    console.error("No wallet provider found");
+  }
+
+  return state;
 };
+
+
 // Wallet connect heplers end
 
 export const tempSenderNfts: SUI_NFTItem[] = [

@@ -115,3 +115,10 @@ interface SUI_NFTItem {
   balance: number;
   rarityRank?: number;
 }
+
+
+declare global {
+  interface Window {
+    ethereum: any;
+  }
+}

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ISwapMarketStore, SUT_GridViewType } from './swap-market-types';
+import { ISwapMarketStore, SUT_GridViewType } from './swap-market-store.types';
 import {
   toggleGridViewHelper,
   setSelectedNftsForSwapHelper,
@@ -15,8 +15,8 @@ import {
   createPrivateMarketSwapHelper,
   connectToWalletHelper
 } from './swap-market-helpers';
-import { IPrivateRoom } from './swap-market-types';
-import { IOpenMarket } from './swap-market-types';
+import { IPrivateRoom } from './swap-market-store.types';
+import { IOpenMarket } from './swap-market-store.types';
 import { SUI_NFTItem, SUI_RarityRankItem } from '@/types/swapup.types';
 import { testWalletAddress } from '@/constants';
 import { Environment } from '@/config';
@@ -149,7 +149,7 @@ const initialState: ISwapMarketStore = {
   connectWallet: () => { }
 };
 
-export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
+export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
   ...initialState,
   openMarket: {
     openRoom: {
@@ -198,5 +198,11 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
       createPrivateMarketSwap: () => set((state) => createPrivateMarketSwapHelper(state)),
     }
   },
-  connectWallet: () => set((state) => connectToWalletHelper(state)),
+
+  connectWallet: async () => {
+    const state = get();
+    const newState = await connectToWalletHelper(state);
+    set(newState);
+  },
+
 }));

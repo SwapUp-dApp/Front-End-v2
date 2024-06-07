@@ -122,7 +122,8 @@ export interface IPrivateRoom {
 export interface IWallet {
   isConnected: boolean;
   address: string;
-  provider?: any;
+  provider?: ethers.BrowserProvider;
+  signer?: ethers.JsonRpcSigner;
 }
 
 

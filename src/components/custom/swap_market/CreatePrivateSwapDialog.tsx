@@ -120,7 +120,12 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
                   <CustomOutlineButton containerClasses="w-full h-full" >Cancel</CustomOutlineButton>
                 </DialogClose>
 
-                <Button variant={"default"} type="submit" >Create room</Button>
+                <Button
+                  variant={"default"}
+                  type="submit"
+                >
+                  Create room
+                </Button>
               </div>
             </form>
           </Form>

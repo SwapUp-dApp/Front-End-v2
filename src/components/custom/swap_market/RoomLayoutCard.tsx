@@ -12,7 +12,7 @@ import EmptyDataset from "../shared/EmptyDataset";
 import PrivateRoomFilterDrawer from "./PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
-import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-types";
+import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-store.types";
 import { useSwapMarketStore } from "@/store/swap-market";
 import LoadingDataset from "../shared/LoadingDataset";
 import { useNFTsByWallet } from "@/service/queries/swap-market.query";
@@ -51,9 +51,8 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet }: IProp) => {
     setFilteredNftsBySearch(searchValue);
   };
 
-  const myWalletAddress = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
 
-  const walletAddress = ((layoutType === "receiver") && (counterPartyWallet)) ? counterPartyWallet : myWalletAddress;
+  const walletAddress = ((layoutType === "receiver") && (counterPartyWallet)) ? counterPartyWallet : profile.walletAddress;
   const { isLoading, data, isSuccess, isError, error } = useNFTsByWallet(walletAddress);
 
   useEffect(() => {
@@ -76,7 +75,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet }: IProp) => {
       toast.custom(
         (id) => (
           <ToastLookCard
-            variant="success"
+            variant="error"
             title="Request failed!"
             description={error.message}
             onClose={() => toast.dismiss(id)}

@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import axios from "axios";
 import { Environment } from "@/config";
 import { defaultNftImageFallbackURL } from "@/constants";
+import { chainsDataset } from "@/store/swap-market/swap-market-helpers";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -99,4 +100,15 @@ export const isValidWalletAddress = (address: string) => {
 
 export const getDefaultNftImageOnError = (e: any) => {
   e.currentTarget.src = defaultNftImageFallbackURL;
+};
+
+
+export const getNetworkImageById = (id: string) => {
+  const network = chainsDataset.find(chain => chain.uuid === id);
+
+  if (network) {
+    return network.iconUrl;
+  }
+
+  return "/src/assets/svgs/ethereum.svg";
 };
