@@ -7,7 +7,15 @@ const state = useSwapMarketStore(state => state);
 
 
 
-const getUserSignature = async (swap: SUI_Swap, swapEncodedMsg: string, chainId: number, swapUpContract: string, signer: JsonRpcSigner, roomKey: SUT_RoomKeyType) => {
+const getUserSignature = async (
+  swap: SUI_Swap,
+  swapEncodedMsg: string,
+  chainId: number,
+  swapUpContract: string,
+  signer: JsonRpcSigner,
+  roomKey: SUT_RoomKeyType) => {
+
+
   //return "cancel" or "error" in case user does not sign OR there is an error
   let swapEncodedBytes = await getSwapEncodedBytes(swap);
 
@@ -70,7 +78,12 @@ export const getSwapEncodedBytes = async (swap: SUI_Swap) => {
   return finalBytes;
 };
 
-export const getMetamaskSignature = async (swap: SUI_Swap, chainId: number, swapUpContract: string, signer: JsonRpcSigner) => {
+export const getMetamaskSignature = async (
+  swap: SUI_Swap,
+  chainId: number,
+  swapUpContract: string,
+  signer: JsonRpcSigner) => {
+
   const domain = {
     name: "swap up",
     version: "1.0",

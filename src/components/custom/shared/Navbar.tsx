@@ -4,6 +4,7 @@ import { getIsActiveNav } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import ConnectWalletButton from "./ConnectWalletButton";
 
 
 const Navbar = () => {
@@ -38,7 +39,8 @@ const Navbar = () => {
             </svg>
           </span>
 
-          <div className="flex items-center gap-4" >
+          <ConnectWalletButton />
+          {/* <div className="flex items-center gap-4" >
             <div className="border-2 rounded-md py-2 px-4 flex items-center gap-4" >
               <span className="flex items-center gap-4">
                 <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -64,7 +66,7 @@ const Navbar = () => {
               <AvatarImage src={'/src/assets/images/avatar.png'} alt="@shadcn" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-          </div>
+          </div> */}
         </div>
       </div>
 

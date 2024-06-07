@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import CustomAvatar from "../shared/CustomAvatar";
 import WalletAddressTile from "../tiles/WalletAddressTile";
 import ChainTile from "../tiles/ChainTile";
@@ -17,7 +17,12 @@ const SwapDialogSideCard = ({ className, data, ...props }: IProp) => {
       <div
         className="group relative w-8 h-8 rounded-xs lg:w-12 lg:h-12 object-cover lg:rounded-sm border-[1.5px] border-white/20"
         key={nft.tokenId}>
-        <img className="w-full h-full object-cover rounded-xs lg:rounded-sm" src={nft.media[0].gateway} alt="nft" />
+        <img
+          className="w-full h-full object-cover rounded-xs lg:rounded-sm"
+          src={nft.media[0].gateway}
+          onError={getDefaultNftImageOnError}
+          alt="nft"
+        />
       </div>
     ))
   );

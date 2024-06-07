@@ -76,7 +76,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet }: IProp) => {
       toast.custom(
         (id) => (
           <ToastLookCard
-            variant="error"
+            variant="success"
             title="Request failed!"
             description={error.message}
             onClose={() => toast.dismiss(id)}
@@ -178,7 +178,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet }: IProp) => {
         {
           filteredNfts && filteredNfts.length > 0
             ? filteredNfts?.map(nft => (
-              <NftCard key={nft.tokenId}
+              <NftCard key={nft.tokenId + nft.timeLastUpdated}
                 className="col-span-1"
                 activeGridView={activeGridView}
                 data={nft}

@@ -6,7 +6,7 @@ import AddCurrencyModalDialog from "./AddCurrencyModalDialog";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { cn } from "@/lib/utils";
+import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
@@ -62,6 +62,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
                 className="w-full h-full object-cover rounded-xs lg:rounded-sm"
                 src={nft.media[0].gateway}
                 alt="nft"
+                onError={getDefaultNftImageOnError}
               />
               {
                 (index === lengthToShow) && nfts.length > lengthToShowParam ?

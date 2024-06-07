@@ -10,9 +10,10 @@ import {
   setValuesOnCreatingPrivateRoomHelper,
   chainsDataset,
   setNftsDatasetHelper,
-  createSwapHelper,
   setValuesOnCreatingOpenSwapRoomHelper,
-  createOpenSwapHelper
+  createOpenSwapHelper,
+  createPrivateMarketSwapHelper,
+  connectToWalletHelper
 } from './swap-market-helpers';
 import { IPrivateRoom } from './swap-market-types';
 import { IOpenMarket } from './swap-market-types';
@@ -130,7 +131,7 @@ const initialPrivateRoomState: IPrivateRoom = {
 
   },
   setValuesOnCreatingRoom: () => { },
-  createSwap: () => { }
+  createPrivateMarketSwap: () => { }
 };
 
 const initialState: ISwapMarketStore = {
@@ -139,7 +140,13 @@ const initialState: ISwapMarketStore = {
   },
   privateMarket: {
     privateRoom: initialPrivateRoomState,
-  }
+  },
+  wallet: {
+    address: '',
+    isConnected: false,
+  },
+  setProvider: () => { },
+  connectWallet: () => { }
 };
 
 export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
@@ -159,7 +166,7 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
 
       },
       setValuesOnCreatingOpenMarket: (tradeId: string) => set((state) => setValuesOnCreatingOpenSwapRoomHelper(state, 'openMarket', 'openRoom', tradeId)),
-      createOpenSwap: () => set((state) => createOpenSwapHelper(state, 'openMarket', 'openRoom')),
+      createOpenSwap: () => set((state) => createOpenSwapHelper(state)),
     }
   },
   privateMarket: {
@@ -188,7 +195,8 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
 
       },
       setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'privateMarket', 'privateRoom', tradeId, counterPartyWalletAddress)),
-      createSwap: () => set((state) => createSwapHelper(state, 'privateMarket', 'openRoom')),
+      createPrivateMarketSwap: () => set((state) => createPrivateMarketSwapHelper(state)),
     }
-  }
+  },
+  connectWallet: () => set((state) => connectToWalletHelper(state)),
 }));

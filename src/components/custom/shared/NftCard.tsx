@@ -1,5 +1,5 @@
 import { defaultNftImageFallbackURL } from "@/constants";
-import { cn, getEtherScanContractNftUrl, getOpenSeaNftUrl } from "@/lib/utils";
+import { cn, getDefaultNftImageOnError, getEtherScanContractNftUrl, getOpenSeaNftUrl } from "@/lib/utils";
 import { SUT_GridViewType } from "@/store/swap-market/swap-market-types";
 import { SUI_NFTItem } from "@/types/swapup.types";
 import { useEffect, useState } from "react";
@@ -32,12 +32,14 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
   }, [isChecked]);
 
   useEffect(() => {
-    const isSelected = nftsSelectedForSwap.some(nft => nft.tokenId === data.tokenId);
+    const isSelected = nftsSelectedForSwap.some(nft => (nft.tokenId === data.tokenId && nft.timeLastUpdated === data.timeLastUpdated));
     setIsChecked(isSelected);
-  }, [nftsSelectedForSwap, data.tokenId]);
+  }, [nftsSelectedForSwap, data.tokenId, data.timeLastUpdated]);
 
 
-  const imageURL = data.media.length > 0 ? data.media[0].gateway : defaultNftImageFallbackURL;
+  const imageURL = data.media.length > 0 ?
+    data.media[0].gateway :
+    defaultNftImageFallbackURL;
   return (
     <div
       className="relative"
@@ -54,8 +56,9 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
           <img
             className={`h-full w-full object-cover ${activeGridView === "detailed" ? "rounded-tl-md rounded-tr-md" : "rounded-md"}`}
             src={imageURL}
-            alt=""
+            alt=''
             onClick={handleCardClick}
+            onError={getDefaultNftImageOnError}
           />
 
           <div className="group" >

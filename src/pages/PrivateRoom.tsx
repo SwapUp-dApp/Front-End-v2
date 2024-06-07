@@ -179,7 +179,7 @@ const PrivateRoom = () => {
                     </div>
                     <Button
                       variant={"default"}
-                      onClick={state.createSwap}
+                      onClick={state.createPrivateMarketSwap}
                     >Proceed</Button>
                   </div>
                 </div>

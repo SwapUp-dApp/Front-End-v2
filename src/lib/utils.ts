@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
 import { Environment } from "@/config";
+import { defaultNftImageFallbackURL } from "@/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -94,4 +95,8 @@ export const getCoinsData = async () => {
 export const isValidWalletAddress = (address: string) => {
   const regex = /^0x[0-9a-fA-F]{40}$/;
   return regex.test(address);
+};
+
+export const getDefaultNftImageOnError = (e: any) => {
+  e.currentTarget.src = defaultNftImageFallbackURL;
 };

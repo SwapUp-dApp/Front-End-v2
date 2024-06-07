@@ -22,7 +22,7 @@ export interface IOpenMarketAddedAmount {
 export interface IOpenMarket {
   uniqueTradeId: string;
   sender: IOpenMarketLayoutSide;
-  setValuesOnCreatingOpenMarket: (tradeId: string) => void;  
+  setValuesOnCreatingOpenMarket: (tradeId: string) => void;
   swap?: SUI_OpenSwap;
   swapEncodedMsg: string;
   sign: string;
@@ -116,12 +116,14 @@ export interface IPrivateRoom {
   swapUpContract: string;
   chainId: number;
   setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => void;
-  createSwap: () => void;
+  createPrivateMarketSwap: () => void;
 }
 
-// interface IOpenMarket {
-//   openRoom: IPrivateRoom;
-// }
+export interface IWallet {
+  isConnected: boolean;
+  address: string;
+  provider?: any;
+}
 
 
 export interface ISwapMarketStore {
@@ -132,4 +134,8 @@ export interface ISwapMarketStore {
   privateMarket: {
     privateRoom: IPrivateRoom;
   };
+
+  wallet: IWallet;
+  connectWallet: () => void;
+  setProvider: (provider: any) => void;
 }

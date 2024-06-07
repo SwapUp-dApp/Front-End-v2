@@ -1,4 +1,4 @@
-import { SUI_Swap,SUI_OpenSwap } from "@/types/swap-market.types";
+import { SUI_Swap, SUI_OpenSwap } from "@/types/swap-market.types";
 import { IOpenMarket, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-types";
 import { SUI_ChainItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 
@@ -215,7 +215,7 @@ export const setNftsDatasetHelper = (
 // Room side helpers start
 
 
-// Room helpers start
+// Private Room helpers start
 export const setValuesOnCreatingPrivateRoomHelper = (
   state: ISwapMarketStore,
   marketKey: 'openMarket' | 'privateMarket',
@@ -244,13 +244,10 @@ export const setValuesOnCreatingPrivateRoomHelper = (
   };
 };
 
-export const createSwapHelper = (
+export const createPrivateMarketSwapHelper = (
   state: ISwapMarketStore,
-  marketKey: 'openMarket' | 'privateMarket',
-  roomKey: 'openRoom' | 'privateRoom',
 ): ISwapMarketStore => {
-  const market = state[marketKey] as Record<string, any>;
-  const room = (roomKey === "privateRoom" ? state.privateMarket.privateRoom : state.openMarket.openRoom) as IPrivateRoom;
+  const room = state.privateMarket.privateRoom as IPrivateRoom;
 
   const swap: SUI_Swap = {
     init_address: room.sender.profile.walletAddress,
@@ -269,11 +266,14 @@ export const createSwapHelper = (
     }
   };
 
+
+  console.info("Private Swaps ---------> \n", swap);
+
   return {
     ...state,
-    [marketKey]: {
-      ...market,
-      [roomKey]: {
+    privateMarket: {
+      ...state.privateMarket,
+      privateRoom: {
         ...room,
         swap,
         nftsLength: swap.metadata.init.tokens.length + swap.metadata.accept.tokens.length
@@ -281,7 +281,6 @@ export const createSwapHelper = (
     },
   };
 };
-
 
 const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]) => {
 
@@ -292,8 +291,7 @@ const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]) => {
   }));
 
 };
-
-// Room helpers end
+// Private Room helpers end
 
 
 //=== Open Market Room helpers start====
@@ -319,11 +317,8 @@ export const setValuesOnCreatingOpenSwapRoomHelper = (
 
 export const createOpenSwapHelper = (
   state: ISwapMarketStore,
-  marketKey: 'openMarket' | 'privateMarket',
-  roomKey: 'openRoom' | 'privateRoom',
 ): ISwapMarketStore => {
-  const market = state[marketKey] as Record<string, any>;
-  const room = (roomKey === "openRoom" ? state.openMarket.openRoom : state.openMarket.openRoom) as IOpenMarket;
+  const room = state.openMarket.openRoom as IOpenMarket;
 
   const swap: SUI_OpenSwap = {
     init_address: room.sender.profile.walletAddress,
@@ -340,9 +335,9 @@ export const createOpenSwapHelper = (
 
   return {
     ...state,
-    [marketKey]: {
-      ...market,
-      [roomKey]: {
+    openMarket: {
+      ...state.openMarket,
+      openRoom: {
         ...room,
         swap,
         nftsLength: swap.metadata.init.tokens.length
@@ -350,10 +345,20 @@ export const createOpenSwapHelper = (
     },
   };
 };
-
-
 //==========================================
 
+
+// Wallet connect helpers start
+export const connectToWalletHelper = (
+  state: ISwapMarketStore,
+): ISwapMarketStore => {
+
+
+  return {
+    ...state,
+  };
+};
+// Wallet connect heplers end
 
 export const tempSenderNfts: SUI_NFTItem[] = [
   {
