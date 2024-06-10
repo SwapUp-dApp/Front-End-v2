@@ -1,7 +1,6 @@
 import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer } from "@/components/ui/drawer";
 import { navItemsData } from "@/constants";
-import { getIsActiveNav, getNameInitials, getNetworkImageById, getShortenWalletAddress } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { getIsActiveNav, getNetworkImageById, getShortenWalletAddress } from "@/lib/utils";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ConnectWalletButton from "./ConnectWalletButton";
@@ -89,10 +88,6 @@ const Navbar = () => {
                   imageSrc={profile.image}
                   fallbackName="profile.title"
                 />
-                {/* <Avatar className="w-10 h-10" >
-                  <AvatarImage src={profile.image} alt="@shadcn" />
-                  <AvatarFallback>{getNameInitials(profile.title)}</AvatarFallback>
-                </Avatar> */}
               </div>
           }
 
@@ -136,9 +131,13 @@ const Navbar = () => {
 
             <div className="mt-6 p-6 h-full flex flex-col justify-between" >
               <ol className="flex flex-col gap-8" >
-                <li className="font-semibold" >Swap Market</li>
-                <li className="font-semibold" >My Swaps</li>
-                <li className="font-semibold" >Profile</li>
+                {
+                  navItemsData.map(navItem => (
+                    <Link to={navItem.path} key={navItem.key}>
+                      <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path, pathname) ? "active" : ""}`} >{navItem.title}</li>
+                    </Link>
+                  ))
+                }
               </ol>
 
               <div className="flex items-center justify-between" >
@@ -147,10 +146,10 @@ const Navbar = () => {
                   <path d="M8 0C3.584 0 0 3.584 0 8C0 12.416 3.584 16 8 16C12.416 16 16 12.416 16 8C16 3.584 12.416 0 8 0ZM8.8 13.6H7.2V12H8.8V13.6ZM10.456 7.4L9.736 8.136C9.16 8.72 8.8 9.2 8.8 10.4H7.2V10C7.2 9.12 7.56 8.32 8.136 7.736L9.128 6.728C9.424 6.44 9.6 6.04 9.6 5.6C9.6 4.72 8.88 4 8 4C7.12 4 6.4 4.72 6.4 5.6H4.8C4.8 3.832 6.232 2.4 8 2.4C9.768 2.4 11.2 3.832 11.2 5.6C11.2 6.304 10.912 6.944 10.456 7.4Z" fill="white" />
                 </svg>
 
-                <Avatar className="w-10 h-10" >
-                  <AvatarImage src={'/src/assets/images/avatar.png'} alt="@shadcn" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
+                <CustomAvatar
+                  imageSrc={profile.image}
+                  fallbackName="profile.title"
+                />
               </div>
             </div>
 

@@ -481,7 +481,6 @@ const SwapMarketPage = () => {
                             descriptionClassName: '!text-white',
                           })
                         }
-
                       />
                     </TableHead>
                   </TableRow>

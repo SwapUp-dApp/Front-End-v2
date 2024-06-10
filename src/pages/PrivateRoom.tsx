@@ -14,12 +14,98 @@ import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate, useParams } from "react-router-dom";
 import { isValidWalletAddress } from "@/lib/utils";
+import { getUserApproval, getUserSignature } from "@/lib/metamask";
+import ToastLookCard from "@/components/custom/shared/ToastLookCard";
+import { toast } from "sonner";
+import { useCreateSwapOffer } from "@/service/queries/swap-market.query";
 
 
 
 const PrivateRoom = () => {
+  const [wallet, resetRoom] = useSwapMarketStore(state => [state.wallet, state.resetRoom]);
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
+  const [createSwapLoading, setCreateSwapLoading] = useState(false);
+  const { counterPartyWallet } = useParams();
+  const navigate = useNavigate();
+
+  const { mutateAsync: createSwapOffer } = useCreateSwapOffer();
+
+  const handleCreatePrivatePartySwap = async () => {
+    try {
+      setCreateSwapLoading(true);
+
+      await state.createPrivateMarketSwap();
+      const createdSwap = useSwapMarketStore.getState().privateMarket.privateRoom.swap;
+
+      if (!createdSwap) {
+        throw new Error("Failed to create swap.");
+      }
+
+      const { sign, swapEncodedBytes } = await getUserSignature(createdSwap, state.swapEncodedMsg, wallet.signer);
+
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+
+      await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
+
+      const approval = await getUserApproval(createdSwap, true, wallet.signer);
+      if (!approval) {
+        throw new Error("User approval not granted.");
+      }
+      const updatedSwap = await useSwapMarketStore.getState().privateMarket.privateRoom.swap;
+
+      const offerResult = await createSwapOffer(updatedSwap!);
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Offer Sent Successfully"
+              description={"You will receive a notification upon your counterparty's response."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        setTimeout(() => {
+          navigate('/swap-up/swap-market');
+        }, 3000);
+      }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setCreateSwapLoading(false);
+    }
+  };
+
+  const handleResetData = () => {
+    resetRoom('privateMarket', 'privateRoom');
+  };
 
   useEffect(() => {
     if ((state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length) &&
@@ -32,9 +118,6 @@ const PrivateRoom = () => {
 
   }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap, state.sender.addedAmount, state.receiver.addedAmount]);
 
-  const { counterPartyWallet } = useParams();
-  const navigate = useNavigate();
-
   useEffect(() => {
     if (counterPartyWallet && !isValidWalletAddress(counterPartyWallet)) {
       navigate(-1);
@@ -43,7 +126,12 @@ const PrivateRoom = () => {
 
   return (
     <div className="flex flex-col gap-4" >
-      <RoomHeader tardeId={state.uniqueTradeId} />
+      <RoomHeader
+        tardeId={state.uniqueTradeId}
+        resetData={handleResetData}
+        existDescription="By leaving the room, you will close it for both parties."
+        existTitle="Are you sure you want to exit the trade?"
+      />
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
         <RoomLayoutCard layoutType={"sender"} />
@@ -179,8 +267,11 @@ const PrivateRoom = () => {
                     </div>
                     <Button
                       variant={"default"}
-                      onClick={state.createPrivateMarketSwap}
-                    >Proceed</Button>
+                      onClick={async () => await handleCreatePrivatePartySwap()}
+                      isLoading={createSwapLoading}
+                    >
+                      Proceed
+                    </Button>
                   </div>
                 </div>
               </ScrollArea>

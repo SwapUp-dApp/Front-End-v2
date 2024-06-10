@@ -1,5 +1,6 @@
 import { AxiosResponse } from "axios";
 import API from "../Axios";
+import { SUI_Swap } from "@/types/swap-market.types";
 
 export const getNftsForWallet = (walletId: string): Promise<AxiosResponse> => {
   return API.get(`/api/nfts/${walletId}`);
@@ -14,7 +15,7 @@ export const getSwapHistoryForWallet = (walletId: string): Promise<AxiosResponse
 export const getSwapDetails = (swapId: string, walletId: string): Promise<AxiosResponse> =>
   API.get(`/api/swaps?swapId=${swapId}&walletId=${walletId}`);
 
-export const createSwapOffer = (swap: any): Promise<AxiosResponse> =>
+export const createSwapOffer = (swap: SUI_Swap): Promise<AxiosResponse> =>
   API.post('/api/swaps/', swap);
 
 export const updateSwapOffer = (swap: any): Promise<AxiosResponse> =>

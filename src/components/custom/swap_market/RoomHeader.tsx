@@ -5,15 +5,19 @@ import ExitPageDialog from "../shared/ExitPageDialog";
 interface IProp {
   backClickNavigateTo?: string;
   tardeId: string;
+  resetData: () => void;
+  existTitle: string;
+  existDescription: string;
 }
 
-const RoomHeader = ({ backClickNavigateTo, tardeId }: IProp) => {
+const RoomHeader = ({ backClickNavigateTo, tardeId, resetData, existDescription, existTitle }: IProp) => {
   return (
     <div className="flex justify-between lg:justify-start lg:gap-6" >
       <ExitPageDialog
-        title="Are you sure you want to exit the trade?"
-        description="By leaving the room, you will close it for both parties."
+        title={existTitle}
+        description={existDescription}
         redirectPath={backClickNavigateTo ? backClickNavigateTo : defaultFallbackRoute}
+        resetData={resetData}
       >
         <span
           className="text-sm dark:text-su_secondary flex items-center gap-2 cursor-pointer py-2 px-3 hover:rounded-sm hover:bg-su_secondary_bg">

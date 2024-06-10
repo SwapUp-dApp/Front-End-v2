@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import axios from "axios";
 import { Environment } from "@/config";
 import { defaultNftImageFallbackURL } from "@/constants";
-import { chainsDataset } from "@/store/swap-market/swap-market-helpers";
+import { chainsDataset } from "@/constants/data";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
