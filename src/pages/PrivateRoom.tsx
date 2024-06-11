@@ -22,7 +22,7 @@ import { useCreateSwapOffer } from "@/service/queries/swap-market.query";
 
 
 const PrivateRoom = () => {
-  const [wallet, resetRoom] = useSwapMarketStore(state => [state.wallet, state.resetRoom]);
+  const wallet = useSwapMarketStore(state => state.wallet);
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [createSwapLoading, setCreateSwapLoading] = useState(false);
@@ -104,7 +104,22 @@ const PrivateRoom = () => {
   };
 
   const handleResetData = () => {
-    resetRoom('privateMarket', 'privateRoom');
+    state.resetPrivateRoom();
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="info"
+          title="Private party room reset!"
+          description={"Room data deleted for both parties."}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 3000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
   };
 
   useEffect(() => {

@@ -1,8 +1,7 @@
 import { SUI_Swap, SUI_OpenSwap } from "@/types/swap-market.types";
-import { IOpenRoom, IPrivateRoom, ISwapMarketStore, SUT_GridViewType, SUT_MarketKeyType, SUT_RoomKeyType } from "./swap-market-store.types";
+import { IOpenRoom, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-store.types";
 import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 import { ethers } from "ethers";
-import { openMarketRoomInitialState, privateMarketRoomInitialState } from ".";
 
 // Shared Room Helper start
 export const toggleGridViewHelper = (
@@ -215,28 +214,6 @@ export const setNftsDatasetHelper = (
   };
 };
 
-export const resetRoomDataHelper = (
-  state: ISwapMarketStore,
-  marketKey: SUT_MarketKeyType,
-  roomKey: SUT_RoomKeyType,
-): ISwapMarketStore => {
-  const market = state[marketKey] as Record<string, any>;
-
-  const roomInitialState = (roomKey === "privateRoom") ?
-    { ...privateMarketRoomInitialState } :
-    { ...openMarketRoomInitialState };
-
-  return {
-    ...state,
-    [marketKey]: {
-      ...market,
-      [roomKey]: {
-        ...roomInitialState
-      },
-    },
-  };
-};
-
 // Shared Room Helper end
 
 
@@ -268,7 +245,6 @@ export const setValuesOnCreatingPrivateRoomHelper = (
     },
   };
 };
-
 export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore,): Promise<ISwapMarketStore> => {
   const room = state.privateMarket.privateRoom as IPrivateRoom;
 
@@ -304,7 +280,6 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore,): P
     },
   };
 };
-
 export const setSwapEncodedMsgAndSignPrivateHelper = async (
   state: ISwapMarketStore,
   swapEncodedMsg: string,
@@ -325,7 +300,6 @@ export const setSwapEncodedMsgAndSignPrivateHelper = async (
     }
   };
 };
-
 const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]) => {
 
   return nfts.map(nft => ({
@@ -335,23 +309,68 @@ const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]) => {
   }));
 
 };
+
+export const resetPrivateRoomDataHelper = (
+  state: ISwapMarketStore,
+): ISwapMarketStore => {
+
+  return {
+    ...state,
+    privateMarket: {
+      ...state.privateMarket,
+      privateRoom: {
+        ...state.privateMarket.privateRoom,
+        nftsLength: 0,
+        sign: '',
+        uniqueTradeId: '',
+        swap: undefined,
+        swapEncodedMsg: '',
+        swapUpContract: "",
+        sender: {
+          ...state.privateMarket.privateRoom.sender,
+          collections: [],
+          nftsSelectedForSwap: [],
+          addedAmount: undefined,
+          nfts: undefined,
+          filteredNfts: undefined,
+          filters: undefined,
+          activeGridView: 'detailed'
+        },
+        receiver: {
+          ...state.privateMarket.privateRoom.receiver,
+          collections: [],
+          nftsSelectedForSwap: [],
+          addedAmount: undefined,
+          nfts: undefined,
+          filteredNfts: undefined,
+          filters: undefined,
+          activeGridView: 'detailed',
+          profile: {
+            ...state.privateMarket.privateRoom.receiver.profile,
+            walletAddress: '',
+            // we need to remove the profile completely in future
+          }
+        }
+      }
+    },
+  };
+};
 // Private Room helpers end
 
 
 //=== Open Market Room helpers start====
 export const setValuesOnCreatingOpenSwapRoomHelper = (
   state: ISwapMarketStore,
-  marketKey: 'openMarket' | 'privateMarket',
-  roomKey: 'openRoom' | 'privateRoom',
   tradeId: string,
 ): ISwapMarketStore => {
-  const market = state[marketKey] as Record<string, any>;
-  const room = market[roomKey] as Record<string, any>;
+  const market = state['openMarket'] as Record<string, any>;
+  const room = market['openRoom'] as IOpenRoom;
+
   return {
     ...state,
-    [marketKey]: {
+    openMarket: {
       ...market,
-      [roomKey]: {
+      openRoom: {
         ...room,
         uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
       },
@@ -406,16 +425,16 @@ export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<IS
       const ensAddress = await provider.lookupAddress(address) || '';
       const network = await provider.getNetwork();
 
-      let image = '/src/assets/images/avatar.png';
+      let image = '';
 
       if (ensAddress) {
         // Fetch ENS avatar if available
         const ensResolver = await provider.getResolver(ensAddress);
         if (ensResolver) {
-          const avatar = await ensResolver._getAvatar();
+          const avatar = await ensResolver.getAvatar();
 
-          if (avatar && avatar.url) {
-            image = avatar.url;
+          if (avatar) {
+            image = avatar;
           }
         }
       }

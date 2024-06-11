@@ -97,12 +97,9 @@ const OpenMarket = () => {
   });
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
-  const resetRoom = useSwapMarketStore(state => state.resetRoom);
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
 
-  const handleResetData = () => {
-    resetRoom("openMarket", "openRoom");
-  };
+  const handleResetData = () => { console.log("Reset open room yet to be implemented..."); };
 
   useEffect(() => {
     if ((state.sender.nftsSelectedForSwap.length) && (state.sender.addedAmount)) {
