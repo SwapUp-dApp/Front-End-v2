@@ -466,6 +466,26 @@ export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<IS
               }
             }
           }
+        },
+        openMarket: {
+          ...state.openMarket,
+          openRoom: {
+            ...state.openMarket.openRoom,
+            sender: {
+              ...state.openMarket.openRoom.sender,
+              profile: {
+                ...state.openMarket.openRoom.sender.profile,
+                image,
+                ensAddress,
+                walletAddress: address,
+              },
+              network: {
+                ...state.openMarket.openRoom.sender.network,
+                title: network.name,
+                id: String(network.chainId)
+              }
+            }
+          }
         }
       };
     } catch (error) {

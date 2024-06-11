@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
@@ -14,87 +13,13 @@ import AvoidingFeeDialog from "@/components/custom/swap_market/AvoidingFeeDialog
 import { useSwapMarketStore } from "@/store/swap-market";
 import OpenMarketRoomFooter from "@/components/custom/swap_market/OpenMarketRoomFooter";
 import OpenMarketSwapDialogSideCard from "@/components/custom/swap_market/OpenMarketSwapDialogSideCard";
-import OpenMarketRoomLayoutCard from "@/components/custom/swap_market/OpenMarketRoomLayoutCard";
 
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import { addDays, format } from "date-fns";
-import { DateRange } from "react-day-picker";
-import { SUI_RarityRankItem } from "@/types/swapup.types";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import RoomHeader from "@/components/custom/swap_market/RoomHeader";
+import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
+import SwapParametersCard from "@/components/custom/swap_market/open-market/SwapParametersCard";
 
-const availableRarityRanking: SUI_RarityRankItem[] = [
-  {
-    from: 1,
-    to: 10
-  },
-  {
-    from: 11,
-    to: 20
-  },
-  {
-    from: 21,
-    to: 50
-  },
-  {
-    from: 51,
-    to: 100
-  },
-  {
-    from: 101,
-    to: 1000
-  },
-  {
-    from: 1001,
-    to: 10000
-  },
-];
-
-
-
-
-const FormSchema = z.object({
-  collection: z.string().min(1, {
-    message: "Please select an preferred collection."
-  }),
-  rarityRank: z.string().min(1, {
-    message: "Please select an preferred rarity rank."
-  })
-
-});
 
 const OpenMarket = () => {
-  const [formKey] = useState(0);
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      collection: '',
-      rarityRank: ''
-    }
-  });
-
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2024, 0, 20),
-    to: addDays(new Date(2024, 0, 20), 1),
-  });
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
@@ -105,7 +30,7 @@ const OpenMarket = () => {
     if ((state.sender.nftsSelectedForSwap.length) && (state.sender.addedAmount)) {
       setEnableApproveButtonCriteria(true);
     } else {
-      setEnableApproveButtonCriteria(true);
+      setEnableApproveButtonCriteria(false);
     }
   }, [state.sender.nftsSelectedForSwap, state.sender.addedAmount]);
 
@@ -114,143 +39,17 @@ const OpenMarket = () => {
       <RoomHeader
         tardeId={state.uniqueTradeId}
         resetData={handleResetData}
+        title={"Create open market swap"}
         existTitle="Are you sure you want to cancel the this open trade?"
         existDescription="By closing the open market swap, your changes would not be saved."
       />
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <OpenMarketRoomLayoutCard layoutType={"sender"} />
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm border-none flex flex-col gap-4 dark:bg-su_secondary_bg p-2 lg:p-6" >
+        <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" />
 
-          <div className="font-semibold text-sm lg:text-lg w-2/3 lg:w-auto">
-            <p>Swap parameters</p>
-          </div>
-
-          <div className="flex justify-between items-center text-sm" >
-            <p>Request date:</p>
-          </div>
-          <div className="" >
-
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant={"outline"}
-                  className={cn(
-                    "w-[300px] justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date?.from ? (
-                    date.to ? (
-                      <>
-                        {format(date.from, "LLL dd, y")} -{" "}
-                        {format(date.to, "LLL dd, y")}
-                      </>
-                    ) : (
-                      format(date.from, "LLL dd, y")
-                    )
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-
-
-            <div className=" ">
-              <div className="flex justify-between items-center text-sm" >
-                <p>Preferred asset:</p>
-
-
-              </div>
-
-              <div className="flex justify-between items-center text-sm" >
-                <ToggleGroup type="single">
-                  <ToggleGroupItem value="any" aria-label="Toggle bold">Any</ToggleGroupItem>
-                  <ToggleGroupItem value="nft" aria-label="Toggle bold" >NFT</ToggleGroupItem>
-                  <ToggleGroupItem value="received" aria-label="Toggle bold">Currency</ToggleGroupItem>
-                </ToggleGroup>
-              </div>
-
-
-            </div>
-
-            <Form {...form} key={formKey}>
-
-
-              <div className="space-y-3" >
-
-
-                <FormField
-                  control={form.control}
-                  name="rarityRank"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Preferred rarity rank:</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl >
-                          <SelectTrigger className="bg-su_enable_bg py-3 px-4 rounded-sm" >
-                            <SelectValue className="" placeholder={
-                              <span className="flex items-center gap-2" >
-                                <svg className="w-3" viewBox="0 0 16 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10.29 4L8 0L5.71 4H10.29ZM2.29 10L0 14H16L13.71 10H2.29ZM13.14 9L10.86 5H5.14L2.86 9H13.14Z" fill="#868691" />
-                                </svg>
-
-                                Any
-                              </span>
-                            } />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {
-                            availableRarityRanking.map((rarityRank, index) => (
-                              <SelectItem key={index + rarityRank.from} value={JSON.stringify(rarityRank)} >
-                                <span className="flex items-center gap-2" >
-                                  <svg className="w-3" viewBox="0 0 16 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M10.29 4L8 0L5.71 4H10.29ZM2.29 10L0 14H16L13.71 10H2.29ZM13.14 9L10.86 5H5.14L2.86 9H13.14Z" fill="#868691" />
-                                  </svg>
-
-                                  {rarityRank.from} - {rarityRank.to}
-                                </span>
-                              </SelectItem>
-                            ))
-                          }
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-
-
-            </Form>
-
-
-
-          </div>
-
-
-
-
-
-
-        </div>
+        {/* Right Side */}
+        <SwapParametersCard />
       </div>
-
 
 
       <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >

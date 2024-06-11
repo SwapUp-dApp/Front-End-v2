@@ -56,6 +56,8 @@ const PrivateRoom = () => {
       }
       const updatedSwap = await useSwapMarketStore.getState().privateMarket.privateRoom.swap;
 
+      // console.info("Updated swap: =======> \n", updatedSwap);
+
       const offerResult = await createSwapOffer(updatedSwap!);
 
       if (offerResult) {
@@ -142,6 +144,7 @@ const PrivateRoom = () => {
   return (
     <div className="flex flex-col gap-4" >
       <RoomHeader
+        title="Private Room"
         tardeId={state.uniqueTradeId}
         resetData={handleResetData}
         existDescription="By leaving the room, you will close it for both parties."
@@ -149,8 +152,9 @@ const PrivateRoom = () => {
       />
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <RoomLayoutCard layoutType={"sender"} />
-        {counterPartyWallet && <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} />}
+        <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" />
+        {counterPartyWallet &&
+          <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} roomKey="privateRoom" />}
       </div>
 
 

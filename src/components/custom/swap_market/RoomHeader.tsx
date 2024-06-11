@@ -6,11 +6,12 @@ interface IProp {
   backClickNavigateTo?: string;
   tardeId: string;
   resetData: () => void;
+  title: string;
   existTitle: string;
   existDescription: string;
 }
 
-const RoomHeader = ({ backClickNavigateTo, tardeId, resetData, existDescription, existTitle }: IProp) => {
+const RoomHeader = ({ backClickNavigateTo, tardeId, resetData, existDescription, existTitle, title }: IProp) => {
   return (
     <div className="flex justify-between lg:justify-start lg:gap-6" >
       <ExitPageDialog
@@ -29,7 +30,7 @@ const RoomHeader = ({ backClickNavigateTo, tardeId, resetData, existDescription,
         </span>
       </ExitPageDialog>
 
-      <h2 className="font-semibold text-1.5xl" >Private Room</h2>
+      <h2 className="font-semibold text-1.5xl">{title}</h2>
 
       <CopyTile textToCopy={tardeId} className="hidden lg:flex" >
         Unique trade ID: <span className="dark:text-su_primary font-semibold">#{tardeId}</span>

@@ -7,10 +7,11 @@ interface IProp {
   subtitle?: string;
   description?: string;
   className?: string;
+  hideCloseButton?: boolean;
   onClose?: () => string | number;
 }
 
-const ToastLookCard = ({ variant = "default", title, description, icon, subtitle, className, onClose, ...props }: IProp) => {
+const ToastLookCard = ({ variant = "default", title, description, icon, subtitle, className, onClose, hideCloseButton = false, ...props }: IProp) => {
 
   const getDefaultIcon = () => {
 
@@ -65,24 +66,30 @@ const ToastLookCard = ({ variant = "default", title, description, icon, subtitle
         {icon ? icon : getDefaultIcon()}
       </div>
 
-      <div className="w-full" >
+      <div className="w-full space-y-1" >
         <h2 className="test-sm lg:text-base text-primary font-semibold text-text dark:text-su_primary flex justify-between items-center" >
           {title}
 
-          <span
-            className="cursor-pointer hover:bg-su_active_bg rounded-full p-1"
-            onClick={onClose ? onClose : () => { }}
-          >
-            <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path fillRule="evenodd" clip-rule="evenodd" d="M10.058 11.1187L10.5883 11.649L11.649 10.5883L11.1186 10.058L7.06049 5.99982L11.1185 1.94173L11.6489 1.41139L10.5882 0.350739L10.0579 0.881072L5.99983 4.93915L1.94179 0.881071L1.41146 0.350739L0.350798 1.41139L0.881126 1.94173L4.93918 5.99982L0.881036 10.058L0.350708 10.5883L1.41137 11.649L1.9417 11.1187L5.99983 7.06048L10.058 11.1187Z" fill="white" />
-            </svg>
-          </span>
+          {
+            !hideCloseButton &&
 
+            <span
+              className="cursor-pointer hover:bg-su_active_bg rounded-full p-1"
+              onClick={onClose ? onClose : () => { }}
+            >
+              <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fillRule="evenodd" clip-rule="evenodd" d="M10.058 11.1187L10.5883 11.649L11.649 10.5883L11.1186 10.058L7.06049 5.99982L11.1185 1.94173L11.6489 1.41139L10.5882 0.350739L10.0579 0.881072L5.99983 4.93915L1.94179 0.881071L1.41146 0.350739L0.350798 1.41139L0.881126 1.94173L4.93918 5.99982L0.881036 10.058L0.350708 10.5883L1.41137 11.649L1.9417 11.1187L5.99983 7.06048L10.058 11.1187Z" fill="white" />
+              </svg>
+            </span>
+          }
         </h2>
-        <p className="text-xs lg:text-sm font-normal dark:text-su_secondary" >{subtitle}</p>
-        <p className="text-xs lg:text-sm font-normal dark:text-su_secondary" >
-          {description}
-        </p>
+
+        <div>
+          <p className="text-xs lg:text-sm font-normal dark:text-su_secondary" >{subtitle}</p>
+          <p className="text-xs lg:text-sm font-normal dark:text-su_secondary" >
+            {description}
+          </p>
+        </div>
       </div>
     </div >
   );

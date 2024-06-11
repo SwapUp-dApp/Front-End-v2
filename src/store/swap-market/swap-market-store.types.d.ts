@@ -59,7 +59,6 @@ export interface IOpenMarketLayoutSide {
   removeAllFilters: () => void;
 }
 
-
 //====================================
 
 
@@ -123,7 +122,6 @@ export interface IWallet {
   provider?: ethers.BrowserProvider;
   signer?: ethers.JsonRpcSigner;
 }
-
 
 export interface ISwapMarketStore {
   openMarket: {
