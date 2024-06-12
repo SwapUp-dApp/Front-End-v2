@@ -103,24 +103,16 @@ const ProfileAssetsLayout = ({  layoutType , walletAddress }: IProp) => {
           <div className="flex items-center gap-2" >
 
 
-          <Card className="h-[50px] w-[600px] border-none bg-card  dark:bg-su_secondary_bg p-3" >
-      <CardContent className={`p-0 flex flex-col ${1 ? 'gap-2' : 'gap-6'}`}>
-        <div className="flex items-start justify-between">
-           
-          <div className="flex gap-2 items-center">          
-                <h2 className="flex justify-between items-center text-sm gap-2" >156.1225 SOL </h2>   
-          </div>
-          <div className="flex gap-4 items-center">
-          <h2 className="flex justify-between items-center text-sm" >   Total Estimated NFT Value</h2>
-          
-          </div>
-          
-          
-        </div>
+        <Card className="h-[60px] w-full border-none bg-card  dark:bg-su_secondary_bg p-3 " >
+          <CardContent className={`p-2 flex flex-col gap-2`}>
+            <div className="flex items-start justify-between">                  
+                    <h2  >156.1225 SOL </h2>   
+              <h2 className="dark:text-su_ternary text-xs p-1 " >   Total Estimated NFT Value</h2>
+            </div>
 
      
-      </CardContent>
-          </Card>
+         </CardContent>
+        </Card>
 
 
 
