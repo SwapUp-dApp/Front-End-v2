@@ -21,12 +21,12 @@ const WalletOverviewCard = ({ cardType, Value, TitleDesc}: IProp) => {
                 ?
                 <h2 className="flex justify-between items-center text-sm" >{Value}</h2>
                 :
-                <h2 className="flex justify-between items-center text-sm" >${Value}</h2>
+                <h2 className="flex justify-between items-center text-sm">${Value}</h2>
             }
                </div>
                <div className="flex items-start justify-between">           
 
-        <h2 className="dark:text-su_ternary text-xs p-1 " >{TitleDesc}</h2>
+        <h2 className="dark:text-su_ternary text-xs p-1">{TitleDesc}</h2>
       </div>
 
 
