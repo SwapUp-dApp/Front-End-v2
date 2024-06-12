@@ -56,9 +56,9 @@ const UserProfile = () => {
                 </TabsTrigger>
               </TabsList>
   
-              <TabsContent value="wallet-overview" className="w-full flex justify-center">
+              <TabsContent value="wallet-overview" className="w-full flex">
                 {/* Wallet Overview Tiles */}
-                <div className="flex flex-col lg:flex-row items-center gap-3" >
+                <div className="flex flex-col lg:flex-row items-start gap-3" >
            
                   <WalletOverviewCard cardType="totalwalletvalue" Value="1685.69" TitleDesc="Total Wallet Value" />
                   <WalletOverviewCard cardType="cryptostored" Value="235.12" TitleDesc="Crypto stored in the smart contract" />
