@@ -11,7 +11,7 @@ const UserProfile = () => {
 
     const myWalletAddress = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
 
-    const handleSwitchTab = (value: "wallet-overview" | "assets") => {
+    const handleSwitchTab = (value: "wallet-overview" | "assets"|"points") => {
       setActiveTab(value);
     };
   
@@ -40,7 +40,7 @@ const UserProfile = () => {
   
   
           <div className="overflow-x-scroll lg:overflow-hidden" >
-            <Tabs defaultValue="swap-history" className="w-full">
+            <Tabs defaultValue="assets" className="w-full">
               <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
                 <TabsTrigger value="wallet-overview" onClick={() => handleSwitchTab("wallet-overview")} >
                   Wallet Overview 

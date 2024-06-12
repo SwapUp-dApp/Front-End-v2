@@ -93,7 +93,7 @@ const ProfileAssetsLayout = ({  layoutType , walletAddress }: IProp) => {
 
   return (
     <Card className="border-none flex flex-col gap-4 dark:bg-su_primary_bg p-2 lg:p-6 space-x-9" >
-      <CardHeader className="flex flex-col p-0 gap-3" >
+      <CardHeader className="flex flex-col p-0 gap-3  " >
         
        
 
@@ -120,7 +120,7 @@ const ProfileAssetsLayout = ({  layoutType , walletAddress }: IProp) => {
 
      
       </CardContent>
-    </Card>
+          </Card>
 
 
 
