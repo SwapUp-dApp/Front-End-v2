@@ -12,7 +12,7 @@ import EmptyDataset from "../shared/EmptyDataset";
 import PrivateRoomFilterDrawer from "./PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
-import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-store.types";
+import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/store/swap-market/swap-market-store.types";
 import { useSwapMarketStore } from "@/store/swap-market";
 import LoadingDataset from "../shared/LoadingDataset";
 import { useNFTsByWallet } from "@/service/queries/swap-market.query";
@@ -24,9 +24,10 @@ import ToastLookCard from "../shared/ToastLookCard";
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
   counterPartyWallet?: string;
+  roomKey: SUT_RoomKeyType;
 }
 
-const RoomLayoutCard = ({ layoutType, counterPartyWallet }: IProp) => {
+const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey }: IProp) => {
 
   const {
     activeGridView,
@@ -42,9 +43,10 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet }: IProp) => {
     removeAllFilters,
     collections,
     setNftsDataset
-  } = useSwapMarketStore((state) => layoutType === "sender" ?
-    state.privateMarket.privateRoom.sender :
-    state.privateMarket.privateRoom.receiver
+  } = useSwapMarketStore((state) =>
+    roomKey === 'privateRoom' ?
+      (layoutType === "sender" ? state.privateMarket.privateRoom.sender : state.privateMarket.privateRoom.receiver)
+      : state.openMarket.openRoom.sender
   );
 
   const handleSearchNfts = (searchValue: string) => {

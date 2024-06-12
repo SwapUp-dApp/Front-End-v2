@@ -22,7 +22,7 @@ import { useCreateSwapOffer } from "@/service/queries/swap-market.query";
 
 
 const PrivateRoom = () => {
-  const [wallet, resetRoom] = useSwapMarketStore(state => [state.wallet, state.resetRoom]);
+  const wallet = useSwapMarketStore(state => state.wallet);
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [createSwapLoading, setCreateSwapLoading] = useState(false);
@@ -55,6 +55,8 @@ const PrivateRoom = () => {
         throw new Error("User approval not granted.");
       }
       const updatedSwap = await useSwapMarketStore.getState().privateMarket.privateRoom.swap;
+
+      // console.info("Updated swap: =======> \n", updatedSwap);
 
       const offerResult = await createSwapOffer(updatedSwap!);
 
@@ -104,7 +106,22 @@ const PrivateRoom = () => {
   };
 
   const handleResetData = () => {
-    resetRoom('privateMarket', 'privateRoom');
+    state.resetPrivateRoom();
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="info"
+          title="Private party room reset!"
+          description={"Room data deleted for both parties."}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 3000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
   };
 
   useEffect(() => {
@@ -127,6 +144,7 @@ const PrivateRoom = () => {
   return (
     <div className="flex flex-col gap-4" >
       <RoomHeader
+        title="Private Room"
         tardeId={state.uniqueTradeId}
         resetData={handleResetData}
         existDescription="By leaving the room, you will close it for both parties."
@@ -134,8 +152,9 @@ const PrivateRoom = () => {
       />
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <RoomLayoutCard layoutType={"sender"} />
-        {counterPartyWallet && <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} />}
+        <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" />
+        {counterPartyWallet &&
+          <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} roomKey="privateRoom" />}
       </div>
 
 

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { IPrivateRoom, IOpenRoom, ISwapMarketStore, SUT_GridViewType, SUT_MarketKeyType, SUT_RoomKeyType } from './swap-market-store.types';
+import { IPrivateRoom, IOpenRoom, ISwapMarketStore, SUT_GridViewType, } from './swap-market-store.types';
 import { SUI_NFTItem, SUI_RarityRankItem } from '@/types/swapup.types';
 import { testWalletAddress } from '@/constants';
 import { Environment } from '@/config';
@@ -18,7 +18,7 @@ import {
   createPrivateMarketSwapHelper,
   connectToWalletHelper,
   setSwapEncodedMsgAndSignPrivateHelper,
-  resetRoomDataHelper,
+  resetPrivateRoomDataHelper,
 } from './swap-market-helpers';
 import { chainsDataset } from '@/constants/data';
 
@@ -132,6 +132,7 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
   setValuesOnCreatingRoom: () => { },
   createPrivateMarketSwap: () => { },
   setSwapEncodedMsgAndSign: () => { },
+  resetPrivateRoom: () => { }
 };
 
 const initialState: ISwapMarketStore = {
@@ -147,7 +148,6 @@ const initialState: ISwapMarketStore = {
   },
   setProvider: () => { },
   connectWallet: () => { },
-  resetRoom: () => { }
 };
 
 export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
@@ -163,10 +163,10 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'openMarket', 'openRoom', 'sender', collectionTitle, selectedRarityRank)),
         removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'openMarket', 'openRoom', 'sender')),
         setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'openMarket', 'openRoom', 'sender', selectedAmount, selectedCoin)),
-        setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'openMarket', 'privateRoom', 'sender', dataset)),
+        setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'openMarket', 'openRoom', 'sender', dataset)),
 
       },
-      setValuesOnCreatingOpenMarket: (tradeId: string) => set((state) => setValuesOnCreatingOpenSwapRoomHelper(state, 'openMarket', 'openRoom', tradeId)),
+      setValuesOnCreatingOpenMarket: (tradeId: string) => set((state) => setValuesOnCreatingOpenSwapRoomHelper(state, tradeId)),
       createPrivateMarketSwap: async () => {
         const state = get();
         const newState = await createOpenSwapHelper(state);
@@ -215,6 +215,7 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         const newState = await setSwapEncodedMsgAndSignPrivateHelper(state, swapEncodedMsg, sign);
         set(newState);
       },
+      resetPrivateRoom: () => set((state) => resetPrivateRoomDataHelper(state))
     }
   },
 
@@ -222,8 +223,6 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
     const state = get();
     const newState = await connectToWalletHelper(state);
     set(newState);
-  },
-
-  resetRoom: (marketKey: SUT_MarketKeyType, roomKey: SUT_RoomKeyType) => set((state) => resetRoomDataHelper(state, marketKey, roomKey)),
+  }
 
 }));

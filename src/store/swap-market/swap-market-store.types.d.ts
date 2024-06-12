@@ -22,7 +22,6 @@ export interface IOpenMarketAddedAmount {
 export interface IOpenRoom {
   uniqueTradeId: string;
   sender: IOpenMarketLayoutSide;
-  setValuesOnCreatingOpenMarket: (tradeId: string) => void;
   swap?: SUI_OpenSwap;
   swapEncodedMsg: string;
   sign: string;
@@ -33,7 +32,6 @@ export interface IOpenRoom {
   createOpenSwap: () => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
 }
-
 
 export interface IOpenMarketLayoutSide {
   activeGridView: SUT_GridViewType;
@@ -60,7 +58,6 @@ export interface IOpenMarketLayoutSide {
   setNftsDataset: (selectedNfts: SUI_NFTItem[]) => void;
   removeAllFilters: () => void;
 }
-
 
 //====================================
 
@@ -116,6 +113,7 @@ export interface IPrivateRoom {
   setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => void;
   createPrivateMarketSwap: () => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
+  resetPrivateRoom: () => void;
 }
 
 export interface IWallet {
@@ -125,11 +123,11 @@ export interface IWallet {
   signer?: ethers.JsonRpcSigner;
 }
 
-
 export interface ISwapMarketStore {
   openMarket: {
     // transaction history
     openRoom: IOpenRoom;
+
   },
   privateMarket: {
     privateRoom: IPrivateRoom;
@@ -138,5 +136,4 @@ export interface ISwapMarketStore {
   wallet: IWallet;
   connectWallet: () => void;
   setProvider: (provider: any) => void;
-  resetRoom: (marketKey: SUT_MarketKeyType, roomKey: SUT_RoomKeyType) => void;
 }

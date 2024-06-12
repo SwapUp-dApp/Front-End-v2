@@ -198,7 +198,6 @@ const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAll
                     <Button variant={"default"} type="submit" >Apply filters</Button>
 
                   </div>
-
                 </form>
               </Form>
             </div>
