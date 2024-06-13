@@ -24,7 +24,7 @@ const availableRarityRanking: SUI_RarityRankItem[] = [
 
 const collections: string[] = ["one", "two", "three"];
 
-const preferredAssetsData: string[] = ["any", "nft", "currency"];
+const preferredAssetsData: string[] = ["any", "NFT", "currency"];
 
 const FormSchema = z.object({
   preferredAsset: z.string().min(1, { message: "Please select a preferred asset." }),
