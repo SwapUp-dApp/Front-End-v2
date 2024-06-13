@@ -11,7 +11,7 @@ import StaySafeDialog from "@/components/custom/swap_market/StaySafeDialog";
 import AvoidingFeeDialog from "@/components/custom/swap_market/AvoidingFeeDialog";
 
 import { useSwapMarketStore } from "@/store/swap-market";
-import OpenMarketRoomFooter from "@/components/custom/swap_market/OpenMarketRoomFooter";
+import OpenMarketRoomFooter from "@/components/custom/swap_market/open-market/OpenMarketRoomFooter";
 import OpenMarketSwapDialogSideCard from "@/components/custom/swap_market/OpenMarketSwapDialogSideCard";
 
 import RoomHeader from "@/components/custom/swap_market/RoomHeader";
@@ -47,7 +47,7 @@ const OpenMarket = () => {
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
         <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" />
 
-        {/* Right Side */}
+        {/* Swap parameters */}
         <SwapParametersCard />
       </div>
 
@@ -181,7 +181,7 @@ const OpenMarket = () => {
         </div>
 
         {/* Sender Side */}
-        <OpenMarketRoomFooter layoutType="sender" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} />
+        <OpenMarketRoomFooter setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} />
       </footer>
     </div >
   );

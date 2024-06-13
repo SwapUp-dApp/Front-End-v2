@@ -422,7 +422,9 @@ export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<IS
       // console.log("signer---->", signer);
 
       const address = await signer.getAddress();
-      const ensAddress = await provider.lookupAddress(address) || '';
+      let ensAddress = null;
+      // ensAddress = await provider.lookupAddress(address);
+
       const network = await provider.getNetwork();
 
       let image = '';
@@ -456,7 +458,7 @@ export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<IS
               profile: {
                 ...state.privateMarket.privateRoom.sender.profile,
                 image,
-                ensAddress,
+                ensAddress: ensAddress ? ensAddress : state.privateMarket.privateRoom.sender.profile.ensAddress,
                 walletAddress: address,
               },
               network: {
@@ -476,7 +478,7 @@ export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<IS
               profile: {
                 ...state.openMarket.openRoom.sender.profile,
                 image,
-                ensAddress,
+                ensAddress: ensAddress ? ensAddress : state.openMarket.openRoom.sender.profile.ensAddress,
                 walletAddress: address,
               },
               network: {

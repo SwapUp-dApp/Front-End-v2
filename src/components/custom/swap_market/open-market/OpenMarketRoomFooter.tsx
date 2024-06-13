@@ -1,7 +1,7 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage, } from "@/components/ui/form";
 import { SUI_ChainItem, SUI_NFTItem } from "@/types/swapup.types";
-import AddCurrencyModalDialog from "./AddCurrencyModalDialog";
+import AddCurrencyModalDialog from "../AddCurrencyModalDialog";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,10 +10,8 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUT_OpenMarketLayoutType } from "@/store/swap-market/swap-market-store.types";
 
 interface IProp {
-  layoutType: SUT_OpenMarketLayoutType;
   setEnableApproveButtonCriteria: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -27,17 +25,14 @@ export const amountConvertFormSchema = z.object({
   }),
 });
 
-const OpenMarketRoomFooter = ({ layoutType, setEnableApproveButtonCriteria }: IProp) => {
+const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
 
   const {
     setSelectedNftsForSwap,
     nftsSelectedForSwap,
     availableChains,
     setAddedAmount
-  } = useSwapMarketStore((state) => layoutType === "sender" ?
-    state.privateMarket.privateRoom.sender :
-    state.privateMarket.privateRoom.sender
-  );
+  } = useSwapMarketStore((state) => state.openMarket.openRoom.sender);
 
   const removeSelectedNftById = (paramId: string) => {
     const filteredNfts = nftsSelectedForSwap.filter(nft => nft.tokenId !== paramId);
