@@ -6,6 +6,7 @@ import PrivateRoom from "@/pages/PrivateRoom";
 import SwapMarketPage from "@/pages/SwapMarketPage";
 import MySwapsPage from "@/pages/MySwapsPage";
 import OpenMarket from "@/pages/OpenMarket";
+import UserProfile from "@/pages/UserProfile";
 
 
 interface IRoutesType {
@@ -56,6 +57,12 @@ export const clientSideRoutes: IRoutesType[] = [
         title: "Create open market swap",
         path: "swap-market/open-market",
         element: <OpenMarket />,
+      },
+      {
+        id: 'user-profile',
+        title: "Profile",
+        path: "profile",
+        element: <UserProfile />,
       },
       {
         id: 'not-found-page',

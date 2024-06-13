@@ -75,7 +75,7 @@ const collections: ICollectionItem[] = [
 
 const currenciesDataset = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
 
-const preferredAssetsData: string[] = ["any", "nft", "currency"];
+const preferredAssetsData: string[] = ["any", "NFT", "currency"];
 
 const FormSchema = z.object({
   expirationDate: z.date({ required_error: "Expiration date is required!" }),
