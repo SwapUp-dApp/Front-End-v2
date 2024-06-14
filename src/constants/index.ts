@@ -1,4 +1,4 @@
-import { SUI_NavItem } from "@/types/swapup.types";
+import { SUI_NavItem, SUI_RarityRankItem } from "@/types/swapup.types";
 
 export const navItemsData: SUI_NavItem[] = [
   {
@@ -16,6 +16,15 @@ export const navItemsData: SUI_NavItem[] = [
     title: "Profile",
     path: "/swap-up/profile"
   }
+];
+
+export const availableRarityRanking: SUI_RarityRankItem[] = [
+  { from: 1, to: 100 },
+  { from: 101, to: 500 },
+  { from: 501, to: 1000 },
+  { from: 1001, to: 2500 },
+  { from: 2501, to: 5000 },
+  { from: 5001, to: 10000 },
 ];
 
 export const testWalletAddress: string = "0xe6a28D675f38856ad383557C76dfdA2238961A49";

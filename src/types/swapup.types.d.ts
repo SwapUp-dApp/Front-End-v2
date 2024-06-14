@@ -25,6 +25,12 @@ export interface SUI_RarityRankItem {
   to: number;
 }
 
+export interface SUI_CurrencyItem {
+  uuid: string;
+  name: string;
+  iconUrl: string;
+}
+
 
 export interface SUI_ChainItem {
   uuid: string;

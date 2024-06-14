@@ -12,27 +12,67 @@ import AvoidingFeeDialog from "@/components/custom/swap_market/AvoidingFeeDialog
 
 import { useSwapMarketStore } from "@/store/swap-market";
 import OpenMarketRoomFooter from "@/components/custom/swap_market/open-market/OpenMarketRoomFooter";
-import OpenMarketSwapDialogSideCard from "@/components/custom/swap_market/OpenMarketSwapDialogSideCard";
-
 import RoomHeader from "@/components/custom/swap_market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
 import SwapParametersCard from "@/components/custom/swap_market/open-market/SwapParametersCard";
+import { useNavigate, useParams } from "react-router-dom";
+import ToastLookCard from "@/components/custom/shared/ToastLookCard";
+import { toast } from "sonner";
+import { getLastCharacters, isValidTradeId } from "@/lib/utils";
+import SwapDialogSideCard from "@/components/custom/swap_market/SwapDialogSideCard";
+import SwapParameterTile from "@/components/custom/tiles/SwapParameterTile";
+import moment from "moment";
+import { availableCollections } from "@/constants/data";
+import ChainTile from "@/components/custom/tiles/ChainTile";
 
 
 const OpenMarket = () => {
+  const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
+  const [isValidParametersForm, setIsValidParametersForm] = useState(false);
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
-  const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
-
+  const { expiration_date, preferred_asset } = state.swap.swap_preferences;
+  const navigate = useNavigate();
+  const { openTradeId } = useParams();
   const handleResetData = () => { console.log("Reset open room yet to be implemented..."); };
 
+
+
   useEffect(() => {
-    if ((state.sender.nftsSelectedForSwap.length) && (state.sender.addedAmount)) {
+    if ((state.sender.nftsSelectedForSwap.length) && (state.sender.addedAmount) && isValidParametersForm) {
       setEnableApproveButtonCriteria(true);
     } else {
       setEnableApproveButtonCriteria(false);
     }
-  }, [state.sender.nftsSelectedForSwap, state.sender.addedAmount]);
+  }, [state.sender.nftsSelectedForSwap, state.sender.addedAmount, isValidParametersForm]);
+
+  useEffect(() => {
+    if (openTradeId && isValidTradeId(openTradeId)) {
+      state.setValuesOnCreatingOpenMarket(openTradeId);
+    }
+  }, [openTradeId]);
+
+  if (openTradeId && !isValidTradeId(openTradeId)) {
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="warning"
+          title="Trade id is required!"
+          description={"A valid trade id is required fo this page!"}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 5000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
+
+    setTimeout(() => {
+      navigate(-1);
+    }, 300);
+  }
 
   return (
     <div className="flex flex-col gap-4" >
@@ -46,9 +86,7 @@ const OpenMarket = () => {
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
         <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" />
-
-        {/* Swap parameters */}
-        <SwapParametersCard />
+        <SwapParametersCard setIsValidParametersForm={setIsValidParametersForm} />
       </div>
 
 
@@ -57,7 +95,7 @@ const OpenMarket = () => {
         <div className="absolute -top-14 flex justify-center w-full" >
           {/* Swap Details Dialog */}
           <Dialog>
-            <div className="relative" >
+            <div className="relative" onClick={() => state.createOpenSwap()} >
               <Button
                 variant={"default"}
                 type="submit"
@@ -65,11 +103,13 @@ const OpenMarket = () => {
               >
                 Approve
               </Button>
-              <DialogTrigger className="absolute w-full h-full top-0 left-0 bg-transparent" disabled={!enableApproveButtonCriteria}>
+              <DialogTrigger
+                className="absolute w-full h-full top-0 left-0 bg-transparent"
+                disabled={!enableApproveButtonCriteria}>
               </DialogTrigger>
             </div>
 
-            <DialogContent className="max-h-[calc(100vh_-_100px)] p-0" >
+            <DialogContent className="max-h-[calc(100vh_-_100px)] p-0 lg:w-[60vw]" >
               <ScrollArea className="p-4 lg:p-5" >
                 <ScrollBar orientation="vertical" />
 
@@ -81,7 +121,7 @@ const OpenMarket = () => {
                         <h2 className="font-semibold text-xl" >Swap Details</h2>
 
                         <CopyTile textToCopy={state.uniqueTradeId} >
-                          <span className="hidden lg:hidden" >Unique trade ID:</span> <span className="dark:text-su_primary font-semibold">#{state.uniqueTradeId}</span>
+                          <span className="hidden lg:hidden" >Unique trade ID:</span> <span className="dark:text-su_primary font-semibold">#{getLastCharacters(state.uniqueTradeId, 7)}</span>
                         </CopyTile>
 
                         <div className="flex items-center gap-2 text-xs text-su_secondary" >
@@ -103,8 +143,82 @@ const OpenMarket = () => {
                   </div>
 
                   {/* side cards*/}
+                  <SwapDialogSideCard data={state.sender} showEscroTile />
+
+                  {/* swap parameters section */}
                   <div className="custom-border-card" >
-                    <OpenMarketSwapDialogSideCard data={state.sender} />
+                    <h2 className="text-xs lg:sm text-primary font-semibold" >Swap Parameters:</h2>
+                    <div className="flex items-center gap-2 flex-wrap" >
+
+                      <SwapParameterTile
+                        title="Expiration date:"
+                        value={`${moment.utc(expiration_date).local().format('MMM DD, YYYY hh:mm a')}`}
+                      />
+
+                      {preferred_asset.type === 'nft' &&
+
+                        <SwapParameterTile
+                          title="Preferred asset:"
+                          value={preferred_asset.type}
+                          valueClasses="uppercase"
+                        />
+                      }
+
+                      {preferred_asset.type === 'nft' &&
+                        <SwapParameterTile
+                          title="Preferred collection:"
+                          value={availableCollections.find(collection => collection.value === preferred_asset.parameters.collection)?.label || ''}
+                        />
+                      }
+
+                      {(preferred_asset.type === 'nft' && preferred_asset.parameters.rank) &&
+                        <SwapParameterTile
+                          title="Preferred rarity rank:"
+                          value={
+                            <span className="flex items-center gap-2" >
+                              <svg className="w-3 pb-0.5" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7.7175 2.85714L6 0L4.2825 2.85714H7.7175ZM1.7175 7.14286L0 10H12L10.2825 7.14286H1.7175ZM9.855 6.42857L8.145 3.57143H3.855L2.145 6.42857H9.855Z" fill="white" />
+                              </svg>
+
+                              <>{preferred_asset.parameters.rank.from} - {preferred_asset.parameters.rank.to}</>
+                            </span>
+                          }
+                        />
+                      }
+
+                      {preferred_asset.type === 'currency' &&
+                        <SwapParameterTile
+                          title="Preferred collection:"
+                          value={'$ ' + preferred_asset.parameters.added_amount}
+                        />
+                      }
+
+                      {(
+                        preferred_asset.type === 'currency' &&
+                        (preferred_asset.parameters.preferred_currency && preferred_asset.parameters.preferred_currency.length > 0)
+                      ) &&
+
+                        <SwapParameterTile
+                          title="Preferred currencies:"
+                          value={
+                            <div className="flex items-center gap-2 flex-wrap" >
+                              {
+                                preferred_asset.parameters.preferred_currency.map(currency => (
+                                  <ChainTile
+                                    key={currency.uuid}
+                                    imageSrc={currency.icon_url}
+                                    title={currency.name}
+                                  />
+                                ))
+                              }
+                            </div>
+                          }
+                        />
+                      }
+
+                    </div>
+
+
                   </div>
 
                   {/* Fee section*/}
@@ -172,7 +286,12 @@ const OpenMarket = () => {
                       <CustomOutlineButton className="px-5 py-2.5">Cancel</CustomOutlineButton>
                       <DialogClose className="absolute w-full h-full top-0 left-0" ></DialogClose>
                     </div>
-                    <Button variant={"default"}>Proceed</Button>
+                    <Button
+                      variant={"default"}
+                      onClick={() => console.log("==> ", state.swap)}
+                    >
+                      Proceed
+                    </Button>
                   </div>
                 </div>
               </ScrollArea>

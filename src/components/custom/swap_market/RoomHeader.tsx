@@ -1,6 +1,7 @@
 import CopyTile from "../tiles/CopyTile";
 import { defaultFallbackRoute } from "@/routes";
 import ExitPageDialog from "../shared/ExitPageDialog";
+import { getLastCharacters } from "@/lib/utils";
 
 interface IProp {
   backClickNavigateTo?: string;
@@ -33,7 +34,7 @@ const RoomHeader = ({ backClickNavigateTo, tardeId, resetData, existDescription,
       <h2 className="font-semibold text-1.5xl">{title}</h2>
 
       <CopyTile textToCopy={tardeId} className="hidden lg:flex" >
-        Unique trade ID: <span className="dark:text-su_primary font-semibold">#{tardeId}</span>
+        Unique trade ID: <span className="dark:text-su_primary font-semibold">#{getLastCharacters(tardeId, 7)}</span>
       </CopyTile>
 
       <button className="lg:hidden" >Details</button>

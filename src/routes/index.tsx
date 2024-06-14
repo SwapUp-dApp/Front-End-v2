@@ -55,7 +55,7 @@ export const clientSideRoutes: IRoutesType[] = [
       {
         id: 'open-market',
         title: "Create open market swap",
-        path: "swap-market/open-market",
+        path: "swap-market/open-market/open-room/:openTradeId",
         element: <OpenMarket />,
       },
       {

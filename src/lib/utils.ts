@@ -4,6 +4,8 @@ import axios from "axios";
 import { Environment } from "@/config";
 import { defaultNftImageFallbackURL } from "@/constants";
 import { chainsDataset } from "@/constants/data";
+import { validate as uuidValidate } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -25,6 +27,10 @@ export const getIsActiveNav = (path: string, pathname: string) => {
   return pathname.toLowerCase().startsWith(path.toLowerCase());
 };
 
+export const isValidTradeId = (tradeId: string): boolean => {
+  return uuidValidate(tradeId);
+};
+
 export const getNameInitials = (name = '') => {
   const nameWords = name.split(' ');
   return `${nameWords[0].charAt(0)}${nameWords[nameWords.length - 1].charAt(0)}`;
@@ -41,17 +47,13 @@ export const getShortenWalletAddress = (address: string) => {
   return `${firstPart}...${lastPart}`;
 };
 
+export const getLastCharacters = (value: string, lastCharacters: number) => {
+  return value.slice(value.length - lastCharacters);
+};
 
-export const generateRandomTradeId = (length: number = 7): string => {
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  const charactersLength = characters.length;
 
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-
-  return result;
+export const generateRandomTradeId = (): string => {
+  return uuidv4();
 };
 
 export const getEtherScanContractNftUrl = (token: string, nftId: string) => {

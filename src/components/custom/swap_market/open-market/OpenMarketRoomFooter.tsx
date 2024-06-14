@@ -103,14 +103,16 @@ const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
   };
 
   useEffect(() => {
-    const chainId = form.getValues('chain');
-    const amount = form.getValues('amount');
+    if (form.watch('chain') && form.watch('amount')) {
+      const chainId = form.getValues('chain');
+      const amount = form.getValues('amount');
 
-    if (amount && chainId) {
-      setAddedAmount(amount, chainId);
+      if (amount && chainId) {
+        setAddedAmount(amount, chainId);
+      }
     }
 
-  }, [form.getValues('chain'), form.getValues('amount')]);
+  }, [form.watch('chain'), form.watch('amount')]);
 
   return (
     <aside className="space-y-2.5 lg:space-y-2 w-full p-4 border border-su_disabled"  >

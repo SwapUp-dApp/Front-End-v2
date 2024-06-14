@@ -1,136 +1,41 @@
+import moment from "moment";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, } from "react-hook-form";
 import { z } from "zod";
-import { SUI_RarityRankItem } from "@/types/swapup.types";
 import { Button } from "@/components/ui/button";
 import ToastLookCard from "../../shared/ToastLookCard";
 import { Input } from "@/components/ui/input";
 import { Combobox } from "@/components/ui/combobox";
 import CurrencySelectCombobox from "../../shared/CurrencySelectCombobox";
-import { chainsDataset } from "@/constants/data";
+import { availableCollections, chainsDataset } from "@/constants/data";
+import { SUFS_OpenSwapParameters } from "@/schema";
+import { availableRarityRanking } from "@/constants";
+import { SUI_SwapCurrencyItem, SUI_SwapPreferences, SUT_PreferredAssetType } from "@/types/swap-market.types";
+import { SUI_CurrencyItem } from "@/types/swapup.types";
+import { useSwapMarketStore } from "@/store/swap-market";
+import { useEffect } from "react";
 
-const availableRarityRanking: SUI_RarityRankItem[] = [
-  { from: 1, to: 100 },
-  { from: 101, to: 500 },
-  { from: 501, to: 1000 },
-  { from: 1001, to: 2500 },
-  { from: 2501, to: 5000 },
-  { from: 5001, to: 10000 },
-];
 
-interface ICollectionItem {
-  value: string;
-  label: string;
+const currenciesDataset: SUI_CurrencyItem[] = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
+const preferredAssetsData: SUT_PreferredAssetType[] = ["any", "nft", "currency"];
+
+interface IProp {
+  setIsValidParametersForm: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const collections: ICollectionItem[] = [
-  {
-    label: 'CryptoPunks',
-    value: 'cryptopunks'
-  },
-  {
-    label: 'Bored Ape Yacht Club',
-    value: 'boredapeyachtclub'
-  },
-  {
-    label: 'Art Blocks',
-    value: 'artblocks'
-  },
-  {
-    label: 'Cool Cats',
-    value: 'coolcats'
-  },
-  {
-    label: 'World of Women',
-    value: 'worldofwomen'
-  },
-  {
-    label: 'Lazy Lions',
-    value: 'lazylions'
-  },
-  {
-    label: 'Pudgy Penguins',
-    value: 'pudgypenguins'
-  },
-  {
-    label: 'Gutter Cat Gang',
-    value: 'guttercatgang'
-  },
-  {
-    label: 'MekaVerse',
-    value: 'mekaverse'
-  },
-  {
-    label: 'VeeFriends',
-    value: 'veefriends'
-  },
-];
 
-const currenciesDataset = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
+const SwapParametersCard = ({ setIsValidParametersForm }: IProp) => {
 
-const preferredAssetsData: string[] = ["any", "NFT", "currency"];
+  const setSwapPreferences = useSwapMarketStore(state => state.openMarket.openRoom.setSwapPreferences);
 
-const FormSchema = z.object({
-  expirationDate: z.date({ required_error: "Expiration date is required!" }),
-  preferredAsset: z.enum(["any", "nft", "currency"], { required_error: "Please select a preferred asset." }),
-  collection: z.string().optional(),
-  rarityRank: z.string().optional(),
-  amountWantToReceive: z.string().optional(),
-  currencies: z.array(z.object({
-    uuid: z.string(),
-    name: z.string(),
-    iconUrl: z.string(),
-  })).optional()
-}).superRefine((data, ctx) => {
-
-  if (data.preferredAsset === "nft") {
-    if (!data.collection) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["collection"],
-        message: "Please select a preferred collection."
-      });
-    }
-
-    if (!data.rarityRank) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["rarityRank"],
-        message: "Please select a preferred rarity rank."
-      });
-    }
-
-  } else if (data.preferredAsset === "currency") {
-
-    if (!data.amountWantToReceive) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["amountWantToReceive"],
-        message: "Please enter amount you want to receive."
-      });
-    }
-
-    if (!data.currencies) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["currencies"],
-        message: "Please currencies you want to receive."
-      });
-    }
-  }
-});
-
-
-const SwapParametersCard = () => {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof SUFS_OpenSwapParameters>>({
+    resolver: zodResolver(SUFS_OpenSwapParameters),
     defaultValues: {
       collection: '',
       rarityRank: '',
@@ -141,9 +46,71 @@ const SwapParametersCard = () => {
     }
   });
 
-  const onSubmit = (values: z.infer<typeof FormSchema>) => {
-    console.log("form data:", values);
+  const handleFormValidationAndSettingState = async () => {
+    const isValid = await form.trigger();
+    setIsValidParametersForm(isValid);
+    const { expirationDate, preferredAsset, amountWantToReceive, collection, currencies, rarityRank } = form.getValues();
+
+
+    let newPreferences: SUI_SwapPreferences = {
+      expiration_date: moment.utc(expirationDate).format(),
+      preferred_asset: {
+        type: 'any',
+        parameters: {}
+      }
+    };
+
+    if ((preferredAsset === "nft") && rarityRank && collection) {
+      form.formState.validatingFields;
+      newPreferences = {
+        ...newPreferences,
+        preferred_asset: {
+          type: preferredAsset,
+          parameters: {
+            collection,
+            rank: JSON.parse(rarityRank)
+          }
+        }
+      };
+    }
+
+    if (((preferredAsset === "currency") && (currencies && currencies.length > 0) && amountWantToReceive)) {
+
+      const mappedCurrencies: SUI_SwapCurrencyItem[] = currencies.map(currency => ({
+        uuid: currency.uuid,
+        name: currency.name,
+        icon_url: currency.iconUrl
+      }));
+
+      newPreferences = {
+        ...newPreferences,
+        preferred_asset: {
+          type: preferredAsset,
+          parameters: {
+            added_amount: amountWantToReceive,
+            preferred_currency: mappedCurrencies
+          }
+        }
+      };
+    }
+
+    setSwapPreferences(newPreferences);
   };
+
+  useEffect(() => {
+    const validateAndLog = async () => {
+      await handleFormValidationAndSettingState();
+    };
+
+    validateAndLog();
+  }, [
+    form.watch("preferredAsset"),
+    form.watch('expirationDate'),
+    form.watch('collection'),
+    form.watch('amountWantToReceive'),
+    form.watch('currencies'),
+    form.watch('rarityRank'),
+  ]);
 
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm border-none flex flex-col gap-4 dark:bg-su_secondary_bg p-2 lg:p-6">
@@ -159,7 +126,7 @@ const SwapParametersCard = () => {
       />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+        <form className="space-y-3">
           {/* Expiration date */}
           <FormField
             control={form.control}
@@ -177,11 +144,12 @@ const SwapParametersCard = () => {
                         "w-full flex justify-between items-center text-left font-normal bg-su_enable_bg rounded-sm text-su_secondary text-sm"
                       )}
                     >
-                      {field.value ? (
-                        format(field.value, "LLL dd, y")
-                      ) : (
-                        <span>Set expiration date</span>
-                      )}
+                      {field.value ?
+                        <span className="text-su_primary" >{moment(field.value).format('MMM DD, YYYY hh:mm a')}</span>
+                        :
+                        (
+                          <span>Set expiration date</span>
+                        )}
                       <CalendarIcon className="w-4" />
                     </Button>
                   </PopoverTrigger>
@@ -232,7 +200,6 @@ const SwapParametersCard = () => {
           {
             form.watch("preferredAsset") === "nft" &&
             <div className="space-y-3" >
-
               <FormField
                 control={form.control}
                 name="collection"
@@ -240,7 +207,7 @@ const SwapParametersCard = () => {
                   <FormItem>
                     <FormLabel className="text-su_secondary text-sm font-normal">Preferred collection:</FormLabel>
                     <Combobox
-                      items={collections}
+                      items={availableCollections}
                       onChange={field.onChange}
                       value={field.value}
                       title="collection"
@@ -334,8 +301,6 @@ const SwapParametersCard = () => {
 
             </div>
           }
-
-          <Button type="submit">Submit</Button>
         </form>
       </Form>
     </div>

@@ -6028,3 +6028,51 @@ export const chainsDataset: SUI_ChainItem[] = [
     ]
   }
 ];
+
+interface ICollectionItem {
+  value: string;
+  label: string;
+}
+
+export const availableCollections: ICollectionItem[] = [
+  {
+    label: 'CryptoPunks',
+    value: 'cryptopunks'
+  },
+  {
+    label: 'Bored Ape Yacht Club',
+    value: 'boredapeyachtclub'
+  },
+  {
+    label: 'Art Blocks',
+    value: 'artblocks'
+  },
+  {
+    label: 'Cool Cats',
+    value: 'coolcats'
+  },
+  {
+    label: 'World of Women',
+    value: 'worldofwomen'
+  },
+  {
+    label: 'Lazy Lions',
+    value: 'lazylions'
+  },
+  {
+    label: 'Pudgy Penguins',
+    value: 'pudgypenguins'
+  },
+  {
+    label: 'Gutter Cat Gang',
+    value: 'guttercatgang'
+  },
+  {
+    label: 'MekaVerse',
+    value: 'mekaverse'
+  },
+  {
+    label: 'VeeFriends',
+    value: 'veefriends'
+  },
+];

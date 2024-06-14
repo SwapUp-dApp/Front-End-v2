@@ -13,7 +13,7 @@ import AvoidingFeeDialog from "@/components/custom/swap_market/AvoidingFeeDialog
 import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate, useParams } from "react-router-dom";
-import { isValidWalletAddress } from "@/lib/utils";
+import { getLastCharacters, isValidWalletAddress } from "@/lib/utils";
 import { getUserApproval, getUserSignature } from "@/lib/metamask";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { toast } from "sonner";
@@ -187,7 +187,7 @@ const PrivateRoom = () => {
                         <h2 className="font-semibold text-xl" >Swap Details</h2>
 
                         <CopyTile textToCopy={state.uniqueTradeId} >
-                          <span className="hidden lg:hidden" >Unique trade ID:</span> <span className="dark:text-su_primary font-semibold">#{state.uniqueTradeId}</span>
+                          <span className="hidden lg:hidden" >Unique trade ID:</span> <span className="dark:text-su_primary font-semibold">#{getLastCharacters(state.uniqueTradeId, 7)}</span>
                         </CopyTile>
 
                         <div className="flex items-center gap-2 text-xs text-su_secondary" >

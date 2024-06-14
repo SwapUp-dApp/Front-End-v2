@@ -1,7 +1,9 @@
-import { SUI_Swap, SUI_OpenSwap } from "@/types/swap-market.types";
+import { SUI_Swap, SUI_OpenSwap, SUI_SwapPreferences } from "@/types/swap-market.types";
 import { IOpenRoom, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-store.types";
 import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 import { ethers } from "ethers";
+import { SUE_SWAP_MODE } from "@/constants/enums";
+import { Environment } from "@/config";
 
 // Shared Room Helper start
 export const toggleGridViewHelper = (
@@ -249,6 +251,9 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore,): P
   const room = state.privateMarket.privateRoom as IPrivateRoom;
 
   const swap: SUI_Swap = {
+    trade_id: state.privateMarket.privateRoom.uniqueTradeId,
+    swap_mode: SUE_SWAP_MODE.PRIVATE,
+    trading_chain: String(Environment.CHAIN_ID),
     init_address: room.sender.profile.walletAddress,
     accept_address: room.receiver.profile.walletAddress,
     accept_sign: '',
@@ -264,7 +269,6 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore,): P
       },
     }
   };
-
 
   // console.info("Private Swaps ---------> \n", swap);
 
@@ -378,22 +382,46 @@ export const setValuesOnCreatingOpenSwapRoomHelper = (
   };
 };
 
+export const setSwapPreferencesHelper = (
+  state: ISwapMarketStore,
+  preferences: SUI_SwapPreferences
+): ISwapMarketStore => {
+
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      openRoom: {
+        ...state.openMarket.openRoom,
+        swap: {
+          ...state.openMarket.openRoom.swap,
+          swap_preferences: preferences
+        }
+      }
+    }
+  };
+};
+
 export const createOpenSwapHelper = async (
   state: ISwapMarketStore,
 ): Promise<ISwapMarketStore> => {
   const room = state.openMarket.openRoom as IOpenRoom;
 
   const swap: SUI_OpenSwap = {
+    ...state.openMarket.openRoom.swap,
+    trade_id: state.openMarket.openRoom.uniqueTradeId,
     init_address: room.sender.profile.walletAddress,
-    accept_address: '',
-    accept_sign: '',
-    init_sign: '',
+    swap_mode: SUE_SWAP_MODE.OPEN,
+    trading_chain: String(Environment.CHAIN_ID),
     metadata: {
       init: {
         tokens: room.sender.nftsSelectedForSwap ?
           getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) : []
       },
-    }
+      accept: {
+        tokens: []
+      }
+    },
   };
 
   return {

@@ -19,8 +19,11 @@ import {
   connectToWalletHelper,
   setSwapEncodedMsgAndSignPrivateHelper,
   resetPrivateRoomDataHelper,
+  setSwapPreferencesHelper,
 } from './swap-market-helpers';
 import { chainsDataset } from '@/constants/data';
+import { SUI_SwapPreferences } from '@/types/swap-market.types';
+import { SUE_SWAP_MODE } from '@/constants/enums';
 
 
 export const openMarketRoomInitialState: IOpenRoom = {
@@ -35,13 +38,13 @@ export const openMarketRoomInitialState: IOpenRoom = {
     toggleGridView: () => { },
     network: {
       id: '1',
-      image: 'src/assets/svgs/ethereum.svg',
+      image: '/src/assets/svgs/ethereum.svg',
       title: 'ethereum',
       shortTitle: "eth"
     },
     profile: {
       ensAddress: 'sender.swapup.eth',
-      image: 'src/assets/images/avatar.png',
+      image: '/src/assets/images/avatar.png',
       isPremium: false,
       title: 'sender',
       walletAddress: testWalletAddress
@@ -59,9 +62,34 @@ export const openMarketRoomInitialState: IOpenRoom = {
     setNftsDataset: () => { },
 
   },
+  swap: {
+    accept_address: '',
+    init_address: '',
+    accept_sign: '',
+    init_sign: '',
+    metadata: {
+      accept: {
+        tokens: []
+      },
+      init: {
+        tokens: []
+      }
+    },
+    swap_mode: SUE_SWAP_MODE.OPEN,
+    trade_id: '',
+    trading_chain: '',
+    swap_preferences: {
+      expiration_date: '',
+      preferred_asset: {
+        type: 'any',
+        parameters: {}
+      }
+    }
+  },
   setValuesOnCreatingOpenMarket: () => { },
   createOpenSwap: () => { },
-  setSwapEncodedMsgAndSign: () => { }
+  setSwapEncodedMsgAndSign: () => { },
+  setSwapPreferences: () => { }
 };
 
 export const privateMarketRoomInitialState: IPrivateRoom = {
@@ -76,13 +104,13 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
     toggleGridView: () => { },
     network: {
       id: '1',
-      image: 'src/assets/svgs/ethereum.svg',
+      image: '/src/assets/svgs/ethereum.svg',
       title: 'ethereum',
       shortTitle: "eth"
     },
     profile: {
       ensAddress: 'sender.swapup.eth',
-      image: 'src/assets/images/avatar.png',
+      image: '/src/assets/images/avatar.png',
       isPremium: false,
       title: 'sender',
       walletAddress: testWalletAddress
@@ -105,7 +133,7 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
     toggleGridView: () => { },
     network: {
       id: '9090',
-      image: 'src/assets/svgs/solana.svg',
+      image: '/src/assets/svgs/solana.svg',
       title: 'solana',
       shortTitle: 'sol'
     },
@@ -167,16 +195,18 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
 
       },
       setValuesOnCreatingOpenMarket: (tradeId: string) => set((state) => setValuesOnCreatingOpenSwapRoomHelper(state, tradeId)),
-      createPrivateMarketSwap: async () => {
+      createOpenSwap: async () => {
         const state = get();
         const newState = await createOpenSwapHelper(state);
         set(newState);
       },
+
       setSwapEncodedMsgAndSign: async (swapEncodedMsg: string, sign: string) => {
         const state = get();
         const newState = await setSwapEncodedMsgAndSignPrivateHelper(state, swapEncodedMsg, sign);
         set(newState);
       },
+      setSwapPreferences: (preferences: SUI_SwapPreferences) => set((state) => setSwapPreferencesHelper(state, preferences))
     }
   },
   privateMarket: {

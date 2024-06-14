@@ -23,7 +23,6 @@ const OpenMarketSwapDialogSideCard = ({ className, data, ...props }: IProp) => {
   );
 
   const getConvertedAmount = (usdAmount: number | string, chainAmount: number | string) => {
-
     return Number(usdAmount) / Number(chainAmount);
   };
 

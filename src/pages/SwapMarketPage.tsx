@@ -139,10 +139,7 @@ const privatePartyTableData: IPrivatePartyTableItem[] = [
 
 const SwapMarketPage = () => {
   const navigate = useNavigate();
-  const setValuesOnCreatingRoom = useSwapMarketStore(state => state.openMarket.openRoom.setValuesOnCreatingOpenMarket);
   const wallet = useSwapMarketStore(state => state.wallet);
-  const uniqueTradeId = generateRandomTradeId();
-  setValuesOnCreatingRoom(uniqueTradeId);
 
   const [activeTab, setActiveTab] = useState<"open-market" | "private-party">("private-party");
   const [filteredPrivatePartyData, setFilteredPrivatePartyData] = useState<IPrivatePartyTableItem[] | []>(privatePartyTableData);
@@ -340,7 +337,6 @@ const SwapMarketPage = () => {
     );
   };
 
-
   return (
     <>
       <section className="flex flex-col gap-4" >
@@ -362,7 +358,7 @@ const SwapMarketPage = () => {
               <div
                 className="relative text-sm flex items-center gap-4 cursor-pointer hover:bg-su_enable_bg py-2 px-4 rounded-md"
                 onClick={() => {
-                  wallet.isConnected ? navigate(`/swap-up/swap-market/open-market`) : handleShowWalletConnectionToast();
+                  wallet.isConnected ? navigate(`/swap-up/swap-market/open-market/open-room/${generateRandomTradeId()}`) : handleShowWalletConnectionToast();
                 }}
               >
                 <svg className="w-5" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">

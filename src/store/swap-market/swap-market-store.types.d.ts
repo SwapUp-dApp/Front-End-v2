@@ -1,4 +1,4 @@
-import { SUI_Swap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences } from "@/types/swap-market.types";
 import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 
 export type SUT_GridViewType = 'detailed' | 'overview';
@@ -22,7 +22,7 @@ export interface IOpenMarketAddedAmount {
 export interface IOpenRoom {
   uniqueTradeId: string;
   sender: IOpenMarketLayoutSide;
-  swap?: SUI_OpenSwap;
+  swap: SUI_OpenSwap;
   swapEncodedMsg: string;
   sign: string;
   nftsLength: number;
@@ -31,6 +31,7 @@ export interface IOpenRoom {
   setValuesOnCreatingOpenMarket: (tradeId: string) => void;
   createOpenSwap: () => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
+  setSwapPreferences: (preferences: SUI_SwapPreferences) => void;
 }
 
 export interface IOpenMarketLayoutSide {
