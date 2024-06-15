@@ -15,7 +15,7 @@ export const connectToWalletHelper = async (state: IProfile): Promise<IProfile> 
   
         const address = await signer.getAddress();
         const ensAddress = await provider.lookupAddress(address) || '';
-        const network = await provider.getNetwork();
+       
   
         let image = '/src/assets/images/avatar.png';
   
@@ -39,26 +39,6 @@ export const connectToWalletHelper = async (state: IProfile): Promise<IProfile> 
             address,
             provider,
             signer
-          },
-          privateMarket: {
-            ...state.privateMarket,
-            privateRoom: {
-              ...state.privateMarket.privateRoom,
-              sender: {
-                ...state.privateMarket.privateRoom.sender,
-                profile: {
-                  ...state.privateMarket.privateRoom.sender.profile,
-                  image,
-                  ensAddress,
-                  walletAddress: address,
-                },
-                network: {
-                  ...state.privateMarket.privateRoom.sender.network,
-                  title: network.name,
-                  id: String(network.chainId)
-                }
-              }
-            }
           }
         };
       } catch (error) {

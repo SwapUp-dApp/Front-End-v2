@@ -1,6 +1,37 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createSwapOffer, getNftsForWallet } from "../api";
+import { createSwapOffer, getNftsForWallet, getPendingSwapsForWallet, getSwapHistoryForWallet } from "../api";
 import { SUI_Swap } from "@/types/swap-market.types";
+
+
+export const getWalletSwapHistory = (walletId: string) => {
+  return useQuery({
+    queryKey: ['getSwapHistoryForWallet', walletId],
+    queryFn: async () => {
+      try {
+        const response = await getSwapHistoryForWallet(walletId);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+};
+
+
+
+export const getWalletPendingSwaps = (walletId: string) => {
+  return useQuery({
+    queryKey: ['getPendingSwapsForWallet', walletId],
+    queryFn: async () => {
+      try {
+        const response = await getPendingSwapsForWallet(walletId);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+};
 
 export const useNFTsByWallet = (walletId: string) => {
   return useQuery({

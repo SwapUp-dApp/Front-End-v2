@@ -398,7 +398,7 @@ const SwapMarketPage = () => {
         </div>
 
         <div className="overflow-x-scroll lg:overflow-hidden" >
-          <Tabs defaultValue="private-party" className="w-full">
+         <Tabs defaultValue="open-market" className="w-full">
             <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
               <TabsTrigger value="open-market" onClick={() => handleSwitchTab("open-market")} >
                 Open market

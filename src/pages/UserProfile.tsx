@@ -5,9 +5,13 @@ import ProfilePointsCard from "@/components/custom/swap_market/ProfilePointsCard
 import WalletOverviewCard from "@/components/custom/swap_market/WalletOverviewCard";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import ProfileAssetsLayout from "@/components/custom/swap_market/ProfileAssetsLayout";
+import { useSwapMarketStore } from "@/store/swap-market";
 
 const UserProfile = () => {
     const [activeTab, setActiveTab] = useState<"wallet-overview" | "assets"| "points">("assets");
+    const wallet = useSwapMarketStore(state => state.wallet);
+
+    const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
 
     const myWalletAddress = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
 
@@ -15,7 +19,7 @@ const UserProfile = () => {
       setActiveTab(value);
     };
   
-
+    const testWalletAddress: string = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
  
 
 
@@ -28,12 +32,14 @@ const UserProfile = () => {
       <>
         <section className="flex flex-col gap-4" >
         <ProfileHeader
-        walletAddress={myWalletAddress}
-        resetData={handleResetData}
-        existDescription="By leaving profile, your changes will not be saved"
-        existTitle="Are you sure you want to exit your Profile page?"
-        ensaddress="maria.swapup.eth"
-        joindate="Joined Sept 2023"
+       walletAddress={testWalletAddress}
+       resetData={handleResetData}
+       existDescription="By leaving profile, your changes will not be saved"
+       existTitle="Are you sure you want to exit your Profile page?"
+       ensaddress={profile.ensAddress}
+       joindate="Joined Sept 2023"
+       avatarimage={profile.image}
+       AvatarFallback="No Image"
       />
   
           {/* leaderboard */}
@@ -72,7 +78,9 @@ const UserProfile = () => {
   
                 {/* Assets Loader */}
                 <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-                <ProfileAssetsLayout layoutType={"sender"}  walletAddress={myWalletAddress}/>        
+                  <ProfileAssetsLayout layoutType={"sender"}  walletAddress={wallet.address}/>        
+
+                  {/* <ProfileAssetsLayout layoutType={"sender"}  walletAddress={testWalletAddress}/>               */}
                 </div>
                 
   

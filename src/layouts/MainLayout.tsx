@@ -1,8 +1,60 @@
 import Footer from "@/components/custom/shared/Footer";
 import Navbar from "@/components/custom/shared/Navbar";
-import { Outlet } from "react-router-dom";
+import { navItemsData } from "@/constants";
+import { useSwapMarketStore } from "@/store/swap-market";
+import { useEffect } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import ToastLookCard from "@/components/custom/shared/ToastLookCard";
+import { toast } from "sonner";
+import { defaultFallbackRoute } from "@/routes";
 
 const MainLayout = () => {
+  const [wallet] = useSwapMarketStore(state => [state.wallet, state.connectWallet])
+const navigate = useNavigate()
+  const {pathname} = useLocation()
+
+  const handleShowWalletConnectionToast = () => {
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="error"
+          title="Connect to wallet!"
+          description={"Please connect to wallet for this feature!"}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 3000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
+  };
+
+  useEffect(()=>{
+
+    if(pathname){
+const currentRoute = navItemsData.find(item=> item.path === pathname)
+if(currentRoute?.protected){
+  
+  wallet.isConnected ?
+   navigate(pathname) 
+   : 
+   (
+     handleShowWalletConnectionToast(),
+     navigate(defaultFallbackRoute)
+   )
+  
+}
+    }
+
+     
+
+  }, [pathname, wallet.isConnected])
+
+
+
+console.log("Wallet connected: ", wallet.isConnected)
   return (
     <>
       <Navbar />

@@ -4,17 +4,20 @@ export const navItemsData: SUI_NavItem[] = [
   {
     key: "swap-market",
     title: "Swap Market",
-    path: "/swap-up/swap-market"
+    path: "/swap-up/swap-market",
+    protected: false,
   },
   {
     key: "my-swaps",
     title: "My Swaps",
-    path: "/swap-up/my-swaps"
+    path: "/swap-up/my-swaps",
+    protected: true,
   },
   {
     key: "Profile",
     title: "Profile",
-    path: "/swap-up/profile"
+    path: "/swap-up/profile",
+    protected: true,
   }
 ];
 

@@ -2,6 +2,7 @@ export interface SUI_NavItem {
   key: string;
   title: string;
   path: string;
+  protected: boolean;
 }
 export interface INetwork {
   id: string;
