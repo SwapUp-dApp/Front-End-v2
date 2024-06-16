@@ -14,6 +14,8 @@ export interface SUI_Swap {
   init_sign: string;
   accept_sign: string;
   metadata: SUI_SwapMetadata;
+  offer_type: 0 | 1;
+//khalil to take care of user_offer_status
 }
 
 export interface SUI_SwapMetadata {
@@ -35,6 +37,7 @@ export interface SUI_SwapToken {
 // Open Market Swap types
 export interface SUI_OpenSwap extends SUI_Swap {
   swap_preferences: SUI_SwapPreferences;
+  open_trade_id: string;
 }
 
 export interface SUI_SwapPreferences {

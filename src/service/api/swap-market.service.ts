@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import API from "../Axios";
-import { SUI_Swap } from "@/types/swap-market.types";
+import { SUI_Swap, SUI_OpenSwap } from "@/types/swap-market.types";
 
 export const getNftsForWallet = (walletId: string): Promise<AxiosResponse> => {
   return API.get(`/api/nfts/${walletId}`);
@@ -23,3 +23,19 @@ export const updateSwapOffer = (swap: any): Promise<AxiosResponse> =>
 
 export const updateSwapStatus = (swapStatus: any): Promise<AxiosResponse> =>
   API.patch('/api/swaps/status', swapStatus);
+
+//open swap
+export const createOpenSwap = (swap: SUI_OpenSwap): Promise<AxiosResponse> =>
+  API.post('/api/openswap/create', swap);
+
+export const getOpenSwapPendingList = (): Promise<AxiosResponse> =>
+  API.get(`/api/openswap/list`);
+
+export const proposeSwap = (swap: SUI_OpenSwap): Promise<AxiosResponse> =>
+  API.post(`/api/openswap/propose`, swap);
+
+export const closeSwapOffer = (swap: any): Promise<AxiosResponse> =>
+  API.patch(`/api/openswap/close-offers`, swap);
+
+export const acceptSwapOffer = (tradeId: string , opentradeId: string): Promise<AxiosResponse> =>
+  API.patch(`/api/openswap/accept?swapId=${tradeId}&walletId=${opentradeId}`);
