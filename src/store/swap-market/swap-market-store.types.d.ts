@@ -1,4 +1,4 @@
-import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUT_SwapOfferType } from "@/types/swap-market.types";
 import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 
 export type SUT_GridViewType = 'detailed' | 'overview';
@@ -32,6 +32,7 @@ export interface IOpenRoom {
   createOpenSwap: () => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   setSwapPreferences: (preferences: SUI_SwapPreferences) => void;
+  resetOpenRoom: () => void;
 }
 
 export interface IOpenMarketLayoutSide {
@@ -112,7 +113,7 @@ export interface IPrivateRoom {
   swapUpContract: string;
   chainId: number;
   setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => void;
-  createPrivateMarketSwap: () => void;
+  createPrivateMarketSwap: (offer_type: SUT_SwapOfferType) => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   resetPrivateRoom: () => void;
 }

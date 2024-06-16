@@ -1,4 +1,4 @@
-import { SUI_Swap, SUI_OpenSwap, SUI_SwapPreferences } from "@/types/swap-market.types";
+import { SUI_Swap, SUI_OpenSwap, SUI_SwapPreferences, SUT_SwapOfferType } from "@/types/swap-market.types";
 import { IOpenRoom, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-store.types";
 import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
 import { ethers } from "ethers";
@@ -247,7 +247,7 @@ export const setValuesOnCreatingPrivateRoomHelper = (
     },
   };
 };
-export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore,): Promise<ISwapMarketStore> => {
+export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, offer_type: SUT_SwapOfferType): Promise<ISwapMarketStore> => {
   const room = state.privateMarket.privateRoom as IPrivateRoom;
 
   const swap: SUI_Swap = {
@@ -258,6 +258,7 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore,): P
     accept_address: room.receiver.profile.walletAddress,
     accept_sign: '',
     init_sign: '',
+    offer_type,
     metadata: {
       init: {
         tokens: room.sender.nftsSelectedForSwap ?
@@ -409,7 +410,7 @@ export const createOpenSwapHelper = async (
 
   const swap: SUI_OpenSwap = {
     ...state.openMarket.openRoom.swap,
-    trade_id: state.openMarket.openRoom.uniqueTradeId,
+    open_trade_id: state.openMarket.openRoom.uniqueTradeId,
     init_address: room.sender.profile.walletAddress,
     swap_mode: SUE_SWAP_MODE.OPEN,
     trading_chain: String(Environment.CHAIN_ID),
@@ -433,6 +434,61 @@ export const createOpenSwapHelper = async (
         swap,
         nftsLength: swap.metadata.init.tokens.length
       },
+    },
+  };
+};
+
+export const resetOpenRoomHelper = (
+  state: ISwapMarketStore,
+): ISwapMarketStore => {
+
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      openRoom: {
+        ...state.openMarket.openRoom,
+        nftsLength: 0,
+        sign: '',
+        uniqueTradeId: '',
+        swap: {
+          accept_address: '',
+          init_address: '',
+          accept_sign: '',
+          init_sign: '',
+          metadata: {
+            accept: {
+              tokens: []
+            },
+            init: {
+              tokens: []
+            }
+          },
+          swap_mode: SUE_SWAP_MODE.OPEN,
+          trade_id: '',
+          offer_type: 0,
+          open_trade_id: '',
+          trading_chain: '',
+          swap_preferences: {
+            expiration_date: '',
+            preferred_asset: {
+              type: 'any',
+              parameters: {}
+            }
+          }
+        },
+        swapEncodedMsg: '',
+        sender: {
+          ...state.openMarket.openRoom.sender,
+          collections: [],
+          nftsSelectedForSwap: [],
+          addedAmount: undefined,
+          nfts: undefined,
+          filteredNfts: undefined,
+          filters: undefined,
+          activeGridView: 'detailed'
+        },
+      }
     },
   };
 };

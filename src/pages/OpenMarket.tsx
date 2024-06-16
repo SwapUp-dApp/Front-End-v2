@@ -24,19 +24,115 @@ import SwapParameterTile from "@/components/custom/tiles/SwapParameterTile";
 import moment from "moment";
 import { availableCollections } from "@/constants/data";
 import ChainTile from "@/components/custom/tiles/ChainTile";
+import { SUP_CreateOpenSwap } from "@/types/swap-market.types";
+import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
+import { useCreateOpenSwapOffer } from "@/service/queries/swap-market.query";
 
+interface ISwapCreation {
+  isLoading: boolean;
+  created: boolean;
+}
 
 const OpenMarket = () => {
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [isValidParametersForm, setIsValidParametersForm] = useState(false);
+  const [swapCreation, setSwapCreation] = useState<ISwapCreation>({ isLoading: false, created: false });
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
   const { expiration_date, preferred_asset } = state.swap.swap_preferences;
   const navigate = useNavigate();
   const { openTradeId } = useParams();
-  const handleResetData = () => { console.log("Reset open room yet to be implemented..."); };
+
+  const { mutateAsync: createOpenSwapOffer } = useCreateOpenSwapOffer();
 
 
+  const handleResetData = () => {
+    state.resetOpenRoom();
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="info"
+          title="Open market room reset!"
+          description={"Room data deleted."}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 3000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
+  };
+
+  const handleCreateOpenMarketSwap = async () => {
+    try {
+      setSwapCreation(prev => ({ ...prev, isLoading: true }));
+      const createdSwap = useSwapMarketStore.getState().openMarket.openRoom.swap;
+
+      if (!createdSwap) {
+        throw new Error("Failed to create swap.");
+      }
+
+      const swapPayload: SUP_CreateOpenSwap = {
+        init_address: createdSwap.init_address,
+        offer_type: SUE_SWAP_OFFER_TYPE.PRIMARY || createdSwap.offer_type,
+        open_trade_id: createdSwap.open_trade_id,
+        swap_mode: createdSwap.swap_mode || SUE_SWAP_MODE.OPEN,
+        trading_chain: createdSwap.trading_chain,
+        swap_preferences: createdSwap.swap_preferences,
+        metadata: {
+          init: createdSwap.metadata.init
+        }
+      };
+
+      const offerResult = await createOpenSwapOffer(swapPayload);
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Offer Created Successfully!"
+              description={"Your open offer is successfully created."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        setSwapCreation(prev => ({ ...prev, created: true }));
+        state.resetOpenRoom();
+
+        setTimeout(() => {
+          navigate('/swap-up/swap-market');
+        }, 3000);
+      }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+    } finally {
+      setSwapCreation(prev => ({ ...prev, isLoading: false }));
+    }
+  };
 
   useEffect(() => {
     if ((state.sender.nftsSelectedForSwap.length) && (state.sender.addedAmount) && isValidParametersForm) {
@@ -95,7 +191,7 @@ const OpenMarket = () => {
         <div className="absolute -top-14 flex justify-center w-full" >
           {/* Swap Details Dialog */}
           <Dialog>
-            <div className="relative" onClick={() => state.createOpenSwap()} >
+            <div className="relative" onClick={async () => await state.createOpenSwap()} >
               <Button
                 variant={"default"}
                 type="submit"
@@ -288,7 +384,9 @@ const OpenMarket = () => {
                     </div>
                     <Button
                       variant={"default"}
-                      onClick={() => console.log("==> ", state.swap)}
+                      disabled={swapCreation.created}
+                      isLoading={swapCreation.isLoading}
+                      onClick={async () => await handleCreateOpenMarketSwap()}
                     >
                       Proceed
                     </Button>

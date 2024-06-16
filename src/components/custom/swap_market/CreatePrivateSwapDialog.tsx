@@ -42,7 +42,7 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
     const uniqueTradeId = generateRandomTradeId();
 
     setValuesOnCreatingRoom(uniqueTradeId, walletAddress);
-    navigate(`/swap-up/swap-market/private-room/${walletAddress}`);
+    navigate(`/swap-up/swap-market/private-room/${walletAddress}/${uniqueTradeId}`);
   }
 
   return (

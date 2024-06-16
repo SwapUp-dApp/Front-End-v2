@@ -1,7 +1,7 @@
 import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer } from "@/components/ui/drawer";
 import { navItemsData } from "@/constants";
 import { getIsActiveNav, getNetworkImageById, getShortenWalletAddress } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ConnectWalletButton from "./ConnectWalletButton";
 import { useSwapMarketStore } from "@/store/swap-market";
@@ -26,6 +26,17 @@ const Navbar = () => {
 
     setIsConnecting(false);
   };
+
+
+  useEffect(() => {
+    if (!wallet.isConnected) {
+      const reconnect = async () => {
+        await handleConnectionToWallet();
+      };
+      reconnect();
+    }
+  }, [wallet.isConnected]);
+
 
   return (
     <div className="w-full p-4 flex justify-between lg:justify-start lg:gap-16" >

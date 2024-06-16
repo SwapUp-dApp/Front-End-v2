@@ -9,15 +9,15 @@ import { toast } from "sonner";
 import { defaultFallbackRoute } from "@/routes";
 
 const MainLayout = () => {
-  const [wallet] = useSwapMarketStore(state => [state.wallet, state.connectWallet])
-const navigate = useNavigate()
-  const {pathname} = useLocation()
+  const [wallet] = useSwapMarketStore(state => [state.wallet, state.connectWallet]);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const handleShowWalletConnectionToast = () => {
     toast.custom(
       (id) => (
         <ToastLookCard
-          variant="error"
+          variant="warning"
           title="Connect to wallet!"
           description={"Please connect to wallet for this feature!"}
           onClose={() => toast.dismiss(id)}
@@ -31,30 +31,30 @@ const navigate = useNavigate()
     );
   };
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    if(pathname){
-const currentRoute = navItemsData.find(item=> item.path === pathname)
-if(currentRoute?.protected){
-  
-  wallet.isConnected ?
-   navigate(pathname) 
-   : 
-   (
-     handleShowWalletConnectionToast(),
-     navigate(defaultFallbackRoute)
-   )
-  
-}
+    if (pathname) {
+      const currentRoute = navItemsData.find(item => item.path === pathname);
+      if (currentRoute?.protected) {
+
+        wallet.isConnected ?
+          navigate(pathname)
+          :
+          (
+            handleShowWalletConnectionToast(),
+            navigate(defaultFallbackRoute)
+          );
+
+      }
     }
 
-     
-
-  }, [pathname, wallet.isConnected])
 
 
+  }, [pathname, wallet.isConnected]);
 
-console.log("Wallet connected: ", wallet.isConnected)
+
+
+  console.log("Wallet connected: ", wallet.isConnected);
   return (
     <>
       <Navbar />

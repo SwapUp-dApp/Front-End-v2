@@ -13,29 +13,36 @@ import AvoidingFeeDialog from "@/components/custom/swap_market/AvoidingFeeDialog
 import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate, useParams } from "react-router-dom";
-import { getLastCharacters, isValidWalletAddress } from "@/lib/utils";
+import { getLastCharacters, isValidTradeId, isValidWalletAddress } from "@/lib/utils";
 import { getUserApproval, getUserSignature } from "@/lib/metamask";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { toast } from "sonner";
-import { useCreateSwapOffer } from "@/service/queries/swap-market.query";
+import { useCreatePrivateSwapOffer } from "@/service/queries/swap-market.query";
+import { SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 
-
+interface ISwapCreation {
+  isLoading: boolean,
+  created: boolean;
+}
 
 const PrivateRoom = () => {
   const wallet = useSwapMarketStore(state => state.wallet);
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
+
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
-  const [createSwapLoading, setCreateSwapLoading] = useState(false);
-  const { counterPartyWallet } = useParams();
+  const [swapCreation, setSwapCreation] = useState<ISwapCreation>({ isLoading: false, created: false });
+
+
+  const { counterPartyWallet, privateTradeId } = useParams();
   const navigate = useNavigate();
 
-  const { mutateAsync: createSwapOffer } = useCreateSwapOffer();
+  const { mutateAsync: createSwapOffer } = useCreatePrivateSwapOffer();
 
   const handleCreatePrivatePartySwap = async () => {
     try {
-      setCreateSwapLoading(true);
+      setSwapCreation(prev => ({ ...prev, isLoading: true }));
 
-      await state.createPrivateMarketSwap();
+      await state.createPrivateMarketSwap(SUE_SWAP_OFFER_TYPE.PRIMARY);
       const createdSwap = useSwapMarketStore.getState().privateMarket.privateRoom.swap;
 
       if (!createdSwap) {
@@ -76,7 +83,8 @@ const PrivateRoom = () => {
             position: "bottom-left",
           }
         );
-
+        setSwapCreation(prev => ({ ...prev, created: true }));
+        state.resetPrivateRoom();
         setTimeout(() => {
           navigate('/swap-up/swap-market');
         }, 3000);
@@ -101,7 +109,7 @@ const PrivateRoom = () => {
 
       // console.log(error);
     } finally {
-      setCreateSwapLoading(false);
+      setSwapCreation(prev => ({ ...prev, isLoading: true }));
     }
   };
 
@@ -136,10 +144,14 @@ const PrivateRoom = () => {
   }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap, state.sender.addedAmount, state.receiver.addedAmount]);
 
   useEffect(() => {
-    if (counterPartyWallet && !isValidWalletAddress(counterPartyWallet)) {
+    if ((counterPartyWallet && !isValidWalletAddress(counterPartyWallet)) || (privateTradeId && !isValidTradeId(privateTradeId))) {
       navigate(-1);
     }
-  }, [counterPartyWallet]);
+
+    if (counterPartyWallet && privateTradeId) {
+      state.setValuesOnCreatingRoom(privateTradeId, counterPartyWallet);
+    }
+  }, [counterPartyWallet, privateTradeId]);
 
   return (
     <div className="flex flex-col gap-4" >
@@ -286,8 +298,9 @@ const PrivateRoom = () => {
                     </div>
                     <Button
                       variant={"default"}
+                      disabled={swapCreation.created}
                       onClick={async () => await handleCreatePrivatePartySwap()}
-                      isLoading={createSwapLoading}
+                      isLoading={swapCreation.isLoading}
                     >
                       Proceed
                     </Button>
