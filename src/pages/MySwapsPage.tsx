@@ -656,8 +656,7 @@ const MySwapsPage = () => {
                                   </button>
                                 </HoverCardContent>
                               </HoverCard>
-                              :
-
+                              :                                                            
                               <HoverCard>
                                 <HoverCardTrigger>
                                   <svg
@@ -704,10 +703,7 @@ const MySwapsPage = () => {
                                   </button>
                                 </HoverCardContent>
                               </HoverCard>
-
-
-
-
+                              
                           }
 
 
