@@ -796,11 +796,8 @@ const MySwapsPage = () => {
 
                         </div>
                       </CreatePrivateSwapDialog>
-
                     </DropdownMenuContent>
                   </DropdownMenu>
-
-
                 </EmptyDataset>
 
               }
@@ -905,12 +902,7 @@ const MySwapsPage = () => {
                                   <Button variant={"default"} type="submit" >Apply filters</Button>
 
                                 </div>
-
-
-
                               </div>
-
-
                             </div>
                           </DrawerContent>
                         </Drawer>
@@ -964,8 +956,6 @@ const MySwapsPage = () => {
                         <TableCell className="font-medium px-4">{data.offerreview_date}</TableCell>
                         <TableCell className="font-medium px-4 capitalize">{data.status}</TableCell>
                         <TableCell className="font-medium flex pr-8 justify-end">
-
-
                           <svg
                             onClick={() =>
                               toast.info("Options", {
@@ -980,11 +970,15 @@ const MySwapsPage = () => {
                               })
                             }
                             className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
+                            <rect x="1" y="1" width="30" height="30" rx="15" stroke="url(#paint0_linear_2344_40905)" stroke-width="2"/>
+                            <path d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z" fill="white"/>
+                            <defs>
+                            <linearGradient id="paint0_linear_2344_40905" x1="32" y1="6.08" x2="-1.86631" y2="14.9716" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#51C0FF"/>
+                            <stop offset="1" stop-color="#9452FF"/>
+                            </linearGradient>
+                            </defs>
                           </svg>
-
-
-
                         </TableCell>
                       </TableRow>
                     ))
