@@ -1,4 +1,4 @@
-import { cn, generateRandomTradeId } from "@/lib/utils";
+import { cn, generateRandomTradeId, isValidWalletAddress } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
@@ -10,13 +10,13 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import ToastLookCard from "../shared/ToastLookCard";
-import { useState } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
 
 const formSchema = z.object({
   walletAddress: z.string().min(1, {
     message: "Required field missed",
+  }).refine((address) => isValidWalletAddress(address), {
+    message: "Invalid wallet address",
   }),
 });
 
@@ -27,7 +27,6 @@ interface IProp {
 
 
 const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
-  const [showSuccessCard, setShowSuccessCard] = useState(false);
   const navigate = useNavigate();
   const setValuesOnCreatingRoom = useSwapMarketStore(state => state.privateMarket.privateRoom.setValuesOnCreatingRoom);
 
@@ -43,10 +42,7 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
     const uniqueTradeId = generateRandomTradeId();
 
     setValuesOnCreatingRoom(uniqueTradeId, walletAddress);
-    setShowSuccessCard(true);
-    setTimeout(() => {
-      navigate("/swap-up/swap-market/private-room");
-    }, 2000);
+    navigate(`/swap-up/swap-market/private-room/${walletAddress}/${uniqueTradeId}`);
   }
 
   return (
@@ -84,7 +80,7 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
                 name="walletAddress"
                 render={({ field }) => (
                   <FormItem className="space-y-2" >
-                    <FormLabel className="text-su_secondary text-sm font-semibold" >Counterparty wallet address</FormLabel>
+                    <FormLabel className="text-su_secondary text-sm font-semibold">Counterparty wallet address</FormLabel>
                     <FormControl>
                       <Input
                         icon={
@@ -103,7 +99,8 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
                 )}
               />
 
-              {
+              {/* We will display this while entering ens address */}
+              {/* {
                 (form.getValues('walletAddress') && showSuccessCard) &&
                 < ToastLookCard
                   className="animate-bounce-once"
@@ -116,14 +113,19 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
                   subtitle={"ENS connected to "}
                   description={form.getValues('walletAddress') + ' ' + 'wallet address'}
                 />
-              }
+              } */}
 
               <div className="w-full grid grid-cols-2 gap-4 py-2" >
                 <DialogClose >
                   <CustomOutlineButton containerClasses="w-full h-full" >Cancel</CustomOutlineButton>
                 </DialogClose>
 
-                <Button variant={"default"} type="submit" >Create room</Button>
+                <Button
+                  variant={"default"}
+                  type="submit"
+                >
+                  Create room
+                </Button>
               </div>
             </form>
           </Form>

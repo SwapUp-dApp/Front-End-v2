@@ -22,7 +22,7 @@ const CopyTile = ({ children, className, textToCopy, ...props }: IProp) => {
   return (
     <div
       className={cn(
-        "dark:bg-su_enable_bg dark:text-su_ternary text-xs flex items-center gap-2 p-2 rounded-xs",
+        "bg-background text-text dark:bg-su_enable_bg dark:text-su_ternary text-xs flex items-center gap-2 p-2 rounded-xs",
         className
       )}
       {...props}

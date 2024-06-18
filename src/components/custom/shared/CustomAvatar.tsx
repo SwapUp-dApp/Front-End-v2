@@ -27,7 +27,7 @@ const CustomAvatar = ({
         textSizeClasses
       )}
     >
-      <AvatarImage src={imageSrc} alt="@shadcn" />
+      <AvatarImage className="rounded-full" src={imageSrc} alt="@shadcn" />
       <AvatarFallback className={`uppercase text-3xs lg:text-sm font-semibold rounded-full dark:bg-su_enable_bg ${sizeClasses} ${textSizeClasses} flex justify-center items-center`}>
         {getNameInitials(fallbackName)}
       </AvatarFallback>

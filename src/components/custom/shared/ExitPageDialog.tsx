@@ -8,10 +8,19 @@ interface IProp {
   redirectPath: string;
   title: string;
   description: string;
+  resetData: () => void;
 }
 
-const ExitPageDialog = ({ children, description, title, redirectPath }: IProp) => {
+const ExitPageDialog = ({ children, description, title, redirectPath, resetData }: IProp) => {
   const navigate = useNavigate();
+
+
+  const handleExit = () => {
+    resetData();
+    navigate(redirectPath);
+  };
+
+
   return (
     <Dialog>
       <DialogTrigger>
@@ -37,7 +46,7 @@ const ExitPageDialog = ({ children, description, title, redirectPath }: IProp) =
 
 
           <div className="w-full grid grid-cols-2 gap-4" >
-            <CustomOutlineButton onClick={() => navigate(redirectPath)} >
+            <CustomOutlineButton onClick={handleExit} >
               Exit
             </CustomOutlineButton>
 

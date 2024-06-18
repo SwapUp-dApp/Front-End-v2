@@ -1,16 +1,16 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage, } from "@/components/ui/form";
-import { IChainItem, INFTItem } from "@/swapup-types";
+import { SUI_ChainItem, SUI_NFTItem } from "@/types/swapup.types";
 import AddCurrencyModalDialog from "./AddCurrencyModalDialog";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { cn } from "@/lib/utils";
+import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-types";
+import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-store.types";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
@@ -40,7 +40,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
   );
 
   const removeSelectedNftById = (paramId: string) => {
-    const filteredNfts = nftsSelectedForSwap.filter(nft => nft.id !== paramId);
+    const filteredNfts = nftsSelectedForSwap.filter(nft => nft.tokenId !== paramId);
     setSelectedNftsForSwap([...filteredNfts]);
   };
 
@@ -49,7 +49,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
     setEnableApproveButtonCriteria(false);
   };
 
-  const nftsImageMapper = (nfts: INFTItem[], lengthToShowParam: number) => {
+  const nftsImageMapper = (nfts: SUI_NFTItem[], lengthToShowParam: number) => {
     const lengthToShow = lengthToShowParam - 1;
     return (
       nfts.map((nft, index) => {
@@ -57,8 +57,13 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
           return (
             <div
               className="group relative w-8 h-8 rounded-xs lg:w-12 lg:h-12 object-cover lg:rounded-sm border-[1.5px] border-white/20"
-              key={nft.image}>
-              <img className="w-full h-full object-cover rounded-xs lg:rounded-sm" src={nft.image} alt="nft" />
+              key={nft.tokenId}>
+              <img
+                className="w-full h-full object-cover rounded-xs lg:rounded-sm"
+                src={nft.media[0].gateway}
+                alt="nft"
+                onError={getDefaultNftImageOnError}
+              />
               {
                 (index === lengthToShow) && nfts.length > lengthToShowParam ?
                   <div className="absolute w-full h-full rounded-xs lg:rounded-sm bg-black/50 top-0 left-0 flex justify-center items-center font-semibold text-xs lg:text-sm" >
@@ -70,7 +75,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
 
                 <span
                   className="rounded-full p-1 bg-white/30 relative cursor-pointer"
-                  onClick={() => removeSelectedNftById(nft.id)}
+                  onClick={() => removeSelectedNftById(nft.tokenId)}
                 >
                   <svg className="w-2" viewBox="0 0 8 8" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fillRule="evenodd" clipRule="evenodd" d="M7.47177 1.58877L8.00207 1.05842L6.94137 -0.00219727L6.41106 0.528155L4.00006 2.93935L1.58906 0.528155L1.05875 -0.00219727L-0.00195312 1.05842L0.528355 1.58877L2.93944 4.00006L0.528356 6.41135L-0.00195312 6.9417L1.05875 8.00231L1.58906 7.47196L4.00006 5.06076L6.41106 7.47196L6.94137 8.00231L8.00207 6.9417L7.47176 6.41135L5.06068 4.00006L7.47177 1.58877Z" fill="white" />
@@ -88,7 +93,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
     resolver: zodResolver(amountConvertFormSchema),
     defaultValues: {
       amount: '',
-      chain: ''
+      chain: 'razxDUgYGNAdQ'
     },
   });
 
@@ -98,7 +103,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) =
 
   const getSelectedChain = () => {
     const selectedChainId = form.getValues("chain");
-    const chain: IChainItem | undefined = availableChains.find(chain => chain.uuid === selectedChainId);
+    const chain: SUI_ChainItem | undefined = availableChains.find(chain => chain.uuid === selectedChainId);
 
     return chain || availableChains[1];
   };

@@ -1,5 +1,8 @@
 import { create } from 'zustand';
-import { ISwapMarketStore, SUT_GridViewType } from './swap-market-types';
+import { IPrivateRoom, IOpenRoom, ISwapMarketStore, SUT_GridViewType, } from './swap-market-store.types';
+import { SUI_NFTItem, SUI_RarityRankItem } from '@/types/swapup.types';
+import { Environment } from '@/config';
+
 import {
   toggleGridViewHelper,
   setSelectedNftsForSwapHelper,
@@ -8,47 +11,133 @@ import {
   removeAllFiltersHelper,
   setAddedAmountHelper,
   setValuesOnCreatingPrivateRoomHelper,
-  tempSenderNfts,
-  chainsDataset,
-  tempReceiverNfts
+  setNftsDatasetHelper,
+  setValuesOnCreatingOpenSwapRoomHelper,
+  createOpenSwapHelper,
+  createPrivateMarketSwapHelper,
+  connectToWalletHelper,
+  setSwapEncodedMsgAndSignPrivateHelper,
+  resetPrivateRoomDataHelper,
+  setSwapPreferencesHelper,
+  resetOpenRoomHelper,
 } from './swap-market-helpers';
-import { IPrivateRoom } from './swap-market-types';
-import { INFTItem, IRarityRankItem } from '@/swapup-types';
 
-const initialPrivateRoomState: IPrivateRoom = {
+import { chainsDataset } from '@/constants/data';
+import { SUI_SwapPreferences, SUT_SwapOfferType } from '@/types/swap-market.types';
+import { SUE_SWAP_MODE } from '@/constants/enums';
+
+
+export const openMarketRoomInitialState: IOpenRoom = {
+  swapUpOpenContract: Environment.SWAPUP_CONTRACT,
+  chainId: Environment.CHAIN_ID,
   uniqueTradeId: '',
+  nftsLength: 0,
+  sign: '',
+  swapEncodedMsg: '',
   sender: {
     activeGridView: 'detailed',
     toggleGridView: () => { },
     network: {
       id: '1',
-      image: 'src/assets/svgs/ethereum.svg',
+      image: '/src/assets/svgs/ethereum.svg',
       title: 'ethereum',
       shortTitle: "eth"
     },
     profile: {
       ensAddress: 'sender.swapup.eth',
-      image: 'src/assets/images/avatar.png',
+      image: '/src/assets/images/avatar.png',
       isPremium: false,
       title: 'sender',
-      walletAddress: '0x13374200C2CF752eCeAa9a0eC6Ac099aF9D6D3D1'
+      walletAddress: ''
     },
-    nfts: tempSenderNfts,
+    collections: [],
+    nfts: [],
     availableChains: chainsDataset,
-    filteredNfts: tempSenderNfts,
+    filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
     setFilteredNftsBySearch: () => { },
     setFilteredNftsByFilters: () => { },
     removeAllFilters: () => { },
     setAddedAmount: () => { },
+    setNftsDataset: () => { },
+
+  },
+  swap: {
+    accept_address: '',
+    init_address: '',
+    accept_sign: '',
+    init_sign: '',
+    metadata: {
+      accept: {
+        tokens: []
+      },
+      init: {
+        tokens: []
+      }
+    },
+    swap_mode: SUE_SWAP_MODE.OPEN,
+    trade_id: '',
+    offer_type: 0,
+    open_trade_id: '',
+    trading_chain: '',
+    swap_preferences: {
+      expiration_date: '',
+      preferred_asset: {
+        type: 'any',
+        parameters: {}
+      }
+    }
+  },
+  setValuesOnCreatingOpenMarket: () => { },
+  createOpenSwap: () => { },
+  setSwapEncodedMsgAndSign: () => { },
+  setSwapPreferences: () => { },
+  resetOpenRoom: () => { }
+};
+
+export const privateMarketRoomInitialState: IPrivateRoom = {
+  swapUpContract: Environment.SWAPUP_CONTRACT,
+  chainId: Environment.CHAIN_ID,
+  uniqueTradeId: '',
+  nftsLength: 0,
+  sign: '',
+  swapEncodedMsg: '',
+  sender: {
+    activeGridView: 'detailed',
+    toggleGridView: () => { },
+    network: {
+      id: '1',
+      image: '/src/assets/svgs/ethereum.svg',
+      title: 'ethereum',
+      shortTitle: "eth"
+    },
+    profile: {
+      ensAddress: 'sender.swapup.eth',
+      image: '/src/assets/images/avatar.png',
+      isPremium: false,
+      title: 'sender',
+      walletAddress: ''
+    },
+    collections: [],
+    nfts: [],
+    availableChains: chainsDataset,
+    filteredNfts: [],
+    nftsSelectedForSwap: [],
+    setSelectedNftsForSwap: () => { },
+    setFilteredNftsBySearch: () => { },
+    setFilteredNftsByFilters: () => { },
+    removeAllFilters: () => { },
+    setAddedAmount: () => { },
+    setNftsDataset: () => { },
   },
   receiver: {
+
     activeGridView: 'detailed',
     toggleGridView: () => { },
     network: {
       id: '9090',
-      image: 'src/assets/svgs/solana.svg',
+      image: '/src/assets/svgs/solana.svg',
       title: 'solana',
       shortTitle: 'sol'
     },
@@ -57,78 +146,117 @@ const initialPrivateRoomState: IPrivateRoom = {
       image: '',
       isPremium: true,
       title: 'receiver',
-      walletAddress: '0xabCdeF1234567890AbCdEf123456789012345678'
+      walletAddress: ''
     },
-    nfts: tempReceiverNfts,
+    collections: [],
+    nfts: [],
     availableChains: chainsDataset,
-    filteredNfts: tempReceiverNfts,
+    filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
     setFilteredNftsBySearch: () => { },
     setFilteredNftsByFilters: () => { },
     removeAllFilters: () => { },
     setAddedAmount: () => { },
+    setNftsDataset: () => { },
+
   },
   setValuesOnCreatingRoom: () => { },
+  createPrivateMarketSwap: () => { },
+  setSwapEncodedMsgAndSign: () => { },
+  resetPrivateRoom: () => { }
 };
 
 const initialState: ISwapMarketStore = {
   openMarket: {
-    openRoom: initialPrivateRoomState,
+    openRoom: openMarketRoomInitialState,
   },
   privateMarket: {
-    privateRoom: initialPrivateRoomState,
-  }
+    privateRoom: privateMarketRoomInitialState,
+  },
+  wallet: {
+    address: '',
+    isConnected: false,
+  },
+  setProvider: () => { },
+  connectWallet: () => { },
 };
 
-export const useSwapMarketStore = create<ISwapMarketStore>((set) => ({
+export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
   ...initialState,
   openMarket: {
     openRoom: {
-      ...initialPrivateRoomState,
+      ...openMarketRoomInitialState,
       sender: {
-        ...initialPrivateRoomState.sender,
+        ...openMarketRoomInitialState.sender,
         toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'openMarket', 'openRoom', 'sender', value)),
-        setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'openMarket', 'openRoom', 'sender', selectedNfts)),
+        setSelectedNftsForSwap: (selectedNfts: SUI_NFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'openMarket', 'openRoom', 'sender', selectedNfts)),
         setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'openMarket', 'openRoom', 'sender', searchValue)),
-        setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'openMarket', 'openRoom', 'sender', collectionTitle, selectedRarityRank)),
+        setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'openMarket', 'openRoom', 'sender', collectionTitle, selectedRarityRank)),
         removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'openMarket', 'openRoom', 'sender')),
         setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'openMarket', 'openRoom', 'sender', selectedAmount, selectedCoin)),
+        setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'openMarket', 'openRoom', 'sender', dataset)),
+
       },
-      receiver: {
-        ...initialPrivateRoomState.receiver,
-        toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'openMarket', 'openRoom', 'receiver', value)),
-        setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'openMarket', 'openRoom', 'receiver', selectedNfts)),
-        setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'openMarket', 'openRoom', 'receiver', searchValue)),
-        setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'openMarket', 'openRoom', 'receiver', collectionTitle, selectedRarityRank)),
-        removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'openMarket', 'openRoom', 'receiver')),
-        setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'openMarket', 'openRoom', 'receiver', selectedAmount, selectedCoin)),
+      setValuesOnCreatingOpenMarket: (tradeId: string) => set((state) => setValuesOnCreatingOpenSwapRoomHelper(state, tradeId)),
+      resetOpenRoom: () => set(state => resetOpenRoomHelper(state)),
+      createOpenSwap: async () => {
+        const state = get();
+        const newState = await createOpenSwapHelper(state);
+        set(newState);
       },
-      setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'openMarket', 'openRoom', tradeId, counterPartyWalletAddress)),
+      setSwapEncodedMsgAndSign: async (swapEncodedMsg: string, sign: string) => {
+        const state = get();
+        const newState = await setSwapEncodedMsgAndSignPrivateHelper(state, swapEncodedMsg, sign);
+        set(newState);
+      },
+      setSwapPreferences: (preferences: SUI_SwapPreferences) => set((state) => setSwapPreferencesHelper(state, preferences))
     }
   },
   privateMarket: {
     privateRoom: {
-      ...initialPrivateRoomState,
+      ...privateMarketRoomInitialState,
       sender: {
-        ...initialPrivateRoomState.sender,
+        ...privateMarketRoomInitialState.sender,
         toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'privateMarket', 'privateRoom', 'sender', value)),
-        setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'privateMarket', 'privateRoom', 'sender', selectedNfts)),
+        setSelectedNftsForSwap: (selectedNfts: SUI_NFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'privateMarket', 'privateRoom', 'sender', selectedNfts)),
         setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'privateMarket', 'privateRoom', 'sender', searchValue)),
-        setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'privateMarket', 'privateRoom', 'sender', collectionTitle, selectedRarityRank)),
+        setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'privateMarket', 'privateRoom', 'sender', collectionTitle, selectedRarityRank)),
         removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'privateMarket', 'privateRoom', 'sender')),
         setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'privateMarket', 'privateRoom', 'sender', selectedAmount, selectedCoin)),
+        setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'privateMarket', 'privateRoom', 'sender', dataset)),
+
       },
       receiver: {
-        ...initialPrivateRoomState.receiver,
+        ...privateMarketRoomInitialState.receiver,
         toggleGridView: (value: SUT_GridViewType) => set((state) => toggleGridViewHelper(state, 'privateMarket', 'privateRoom', 'receiver', value)),
-        setSelectedNftsForSwap: (selectedNfts: INFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'privateMarket', 'privateRoom', 'receiver', selectedNfts)),
+        setSelectedNftsForSwap: (selectedNfts: SUI_NFTItem[] | []) => set((state) => setSelectedNftsForSwapHelper(state, 'privateMarket', 'privateRoom', 'receiver', selectedNfts)),
         setFilteredNftsBySearch: (searchValue: string) => set((state) => setFilteredNftsBySearchHelper(state, 'privateMarket', 'privateRoom', 'receiver', searchValue)),
-        setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'privateMarket', 'privateRoom', 'receiver', collectionTitle, selectedRarityRank)),
+        setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => set((state) => setFilteredNftsByFiltersHelper(state, 'privateMarket', 'privateRoom', 'receiver', collectionTitle, selectedRarityRank)),
         removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'privateMarket', 'privateRoom', 'receiver')),
         setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'privateMarket', 'privateRoom', 'receiver', selectedAmount, selectedCoin)),
+        setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'privateMarket', 'privateRoom', 'receiver', dataset)),
+
       },
       setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'privateMarket', 'privateRoom', tradeId, counterPartyWalletAddress)),
+      createPrivateMarketSwap: async (offer_type: SUT_SwapOfferType) => {
+        const state = get();
+        const newState = await createPrivateMarketSwapHelper(state, offer_type);
+        set(newState);
+      },
+      setSwapEncodedMsgAndSign: async (swapEncodedMsg: string, sign: string) => {
+        const state = get();
+        const newState = await setSwapEncodedMsgAndSignPrivateHelper(state, swapEncodedMsg, sign);
+        set(newState);
+      },
+      resetPrivateRoom: () => set((state) => resetPrivateRoomDataHelper(state))
     }
+  },
+
+  connectWallet: async () => {
+    const state = get();
+    const newState = await connectToWalletHelper(state);
+    set(newState);
   }
+
 }));

@@ -18,7 +18,7 @@ const WalletAddressTile = ({
 }: IProp) => {
 
   return (
-    <div className="flex items-center justify-between lg:justify-start xl:gap-20 lg:gap-16 dark:bg-su_enable_bg py-2 px-3 rounded-xs" >
+    <div className="flex items-center justify-between xl:gap-20  dark:bg-su_enable_bg py-2 px-3 rounded-xs" >
       <div
         className={cn(
           "flex items-center gap-1 lg:gap-2 text-xs lg:text-sm",

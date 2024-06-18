@@ -1,14 +1,16 @@
-import { cn } from "@/lib/utils";
-import { SUT_GridViewType } from "@/store/private-room-store/types";
-import { INFTItem } from "@/swapup-types";
+import { defaultNftImageFallbackURL } from "@/constants";
+import { cn, getDefaultNftImageOnError, getEtherScanContractNftUrl, getOpenSeaNftUrl } from "@/lib/utils";
+import { SUT_GridViewType } from "@/store/swap-market/swap-market-store.types";
+import { SUI_NFTItem } from "@/types/swapup.types";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 interface IProp {
   className?: string;
   activeGridView: SUT_GridViewType;
-  data: INFTItem;
-  setSelectedNftsForSwap: (selectedNfts: [] | INFTItem[]) => void;
-  nftsSelectedForSwap: INFTItem[] | [];
+  data: SUI_NFTItem;
+  setSelectedNftsForSwap: (selectedNfts: [] | SUI_NFTItem[]) => void;
+  nftsSelectedForSwap: SUI_NFTItem[] | [];
 }
 
 const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nftsSelectedForSwap, ...props }: IProp) => {
@@ -20,25 +22,27 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
 
   useEffect(() => {
 
-
     if (isChecked) {
       setSelectedNftsForSwap([...nftsSelectedForSwap, data]);
     }
     else {
-      const filteredNfts = nftsSelectedForSwap.filter(nft => nft.id !== data.id);
+      const filteredNfts = nftsSelectedForSwap.filter(nft => nft.tokenId !== data.tokenId);
       setSelectedNftsForSwap([...filteredNfts]);
     }
   }, [isChecked]);
 
   useEffect(() => {
-    const isSelected = nftsSelectedForSwap.some(nft => nft.id === data.id);
+    const isSelected = nftsSelectedForSwap.some(nft => (nft.tokenId === data.tokenId && nft.timeLastUpdated === data.timeLastUpdated));
     setIsChecked(isSelected);
-  }, [nftsSelectedForSwap, data.id]);
+  }, [nftsSelectedForSwap, data.tokenId, data.timeLastUpdated]);
 
+
+  const imageURL = data.media.length > 0 ?
+    data.media[0].gateway :
+    defaultNftImageFallbackURL;
   return (
     <div
       className="relative"
-      onClick={handleCardClick}
     >
       <div
         className={cn(
@@ -49,7 +53,13 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
         {...props}
       >
         <div className={`relative ${activeGridView === "detailed" ? "h-[132px] rounded-tl-md rounded-tr-md" : "h-full rounded-md"}`}>
-          <img src={data.image} alt="" className={`h-full w-full object-cover ${activeGridView === "detailed" ? "rounded-tl-md rounded-tr-md" : "rounded-md"}`} />
+          <img
+            className={`h-full w-full object-cover ${activeGridView === "detailed" ? "rounded-tl-md rounded-tr-md" : "rounded-md"}`}
+            src={imageURL}
+            alt=''
+            onClick={handleCardClick}
+            onError={getDefaultNftImageOnError}
+          />
 
           <div className="group" >
             <span className={`absolute top-2 ${activeGridView === "detailed" ? "right-3" : "right-1"} w-7 h-7 flex justify-center items-center rounded-full bg-transparent hover:bg-su_active_bg`} >
@@ -73,20 +83,23 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
           activeGridView === "detailed" &&
           <div className="p-3 flex flex-col gap-2" >
             <div className="flex items-center justify-between" >
-              <p className="text-xs lg:text-sm font-semibold capitalize w-4/5 line-clamp-1">{data.title} #{data.id}</p>
+              <p className="text-xs lg:text-sm font-semibold capitalize w-4/5 line-clamp-1">{data.title}</p>
 
-              {data.isTopRated &&
+              <Link to={getEtherScanContractNftUrl(data.contract.address, data.tokenId)} target="_blank" >
                 <svg className="w-4" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fillRule="evenodd" clipRule="evenodd" d="M3.83666 6.06934C3.51408 6.06934 3.24863 6.33479 3.24863 6.65793L3.24919 10.3637C3.24919 10.6179 3.06437 10.8375 2.81068 10.8604C2.52282 10.8952 2.29208 10.9181 2.10727 10.9299C1.76117 10.9646 1.43803 10.7916 1.26498 10.4914C1.046 10.1106 0.861192 9.71797 0.722863 9.30242C-0.545618 5.65379 1.39211 1.65961 5.03738 0.389449C8.68266 -0.880713 12.6735 1.05925 13.9425 4.70733C14.0579 5.03047 14.0002 5.37713 13.7924 5.64259C13.1002 6.54313 12.2232 7.29357 11.3697 7.91689V3.67966C11.3697 3.34476 11.1043 3.0793 10.7811 3.0793H9.78929C9.46615 3.0793 9.20069 3.35652 9.20069 3.67966V8.81687C9.20069 9.02521 9.08532 9.19826 8.90051 9.2789C8.65858 9.38251 8.41608 9.48668 8.41608 9.48668V5.18C8.41608 4.8451 8.13942 4.57964 7.81628 4.57964H6.82446C6.49012 4.57964 6.22466 4.85686 6.22466 5.18V9.82102C6.22466 10.0523 6.06281 10.2483 5.84383 10.306C5.68198 10.3407 5.54365 10.3755 5.42829 10.4102V6.66969C5.42829 6.33479 5.15163 6.06934 4.82849 6.06934H3.83666ZM12.9953 11.1145C10.7232 14.2429 6.35104 14.9357 3.22492 12.6613C7.04324 12.1187 11.7615 10.3294 14.3103 6.50823L14.3119 6.53171C14.3226 6.68568 14.3332 6.8392 14.3332 6.99322C14.3332 8.4706 13.8606 9.91381 12.9953 11.1145Z" fill="#B6B6BD" />
                 </svg>
-              }
+              </Link>
+
             </div>
 
             <div className="flex items-center justify-between" >
               <div className="flex items-center gap-2" >
-                <img src={data.network.image} alt="" className="w-4 h-4 rounded-full" />
+                <Link to={getOpenSeaNftUrl(data.contract.address, data.tokenId)} target="_blank" >
+                  <img src={"/src/assets/svgs/ethereum.svg"} alt="" className="w-4 h-4 rounded-full" />
+                </Link>
 
-                <p className="text-xs text-su_secondary uppercase">{data.amount} {data.network.title.slice(0, 3)}</p>
+                {/* <p className="text-xs text-su_secondary uppercase">{data.amount} {data.network.title.slice(0, 3)}</p> */}
               </div>
 
               <div className="flex items-center gap-2" >

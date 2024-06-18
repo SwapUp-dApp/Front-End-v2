@@ -1,29 +1,34 @@
-import { cn } from "@/lib/utils";
+import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import CustomAvatar from "../shared/CustomAvatar";
 import WalletAddressTile from "../tiles/WalletAddressTile";
-import { INFTItem } from "@/swapup-types";
 import ChainTile from "../tiles/ChainTile";
-import { IPrivateRoomState } from "@/store/private-room-store/types";
+import { IPrivateRoomsLayoutSide } from "@/store/swap-market/swap-market-store.types";
+import { SUI_NFTItem } from "@/types/swapup.types";
 
 interface IProp {
   className?: string;
-  data: IPrivateRoomState;
+  data: IPrivateRoomsLayoutSide;
+  showEscroTile?: boolean;
 }
 
-const SwapDialogSideCard = ({ className, data, ...props }: IProp) => {
+const SwapDialogSideCard = ({ className, data, showEscroTile = false, ...props }: IProp) => {
 
-  const nftsImageMapper = (nfts: INFTItem[],) => (
+  const nftsImageMapper = (nfts: SUI_NFTItem[],) => (
     nfts.map((nft) => (
       <div
         className="group relative w-8 h-8 rounded-xs lg:w-12 lg:h-12 object-cover lg:rounded-sm border-[1.5px] border-white/20"
-        key={nft.image}>
-        <img className="w-full h-full object-cover rounded-xs lg:rounded-sm" src={nft.image} alt="nft" />
+        key={nft.tokenId}>
+        <img
+          className="w-full h-full object-cover rounded-xs lg:rounded-sm"
+          src={nft.media[0].gateway}
+          onError={getDefaultNftImageOnError}
+          alt="nft"
+        />
       </div>
     ))
   );
 
   const getConvertedAmount = (usdAmount: number | string, chainAmount: number | string) => {
-
     return Number(usdAmount) / Number(chainAmount);
   };
 
@@ -46,7 +51,17 @@ const SwapDialogSideCard = ({ className, data, ...props }: IProp) => {
       </div>
 
       <WalletAddressTile walletAddress={data.profile.walletAddress} className="text-2xs lg:text-xs">
-        <ChainTile imageSrc={data.network.image} title={data.network.title} showChainTitleOnMobileScreen className="text-2xs lg:text-xs" />
+        <div className="flex items-center gap-2" >
+          <ChainTile imageSrc={data.network.image} title={data.network.title} showChainTitleOnMobileScreen className="text-2xs lg:text-xs" />
+          {
+            showEscroTile &&
+            <span className=" flex items-center gap-2 p-2 bg-su_enable_bg text-su_primary font-semibold text-2xs lg:text-xs rounded-xs" >
+              <span className="rounded-full w-2 h-2 bg-su_positive" ></span>
+
+              Escro
+            </span>
+          }
+        </div>
       </WalletAddressTile>
 
       <div className="text-xs lg:text-sm text-su_secondary flex items-center justify-between" >

@@ -1,19 +1,25 @@
 import CopyTile from "../tiles/CopyTile";
 import { defaultFallbackRoute } from "@/routes";
 import ExitPageDialog from "../shared/ExitPageDialog";
+import { getLastCharacters } from "@/lib/utils";
 
 interface IProp {
   backClickNavigateTo?: string;
   tardeId: string;
+  resetData: () => void;
+  title: string;
+  existTitle: string;
+  existDescription: string;
 }
 
-const RoomHeader = ({ backClickNavigateTo, tardeId }: IProp) => {
+const RoomHeader = ({ backClickNavigateTo, tardeId, resetData, existDescription, existTitle, title }: IProp) => {
   return (
     <div className="flex justify-between lg:justify-start lg:gap-6" >
       <ExitPageDialog
-        title="Are you sure you want to exit the trade?"
-        description="By leaving the room, you will close it for both parties."
+        title={existTitle}
+        description={existDescription}
         redirectPath={backClickNavigateTo ? backClickNavigateTo : defaultFallbackRoute}
+        resetData={resetData}
       >
         <span
           className="text-sm dark:text-su_secondary flex items-center gap-2 cursor-pointer py-2 px-3 hover:rounded-sm hover:bg-su_secondary_bg">
@@ -25,10 +31,10 @@ const RoomHeader = ({ backClickNavigateTo, tardeId }: IProp) => {
         </span>
       </ExitPageDialog>
 
-      <h2 className="font-semibold text-1.5xl" >Private Room</h2>
+      <h2 className="font-semibold text-1.5xl">{title}</h2>
 
       <CopyTile textToCopy={tardeId} className="hidden lg:flex" >
-        Unique trade ID: <span className="dark:text-su_primary font-semibold">#{tardeId}</span>
+        Unique trade ID: <span className="dark:text-su_primary font-semibold">#{getLastCharacters(tardeId, 7)}</span>
       </CopyTile>
 
       <button className="lg:hidden" >Details</button>

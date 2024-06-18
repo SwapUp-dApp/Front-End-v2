@@ -7,7 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
-import { IRarityRankItem } from "@/swapup-types";
+import { availableRarityRanking } from "@/constants";
+import { SUI_RarityRankItem } from "@/types/swapup.types";
+
 
 const FormSchema = z.object({
   collection: z.string().min(1, {
@@ -21,11 +23,12 @@ const FormSchema = z.object({
 
 interface IProp {
   children: any;
-  setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: IRarityRankItem) => void;
+  setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
   removeAllFilters: () => void;
+  collections: [] | string[];
 }
 
-const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAllFilters }: IProp) => {
+const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAllFilters, collections }: IProp) => {
   const [formKey, setFormKey] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -52,32 +55,6 @@ const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAll
     removeAllFilters();
   };
 
-  const availableRarityRanking: IRarityRankItem[] = [
-    {
-      from: 1,
-      to: 10
-    },
-    {
-      from: 11,
-      to: 20
-    },
-    {
-      from: 21,
-      to: 50
-    },
-    {
-      from: 51,
-      to: 100
-    },
-    {
-      from: 101,
-      to: 1000
-    },
-    {
-      from: 1001,
-      to: 10000
-    },
-  ];
 
   return (
     <>
@@ -137,8 +114,9 @@ const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAll
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="cool animals">cool animals</SelectItem>
-                              <SelectItem value="uncool animals">uncool animals</SelectItem>
+                              {collections.map(collection => (
+                                <SelectItem key={collection} value={collection}>{collection}</SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -196,7 +174,6 @@ const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAll
                     <Button variant={"default"} type="submit" >Apply filters</Button>
 
                   </div>
-
                 </form>
               </Form>
             </div>
