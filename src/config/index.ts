@@ -16,7 +16,7 @@ const config: SUI_Config = {
   },
 
   dev: {
-    API_BASE_URL: "http://localhost:8800",
+    API_BASE_URL: "https://swapup-api-dev.azurewebsites.net",
     ETHERSCAN_BASE_URL: "https://sepolia.etherscan.io",
     OPENSEA_BASE_URL: "https://testnets.opensea.io",
     NETWORK: "sepolia",
