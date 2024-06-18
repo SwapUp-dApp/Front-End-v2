@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createOpenSwapOffer, createPrivateSwapOffer, getNftsForWallet, getPendingSwapsForWallet, getSwapHistoryForWallet } from "../api";
+import { createOpenSwapOffer, createPrivateSwapOffer, getNftsForWallet, getOpenSwapPendingList, getPendingSwapsForWallet, getSwapHistoryForWallet } from "../api";
 import { SUI_Swap, SUP_CreateOpenSwap } from "@/types/swap-market.types";
 
 
@@ -45,7 +45,6 @@ export const useNFTsByWallet = (walletId: string) => {
   });
 };
 
-
 export const useCreatePrivateSwapOffer = () => {
   return useMutation({
     mutationFn: async (swap: SUI_Swap) => {
@@ -66,6 +65,7 @@ export const useCreatePrivateSwapOffer = () => {
   });
 };
 
+// Open Market queries
 export const useCreateOpenSwapOffer = () => {
   return useMutation({
     mutationFn: async (swap: SUP_CreateOpenSwap) => {
@@ -82,6 +82,20 @@ export const useCreateOpenSwapOffer = () => {
     },
     onSuccess: (data) => {
       console.log("Swap offer created successfully:", data);
+    },
+  });
+};
+
+export const useOpenSwapsPendingList = () => {
+  return useQuery({
+    queryKey: ['getNftsForWallet'],
+    queryFn: async () => {
+      try {
+        const response = await getOpenSwapPendingList();
+        return response;
+      } catch (error) {
+        throw error;
+      }
     },
   });
 };

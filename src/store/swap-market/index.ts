@@ -20,10 +20,12 @@ import {
   resetPrivateRoomDataHelper,
   setSwapPreferencesHelper,
   resetOpenRoomHelper,
+  setOpenSwapsDataHelper,
+  setFilteredAvailableSwapsBySearchHelper,
 } from './swap-market-helpers';
 
 import { chainsDataset } from '@/constants/data';
-import { SUI_SwapPreferences, SUT_SwapOfferType } from '@/types/swap-market.types';
+import { SUI_OpenSwap, SUI_SwapPreferences, SUT_SwapOfferType } from '@/types/swap-market.types';
 import { SUE_SWAP_MODE } from '@/constants/enums';
 
 
@@ -170,6 +172,8 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
 const initialState: ISwapMarketStore = {
   openMarket: {
     openRoom: openMarketRoomInitialState,
+    setOpenSwapsData: () => { },
+    setFilteredAvailableSwapsBySearch: () => { }
   },
   privateMarket: {
     privateRoom: privateMarketRoomInitialState,
@@ -211,7 +215,9 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         set(newState);
       },
       setSwapPreferences: (preferences: SUI_SwapPreferences) => set((state) => setSwapPreferencesHelper(state, preferences))
-    }
+    },
+    setOpenSwapsData: (swapsData: SUI_OpenSwap[]) => set(state => setOpenSwapsDataHelper(state, swapsData)),
+    setFilteredAvailableSwapsBySearch: (searchValue: string) => set(state => setFilteredAvailableSwapsBySearchHelper(state, searchValue))
   },
   privateMarket: {
     privateRoom: {

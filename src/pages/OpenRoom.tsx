@@ -33,7 +33,7 @@ interface ISwapCreation {
   created: boolean;
 }
 
-const OpenMarket = () => {
+const OpenRoom = () => {
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [isValidParametersForm, setIsValidParametersForm] = useState(false);
   const [swapCreation, setSwapCreation] = useState<ISwapCreation>({ isLoading: false, created: false });
@@ -404,4 +404,4 @@ const OpenMarket = () => {
   );
 };
 
-export default OpenMarket;
+export default OpenRoom;

@@ -128,8 +128,14 @@ export interface IWallet {
 export interface ISwapMarketStore {
   openMarket: {
     // transaction history
+    availableSwaps?: SUI_OpenSwap[];
+    filteredAvailableSwaps?: SUI_OpenSwap[];
+    createdSwaps?: SUI_OpenSwap[];
+    pendingSwaps?: SUI_OpenSwap[];
+    history?: SUI_OpenSwap[];
     openRoom: IOpenRoom;
-
+    setOpenSwapsData: (swapsData: SUI_OpenSwap[]) => void;
+    setFilteredAvailableSwapsBySearch: (searchValue: string) => void;
   },
   privateMarket: {
     privateRoom: IPrivateRoom;

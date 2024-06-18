@@ -310,7 +310,8 @@ const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]) => {
   return nfts.map(nft => ({
     id: nft.tokenId,
     address: nft.contract.address,
-    type: nft.tokenType
+    type: nft.tokenType,
+    image_url: nft.media[0].gateway
   }));
 
 };
@@ -364,6 +365,51 @@ export const resetPrivateRoomDataHelper = (
 
 
 //=== Open Market Room helpers start====
+export const setOpenSwapsDataHelper = (
+  state: ISwapMarketStore,
+  swapsData: SUI_OpenSwap[],
+): ISwapMarketStore => {
+
+  let availableSwaps: SUI_OpenSwap[] = [];
+  let createdSwaps: SUI_OpenSwap[] = [];
+
+  if (state.wallet.address && state.wallet.isConnected) {
+    availableSwaps = swapsData.filter(swap => swap.init_address !== state.wallet.address);
+    createdSwaps = swapsData.filter(swap => swap.init_address === state.wallet.address);
+  }
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      availableSwaps,
+      createdSwaps,
+      filteredAvailableSwaps: availableSwaps
+    },
+  };
+};
+
+export const setFilteredAvailableSwapsBySearchHelper = (
+  state: ISwapMarketStore,
+  searchValue: string
+): ISwapMarketStore => {
+  const lowerCaseSearchValue = searchValue.toLowerCase();
+
+  const filteredAvailableSwaps = state.openMarket.availableSwaps?.filter(swap =>
+    swap.init_address.includes(lowerCaseSearchValue) ||
+    swap.open_trade_id.includes(lowerCaseSearchValue) ||
+    swap.swap_preferences.expiration_date.includes(lowerCaseSearchValue) ||
+    swap.swap_preferences.preferred_asset.type.includes(lowerCaseSearchValue) ||
+    swap.swap_preferences.preferred_asset.parameters.collection?.includes(lowerCaseSearchValue)
+  );
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      filteredAvailableSwaps: filteredAvailableSwaps
+    }
+  };
+};
+
 export const setValuesOnCreatingOpenSwapRoomHelper = (
   state: ISwapMarketStore,
   tradeId: string,
@@ -374,7 +420,7 @@ export const setValuesOnCreatingOpenSwapRoomHelper = (
   return {
     ...state,
     openMarket: {
-      ...market,
+      ...state.openMarket,
       openRoom: {
         ...room,
         uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
@@ -583,8 +629,6 @@ export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<IS
 
   return state;
 };
-
-// Wallet connect heplers end
 
 export const tempSenderNfts: SUI_NFTItem[] = [
   {

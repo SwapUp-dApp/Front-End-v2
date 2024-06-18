@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import ExitPageDialog from "@/components/custom/shared/ExitPageDialog";
 import { defaultFallbackRoute } from "@/routes";
 import { generateRandomTradeId } from "@/lib/utils";
-import { SUI_SwapPreferences} from "@/types/swap-market.types";
+import { SUI_SwapPreferences } from "@/types/swap-market.types";
 import { Input } from "@/components/ui/input";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
@@ -30,8 +30,8 @@ export interface IOpenMarketTableItem {
   },
   creation_date: string,
   expiry_date: string,
-  number_of_offers:number;
-  swap_preferences:SUI_SwapPreferences,
+  number_of_offers: number;
+  swap_preferences: SUI_SwapPreferences,
 }
 
 const openMarketTableData: IOpenMarketTableItem[] = [
@@ -39,9 +39,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png']
     },
-    creation_date: 'Apr 08, 2024',    
+    creation_date: 'Apr 08, 2024',
     expiry_date: 'Jun 23, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "nft",
@@ -69,9 +69,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png']
     },
-    creation_date: 'Apr 01, 2024',    
+    creation_date: 'Apr 01, 2024',
     expiry_date: 'Jun 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "nft",
@@ -94,14 +94,14 @@ const openMarketTableData: IOpenMarketTableItem[] = [
       </svg>,
       title: 'Solana'
     }
-  }, 
+  },
   {
     assets: {
       from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
     },
-    creation_date: 'May 01, 2024',    
+    creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "currency",
@@ -126,9 +126,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
     },
-    creation_date: 'May 01, 2024',    
+    creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "currency",
@@ -153,9 +153,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
     },
-    creation_date: 'May 01, 2024',    
+    creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "currency",
@@ -180,9 +180,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
     },
-    creation_date: 'May 01, 2024',    
+    creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "currency",
@@ -207,9 +207,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
     },
-    creation_date: 'May 01, 2024',    
+    creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "currency",
@@ -234,9 +234,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
     },
-    creation_date: 'May 01, 2024',    
+    creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "currency",
@@ -261,9 +261,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
     },
-    creation_date: 'May 01, 2024',    
+    creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "currency",
@@ -288,9 +288,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
     },
-    creation_date: 'May 01, 2024',    
+    creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "currency",
@@ -315,9 +315,9 @@ const openMarketTableData: IOpenMarketTableItem[] = [
     assets: {
       from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
     },
-    creation_date: 'May 01, 2024',    
+    creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
-    swap_preferences:{
+    swap_preferences: {
       expiration_date: 'Jun 23, 2024',
       preferred_asset: {
         type: "currency",
@@ -342,7 +342,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
 
 
 const ManageOpenMarketSwaps = () => {
- 
+
   const navigate = useNavigate();
   const wallet = useSwapMarketStore(state => state.wallet);
   const [filteredOpenSwapData, setFilteredOpenSwapData] = useState<IOpenMarketTableItem[] | []>(openMarketTableData);
@@ -365,7 +365,7 @@ const ManageOpenMarketSwaps = () => {
     );
   };
 
-  const handleResetData = () => {   
+  const handleResetData = () => {
     toast.custom(
       (id) => (
         <ToastLookCard
@@ -388,11 +388,11 @@ const ManageOpenMarketSwaps = () => {
     const value = event.target.value.toLowerCase();
 
     const newOpenSwapFilteredData = openMarketTableData.filter((item) => (
-      item.swap_preferences.preferred_asset.parameters.collection? item.swap_preferences.preferred_asset.parameters.collection.toLocaleLowerCase().includes(value) : "" ||
-      item.trading_chain.title.toLowerCase().includes(value) ||
-      item.creation_date.toLowerCase().includes(value) ||
-      item.expiry_date.toLowerCase().includes(value) ||
-      item.unique_trade_id.toLowerCase().includes(value)
+      item.swap_preferences.preferred_asset.parameters.collection ? item.swap_preferences.preferred_asset.parameters.collection.toLocaleLowerCase().includes(value) : "" ||
+        item.trading_chain.title.toLowerCase().includes(value) ||
+        item.creation_date.toLowerCase().includes(value) ||
+        item.expiry_date.toLowerCase().includes(value) ||
+        item.unique_trade_id.toLowerCase().includes(value)
     ));
     setFilteredOpenSwapData(newOpenSwapFilteredData);
   };
@@ -421,50 +421,50 @@ const ManageOpenMarketSwaps = () => {
 
   return (
     <div className="flex flex-col gap-4" >
-     
-    {/* Swaps Management Page - Title and Header */}
-     <div className="flex flex-col lg:flex-row gap-3" >
-          <ExitPageDialog
-            title={"Close Open Market Swaps Management"}
-            description={"Are you sure you want to go back to Swap Market?"}
-            redirectPath={defaultFallbackRoute}
-            resetData={handleResetData}
-          >
-            <span
-              className="text-sm dark:text-su_secondary flex items-center gap-2 cursor-pointer py-2 px-3 hover:rounded-sm hover:bg-su_secondary_bg">
-              <svg className="w-3" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 0L7.0575 1.0575L2.8725 5.25H12V6.75H2.8725L7.0575 10.9425L6 12L0 6L6 0Z" fill="#B6B6BD" />
-              </svg>
 
-              Back
-            </span>
-          </ExitPageDialog>
-          <div className=" w-full flex items-center justify-between">
-              <h2 className="font-semibold text-1.5xl " >Manage Open Market Swaps</h2>
-            <div className="flex items-center gap-2">             
+      {/* Swaps Management Page - Title and Header */}
+      <div className="flex flex-col lg:flex-row gap-3" >
+        <ExitPageDialog
+          title={"Close Open Market Swaps Management"}
+          description={"Are you sure you want to go back to Swap Market?"}
+          redirectPath={defaultFallbackRoute}
+          resetData={handleResetData}
+        >
+          <span
+            className="text-sm dark:text-su_secondary flex items-center gap-2 cursor-pointer py-2 px-3 hover:rounded-sm hover:bg-su_secondary_bg">
+            <svg className="w-3" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 0L7.0575 1.0575L2.8725 5.25H12V6.75H2.8725L7.0575 10.9425L6 12L0 6L6 0Z" fill="#B6B6BD" />
+            </svg>
+
+            Back
+          </span>
+        </ExitPageDialog>
+        <div className=" w-full flex items-center justify-between">
+          <h2 className="font-semibold text-1.5xl " >Manage Open Market Swaps</h2>
+          <div className="flex items-center gap-2">
             <Input
-                  className="min-w-full-[10px] bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
-                  placeholder="Search by NFT, trade ID, trading chain, etc..."
-                  onChange={handleOpenSwapFilterData}
-                  icon={
-                    <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
-                    </svg>
-                  }
-                />
+              className="min-w-full-[10px] bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
+              placeholder="Search by NFT, trade ID, trading chain, etc..."
+              onChange={handleOpenSwapFilterData}
+              icon={
+                <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
+                </svg>
+              }
+            />
             <Button
-                  className="gradient-button"
-                  onClick={() => {
-                    wallet.isConnected ? navigate(`/swap-up/swap-market/open-market/open-room/${generateRandomTradeId()}`) : handleShowWalletConnectionToast();
-                  }}
-                >Create open swap</Button>
-            </div>
+              className="gradient-button"
+              onClick={() => {
+                wallet.isConnected ? navigate(`/swap-up/swap-market/open-market/open-room/${generateRandomTradeId()}`) : handleShowWalletConnectionToast();
+              }}
+            >Create open swap</Button>
           </div>
-     </div>
-  
-    {/* Swaps Management Table */}
-    <Table className="min-w-full">
-      <TableHeader>
+        </div>
+      </div>
+
+      {/* Swaps Management Table */}
+      <Table className="min-w-full">
+        <TableHeader>
           <TableRow>
             <TableHead className="font-semibold">Assets</TableHead>
             <TableHead className="font-semibold px-4" >Unique trade ID</TableHead>
@@ -514,19 +514,19 @@ const ManageOpenMarketSwaps = () => {
                 <TableCell className="font-medium px-4">{data.number_of_offers}</TableCell>
                 <TableCell className="font-medium px-4 capitalize">
                   {
-                    data.swap_preferences.preferred_asset.type === "nft"?
-                    <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                    {data.swap_preferences.preferred_asset.parameters.collection} /{data.swap_preferences.preferred_asset.parameters.rank?.from} - {data.swap_preferences.preferred_asset.parameters.rank?.to}
-                  </span>                          
-                    :
-                    <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                    {data.swap_preferences.preferred_asset.parameters.added_amount} ETH
-                  </span>
+                    data.swap_preferences.preferred_asset.type === "nft" ?
+                      <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                        {data.swap_preferences.preferred_asset.parameters.collection} /{data.swap_preferences.preferred_asset.parameters.rank?.from} - {data.swap_preferences.preferred_asset.parameters.rank?.to}
+                      </span>
+                      :
+                      <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                        {data.swap_preferences.preferred_asset.parameters.added_amount} ETH
+                      </span>
 
                   }
                 </TableCell>
                 <TableCell className="font-medium flex pr-16 justify-end">
-                <HoverCard>
+                  <HoverCard>
                     <HoverCardTrigger className=" px-3 py-1.5 rounded-xs hover:bg-su_enable_bg cursor-pointer" >
                       <svg
                         className="w-1 cursor-pointer" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -534,17 +534,17 @@ const ManageOpenMarketSwaps = () => {
                       </svg>
                     </HoverCardTrigger>
                     <HoverCardContent className="border-none bg-card  dark:bg-su_secondary_bg p-0 rounded-xs" >
-                    <button onClick={handleResetFilters} type="reset" className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg" >
+                      <button onClick={handleResetFilters} type="reset" className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg" >
 
-                    <svg  className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 14.8538V17.5556C2 17.8045 2.19553 18 2.44438 18H5.14624C5.26178 18 5.37732 17.9556 5.45731 17.8667L15.1627 8.17022L11.8298 4.83734L2.13332 14.5338C2.04444 14.6227 2 14.7293 2 14.8538ZM17.7401 4.33963L15.6604 2.25991C15.5781 2.17752 15.4805 2.11216 15.373 2.06756C15.2654 2.02296 15.1502 2 15.0338 2C14.9174 2 14.8021 2.02296 14.6946 2.06756C14.5871 2.11216 14.4894 2.17752 14.4072 2.25991L12.7808 3.88636L16.1136 7.21924L17.7401 5.5928C17.8225 5.51057 17.8878 5.41291 17.9324 5.30539C17.977 5.19787 18 5.08261 18 4.96621C18 4.84981 17.977 4.73456 17.9324 4.62704C17.8878 4.51952 17.8225 4.42186 17.7401 4.33963Z" fill="#868691"/>
-                    </svg>
+                        <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M2 14.8538V17.5556C2 17.8045 2.19553 18 2.44438 18H5.14624C5.26178 18 5.37732 17.9556 5.45731 17.8667L15.1627 8.17022L11.8298 4.83734L2.13332 14.5338C2.04444 14.6227 2 14.7293 2 14.8538ZM17.7401 4.33963L15.6604 2.25991C15.5781 2.17752 15.4805 2.11216 15.373 2.06756C15.2654 2.02296 15.1502 2 15.0338 2C14.9174 2 14.8021 2.02296 14.6946 2.06756C14.5871 2.11216 14.4894 2.17752 14.4072 2.25991L12.7808 3.88636L16.1136 7.21924L17.7401 5.5928C17.8225 5.51057 17.8878 5.41291 17.9324 5.30539C17.977 5.19787 18 5.08261 18 4.96621C18 4.84981 17.977 4.73456 17.9324 4.62704C17.8878 4.51952 17.8225 4.42186 17.7401 4.33963Z" fill="#868691" />
+                        </svg>
 
-                      Edit
+                        Edit
                       </button>
                       <button onClick={() => {
-                          wallet.isConnected ? navigate(`/swap-up/my-swaps`) : handleShowWalletConnectionToast();
-                        }} type="reset" className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg" >
+                        wallet.isConnected ? navigate(`/swap-up/my-swaps`) : handleShowWalletConnectionToast();
+                      }} type="reset" className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg" >
 
                         <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
@@ -561,26 +561,26 @@ const ManageOpenMarketSwaps = () => {
                       </button>
                     </HoverCardContent>
                   </HoverCard>
-                  </TableCell>
+                </TableCell>
               </TableRow>
             ))
           }
         </TableBody>
-        </Table>
-            {
-              !filteredOpenSwapData.length &&
-            <EmptyDataset
-              title="No Open Swaps Available"
-              description="Check back later or create your own swap!"
-            >
-              <Button
-                className="gradient-button"
-                onClick={() => {
-                  wallet.isConnected ? navigate(`/swap-up/swap-market/open-market/open-room/${generateRandomTradeId()}`) : handleShowWalletConnectionToast();
-                }}
-              >Create open swap</Button>
-            </EmptyDataset>
-            }    
+      </Table>
+      {
+        !filteredOpenSwapData.length &&
+        <EmptyDataset
+          title="No Open Swaps Available"
+          description="Check back later or create your own swap!"
+        >
+          <Button
+            className="gradient-button"
+            onClick={() => {
+              wallet.isConnected ? navigate(`/swap-up/swap-market/open-market/open-room/${generateRandomTradeId()}`) : handleShowWalletConnectionToast();
+            }}
+          >Create open swap</Button>
+        </EmptyDataset>
+      }
     </div >
   );
 };

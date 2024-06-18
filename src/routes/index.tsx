@@ -5,7 +5,7 @@ import MainLayout from "@/layouts/MainLayout";
 import PrivateRoom from "@/pages/PrivateRoom";
 import SwapMarketPage from "@/pages/SwapMarketPage";
 import MySwapsPage from "@/pages/MySwapsPage";
-import OpenMarket from "@/pages/OpenMarket";
+import OpenMarket from "@/pages/OpenRoom";
 import UserProfile from "@/pages/UserProfile";
 import ManageOpenMarketSwaps from "@/pages/ManageOpenMarketSwaps";
 

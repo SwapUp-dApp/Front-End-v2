@@ -32,6 +32,7 @@ export interface SUI_SwapToken {
   id: string;
   address: string;
   type: string;
+  image_url: string;
 }
 
 
@@ -39,6 +40,8 @@ export interface SUI_SwapToken {
 export interface SUI_OpenSwap extends SUI_Swap {
   swap_preferences: SUI_SwapPreferences;
   open_trade_id: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface SUI_SwapPreferences {
