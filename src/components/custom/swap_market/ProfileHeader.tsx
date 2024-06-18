@@ -50,7 +50,7 @@ const ProfileHeader = ({ backClickNavigateTo, walletAddress, resetData, existDes
               <Label htmlFor="airplane-mode">Private mode</Label>
             </div>
           </div>
-          </div>
+      </div>
         
       <div className="min-w-full space-x-10  relative">
         {/* 👇️ local image */}

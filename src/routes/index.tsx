@@ -7,6 +7,7 @@ import SwapMarketPage from "@/pages/SwapMarketPage";
 import MySwapsPage from "@/pages/MySwapsPage";
 import OpenMarket from "@/pages/OpenMarket";
 import UserProfile from "@/pages/UserProfile";
+import ManageOpenMarketSwaps from "@/pages/ManageOpenMarketSwaps";
 
 
 interface IRoutesType {
@@ -57,6 +58,12 @@ export const clientSideRoutes: IRoutesType[] = [
         title: "Create open market swap",
         path: "swap-market/open-market/open-room/:openTradeId",
         element: <OpenMarket />,
+      },
+      {
+        id: 'manage-open-market',
+        title: "Manage Open Market Swaps",
+        path: "swap-market/open-market/manage-open-market",
+        element: <ManageOpenMarketSwaps />,
       },
       {
         id: 'user-profile',
