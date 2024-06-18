@@ -13,7 +13,7 @@ const UserProfile = () => {
 
     const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
 
-    const myWalletAddress = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
+    //const myWalletAddress = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
 
     const handleSwitchTab = (value: "wallet-overview" | "assets"|"points") => {
       setActiveTab(value);
@@ -39,7 +39,7 @@ const UserProfile = () => {
        ensaddress={profile.ensAddress}
        joindate="Joined Sept 2023"
        avatarimage={profile.image}
-       AvatarFallback="No Image"
+       avatarFallbackI="No Image"
       />
   
           {/* leaderboard */}
@@ -90,7 +90,7 @@ const UserProfile = () => {
 
                 {/* Points & Swappot  */}
 
-                <div className="flex flex-col lg:flex-row items-center gap-3" >
+                <div className="flex flex-col lg:flex-row items-center gap-3 " >
            
                   <ProfilePointsCard cardType="tradescreated" Title="Trades Created" TitleDesc="Active trade Proposals you have created" Points="50" />
                   <ProfilePointsCard cardType="tradescreated" Title="Trades Completed" TitleDesc="Successfully finalized trade transactions" Points="50"/>
@@ -98,8 +98,11 @@ const UserProfile = () => {
                 
                </div>
                <div className="flex gap-4 items-center">
-                <h2 className="font-semibold text-1.5xl" >Swappot</h2>
-             
+               <h2 className="font-semibold text-1.5xl" >Swappot</h2>
+
+               <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'points' ? 'bg-muted text-muted-foreground' : 'bg-muted'}`}>
+               
+             </span>
                 </div>
 
                 <EmptyDataset

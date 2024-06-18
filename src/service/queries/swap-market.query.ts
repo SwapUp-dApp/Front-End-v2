@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createOpenSwapOffer, createPrivateSwapOffer, getNftsForWallet, getPendingSwapsForWallet, getSwapHistoryForWallet } from "../api";
-import { SUI_OpenSwap, SUI_Swap, SUP_CreateOpenSwap } from "@/types/swap-market.types";
+import { SUI_Swap, SUP_CreateOpenSwap } from "@/types/swap-market.types";
 
 
 export const getWalletSwapHistory = (walletId: string) => {

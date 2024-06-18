@@ -33,7 +33,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { useSwapMarketStore } from "@/store/swap-market";
 
 export interface IPendingSwapTableItem {
   assets: {
@@ -310,8 +309,8 @@ const MySwapsPage = () => {
   const [filteredPendingSwapData, setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
 
   const [isOpen, setIsOpen] = useState(false);
-  const wallet = useSwapMarketStore(state => state.wallet);
-  const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
+ // const wallet = useSwapMarketStore(state => state.wallet);
+ // const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
 
 
   const [date, setDate] = React.useState<DateRange | undefined>({

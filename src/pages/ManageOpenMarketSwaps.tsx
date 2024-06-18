@@ -1,31 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { DialogClose } from "@/components/ui/dialog";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
-import CopyTile from "@/components/custom/tiles/CopyTile";
-
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
-import StaySafeDialog from "@/components/custom/swap_market/StaySafeDialog";
-import AvoidingFeeDialog from "@/components/custom/swap_market/AvoidingFeeDialog";
-
 import { useSwapMarketStore } from "@/store/swap-market";
-import OpenMarketRoomFooter from "@/components/custom/swap_market/open-market/OpenMarketRoomFooter";
-import RoomHeader from "@/components/custom/swap_market/RoomHeader";
-import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
-import SwapParametersCard from "@/components/custom/swap_market/open-market/SwapParametersCard";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { toast } from "sonner";
-import { getLastCharacters, isValidTradeId } from "@/lib/utils";
-import SwapDialogSideCard from "@/components/custom/swap_market/SwapDialogSideCard";
-import SwapParameterTile from "@/components/custom/tiles/SwapParameterTile";
-import moment from "moment";
-import { availableCollections } from "@/constants/data";
-import ChainTile from "@/components/custom/tiles/ChainTile";
-import { SUP_CreateOpenSwap } from "@/types/swap-market.types";
-import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
-import { useCreateOpenSwapOffer } from "@/service/queries/swap-market.query";
 import ExitPageDialog from "@/components/custom/shared/ExitPageDialog";
 import { defaultFallbackRoute } from "@/routes";
 import { generateRandomTradeId } from "@/lib/utils";

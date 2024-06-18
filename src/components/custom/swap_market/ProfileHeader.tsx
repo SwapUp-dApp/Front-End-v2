@@ -3,10 +3,8 @@ import { defaultFallbackRoute } from "@/routes";
 import ExitPageDialog from "../shared/ExitPageDialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { Card, CardContent } from "@/components/ui/card";
-
+import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
  
 
 interface IProp {
@@ -18,10 +16,10 @@ interface IProp {
   ensaddress: string;
   joindate:string;
   avatarimage:string;
-  AvatarFallback: string;
+  avatarFallbackI: string;
 }
 
-const ProfileHeader = ({ backClickNavigateTo, walletAddress, resetData, existDescription, existTitle, ensaddress,joindate, avatarimage, AvatarFallback }: IProp) => {
+const ProfileHeader = ({ backClickNavigateTo, walletAddress, resetData, existDescription, existTitle, ensaddress,joindate, avatarimage, avatarFallbackI }: IProp) => {
   return (
 
    
@@ -62,15 +60,21 @@ const ProfileHeader = ({ backClickNavigateTo, walletAddress, resetData, existDes
             imageSrc={"/src/assets/images/avatar.png"}
               sizeClasses="w-full h-full lg:w-20 lg:h-20"
             /> */}
-            <Avatar
-              className={cn(
-              " absolute bottom-40 flex h-20 w-20 shrink-0 "
-              )}
-              >
-               
-              <AvatarImage src={avatarimage ? avatarimage : ""} />
-              {/* <AvatarFallback className={cn(`uppercase text-3xs font-semibold rounded-full border-[4.5px] border-su_active_bg dark: bg-su_secondary_bg w-40 h-20  $text-xs lg:text-1.5xl flex justify-center items-center`)}>KS</AvatarFallback> */}
-            </Avatar>
+
+<Avatar
+      className={" absolute bottom-40 flex h-20 w-20 shrink-0 "}
+    >
+      <AvatarImage className="rounded-full" src={avatarimage ? avatarimage : ""}  alt="@shadcn" />
+      <AvatarFallback className={`uppercase text-3xs font-semibold rounded-full border-[4.5px] border-su_active_bg dark: bg-su_secondary_bg w-40 h-20  $text-xs lg:text-1.5xl flex justify-center items-center`}>
+      {avatarFallbackI}
+      </AvatarFallback>
+
+     
+    </Avatar>
+
+
+
+
 
 
             <div className="  w-full flex items-center justify-between">

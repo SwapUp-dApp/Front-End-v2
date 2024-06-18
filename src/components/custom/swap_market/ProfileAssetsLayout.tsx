@@ -1,13 +1,9 @@
 import { ChangeEvent, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import WalletAddressTile from "../tiles/WalletAddressTile";
-import CustomAvatar from "../shared/CustomAvatar";
-import ChainTile from "../tiles/ChainTile";
 import FilterButton from "../shared/FilterButton";
 import GridToggleButton from "../shared/GridToggleButton";
 import { Input } from "@/components/ui/input";
 import NftCard from "../shared/NftCard";
-import { Separator } from "@/components/ui/separator";
 import EmptyDataset from "../shared/EmptyDataset";
 import PrivateRoomFilterDrawer from "./PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
@@ -31,8 +27,6 @@ const ProfileAssetsLayout = ({  layoutType , walletAddress }: IProp) => {
   const {
     activeGridView,
     toggleGridView,
-    profile,
-    network,
     filteredNfts,
     setSelectedNftsForSwap,
     nftsSelectedForSwap,

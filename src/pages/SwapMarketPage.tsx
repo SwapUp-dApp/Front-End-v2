@@ -14,7 +14,7 @@ import { generateRandomTradeId } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useSwapMarketStore } from "@/store/swap-market";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-import { SUI_OpenSwap, SUI_SwapPreferences, SUI_SwapCurrencyItem } from "@/types/swap-market.types";
+import { SUI_SwapPreferences} from "@/types/swap-market.types";
 import CreatedSwapsCards from "@/components/custom/swap_market/CreatedSwapsCards";
 
 export interface ICreatedSwap {
