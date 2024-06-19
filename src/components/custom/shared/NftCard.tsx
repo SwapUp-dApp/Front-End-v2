@@ -96,7 +96,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
             <div className="flex items-center justify-between" >
               <div className="flex items-center gap-2" >
                 <Link to={getOpenSeaNftUrl(data.contract.address, data.tokenId)} target="_blank" >
-                  <img src={"/src/assets/svgs/ethereum.svg"} alt="" className="w-4 h-4 rounded-full" />
+                  <img src={"/assets/svgs/ethereum.svg"} alt="" className="w-4 h-4 rounded-full" />
                 </Link>
 
                 {/* <p className="text-xs text-su_secondary uppercase">{data.amount} {data.network.title.slice(0, 3)}</p> */}

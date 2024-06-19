@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { getNameInitials } from "@/lib/utils";
+import { getNameInitials, resolveAssetPath } from "@/lib/utils";
 import { IMember } from "@/pages/SwapMarketPage";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
@@ -28,19 +28,19 @@ const LeaderboardCard = ({ users }: IProp) => {
           <div className="flex flex-col gap-1.5" >
             <div className="flex items-center gap-6 2xl:gap-8 mx-auto">
               <div className="flex items-center gap-2">
-                <img className="w-6 h-6" src="/src/assets/svgs/goldBadge.svg" alt="1st" />
+                <img className="w-6 h-6" src="/assets/svgs/goldBadge.svg" alt="1st" />
                 <span className="text-xs font-semibold" >1,600</span>
               </div>
               <div className="flex items-center gap-2">
-                <img className="w-6 h-6" src="/src/assets/svgs/silverBadge.svg" alt="1st" />
+                <img className="w-6 h-6" src="/assets/svgs/silverBadge.svg" alt="1st" />
                 <span className="text-xs font-semibold" >1,300</span>
               </div>
               <div className="flex items-center gap-2">
-                <img className="w-6 h-6" src="/src/assets/svgs/bronzeBadge.svg" alt="1st" />
+                <img className="w-6 h-6" src="/assets/svgs/bronzeBadge.svg" alt="1st" />
                 <span className="text-xs font-semibold" >1,100</span>
               </div>
               <div className="flex items-center gap-2">
-                <img className="w-6 h-6" src="/src/assets/svgs/fourthPlaceBadge.svg" alt="1st" />
+                <img className="w-6 h-6" src="/assets/svgs/fourthPlaceBadge.svg" alt="1st" />
                 <span className="text-xs font-semibold" >800</span>
               </div>
             </div>
@@ -53,7 +53,7 @@ const LeaderboardCard = ({ users }: IProp) => {
                       <div className="flex items-center justify-between" key={user.id}>
                         <div className="w-[25%] border">
                           <Avatar className="relative w-4 h-4 mx-auto">
-                            <AvatarImage className="w-4 h-4" src={user.image} alt="@shadcn" />
+                            <AvatarImage className="w-4 h-4" src={user.image ? resolveAssetPath(user.image) : ''} alt="@shadcn" />
                             <AvatarFallback className="text-[8px] font-semibold rounded-full dark:bg-su_enable_bg w-4 h-4 flex justify-center items-center">
                               {getNameInitials(user.title)}
                             </AvatarFallback>

@@ -71,8 +71,8 @@ export interface ISwapHistoryTableItem {
 const pendingSwapTableData: IPendingSwapTableItem[] = [
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png', '/src/assets/nfts/from4.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png', '/assets/nfts/from4.png']
     },
     unique_trade_id: '#46Aic2o',
     status: 'sent',
@@ -89,8 +89,8 @@ const pendingSwapTableData: IPendingSwapTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#32Bic1o',
     status: 'sent',
@@ -107,8 +107,8 @@ const pendingSwapTableData: IPendingSwapTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png',],
-      to: ['/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png',],
+      to: ['/assets/nfts/to3.png']
     },
     unique_trade_id: '#12Bic1o',
     status: 'received',
@@ -125,8 +125,8 @@ const pendingSwapTableData: IPendingSwapTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     status: 'received',
@@ -143,8 +143,8 @@ const pendingSwapTableData: IPendingSwapTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     status: 'sent',
@@ -161,8 +161,8 @@ const pendingSwapTableData: IPendingSwapTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     status: 'sent',
@@ -179,8 +179,8 @@ const pendingSwapTableData: IPendingSwapTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     status: 'sent',
@@ -200,8 +200,8 @@ const pendingSwapTableData: IPendingSwapTableItem[] = [
 const swapHistoryTableData: ISwapHistoryTableItem[] = [
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png', '/src/assets/nfts/from4.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png', '/assets/nfts/from4.png']
     },
     unique_trade_id: '#46Aic2o',
     swap_mode: 'open market',
@@ -217,8 +217,8 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#32Bic1o',
     swap_mode: 'private',
@@ -234,8 +234,8 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png',],
-      to: ['/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png',],
+      to: ['/assets/nfts/to3.png']
     },
     unique_trade_id: '#12Bic1o',
     swap_mode: 'open market',
@@ -251,8 +251,8 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     swap_mode: 'private',
@@ -268,8 +268,8 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     swap_mode: 'private',
@@ -285,8 +285,8 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     swap_mode: 'private',
@@ -309,8 +309,8 @@ const MySwapsPage = () => {
   const [filteredPendingSwapData, setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
 
   const [isOpen, setIsOpen] = useState(false);
- // const wallet = useSwapMarketStore(state => state.wallet);
- // const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
+  // const wallet = useSwapMarketStore(state => state.wallet);
+  // const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
 
 
   const [date, setDate] = React.useState<DateRange | undefined>({
@@ -969,7 +969,7 @@ const MySwapsPage = () => {
                               })
                             }
                             className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD"/>
+                            <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
                           </svg>
                         </TableCell>
                       </TableRow>

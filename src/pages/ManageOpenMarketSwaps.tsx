@@ -37,7 +37,7 @@ export interface IOpenMarketTableItem {
 const openMarketTableData: IOpenMarketTableItem[] = [
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png']
     },
     creation_date: 'Apr 08, 2024',
     expiry_date: 'Jun 23, 2024',
@@ -67,7 +67,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png']
     },
     creation_date: 'Apr 01, 2024',
     expiry_date: 'Jun 27, 2024',
@@ -97,7 +97,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png']
     },
     creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
@@ -124,7 +124,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png']
     },
     creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
@@ -151,7 +151,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png']
     },
     creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
@@ -178,7 +178,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png']
     },
     creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
@@ -205,7 +205,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png']
     },
     creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
@@ -232,7 +232,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png']
     },
     creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
@@ -259,7 +259,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png']
     },
     creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
@@ -286,7 +286,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png']
     },
     creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',
@@ -313,7 +313,7 @@ const openMarketTableData: IOpenMarketTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png']
     },
     creation_date: 'May 01, 2024',
     expiry_date: 'July 27, 2024',

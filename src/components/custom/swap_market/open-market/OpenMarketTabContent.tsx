@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import FilterButton from '../../shared/FilterButton';
 import { Button } from '@/components/ui/button';
 import EmptyDataset from '../../shared/EmptyDataset';
-import { generateRandomTradeId, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
 import CreatedSwapsCards from './CreatedSwapsCards';
@@ -44,6 +44,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
     }
 
     if (error && isError) {
+      setOpenSwapsData([]);
       toast.custom(
         (id) => (
           <ToastLookCard
@@ -72,7 +73,9 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
               <img
                 className="w-full h-full object-cover rounded-xs border-[1.5px] border-white/20"
                 src={nft.image_url}
-                alt="nft" />
+                alt="nft"
+                onError={getDefaultNftImageOnError}
+              />
 
               {
                 (index === 2) &&
@@ -94,7 +97,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
         <div className="flex items-center justify-between gap-4" >
           <h2 className="text-1.5xl font-medium" >Created</h2>
           <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'private-party' ? 'bg-muted text-muted-foreground' : 'bg-muted'}`}>
-            {createdSwaps?.length}
+            {createdSwaps?.length || 0}
           </span>
         </div>
 
@@ -128,7 +131,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
         <div className="flex items-center justify-between gap-4" >
           <h2 className="text-1.5xl font-medium" >Available</h2>
           <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'private-party' ? 'bg-muted text-muted-foreground' : 'bg-muted'}`}>
-            {filteredAvailableSwaps?.length}
+            {filteredAvailableSwaps?.length || 0}
           </span>
         </div>
 
@@ -264,7 +267,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
       />
 
       {
-        (!isLoading && (filteredAvailableSwaps?.length === 0)) &&
+        (!isLoading && ((filteredAvailableSwaps || []).length === 0)) &&
         <EmptyDataset
           title="No Open Swaps Available"
           description="Check back later or create your own swap!"

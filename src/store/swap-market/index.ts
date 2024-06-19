@@ -41,13 +41,13 @@ export const openMarketRoomInitialState: IOpenRoom = {
     toggleGridView: () => { },
     network: {
       id: '1',
-      image: '/src/assets/svgs/ethereum.svg',
+      image: '/assets/svgs/ethereum.svg',
       title: 'ethereum',
       shortTitle: "eth"
     },
     profile: {
       ensAddress: 'sender.swapup.eth',
-      image: '/src/assets/images/avatar.png',
+      image: '/assets/images/avatar.png',
       isPremium: false,
       title: 'sender',
       walletAddress: ''
@@ -110,13 +110,13 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
     toggleGridView: () => { },
     network: {
       id: '1',
-      image: '/src/assets/svgs/ethereum.svg',
+      image: '/assets/svgs/ethereum.svg',
       title: 'ethereum',
       shortTitle: "eth"
     },
     profile: {
       ensAddress: 'sender.swapup.eth',
-      image: '/src/assets/images/avatar.png',
+      image: '/assets/images/avatar.png',
       isPremium: false,
       title: 'sender',
       walletAddress: ''
@@ -139,7 +139,7 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
     toggleGridView: () => { },
     network: {
       id: '9090',
-      image: '/src/assets/svgs/solana.svg',
+      image: '/assets/svgs/solana.svg',
       title: 'solana',
       shortTitle: 'sol'
     },

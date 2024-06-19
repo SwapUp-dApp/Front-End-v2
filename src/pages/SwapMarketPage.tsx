@@ -42,8 +42,8 @@ export interface IPrivatePartyTableItem {
 const privatePartyTableData: IPrivatePartyTableItem[] = [
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png', '/src/assets/nfts/from4.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png', '/assets/nfts/from4.png']
     },
     unique_trade_id: '#46Aic2o',
     status: 'sent',
@@ -58,8 +58,8 @@ const privatePartyTableData: IPrivatePartyTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#32Bic1o',
     status: 'received',
@@ -74,8 +74,8 @@ const privatePartyTableData: IPrivatePartyTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png',],
-      to: ['/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png',],
+      to: ['/assets/nfts/to3.png']
     },
     unique_trade_id: '#12Bic1o',
     status: 'sent',
@@ -90,8 +90,8 @@ const privatePartyTableData: IPrivatePartyTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     status: 'sent',
@@ -106,8 +106,8 @@ const privatePartyTableData: IPrivatePartyTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from1.png', '/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png', '/src/assets/nfts/from4.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to2.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     status: 'sent',
@@ -122,8 +122,8 @@ const privatePartyTableData: IPrivatePartyTableItem[] = [
   },
   {
     assets: {
-      from: ['/src/assets/nfts/from2.png', '/src/assets/nfts/from3.png'],
-      to: ['/src/assets/nfts/to1.png', '/src/assets/nfts/to3.png']
+      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png'],
+      to: ['/assets/nfts/to1.png', '/assets/nfts/to3.png']
     },
     unique_trade_id: '#46Aic2o',
     status: 'received',
@@ -150,17 +150,17 @@ const SwapMarketPage = () => {
   const membersData: IMember[] = [
     {
       id: '1',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '2',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '3',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
@@ -175,7 +175,7 @@ const SwapMarketPage = () => {
     },
     {
       id: '6',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
@@ -190,27 +190,27 @@ const SwapMarketPage = () => {
     },
     {
       id: '9',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '10',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '11',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '12',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '13',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
   ];
@@ -218,70 +218,70 @@ const SwapMarketPage = () => {
   const tradersData: IMember[] = [
     {
       id: '1',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D',
       topRated: true
     },
     {
       id: '2',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D',
       topRated: true
     },
     {
       id: '3',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D',
       topRated: true
     },
     {
       id: '4',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '5',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '6',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '7',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '8',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '9',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '10',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '11',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '12',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
     {
       id: '13',
-      image: '/src/assets/images/avatar.png',
+      image: 'assets/images/avatar.png',
       title: 'John D'
     },
   ];

@@ -22,7 +22,7 @@ const EmptyDataset = ({ title, description, children, navigateTo, showBackground
       )}
     >
       {showBackgroundPicture &&
-        <img className="absolute top-0 h-full" src="/src/assets/svgs/emptyBackground.svg" alt="" />
+        <img className="absolute top-0 h-full" src="/assets/svgs/emptyBackground.svg" alt="" />
       }
       <div className="absolute lg:w-[497px] h-full bg-[rgba(217, 217, 217, 1)]" ></div>
 
