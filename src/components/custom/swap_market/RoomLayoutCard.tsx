@@ -49,7 +49,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey }: IProp) => {
       : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
 
-  const [swap, setCounterPartyNftsDataset] = useSwapMarketStore(state => [state.openMarket.openRoom.swap, state.openMarket.openRoom.receiver.setCounterPartyNftsDataset]);
+  const [swap, ] = useSwapMarketStore(state => [state.openMarket.openRoom.swap, state.openMarket.openRoom.receiver.setCounterPartyNftsDataset]);
 
   const handleSearchNfts = (searchValue: string) => {
     setFilteredNftsBySearch(searchValue);
