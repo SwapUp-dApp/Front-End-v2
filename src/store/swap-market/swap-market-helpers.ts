@@ -484,7 +484,7 @@ export const createOpenSwapHelper = async (
   };
 };
 
-export const resetOpenRoomHelper = (
+export const resetOpenSwapCreationRoomHelper = (
   state: ISwapMarketStore,
 ): ISwapMarketStore => {
 

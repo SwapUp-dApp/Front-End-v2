@@ -6,7 +6,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import CustomOutlineButton from "../shared/CustomOutlineButton";
+import CustomOutlineButton from "../../shared/CustomOutlineButton";
 import { availableRarityRanking } from "@/constants";
 import { SUI_RarityRankItem } from "@/types/swapup.types";
 

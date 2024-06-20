@@ -230,20 +230,11 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
 
                   <TableCell className="font-medium flex pr-8 justify-end">
                     <svg
-                      onClick={() =>
-                        toast.info("Options", {
-                          duration: 2000,
-                          description: "Propose Swap feature is under construction!",
-                          action: {
-                            label: "Close",
-                            onClick: () => { },
-                          },
-                          className: '!bg-gradient-primary border-none',
-                          descriptionClassName: '!text-white',
-                        })
-                      }
-                      className="w-12 h-6 cursor-pointer" viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="1" y="1" width="30" height="30" rx="15" stroke="url(#paint0_linear_2344_40905)" stroke-width="2" />
+                      onClick={() => { navigate(`/swap-up/swap-market/open-swap/propose/${swap.init_address}/${generateRandomTradeId()}`); }}
+
+                      className="w-12 h-6 cursor-pointer"
+                      viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="1" y="1" width="30" height="30" rx="15" stroke="url(#paint0_linear_2344_40905)" strokeWidth="2" />
                       <path d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z" fill="white" />
                       <defs>
                         <linearGradient id="paint0_linear_2344_40905" x1="32" y1="6.08" x2="-1.86631" y2="14.9716" gradientUnits="userSpaceOnUse">
@@ -276,7 +267,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
             className="gradient-button"
             onClick={() => {
               wallet.isConnected ?
-                navigate(`/swap-up/swap-market/open-market/open-room/${generateRandomTradeId()}`)
+                navigate(`/swap-up/swap-market/open-swap/create/${generateRandomTradeId()}`)
                 : handleShowWalletConnectionToast();
             }}
           >

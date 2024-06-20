@@ -23,7 +23,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import CreatePrivateSwapDialog from "@/components/custom/swap_market/CreatePrivateSwapDialog";
+import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import { CalendarIcon } from "lucide-react";
 import { addDays, format } from "date-fns";

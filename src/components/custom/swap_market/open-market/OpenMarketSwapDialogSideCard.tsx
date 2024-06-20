@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import CustomAvatar from "../shared/CustomAvatar";
-import WalletAddressTile from "../tiles/WalletAddressTile";
-import ChainTile from "../tiles/ChainTile";
+import CustomAvatar from "../../shared/CustomAvatar";
+import WalletAddressTile from "../../tiles/WalletAddressTile";
+import ChainTile from "../../tiles/ChainTile";
 import { IOpenMarketLayoutSide } from "@/store/swap-market/swap-market-store.types";
 import { SUI_NFTItem } from "@/types/swapup.types";
 
