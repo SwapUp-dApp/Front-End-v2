@@ -42,12 +42,14 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey }: IProp) => {
     filters,
     removeAllFilters,
     collections,
-    setNftsDataset
+    setNftsDataset,
   } = useSwapMarketStore((state) =>
     roomKey === 'privateRoom' ?
       (layoutType === "sender" ? state.privateMarket.privateRoom.sender : state.privateMarket.privateRoom.receiver)
       : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
+
+  const [swap, setCounterPartyNftsDataset] = useSwapMarketStore(state => [state.openMarket.openRoom.swap, state.openMarket.openRoom.receiver.setCounterPartyNftsDataset]);
 
   const handleSearchNfts = (searchValue: string) => {
     setFilteredNftsBySearch(searchValue);
@@ -60,7 +62,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey }: IProp) => {
   useEffect(() => {
 
     if (data && isSuccess) {
-      setNftsDataset((data.data as SUI_NFTItem[]).map(item => ({
+      const resNfts = (data.data as SUI_NFTItem[]).map(item => ({
         ...item,
         rarityRank: Number(item.tokenId),
         media: item.media.length > 0 ? item.media : [
@@ -69,7 +71,15 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey }: IProp) => {
             raw: defaultNftImageFallbackURL
           }
         ]
-      })));
+      }));
+
+      if (roomKey === "openRoom" && layoutType === "receiver") {
+        resNfts.filter(nft =>
+          swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+        );
+      }
+
+      setNftsDataset(resNfts);
     }
 
     if (isError) {

@@ -26,9 +26,9 @@ export interface IMember {
 const SwapMarketPage = () => {
   const navigate = useNavigate();
   const wallet = useSwapMarketStore(state => state.wallet);
- 
+
   const [activeTab, setActiveTab] = useState<"open-market" | "private-party">("private-party");
-  
+
 
   const openMarketSwapLength = useSwapMarketStore(state => (state.openMarket.filteredAvailableSwaps || []).length + (state.openMarket.createdSwaps || []).length);
   const privateSwapLength = useSwapMarketStore(state => (state.privateMarket.filteredAvailablePrivateSwaps || []).length);
@@ -172,7 +172,7 @@ const SwapMarketPage = () => {
     },
   ];
 
- 
+
   const handleSwitchTab = (value: "open-market" | "private-party") => {
     setActiveTab(value);
   };
@@ -277,7 +277,7 @@ const SwapMarketPage = () => {
             </TabsContent>
 
             <TabsContent value="private-party" className="w-full flex flex-col gap-4">
-            <PrivateMarketTabContent activeTab={activeTab} handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
+              <PrivateMarketTabContent activeTab={activeTab} handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
               {/* Title */}
             </TabsContent>
           </Tabs>

@@ -8,6 +8,7 @@ export type SUT_PreferredAssetType = "any" | "nft" | "currency";
 
 // Swap Type starts here
 export interface SUI_Swap {
+  id?: string;
   trade_id: string;
   swap_mode: SUT_SwapMode;
   trading_chain: string;
@@ -42,7 +43,7 @@ export interface SUI_SwapToken {
 export interface SUI_OpenSwap extends SUI_Swap {
   swap_preferences: SUI_SwapPreferences;
   open_trade_id: string;
-  
+
 }
 
 export interface SUI_SwapPreferences {
@@ -78,14 +79,14 @@ export interface SUP_CreateOpenSwap extends Pick<
   };
 }
 
-export interface SUP_UpdateSwap {
-   status: number;
-   txt: string;
-   notes: string;
-   timestamp: string;
-   id: string;
-   metadata: string;
-   
+export interface SUP_UpdateSwap extends Pick<
+  SUI_OpenSwap,
+  'init_address' | 'accept_address' | 'init_sign' | 'trade_id' | 'trading_chain' | 'swap_mode' | 'offer_type' | 'metadata'> {
+  status: number;
+  txt: string;
+  notes: string;
+  timestamp: string;
+  id: string;
 }
 
 let res2 = await api.updateSwapStatus({
@@ -95,7 +96,7 @@ let res2 = await api.updateSwapStatus({
   notes: res?.notes,
   metadata: JSON.stringify(this.existingSwap.metadata),
   timestamp: Math.floor(new Date().getTime() / 1000)
-})
+});
 
 
 // Swap api payload types ends here

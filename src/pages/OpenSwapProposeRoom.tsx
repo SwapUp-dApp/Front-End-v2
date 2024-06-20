@@ -28,6 +28,13 @@ const OpenSwapProposeRoom = () => {
   const { isLoading, data, isSuccess, isError, error } = useOpenSwapByOpenTradId(openTradeId!);
 
   const handlePurposeOpenSwap = async () => {
+    try {
+      setSwapCreation(prev => ({ ...prev, isLoading: true }));
+    } catch (error) {
+
+    } finally {
+      setSwapCreation(prev => ({ ...prev, isLoading: false }));
+    }
   };
 
   const handleResetData = () => {

@@ -300,7 +300,7 @@ export const setSwapEncodedMsgAndSignPrivateHelper = async (
         swapEncodedMsg: swapEncodedMsg,
         swap: state.privateMarket.privateRoom.swap && {
           ...state.privateMarket.privateRoom.swap,
-          init_sign: sign         
+          init_sign: sign
         }
       }
     }
@@ -372,7 +372,7 @@ export const setPrivateSwapsDataHelper = (
 
 
   if (state.wallet.address && state.wallet.isConnected) {
-    availablePrivateSwaps = swapsData.filter(swap => swap.swap_mode === 1);   
+    availablePrivateSwaps = swapsData.filter(swap => swap.swap_mode === 1);
   }
   return {
     ...state,
@@ -406,6 +406,31 @@ export const setFilteredAvailablePrivateSwapsBySearchHelper = (
 
 
 //=== Open Market Room helpers start====
+export const setCounterPartyNftsDatasetHelper = (
+  state: ISwapMarketStore,
+  dataset: SUI_NFTItem[] | []
+): ISwapMarketStore => {
+
+  const collections: string[] | [] = [...new Set(dataset.map(item => item.contract.name))];
+
+
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      openRoom: {
+        ...state.openMarket.openRoom,
+        receiver: {
+          ...state.openMarket.openRoom.receiver,
+          filteredNfts: dataset.length > 0 ? dataset : [],
+          nfts: dataset.length > 0 ? dataset : [],
+          nftsSelectedForSwap: dataset.length > 0 ? dataset : [],
+          collections
+        }
+      }
+    }
+  };
+};
 export const setOpenSwapsDataHelper = (
   state: ISwapMarketStore,
   swapsData: SUI_OpenSwap[],

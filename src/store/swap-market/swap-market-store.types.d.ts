@@ -60,6 +60,7 @@ export interface IOpenMarketLayoutSide {
   setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
   setNftsDataset: (selectedNfts: SUI_NFTItem[]) => void;
+  setCounterPartyNftsDataset: (selectedNfts: SUI_NFTItem[]) => void;
   removeAllFilters: () => void;
 }
 

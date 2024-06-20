@@ -25,6 +25,7 @@ import {
   setValuesOnProposeOpenSwapRoomHelper,
   setPrivateSwapsDataHelper,
   setFilteredAvailablePrivateSwapsBySearchHelper,
+  setCounterPartyNftsDatasetHelper,
 } from './swap-market-helpers';
 
 import { chainsDataset } from '@/constants/data';
@@ -66,7 +67,7 @@ export const openMarketRoomInitialState: IOpenRoom = {
     removeAllFilters: () => { },
     setAddedAmount: () => { },
     setNftsDataset: () => { },
-
+    setCounterPartyNftsDataset: () => { }
   },
   receiver: {
     activeGridView: 'detailed',
@@ -95,7 +96,7 @@ export const openMarketRoomInitialState: IOpenRoom = {
     removeAllFilters: () => { },
     setAddedAmount: () => { },
     setNftsDataset: () => { },
-
+    setCounterPartyNftsDataset: () => { }
   },
   swap: {
     accept_address: '',
@@ -246,6 +247,7 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         removeAllFilters: () => set((state) => removeAllFiltersHelper(state, 'openMarket', 'openRoom', 'receiver')),
         setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'openMarket', 'openRoom', 'receiver', selectedAmount, selectedCoin)),
         setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'openMarket', 'openRoom', 'receiver', dataset)),
+        setCounterPartyNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setCounterPartyNftsDatasetHelper(state, dataset)),
       },
       resetOpenSwapCreationRoom: () => set(state => resetOpenSwapCreationRoomHelper(state)),
       setValuesOnCreateOpenSwapRoom: (tradeId: string) => set((state) => setValuesOnCreateOpenSwapRoomHelper(state, tradeId)),
