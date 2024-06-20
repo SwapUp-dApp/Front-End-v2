@@ -61,9 +61,9 @@ export const clientSideRoutes: IRoutesType[] = [
         element: <OpenSwapCreationRoom />,
       },
       {
-        id: 'purpose-open-swap',
-        title: "Purpose open swap room page",
-        path: "swap-market/open-swap/propose/:counterPartyWallet/:tradeId",
+        id: 'propose-open-swap',
+        title: "Propose open swap room page",
+        path: "swap-market/open-swap/propose/:openTradeId/:tradeId",
         element: <OpenSwapProposeRoom />,
       },
       {

@@ -31,6 +31,9 @@ export const createOpenSwapOffer = (swap: SUP_CreateOpenSwap): Promise<AxiosResp
 export const getOpenSwapPendingList = (): Promise<AxiosResponse> =>
   API.get(`/api/openswap/list`);
 
+export const getOpenSwapByOpenTradeId = (openTradeId: string): Promise<AxiosResponse> =>
+  API.get(`/api/openswap/get-swap-by-id/?open_trade_id=${openTradeId}`);
+
 export const proposeSwap = (swap: SUI_OpenSwap): Promise<AxiosResponse> =>
   API.post(`/api/openswap/propose`, swap);
 

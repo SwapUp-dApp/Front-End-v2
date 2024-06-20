@@ -12,7 +12,7 @@ import {
   setAddedAmountHelper,
   setValuesOnCreatingPrivateRoomHelper,
   setNftsDatasetHelper,
-  setValuesOnCreatingOpenSwapRoomHelper,
+  setValuesOnCreateOpenSwapRoomHelper,
   createOpenSwapHelper,
   createPrivateMarketSwapHelper,
   connectToWalletHelper,
@@ -22,6 +22,7 @@ import {
   resetOpenSwapCreationRoomHelper,
   setOpenSwapsDataHelper,
   setFilteredAvailableSwapsBySearchHelper,
+  setValuesOnProposeOpenSwapRoomHelper,
 } from './swap-market-helpers';
 
 import { chainsDataset } from '@/constants/data';
@@ -120,7 +121,8 @@ export const openMarketRoomInitialState: IOpenRoom = {
       }
     }
   },
-  setValuesOnCreatingOpenMarket: () => { },
+  setValuesOnCreateOpenSwapRoom: () => { },
+  setValuesOnProposeOpenSwapRoom: () => { },
   createOpenSwap: () => { },
   setSwapEncodedMsgAndSign: () => { },
   setSwapPreferences: () => { },
@@ -241,8 +243,13 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         setAddedAmount: (selectedAmount: string, selectedCoin: string) => set((state) => setAddedAmountHelper(state, 'openMarket', 'openRoom', 'receiver', selectedAmount, selectedCoin)),
         setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'openMarket', 'openRoom', 'receiver', dataset)),
       },
-      setValuesOnCreatingOpenMarket: (tradeId: string) => set((state) => setValuesOnCreatingOpenSwapRoomHelper(state, tradeId)),
       resetOpenSwapCreationRoom: () => set(state => resetOpenSwapCreationRoomHelper(state)),
+      setValuesOnCreateOpenSwapRoom: (tradeId: string) => set((state) => setValuesOnCreateOpenSwapRoomHelper(state, tradeId)),
+      setValuesOnProposeOpenSwapRoom: async (tradeId: string, swap: SUI_OpenSwap) => {
+        const state = get();
+        const newState = await setValuesOnProposeOpenSwapRoomHelper(state, tradeId, swap);
+        set(newState);
+      },
       createOpenSwap: async () => {
         const state = get();
         const newState = await createOpenSwapHelper(state);

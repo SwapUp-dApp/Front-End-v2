@@ -230,7 +230,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
 
                   <TableCell className="font-medium flex pr-8 justify-end">
                     <svg
-                      onClick={() => { navigate(`/swap-up/swap-market/open-swap/propose/${swap.init_address}/${generateRandomTradeId()}`); }}
+                      onClick={() => { navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`); }}
 
                       className="w-12 h-6 cursor-pointer"
                       viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">

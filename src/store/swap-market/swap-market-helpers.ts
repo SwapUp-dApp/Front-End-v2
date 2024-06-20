@@ -410,7 +410,7 @@ export const setFilteredAvailableSwapsBySearchHelper = (
   };
 };
 
-export const setValuesOnCreatingOpenSwapRoomHelper = (
+export const setValuesOnCreateOpenSwapRoomHelper = (
   state: ISwapMarketStore,
   tradeId: string,
 ): ISwapMarketStore => {
@@ -429,6 +429,33 @@ export const setValuesOnCreatingOpenSwapRoomHelper = (
   };
 };
 
+export const setValuesOnProposeOpenSwapRoomHelper = async (
+  state: ISwapMarketStore,
+  tradeId: string,
+  swap: SUI_OpenSwap
+): Promise<ISwapMarketStore> => {
+  const market = state['openMarket'] as Record<string, any>;
+  const room = market['openRoom'] as IOpenRoom;
+
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      openRoom: {
+        ...room,
+        uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
+        swap,
+        receiver: {
+          ...room.receiver,
+          profile: {
+            ...room.receiver.profile,
+            walletAddress: swap.init_address
+          }
+        }
+      },
+    },
+  };
+};
 export const setSwapPreferencesHelper = (
   state: ISwapMarketStore,
   preferences: SUI_SwapPreferences

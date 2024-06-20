@@ -29,7 +29,8 @@ export interface IOpenRoom {
   nftsLength: number;
   swapUpOpenContract: string;
   chainId: number;
-  setValuesOnCreatingOpenMarket: (tradeId: string) => void;
+  setValuesOnCreateOpenSwapRoom: (tradeId: string) => void;
+  setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
   createOpenSwap: () => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   setSwapPreferences: (preferences: SUI_SwapPreferences) => void;
