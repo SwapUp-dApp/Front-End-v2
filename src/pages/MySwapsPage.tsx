@@ -33,6 +33,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { useNavigate } from "react-router-dom";
+import { useSwapMarketStore } from "@/store/swap-market";
 
 export interface IPendingSwapTableItem {
   assets: {
@@ -304,13 +306,24 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
 
 
 const MySwapsPage = () => {
-  const [activeTab, setActiveTab] = useState<"pending-swaps" | "swap-history">("swap-history");
+  
   const [filteredSwapHistoryData, setFilteredSwapHistoryData] = useState<ISwapHistoryTableItem[] | []>(swapHistoryTableData);
   const [filteredPendingSwapData, setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
 
+
+ // const navigate = useNavigate();
+  //const wallet = useSwapMarketStore(state => state.wallet);
+
+  const [activeTab, setActiveTab] = useState<"pending-swaps" | "swap-history">("swap-history");
+
+  
+
+  //const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
+ // const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
+
+
   const [isOpen, setIsOpen] = useState(false);
-  // const wallet = useSwapMarketStore(state => state.wallet);
-  // const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
+
 
 
   const [date, setDate] = React.useState<DateRange | undefined>({
