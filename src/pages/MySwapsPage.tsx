@@ -33,8 +33,8 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { useNavigate } from "react-router-dom";
-import { useSwapMarketStore } from "@/store/swap-market";
+//import { useNavigate } from "react-router-dom";
+//import { useSwapMarketStore } from "@/store/swap-market";
 
 export interface IPendingSwapTableItem {
   assets: {
