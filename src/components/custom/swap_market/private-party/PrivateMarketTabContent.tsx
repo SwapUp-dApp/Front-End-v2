@@ -13,7 +13,7 @@ import moment from 'moment';
 import LoadingDataset from '../../shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
 import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
-import CreatePrivateSwapDialog from "@/components/custom/swap_market/CreatePrivateSwapDialog";
+import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 
 interface IProp {
   activeTab: "open-market" | "private-party";
