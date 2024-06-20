@@ -1,7 +1,7 @@
 import { cn, generateRandomTradeId, isValidWalletAddress } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import CustomOutlineButton from "../shared/CustomOutlineButton";
+import CustomOutlineButton from "../../shared/CustomOutlineButton";
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from "@/components/ui/dialog";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
@@ -42,7 +42,7 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
     const uniqueTradeId = generateRandomTradeId();
 
     setValuesOnCreatingRoom(uniqueTradeId, walletAddress);
-    navigate(`/swap-up/swap-market/private-room/${walletAddress}/${uniqueTradeId}`);
+    navigate(`/swap-up/swap-market/private-swap/create/${walletAddress}/${uniqueTradeId}`);
   }
 
   return (

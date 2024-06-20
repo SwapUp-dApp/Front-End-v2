@@ -10,11 +10,12 @@ import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUT_PrivateRoomLayoutType } from "@/store/swap-market/swap-market-store.types";
+import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/store/swap-market/swap-market-store.types";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
   setEnableApproveButtonCriteria: React.Dispatch<React.SetStateAction<boolean>>;
+  roomKey: SUT_RoomKeyType;
 }
 
 export const amountConvertFormSchema = z.object({
@@ -27,16 +28,17 @@ export const amountConvertFormSchema = z.object({
   }),
 });
 
-const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria }: IProp) => {
+const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey }: IProp) => {
 
   const {
     setSelectedNftsForSwap,
     nftsSelectedForSwap,
     availableChains,
     setAddedAmount
-  } = useSwapMarketStore((state) => layoutType === "sender" ?
-    state.privateMarket.privateRoom.sender :
-    state.privateMarket.privateRoom.receiver
+  } = useSwapMarketStore((state) =>
+    roomKey === 'privateRoom' ?
+      (layoutType === "sender" ? state.privateMarket.privateRoom.sender : state.privateMarket.privateRoom.receiver)
+      : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
 
   const removeSelectedNftById = (paramId: string) => {

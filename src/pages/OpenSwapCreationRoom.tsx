@@ -33,7 +33,7 @@ interface ISwapCreation {
   created: boolean;
 }
 
-const OpenRoom = () => {
+const OpenSwapCreationRoom = () => {
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [isValidParametersForm, setIsValidParametersForm] = useState(false);
   const [swapCreation, setSwapCreation] = useState<ISwapCreation>({ isLoading: false, created: false });
@@ -47,7 +47,7 @@ const OpenRoom = () => {
 
 
   const handleResetData = () => {
-    state.resetOpenRoom();
+    state.resetOpenSwapCreationRoom();
     toast.custom(
       (id) => (
         <ToastLookCard
@@ -106,7 +106,7 @@ const OpenRoom = () => {
         );
 
         setSwapCreation(prev => ({ ...prev, created: true }));
-        state.resetOpenRoom();
+        state.resetOpenSwapCreationRoom();
 
         setTimeout(() => {
           navigate('/swap-up/swap-market');
@@ -404,4 +404,4 @@ const OpenRoom = () => {
   );
 };
 
-export default OpenRoom;
+export default OpenSwapCreationRoom;

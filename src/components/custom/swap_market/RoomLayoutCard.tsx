@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import NftCard from "../shared/NftCard";
 import { Separator } from "@/components/ui/separator";
 import EmptyDataset from "../shared/EmptyDataset";
-import PrivateRoomFilterDrawer from "./PrivateRoomFilterDrawer";
+import PrivateRoomFilterDrawer from "./private-party/PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
 import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/store/swap-market/swap-market-store.types";
@@ -46,7 +46,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey }: IProp) => {
   } = useSwapMarketStore((state) =>
     roomKey === 'privateRoom' ?
       (layoutType === "sender" ? state.privateMarket.privateRoom.sender : state.privateMarket.privateRoom.receiver)
-      : state.openMarket.openRoom.sender
+      : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
 
   const handleSearchNfts = (searchValue: string) => {
@@ -103,7 +103,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey }: IProp) => {
           </div>
 
           <div className="flex items-center gap-2">
-            <WalletAddressTile walletAddress={profile.walletAddress} />
+            <WalletAddressTile walletAddress={layoutType === "receiver" ? profile.walletAddress || counterPartyWallet! : profile.walletAddress} />
             <ChainTile imageSrc={network.image} title={network.title} />
           </div>
         </div>

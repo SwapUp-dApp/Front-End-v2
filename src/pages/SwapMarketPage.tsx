@@ -4,8 +4,8 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-u
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useState } from "react";
 import { toast } from "sonner";
-
-import CreatePrivateSwapDialog from "@/components/custom/swap_market/CreatePrivateSwapDialog";
+import FilterButton from "@/components/custom/shared/FilterButton";
+import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 import { generateRandomTradeId } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useSwapMarketStore } from "@/store/swap-market";
@@ -363,7 +363,7 @@ const SwapMarketPage = () => {
               <div
                 className="relative text-sm flex items-center gap-4 cursor-pointer hover:bg-su_enable_bg py-2 px-4 rounded-md"
                 onClick={() => {
-                  wallet.isConnected ? navigate(`/swap-up/swap-market/open-market/open-room/${generateRandomTradeId()}`) : handleShowWalletConnectionToast();
+                  wallet.isConnected ? navigate(`/swap-up/swap-market/open-swap/create/${generateRandomTradeId()}`) : handleShowWalletConnectionToast();
                 }}
               >
                 <svg className="w-5" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -391,7 +391,6 @@ const SwapMarketPage = () => {
 
             </DropdownMenuContent>
           </DropdownMenu>
-
         </div>
 
         {/* leaderboard */}

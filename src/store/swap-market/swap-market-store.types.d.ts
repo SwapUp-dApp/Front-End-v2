@@ -22,6 +22,7 @@ export interface IOpenMarketAddedAmount {
 export interface IOpenRoom {
   uniqueTradeId: string;
   sender: IOpenMarketLayoutSide;
+  receiver: IOpenMarketLayoutSide;
   swap: SUI_OpenSwap;
   swapEncodedMsg: string;
   sign: string;
@@ -32,7 +33,7 @@ export interface IOpenRoom {
   createOpenSwap: () => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   setSwapPreferences: (preferences: SUI_SwapPreferences) => void;
-  resetOpenRoom: () => void;
+  resetOpenSwapCreationRoom: () => void;
 }
 
 export interface IOpenMarketLayoutSide {
