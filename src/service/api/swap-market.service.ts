@@ -24,6 +24,9 @@ export const updateSwapOffer = (swap: any): Promise<AxiosResponse> =>
 export const updateSwapStatus = (swapStatus: any): Promise<AxiosResponse> =>
   API.patch('/api/swaps/status', swapStatus);
 
+export const getPrivateSwapPendingList = (walletId: string): Promise<AxiosResponse> =>
+  API.get(`/api/swaps/private-swaplist/?address=${walletId}`);
+
 //open swap
 export const createOpenSwapOffer = (swap: SUP_CreateOpenSwap): Promise<AxiosResponse> =>
   API.post('/api/openswap/create', swap);

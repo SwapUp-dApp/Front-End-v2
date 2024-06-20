@@ -288,18 +288,19 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, off
 export const setSwapEncodedMsgAndSignPrivateHelper = async (
   state: ISwapMarketStore,
   swapEncodedMsg: string,
-  sign: string
+  sign: string,
 ): Promise<ISwapMarketStore> => {
 
   return {
     ...state,
     privateMarket: {
+      ...state.privateMarket,
       privateRoom: {
         ...state.privateMarket.privateRoom,
         swapEncodedMsg: swapEncodedMsg,
         swap: state.privateMarket.privateRoom.swap && {
           ...state.privateMarket.privateRoom.swap,
-          init_sign: sign
+          init_sign: sign         
         }
       }
     }
@@ -361,7 +362,47 @@ export const resetPrivateRoomDataHelper = (
     },
   };
 };
+
+export const setPrivateSwapsDataHelper = (
+  state: ISwapMarketStore,
+  swapsData: SUI_Swap[],
+): ISwapMarketStore => {
+
+  let availablePrivateSwaps: SUI_Swap[] = [];
+
+
+  if (state.wallet.address && state.wallet.isConnected) {
+    availablePrivateSwaps = swapsData.filter(swap => swap.swap_mode === 1);   
+  }
+  return {
+    ...state,
+    privateMarket: {
+      ...state.privateMarket,
+      filteredAvailablePrivateSwaps: availablePrivateSwaps
+    },
+  };
+};
+
+export const setFilteredAvailablePrivateSwapsBySearchHelper = (
+  state: ISwapMarketStore,
+  searchValue: string
+): ISwapMarketStore => {
+  const lowerCaseSearchValue = searchValue.toLowerCase();
+
+  const filteredAvailablePrivateSwaps = state.privateMarket.availablePrivateSwaps?.filter(swap =>
+    swap.init_address.includes(lowerCaseSearchValue) ||
+    swap.trade_id.includes(lowerCaseSearchValue)
+  );
+  return {
+    ...state,
+    privateMarket: {
+      ...state.privateMarket,
+      filteredAvailablePrivateSwaps: filteredAvailablePrivateSwaps
+    }
+  };
+};
 // Private Room helpers end
+
 
 
 //=== Open Market Room helpers start====

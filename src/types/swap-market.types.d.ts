@@ -17,6 +17,8 @@ export interface SUI_Swap {
   accept_sign: string;
   metadata: SUI_SwapMetadata;
   offer_type: SUT_SwapOfferType;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface SUI_SwapMetadata {
@@ -40,8 +42,7 @@ export interface SUI_SwapToken {
 export interface SUI_OpenSwap extends SUI_Swap {
   swap_preferences: SUI_SwapPreferences;
   open_trade_id: string;
-  created_at?: string;
-  updated_at?: string;
+  
 }
 
 export interface SUI_SwapPreferences {

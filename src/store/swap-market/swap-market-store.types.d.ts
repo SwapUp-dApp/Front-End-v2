@@ -140,7 +140,13 @@ export interface ISwapMarketStore {
     setFilteredAvailableSwapsBySearch: (searchValue: string) => void;
   },
   privateMarket: {
+    availablePrivateSwaps?: SUI_Swap[];
+    filteredAvailablePrivateSwaps?: SUI_Swap[];
+    pendingPrivateSwaps?: SUI_Swap[];
+    privatehistory?: SUI_Swap[];
     privateRoom: IPrivateRoom;
+    setPrivateSwapsData: (swapsData: SUI_Swap[]) => void;
+    setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
   };
 
   wallet: IWallet;

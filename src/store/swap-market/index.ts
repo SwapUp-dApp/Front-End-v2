@@ -23,10 +23,12 @@ import {
   setOpenSwapsDataHelper,
   setFilteredAvailableSwapsBySearchHelper,
   setValuesOnProposeOpenSwapRoomHelper,
+  setPrivateSwapsDataHelper,
+  setFilteredAvailablePrivateSwapsBySearchHelper,
 } from './swap-market-helpers';
 
 import { chainsDataset } from '@/constants/data';
-import { SUI_OpenSwap, SUI_SwapPreferences, SUT_SwapOfferType } from '@/types/swap-market.types';
+import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUT_SwapOfferType } from '@/types/swap-market.types';
 import { SUE_SWAP_MODE } from '@/constants/enums';
 
 
@@ -208,6 +210,8 @@ const initialState: ISwapMarketStore = {
   },
   privateMarket: {
     privateRoom: privateMarketRoomInitialState,
+    setPrivateSwapsData: () => { },
+    setFilteredAvailablePrivateSwapsBySearch: () => { }
   },
   wallet: {
     address: '',
@@ -301,8 +305,11 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         const newState = await setSwapEncodedMsgAndSignPrivateHelper(state, swapEncodedMsg, sign);
         set(newState);
       },
-      resetPrivateRoom: () => set((state) => resetPrivateRoomDataHelper(state))
-    }
+      resetPrivateRoom: () => set((state) => resetPrivateRoomDataHelper(state)),
+
+    },
+    setPrivateSwapsData: (privateswapsData: SUI_Swap[]) => set(state => setPrivateSwapsDataHelper(state, privateswapsData)),
+    setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => set(state => setFilteredAvailablePrivateSwapsBySearchHelper(state, searchValue))
   },
 
   connectWallet: async () => {
