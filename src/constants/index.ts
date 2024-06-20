@@ -32,4 +32,4 @@ export const availableRarityRanking: SUI_RarityRankItem[] = [
 
 export const testWalletAddress: string = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
 
-export const defaultNftImageFallbackURL = "/src/assets/nfts/default.svg";
+export const defaultNftImageFallbackURL = "/assets/nfts/default.svg";

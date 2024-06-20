@@ -17,7 +17,7 @@
 //         const ensAddress = await provider.lookupAddress(address) || '';
        
   
-//         let imageA = '/src/assets/images/avatar.png';
+//         let imageA = '/assets/images/avatar.png';
   
 //         if (ensAddress) {
 //           // Fetch ENS avatar if available

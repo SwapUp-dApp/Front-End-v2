@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { getNameInitials } from "@/lib/utils";
+import { getNameInitials, resolveAssetPath } from "@/lib/utils";
 import { IMember } from "@/pages/SwapMarketPage";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
@@ -9,7 +9,6 @@ interface IProp {
 }
 
 const NewMembersCard = ({ cardType = 'member', users }: IProp) => {
-
   return (
     <Card className="h-[100px] border-none bg-card dark:bg-su_secondary_bg p-3" >
       <CardContent className={`p-0 flex flex-col ${cardType === 'member' ? 'gap-2' : 'gap-6'}`}>
@@ -44,7 +43,7 @@ const NewMembersCard = ({ cardType = 'member', users }: IProp) => {
                 return (
 
                   <Avatar className="relative lg:w-[30px] lg:h-[30px] 2xl:w-8 2xl:h-8" key={user.id}>
-                    <AvatarImage src={user.image} alt="@shadcn" />
+                    <AvatarImage src={user.image ? resolveAssetPath(user.image) : ''} alt="@shadcn" />
                     <AvatarFallback className="text-sm font-semibold rounded-full dark:bg-su_enable_bg lg:w-[30px] lg:h-[30px] 2xl:w-8 2xl:h-8 flex justify-center items-center">
                       {getNameInitials(user.title)}
                     </AvatarFallback>

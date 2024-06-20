@@ -288,12 +288,13 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, off
 export const setSwapEncodedMsgAndSignPrivateHelper = async (
   state: ISwapMarketStore,
   swapEncodedMsg: string,
-  sign: string
+  sign: string,
 ): Promise<ISwapMarketStore> => {
 
   return {
     ...state,
     privateMarket: {
+      ...state.privateMarket,
       privateRoom: {
         ...state.privateMarket.privateRoom,
         swapEncodedMsg: swapEncodedMsg,
@@ -310,7 +311,8 @@ const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]) => {
   return nfts.map(nft => ({
     id: nft.tokenId,
     address: nft.contract.address,
-    type: nft.tokenType
+    type: nft.tokenType,
+    image_url: nft.media[0].gateway
   }));
 
 };
@@ -360,11 +362,121 @@ export const resetPrivateRoomDataHelper = (
     },
   };
 };
+
+export const setPrivateSwapsDataHelper = (
+  state: ISwapMarketStore,
+  swapsData: SUI_Swap[],
+): ISwapMarketStore => {
+
+  let availablePrivateSwaps: SUI_Swap[] = [];
+
+
+  if (state.wallet.address && state.wallet.isConnected) {
+    availablePrivateSwaps = swapsData.filter(swap => swap.swap_mode === 1);
+  }
+  return {
+    ...state,
+    privateMarket: {
+      ...state.privateMarket,
+      filteredAvailablePrivateSwaps: availablePrivateSwaps
+    },
+  };
+};
+
+export const setFilteredAvailablePrivateSwapsBySearchHelper = (
+  state: ISwapMarketStore,
+  searchValue: string
+): ISwapMarketStore => {
+  const lowerCaseSearchValue = searchValue.toLowerCase();
+
+  const filteredAvailablePrivateSwaps = state.privateMarket.availablePrivateSwaps?.filter(swap =>
+    swap.init_address.includes(lowerCaseSearchValue) ||
+    swap.trade_id.includes(lowerCaseSearchValue)
+  );
+  return {
+    ...state,
+    privateMarket: {
+      ...state.privateMarket,
+      filteredAvailablePrivateSwaps: filteredAvailablePrivateSwaps
+    }
+  };
+};
 // Private Room helpers end
 
 
+
 //=== Open Market Room helpers start====
-export const setValuesOnCreatingOpenSwapRoomHelper = (
+export const setCounterPartyNftsDatasetHelper = (
+  state: ISwapMarketStore,
+  dataset: SUI_NFTItem[] | []
+): ISwapMarketStore => {
+
+  const collections: string[] | [] = [...new Set(dataset.map(item => item.contract.name))];
+
+
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      openRoom: {
+        ...state.openMarket.openRoom,
+        receiver: {
+          ...state.openMarket.openRoom.receiver,
+          filteredNfts: dataset.length > 0 ? dataset : [],
+          nfts: dataset.length > 0 ? dataset : [],
+          nftsSelectedForSwap: dataset.length > 0 ? dataset : [],
+          collections
+        }
+      }
+    }
+  };
+};
+export const setOpenSwapsDataHelper = (
+  state: ISwapMarketStore,
+  swapsData: SUI_OpenSwap[],
+): ISwapMarketStore => {
+
+  let availableSwaps: SUI_OpenSwap[] = [];
+  let createdSwaps: SUI_OpenSwap[] = [];
+
+  if (state.wallet.address && state.wallet.isConnected) {
+    availableSwaps = swapsData.filter(swap => swap.init_address !== state.wallet.address);
+    createdSwaps = swapsData.filter(swap => swap.init_address === state.wallet.address);
+  }
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      availableSwaps,
+      createdSwaps,
+      filteredAvailableSwaps: availableSwaps
+    },
+  };
+};
+
+export const setFilteredAvailableSwapsBySearchHelper = (
+  state: ISwapMarketStore,
+  searchValue: string
+): ISwapMarketStore => {
+  const lowerCaseSearchValue = searchValue.toLowerCase();
+
+  const filteredAvailableSwaps = state.openMarket.availableSwaps?.filter(swap =>
+    swap.init_address.includes(lowerCaseSearchValue) ||
+    swap.open_trade_id.includes(lowerCaseSearchValue) ||
+    swap.swap_preferences.expiration_date.includes(lowerCaseSearchValue) ||
+    swap.swap_preferences.preferred_asset.type.includes(lowerCaseSearchValue) ||
+    swap.swap_preferences.preferred_asset.parameters.collection?.includes(lowerCaseSearchValue)
+  );
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      filteredAvailableSwaps: filteredAvailableSwaps
+    }
+  };
+};
+
+export const setValuesOnCreateOpenSwapRoomHelper = (
   state: ISwapMarketStore,
   tradeId: string,
 ): ISwapMarketStore => {
@@ -374,7 +486,7 @@ export const setValuesOnCreatingOpenSwapRoomHelper = (
   return {
     ...state,
     openMarket: {
-      ...market,
+      ...state.openMarket,
       openRoom: {
         ...room,
         uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
@@ -383,6 +495,33 @@ export const setValuesOnCreatingOpenSwapRoomHelper = (
   };
 };
 
+export const setValuesOnProposeOpenSwapRoomHelper = async (
+  state: ISwapMarketStore,
+  tradeId: string,
+  swap: SUI_OpenSwap
+): Promise<ISwapMarketStore> => {
+  const market = state['openMarket'] as Record<string, any>;
+  const room = market['openRoom'] as IOpenRoom;
+
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      openRoom: {
+        ...room,
+        uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
+        swap,
+        receiver: {
+          ...room.receiver,
+          profile: {
+            ...room.receiver.profile,
+            walletAddress: swap.init_address
+          }
+        }
+      },
+    },
+  };
+};
 export const setSwapPreferencesHelper = (
   state: ISwapMarketStore,
   preferences: SUI_SwapPreferences
@@ -438,7 +577,7 @@ export const createOpenSwapHelper = async (
   };
 };
 
-export const resetOpenRoomHelper = (
+export const resetOpenSwapCreationRoomHelper = (
   state: ISwapMarketStore,
 ): ISwapMarketStore => {
 
@@ -583,8 +722,6 @@ export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<IS
 
   return state;
 };
-
-// Wallet connect heplers end
 
 export const tempSenderNfts: SUI_NFTItem[] = [
   {

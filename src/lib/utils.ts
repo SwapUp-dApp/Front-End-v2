@@ -104,6 +104,9 @@ export const getDefaultNftImageOnError = (e: any) => {
   e.currentTarget.src = defaultNftImageFallbackURL;
 };
 
+export const resolveAssetPath = (path: string) => {
+  return `/${path}`; // Assuming assets are under /public directory
+};
 
 export const getNetworkImageById = (id: string) => {
   const network = chainsDataset.find(chain => chain.uuid === id);
@@ -112,5 +115,5 @@ export const getNetworkImageById = (id: string) => {
     return network.iconUrl;
   }
 
-  return "/src/assets/svgs/ethereum.svg";
+  return "/assets/svgs/ethereum.svg";
 };

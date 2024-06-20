@@ -2,7 +2,8 @@ import { Environment } from "@/config";
 import { abi } from "@/constants/abi";
 import { SUI_Swap } from "@/types/swap-market.types";
 import { ethers, JsonRpcSigner } from 'ethers';
-
+import { env } from "process";
+import { useState } from "react";
 
 export const getUserSignature = async (
   swap: SUI_Swap,
@@ -197,6 +198,32 @@ export const triggerApprovalForAll = async (nftContractAddress: string, signer: 
   return tx;
 };
 
+export const triggerTransfer = async (swap: SUI_Swap , signer:JsonRpcSigner) => {
+  const contract = new ethers.Contract(
+    Environment.SWAPUP_CONTRACT,
+      abi.swapUp,
+      signer
+  );
+  console.log(contract);
+  let swapEncodedBytes = await getSwapEncodedBytes(swap);
+  try {
+      let gas = 200000 + 60000 * 10;
+      const tx = await contract["swap(bytes,bytes)"](
+          swapEncodedBytes,
+          swap.init_sign,
+          {
+              gasLimit: gas
+          }
+      );
+      console.log(tx);
+      let res = await getTransactionReceipt(tx);      
+      console.log("rec", res);
+      return res;
+  } catch (err) {
+      console.log("txErr", err);
+      return null; //transaction rejected or other issues
+  }
+};
 
 export const getTransactionReceipt = async (tx: any) => {
   /*** Transaction Receipt Logic (https://docs.ethers.org/v5/api/providers/types/#providers-TransactionResponse)

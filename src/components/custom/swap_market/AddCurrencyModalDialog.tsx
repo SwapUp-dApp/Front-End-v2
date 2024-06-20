@@ -95,7 +95,7 @@ const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableCha
                           <SelectTrigger className="bg-transparent border-none flex items-center gap-2 w-[100px]">
                             <SelectValue className="uppercase" placeholder={
                               <span className=" flex items-center gap-2" >
-                                <img className="w-4 h-4 rounded-full" src={'/src/assets/svgs/ethereum.svg'} alt="" />
+                                <img className="w-4 h-4 rounded-full" src={'/assets/svgs/ethereum.svg'} alt="" />
                                 Eth
                               </span>
                             } />

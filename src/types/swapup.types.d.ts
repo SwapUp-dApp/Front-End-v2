@@ -129,3 +129,8 @@ declare global {
     ethereum: any;
   }
 }
+
+export interface SUI_SwapCreation {
+  isLoading: boolean,
+  created: boolean;
+}

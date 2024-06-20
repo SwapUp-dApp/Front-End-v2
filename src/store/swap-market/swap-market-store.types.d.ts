@@ -22,17 +22,19 @@ export interface IOpenMarketAddedAmount {
 export interface IOpenRoom {
   uniqueTradeId: string;
   sender: IOpenMarketLayoutSide;
+  receiver: IOpenMarketLayoutSide;
   swap: SUI_OpenSwap;
   swapEncodedMsg: string;
   sign: string;
   nftsLength: number;
   swapUpOpenContract: string;
   chainId: number;
-  setValuesOnCreatingOpenMarket: (tradeId: string) => void;
+  setValuesOnCreateOpenSwapRoom: (tradeId: string) => void;
+  setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
   createOpenSwap: () => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   setSwapPreferences: (preferences: SUI_SwapPreferences) => void;
-  resetOpenRoom: () => void;
+  resetOpenSwapCreationRoom: () => void;
 }
 
 export interface IOpenMarketLayoutSide {
@@ -58,6 +60,7 @@ export interface IOpenMarketLayoutSide {
   setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
   setNftsDataset: (selectedNfts: SUI_NFTItem[]) => void;
+  setCounterPartyNftsDataset: (selectedNfts: SUI_NFTItem[]) => void;
   removeAllFilters: () => void;
 }
 
@@ -128,11 +131,23 @@ export interface IWallet {
 export interface ISwapMarketStore {
   openMarket: {
     // transaction history
+    availableSwaps?: SUI_OpenSwap[];
+    filteredAvailableSwaps?: SUI_OpenSwap[];
+    createdSwaps?: SUI_OpenSwap[];
+    pendingSwaps?: SUI_OpenSwap[];
+    history?: SUI_OpenSwap[];
     openRoom: IOpenRoom;
-
+    setOpenSwapsData: (swapsData: SUI_OpenSwap[]) => void;
+    setFilteredAvailableSwapsBySearch: (searchValue: string) => void;
   },
   privateMarket: {
+    availablePrivateSwaps?: SUI_Swap[];
+    filteredAvailablePrivateSwaps?: SUI_Swap[];
+    pendingSwaps?: SUI_OpenSwap[];
+    swapHistory?: SUI_OpenSwap[];
     privateRoom: IPrivateRoom;
+    setPrivateSwapsData: (swapsData: SUI_Swap[]) => void;
+    setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
   };
 
   wallet: IWallet;
