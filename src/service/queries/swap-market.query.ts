@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createOpenSwapOffer, createPrivateSwapOffer, getNftsForWallet, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet } from "../api";
-import { SUI_Swap, SUP_CreateOpenSwap } from "@/types/swap-market.types";
+import { createOpenSwapOffer, createPrivateSwapOffer, getNftsForWallet, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet, updateSwapOffer } from "../api";
+import { SUI_Swap, SUP_CreateOpenSwap, SUP_UpdateSwap } from "@/types/swap-market.types";
 
 
 export const getWalletSwapHistory = (walletId: string) => {
@@ -53,6 +53,26 @@ export const useCreatePrivateSwapOffer = () => {
         return response;
       } catch (error) {
         console.error("Failed to create swap offer:", error);
+        throw error;
+      }
+    },
+    onError: (error) => {
+      console.error("Error occurred during mutation:", error);
+    },
+    onSuccess: (data) => {
+      console.log("Swap offer created successfully:", data);
+    },
+  });
+};
+
+export const useSwapUpdate = () => {
+  return useMutation({
+    mutationFn: async (swap: SUP_UpdateSwap) => {
+      try {
+        const response = await updateSwapOffer(swap);
+        return response;
+      } catch (error) {
+        console.error("Failed to accept swap offer:", error);
         throw error;
       }
     },

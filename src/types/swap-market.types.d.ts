@@ -78,5 +78,25 @@ export interface SUP_CreateOpenSwap extends Pick<
   };
 }
 
+export interface SUP_UpdateSwap {
+   status: number;
+   txt: string;
+   notes: string;
+   timestamp: string;
+   id: string;
+   metadata: string;
+   
+}
+
+let res2 = await api.updateSwapStatus({
+  id: this.existingSwap.id,
+  status: 4,
+  txn: res?.hash,
+  notes: res?.notes,
+  metadata: JSON.stringify(this.existingSwap.metadata),
+  timestamp: Math.floor(new Date().getTime() / 1000)
+})
+
+
 // Swap api payload types ends here
 

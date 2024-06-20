@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
@@ -7,8 +7,8 @@ import FilterButton from '../../shared/FilterButton';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
 import EmptyDataset from '../../shared/EmptyDataset';
 import { getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import { SUI_Swap, SUI_SwapToken } from '@/types/swap-market.types';
-import { usePrivateSwapsPendingList } from '@/service/queries/swap-market.query';
+import { SUI_Swap, SUI_SwapToken, SUP_UpdateSwap } from '@/types/swap-market.types';
+import { usePrivateSwapsPendingList, useSwapUpdate } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -18,6 +18,10 @@ import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/
 import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 import { generateRandomTradeId } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { getUserApproval, getUserSignature, triggerTransfer } from '@/lib/metamask';
+import { SUI_SwapCreation } from '@/types/swapup.types';
+import { object } from 'zod';
+import { previousDay } from 'date-fns';
 interface IProp {
   activeTab: "open-market" | "private-party";
   handleShowWalletConnectionToast: () => void;
@@ -27,8 +31,11 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
   const navigate = useNavigate();
   const { setPrivateSwapsData, filteredAvailablePrivateSwaps, setFilteredAvailablePrivateSwapsBySearch } = useSwapMarketStore(state => state.privateMarket);
   const wallet = useSwapMarketStore(state => state.wallet);
+  const [setSwapAcceptance] = useState <SUI_SwapCreation>({created: false,isLoading: false });
+  const [acceptSwap, setAcceptSwap] = useState <any> ();
+  const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
 
-
+  const {mutateAsync:updateSwapOffer} = useSwapUpdate();
 
   const handlePrivateSwapFilterData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
@@ -36,6 +43,94 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
   };
 
   const handleResetFilters = () => { };
+
+
+
+  const handleSwapAccept = async (swap: SUI_Swap) => {
+    try {
+      
+      setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
+
+      //update swap - 
+      setAcceptSwap(swap);
+     
+      const { sign, swapEncodedBytes } = await getUserSignature(swap, state.swapEncodedMsg, wallet.signer);
+
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+
+      setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));  
+     
+
+      const approval = await getUserApproval(swap, true, wallet.signer);
+      if (!approval) {
+        throw new Error("User approval not granted.");
+      }
+      
+      const triggerTranfer = await triggerTransfer(swap, wallet.signer);
+      
+      if (!triggerTranfer) {
+        throw new Error("Swap Failed");
+      }
+
+      const payload: SUP_UpdateSwap = {
+        id: acceptSwap?.trade_id,
+        metadata: JSON.stringify(acceptSwap?.metadata),
+        notes: triggerTranfer.notes,
+       status:4,
+       txt: triggerTranfer?.hash,
+       timestamp:triggerTranfer?.timeStamp        
+      };
+
+      const offerResult = await updateSwapOffer(payload);
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Offer Sent Successfully"
+              description={"You will receive a notification upon your counterparty's response."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setAcceptSwap(prev => ({ ...prev, created: true }));
+        state.resetPrivateRoom();
+        setTimeout(() => {
+          navigate('/swap-up/swap-market');
+        }, 3000);
+      }
+  
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
+    }
+  };
 
   const { isLoading, isError, error, data, isSuccess } = usePrivateSwapsPendingList(wallet.address);
 
@@ -272,7 +367,10 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
                                   </button>
 
 
-                                  <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                                  <button onClick={async () => {
+                                           await handleSwapAccept(swap)
+                                            }}
+                                   type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
 
                                     <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                       <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM8.22222 14.4444L3.77778 10L5.03111 8.74667L8.22222 11.9289L14.9689 5.18222L16.2222 6.44444L8.22222 14.4444Z" fill="#75FFC1" />
