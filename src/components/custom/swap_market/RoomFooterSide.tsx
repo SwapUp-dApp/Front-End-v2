@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/store/swap-market/swap-market-store.types";
 
@@ -16,6 +16,7 @@ interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
   setEnableApproveButtonCriteria: React.Dispatch<React.SetStateAction<boolean>>;
   roomKey: SUT_RoomKeyType;
+  showRemoveNftButton?: boolean;
 }
 
 export const amountConvertFormSchema = z.object({
@@ -28,18 +29,22 @@ export const amountConvertFormSchema = z.object({
   }),
 });
 
-const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey }: IProp) => {
+const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, showRemoveNftButton = true }: IProp) => {
 
   const {
     setSelectedNftsForSwap,
     nftsSelectedForSwap,
     availableChains,
-    setAddedAmount
+    setAddedAmount,
+    addedAmount,
+    nfts
   } = useSwapMarketStore((state) =>
     roomKey === 'privateRoom' ?
       (layoutType === "sender" ? state.privateMarket.privateRoom.sender : state.privateMarket.privateRoom.receiver)
       : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
+
+  const [nftsToDisplay, setNftsToDisplay] = useState<SUI_NFTItem[] | []>([]);
 
   const removeSelectedNftById = (paramId: string) => {
     const filteredNfts = nftsSelectedForSwap.filter(nft => nft.tokenId !== paramId);
@@ -51,15 +56,15 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey }:
     setEnableApproveButtonCriteria(false);
   };
 
-  const nftsImageMapper = (nfts: SUI_NFTItem[], lengthToShowParam: number) => {
+  const nftsImageMapper = (nftsForMap: SUI_NFTItem[], lengthToShowParam: number) => {
     const lengthToShow = lengthToShowParam - 1;
     return (
-      nfts.map((nft, index) => {
-        if (index < lengthToShow || (index === lengthToShow && nfts.length > lengthToShow))
+      nftsForMap.map((nft, index) => {
+        if (index < lengthToShow || (index === lengthToShow && nftsForMap.length > lengthToShow))
           return (
             <div
               className="group relative w-8 h-8 rounded-xs lg:w-12 lg:h-12 object-cover lg:rounded-sm border-[1.5px] border-white/20"
-              key={nft.tokenId}>
+              key={nft.tokenId + index}>
               <img
                 className="w-full h-full object-cover rounded-xs lg:rounded-sm"
                 src={nft.media[0].gateway}
@@ -67,22 +72,25 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey }:
                 onError={getDefaultNftImageOnError}
               />
               {
-                (index === lengthToShow) && nfts.length > lengthToShowParam ?
+                (index === lengthToShow) && nftsForMap.length > lengthToShowParam ?
                   <div className="absolute w-full h-full rounded-xs lg:rounded-sm bg-black/50 top-0 left-0 flex justify-center items-center font-semibold text-xs lg:text-sm" >
-                    +{nfts.length - lengthToShowParam}
+                    +{nftsForMap.length - lengthToShowParam}
                   </div> : ''
               }
 
               <div className="hidden group-hover:absolute group-hover:flex w-full h-full rounded-xs lg:rounded-sm bg-black/50 top-0 left-0 justify-end items-start font-semibold text-xs lg:text-sm p-1" >
+                {
+                  showRemoveNftButton &&
 
-                <span
-                  className="rounded-full p-1 bg-white/30 relative cursor-pointer"
-                  onClick={() => removeSelectedNftById(nft.tokenId)}
-                >
-                  <svg className="w-2" viewBox="0 0 8 8" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path fillRule="evenodd" clipRule="evenodd" d="M7.47177 1.58877L8.00207 1.05842L6.94137 -0.00219727L6.41106 0.528155L4.00006 2.93935L1.58906 0.528155L1.05875 -0.00219727L-0.00195312 1.05842L0.528355 1.58877L2.93944 4.00006L0.528356 6.41135L-0.00195312 6.9417L1.05875 8.00231L1.58906 7.47196L4.00006 5.06076L6.41106 7.47196L6.94137 8.00231L8.00207 6.9417L7.47176 6.41135L5.06068 4.00006L7.47177 1.58877Z" fill="white" />
-                  </svg>
-                </span>
+                  <span
+                    className="rounded-full p-1 bg-white/30 relative cursor-pointer"
+                    onClick={() => removeSelectedNftById(nft.tokenId)}
+                  >
+                    <svg className="w-2" viewBox="0 0 8 8" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M7.47177 1.58877L8.00207 1.05842L6.94137 -0.00219727L6.41106 0.528155L4.00006 2.93935L1.58906 0.528155L1.05875 -0.00219727L-0.00195312 1.05842L0.528355 1.58877L2.93944 4.00006L0.528356 6.41135L-0.00195312 6.9417L1.05875 8.00231L1.58906 7.47196L4.00006 5.06076L6.41106 7.47196L6.94137 8.00231L8.00207 6.9417L7.47176 6.41135L5.06068 4.00006L7.47177 1.58877Z" fill="white" />
+                    </svg>
+                  </span>
+                }
               </div>
             </div>
           );
@@ -94,7 +102,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey }:
   const form = useForm<z.infer<typeof amountConvertFormSchema>>({
     resolver: zodResolver(amountConvertFormSchema),
     defaultValues: {
-      amount: '',
+      amount: String(addedAmount?.usdAmount) || '',
       chain: 'razxDUgYGNAdQ'
     },
   });
@@ -120,13 +128,23 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey }:
 
   }, [form.getValues('chain'), form.getValues('amount')]);
 
+
+
+  useEffect(() => {
+    if (roomKey === "openRoom" && layoutType === "receiver" && nfts?.length) {
+      setNftsToDisplay(nfts);
+    } else {
+      setNftsToDisplay(nftsSelectedForSwap);
+    }
+  }, [roomKey, layoutType, nfts, nftsSelectedForSwap]);
+
   return (
     <aside className="space-y-2.5 lg:space-y-2 w-1/2 p-4 border border-su_disabled"  >
       <div className="flex justify-between items-center text-su_secondary " >
         <h2 className="dark:text-white text-xs">You offer:</h2>
 
         {
-          nftsSelectedForSwap.length > 0 &&
+          (nftsToDisplay.length > 0 && showRemoveNftButton) &&
           <span
             className="flex items-center gap-1 lg:gap-2 text-2xs lg:text-xs font-semibold cursor-pointer"
             onClick={() => removeAllSelectedNft()}
@@ -142,24 +160,25 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey }:
 
       <div className="flex items-center justify-between" >
         {
-          !(nftsSelectedForSwap.length > 0) &&
+          nftsToDisplay.length === 0 &&
           <p className="text-xs text-su_secondary">Awaiting asset selection. You can choose up to 20 assets.</p>
         }
 
         {
-          nftsSelectedForSwap.length > 0 &&
+          nftsToDisplay.length > 0 &&
           <>
             {/* For Desktop */}
             <div className="hidden lg:flex items-center gap-1.5 lg:gap-2" >
-              {nftsImageMapper(nftsSelectedForSwap, 6)}
+              {nftsImageMapper(nftsToDisplay, 6)}
             </div>
 
             {/* For Mobile */}
             <div className="lg:hidden flex items-center gap-1.5 lg:gap-2" >
-              {nftsImageMapper(nftsSelectedForSwap, 4)}
+              {nftsImageMapper(nftsToDisplay, 4)}
             </div>
           </>
         }
+
         <div className="hidden lg:inline-block" >
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">

@@ -30,7 +30,7 @@ const LoadingDataset = ({ title, description, icon, className, isLoading }: IPro
 
         <div className="text-center" >
           <h3 className="font-semibold leading-8">{title ? title : "Loading"}</h3>
-          <p className="text-sm text-su_secondary">{description ? description : "Please wait data being loaded!"}</p>
+          <p className="text-sm text-su_secondary">{description}</p>
         </div>
       </div>
     </div>
