@@ -140,7 +140,7 @@ export const generateSignString = async (swap: SUI_Swap) => {
   });
 
   let signStr = `${swap.init_address} offering to swap NFTs, ${initNfts} with the NFTs, ${acceptNfts} belonging to ${swap.accept_address}`;
-  console.log(signStr);
+  console.log("sign string :" + signStr);
 
   return signStr;
 };
@@ -215,6 +215,13 @@ export const triggerTransfer = async (swap: SUI_Swap , signer:JsonRpcSigner) => 
               gasLimit: gas
           }
       );
+      // const tx = await contract["externalTesting(string,string)"](
+      //   "swap.accept_sign",
+      //   "swap.init_sign",
+      //   {
+      //       gasLimit: gas
+      //   }
+      // )
       console.log(tx);
       let res = await getTransactionReceipt(tx);      
       console.log("rec", res);
