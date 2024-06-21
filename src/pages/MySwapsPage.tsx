@@ -16,10 +16,30 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
+import { CalendarIcon } from "lucide-react";
+import { addDays, format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+//import { useNavigate } from "react-router-dom";
+//import { useSwapMarketStore } from "@/store/swap-market";
 
 // import { useNavigate } from "react-router-dom";
 // import { useSwapMarketStore } from "@/store/swap-market";
+import ToastLookCard from "@/components/custom/shared/ToastLookCard";
+import { useSwapMarketStore } from "@/store/swap-market";
 import PendingSwapsTabContent from "@/components/custom/swap_market/my-swaps/PendingSwapsTabContent";
 
 // export interface IPendingSwapTableItem {
@@ -294,20 +314,25 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
 const MySwapsPage = () => {
 
   const [filteredSwapHistoryData, setFilteredSwapHistoryData] = useState<ISwapHistoryTableItem[] | []>(swapHistoryTableData);
-  // const [setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
+  // const [filteredPendingSwapData, setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
+
 
   // const navigate = useNavigate();
   //const wallet = useSwapMarketStore(state => state.wallet);
 
   const [activeTab, setActiveTab] = useState<"pending-swaps" | "swap-history">("swap-history");
 
+  const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
+  const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
 
-
-  //const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
-  // const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
 
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const [date, setDate] = React.useState<DateRange | undefined>({
+    from: new Date(2024, 0, 20),
+    to: addDays(new Date(2024, 0, 20), 1),
+  });
 
 
 
@@ -400,13 +425,13 @@ const MySwapsPage = () => {
               <TabsTrigger value="pending-swaps" onClick={() => handleSwitchTab("pending-swaps")} >
                 Pending
                 <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'pending-swaps' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {/* {pendingSwapsLength} */}
+                  {pendingSwapsLength}
                 </span>
               </TabsTrigger>
               <TabsTrigger value="swap-history" onClick={() => handleSwitchTab("swap-history")}>
                 History
                 <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'swap-history' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {/* {swapHistoryLength} */}
+                  {swapHistoryLength}
                 </span>
               </TabsTrigger>
             </TabsList>

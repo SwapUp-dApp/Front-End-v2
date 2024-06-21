@@ -5,7 +5,7 @@ import FilterButton from '../../shared/FilterButton';
 import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
 import { getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '../../shared/EmptyDataset';
-import { SUI_SwapToken } from '@/types/swap-market.types';
+import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
 import { usePendingSwapsList } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
@@ -21,8 +21,6 @@ import { DateRange } from "react-day-picker";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { generateRandomTradeId } from "@/lib/utils";
-
 import {
   ToggleGroup,
   ToggleGroupItem,
@@ -45,7 +43,7 @@ interface IProp {
 
 const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
   const navigate = useNavigate();
-  const { pendingSwaps } = useSwapMarketStore(state => state.privateMarket);
+  const { setPendingSwapsData, pendingSwaps } = useSwapMarketStore(state => state.privateMarket);
   const wallet = useSwapMarketStore(state => state.wallet);
 
   const [isOpen, setIsOpen] = useState(false);
@@ -68,12 +66,12 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
     if (data?.data && isSuccess) {
 
       if (data.data.data.length > 0) {
-        // setPendingSwapsData(data.data.data as SUI_OpenSwap[]);
+        setPendingSwapsData(data.data.data as SUI_OpenSwap[]);
       }
     }
 
     if (error && isError) {
-      // setPendingSwapsData([]);
+      setPendingSwapsData([]);
       toast.custom(
         (id) => (
           <ToastLookCard
