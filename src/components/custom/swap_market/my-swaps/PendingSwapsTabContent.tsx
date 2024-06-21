@@ -305,7 +305,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                   <TableCell className="font-medium pl-8">
                     <div className="w-auto flex justify-start" >  #
                       {
-                        swap.swap_mode === "0" ?
+                        swap.swap_mode === 0 ?
                           getLastCharacters(swap.open_trade_id, 7)
                           :
                           getLastCharacters(swap.trade_id, 7)
@@ -339,7 +339,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
 
                   <TableCell className="font-medium px-4">
                     <div className="w-auto flex justify-start" >{
-                      swap.swap_mode === "0" ?
+                      swap.swap_mode === 0 ?
                         <span className="flex items-center justify-center gap-2 py-2 px-3  rounded-full bg-su_enable_bg capitalize" >
                           Open market
                         </span>

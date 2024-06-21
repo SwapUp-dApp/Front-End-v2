@@ -1,7 +1,7 @@
 import { SUI_NFTItem, SUI_RarityRankItem } from "./swapup.types";
 
 export type SUT_GetNFTsByWalletIdResponse = SUI_NFTItem[];
-export type SUT_SwapMode = "0" | "1";
+export type SUT_SwapMode = 0 | 1;
 export type SUT_SwapOfferType = 0 | 1;
 export type SUT_PreferredAssetType = "any" | "nft" | "currency";
 
