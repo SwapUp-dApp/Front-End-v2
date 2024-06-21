@@ -24,6 +24,7 @@ export interface IOpenRoom {
   sender: IOpenMarketLayoutSide;
   receiver: IOpenMarketLayoutSide;
   swap: SUI_OpenSwap;
+  proposeSwap?: SUI_OpenSwap;
   swapEncodedMsg: string;
   sign: string;
   nftsLength: number;
@@ -32,9 +33,11 @@ export interface IOpenRoom {
   setValuesOnCreateOpenSwapRoom: (tradeId: string) => void;
   setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
   createOpenSwap: () => void;
+  createProposeOpenSwap: () => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   setSwapPreferences: (preferences: SUI_SwapPreferences) => void;
   resetOpenSwapCreationRoom: () => void;
+  resetOpenSwapProposeRoom: () => void;
 }
 
 export interface IOpenMarketLayoutSide {
@@ -102,7 +105,7 @@ export interface IPrivateRoomsLayoutSide {
   setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
   setNftsDataset: (selectedNfts: SUI_NFTItem[] | []) => void;
-  removeAllFilters: () => void;
+  removeAllFilters: (doNotRemoveSelectedNfts?: boolean) => void;
 }
 
 export interface IPrivateRoom {
@@ -146,7 +149,6 @@ export interface ISwapMarketStore {
     pendingSwaps?: SUI_OpenSwap[];
     swapHistory?: SUI_OpenSwap[];
     privateRoom: IPrivateRoom;
-    setPendingSwapsData: (pendingswapsData: SUI_OpenSwap[]) => void;
     setPrivateSwapsData: (swapsData: SUI_Swap[]) => void;
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
   };
