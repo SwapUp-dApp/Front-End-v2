@@ -363,6 +363,48 @@ export const resetPrivateRoomDataHelper = (
   };
 };
 
+//my-swaps functions
+export const setPendingSwapsDataHelper = (
+  state: ISwapMarketStore,
+  pendingSwaps: SUI_OpenSwap[],
+): ISwapMarketStore => {
+
+  let availablePendingSwaps: SUI_OpenSwap[] = [];
+
+  if (state.wallet.address && state.wallet.isConnected) {
+    availablePendingSwaps = pendingSwaps;
+  }
+  return {
+    ...state,
+    privateMarket: {
+      ...state.privateMarket,
+      pendingSwaps: availablePendingSwaps
+    },
+  };
+};
+
+//my-swaps functions
+export const setSwapHistoryDataHelper = (
+  state: ISwapMarketStore,
+  swapHistory: SUI_OpenSwap[],
+): ISwapMarketStore => {
+
+  let availableSwapHistory: SUI_OpenSwap[] = [];
+
+
+  if (state.wallet.address && state.wallet.isConnected) {
+    availableSwapHistory = swapHistory;
+  }
+  return {
+    ...state,
+    privateMarket: {
+      ...state.privateMarket,
+      swapHistory: availableSwapHistory
+    },
+  };
+};
+
+
 export const setPrivateSwapsDataHelper = (
   state: ISwapMarketStore,
   swapsData: SUI_Swap[],
