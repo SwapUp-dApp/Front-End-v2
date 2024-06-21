@@ -31,7 +31,7 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
   const { setPrivateSwapsData, filteredAvailablePrivateSwaps, setFilteredAvailablePrivateSwapsBySearch } = useSwapMarketStore(state => state.privateMarket);
   const wallet = useSwapMarketStore(state => state.wallet);
 
-  const [, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
 
   // const [acceptSwap, setAcceptSwap] = useState<any>();
 

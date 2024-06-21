@@ -19,7 +19,7 @@ import {
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 
 // import { useNavigate } from "react-router-dom";
-import { useSwapMarketStore } from "@/store/swap-market";
+// import { useSwapMarketStore } from "@/store/swap-market";
 import PendingSwapsTabContent from "@/components/custom/swap_market/my-swaps/PendingSwapsTabContent";
 
 // export interface IPendingSwapTableItem {
@@ -400,13 +400,13 @@ const MySwapsPage = () => {
               <TabsTrigger value="pending-swaps" onClick={() => handleSwitchTab("pending-swaps")} >
                 Pending
                 <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'pending-swaps' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {pendingSwapsLength}
+                  {/* {pendingSwapsLength} */}
                 </span>
               </TabsTrigger>
               <TabsTrigger value="swap-history" onClick={() => handleSwitchTab("swap-history")}>
                 History
                 <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'swap-history' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {swapHistoryLength}
+                  {/* {swapHistoryLength} */}
                 </span>
               </TabsTrigger>
             </TabsList>
