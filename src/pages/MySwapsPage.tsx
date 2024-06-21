@@ -292,19 +292,20 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
 
 
 const MySwapsPage = () => {
-  
+
   const [filteredSwapHistoryData, setFilteredSwapHistoryData] = useState<ISwapHistoryTableItem[] | []>(swapHistoryTableData);
- // const [setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
+  // const [setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
 
   // const navigate = useNavigate();
-  // const wallet = useSwapMarketStore(state => state.wallet);
+  //const wallet = useSwapMarketStore(state => state.wallet);
 
   const [activeTab, setActiveTab] = useState<"pending-swaps" | "swap-history">("swap-history");
 
-  const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
-  const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
 
-  
+
+  //const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
+  // const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
+
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -799,7 +800,7 @@ const MySwapsPage = () => {
 
               } */}
 
-<PendingSwapsTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
+              <PendingSwapsTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
 
             </TabsContent>
 
