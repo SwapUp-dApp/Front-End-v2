@@ -2,8 +2,6 @@ import { Environment } from "@/config";
 import { abi } from "@/constants/abi";
 import { SUI_Swap } from "@/types/swap-market.types";
 import { ethers, JsonRpcSigner } from 'ethers';
-import { env } from "process";
-import { useState } from "react";
 
 export const getUserSignature = async (
   swap: SUI_Swap,

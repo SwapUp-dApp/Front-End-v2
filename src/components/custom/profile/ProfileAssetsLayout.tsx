@@ -158,7 +158,7 @@ const ProfileAssetsLayout = ({ layoutType, walletAddress }: IProp) => {
             </div>
             <span
               className="text-sm font-semibold py-2 px-3 hover:bg-su_enable_bg cursor-pointer flex items-center gap-2 rounded-xs"
-              onClick={removeAllFilters}
+              onClick={() => removeAllFilters()}
             >
               Clear all
 

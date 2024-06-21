@@ -10,7 +10,7 @@ import { getUserApproval, getUserSignature } from "@/lib/metamask";
 import { isValidTradeId } from "@/lib/utils";
 import { useOpenSwapByOpenTradId } from "@/service/queries/swap-market.query";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUI_OpenSwap, SUI_Swap } from "@/types/swap-market.types";
+import { SUI_OpenSwap } from "@/types/swap-market.types";
 import { SUI_SwapCreation } from "@/types/swapup.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
