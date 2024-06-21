@@ -21,6 +21,8 @@ import { DateRange } from "react-day-picker";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { generateRandomTradeId } from "@/lib/utils";
+
 import {
   ToggleGroup,
   ToggleGroupItem,
