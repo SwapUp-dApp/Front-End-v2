@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 interface IProp {
   className?: string;
   title: string;
-  value?: string | any;
+  value: string | any;
   valueClasses?: string;
 }
 

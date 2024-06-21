@@ -25,10 +25,9 @@ interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
   counterPartyWallet?: string;
   roomKey: SUT_RoomKeyType;
-  setDataSavedInStore?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedInStore }: IProp) => {
+const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey }: IProp) => {
 
   const {
     activeGridView,
@@ -74,23 +73,13 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
         ]
       }));
 
-      if (roomKey === "openRoom" && layoutType === "receiver" && setDataSavedInStore) {
-
-        const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+      if (roomKey === "openRoom" && layoutType === "receiver") {
+        resNfts.filter(nft =>
           swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
         );
-
-        setCounterPartyNftsDataset(filteredNfts);
-        setSelectedNftsForSwap(filteredNfts);
-
-        setTimeout(() => {
-          setDataSavedInStore(true);
-        }, 200);
-
-      } else {
-        setNftsDataset(resNfts);
       }
 
+      setNftsDataset(resNfts);
     }
 
     if (isError) {
@@ -112,7 +101,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
       );
     }
 
-  }, [data, isSuccess, isError, roomKey, layoutType, setDataSavedInStore]);
+  }, [data, isSuccess, isError]);
 
   return (
     <Card className="border-none flex flex-col gap-4 dark:bg-su_secondary_bg p-2 lg:p-6" >
@@ -143,9 +132,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
             }
           />
 
-          <div
-            className={`flex items-center gap-2`}
-          >
+          <div className="flex items-center gap-2" >
             <GridToggleButton activeGridView={activeGridView} toggleView={toggleGridView} />
 
             <PrivateRoomFilterDrawer setFilteredNftsByFilters={setFilteredNftsByFilters} removeAllFilters={removeAllFilters} collections={collections} >
@@ -181,7 +168,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
             </div>
             <span
               className="text-sm font-semibold py-2 px-3 hover:bg-su_enable_bg cursor-pointer flex items-center gap-2 rounded-xs"
-              onClick={() => removeAllFilters()}
+              onClick={removeAllFilters}
             >
               Clear all
 
@@ -208,9 +195,6 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
                 data={nft}
                 setSelectedNftsForSwap={setSelectedNftsForSwap}
                 nftsSelectedForSwap={nftsSelectedForSwap}
-                disableNftSelection={
-                  (roomKey === "openRoom" && layoutType === "receiver") ? true : false
-                }
               />
             ))
             :

@@ -174,7 +174,7 @@ const PrivateRoom = () => {
               type="submit"
               disabled={!enableApproveButtonCriteria}
             >
-              Create
+              Approve
             </Button>
           </SwapDetailsDialog>
         </div >

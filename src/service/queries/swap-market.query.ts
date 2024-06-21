@@ -146,6 +146,5 @@ export const useOpenSwapByOpenTradId = (openTradeId: string) => {
         throw error;
       }
     },
-    refetchOnMount: "always"
   });
 };

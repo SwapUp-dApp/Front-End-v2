@@ -11,6 +11,7 @@ export const getUserSignature = async (
   signer: JsonRpcSigner,
 ) => {
 
+
   //return "cancel" or "error" in case user does not sign OR there is an error
   let swapEncodedBytes = await getSwapEncodedBytes(swap);
 
@@ -197,30 +198,30 @@ export const triggerApprovalForAll = async (nftContractAddress: string, signer: 
   return tx;
 };
 
-export const triggerTransfer = async (swap: SUI_Swap, signer: JsonRpcSigner) => {
+export const triggerTransfer = async (swap: SUI_Swap , signer:JsonRpcSigner) => {
   const contract = new ethers.Contract(
     Environment.SWAPUP_CONTRACT,
-    abi.swapUp,
-    signer
+      abi.swapUp,
+      signer
   );
   console.log(contract);
   let swapEncodedBytes = await getSwapEncodedBytes(swap);
   try {
-    let gas = 200000 + 60000 * 10;
-    const tx = await contract["swap(bytes,bytes)"](
-      swapEncodedBytes,
-      swap.init_sign,
-      {
-        gasLimit: gas
-      }
-    );
-    console.log(tx);
-    let res = await getTransactionReceipt(tx);
-    console.log("rec", res);
-    return res;
+      let gas = 200000 + 60000 * 10;
+      const tx = await contract["swap(bytes,bytes)"](
+          swapEncodedBytes,
+          swap.init_sign,
+          {
+              gasLimit: gas
+          }
+      );
+      console.log(tx);
+      let res = await getTransactionReceipt(tx);      
+      console.log("rec", res);
+      return res;
   } catch (err) {
-    console.log("txErr", err);
-    return null; //transaction rejected or other issues
+      console.log("txErr", err);
+      return null; //transaction rejected or other issues
   }
 };
 

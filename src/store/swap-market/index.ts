@@ -26,9 +26,6 @@ import {
   setPrivateSwapsDataHelper,
   setFilteredAvailablePrivateSwapsBySearchHelper,
   setCounterPartyNftsDatasetHelper,
-  resetOpenSwapProposeRoomHelper,
-  createProposeOpenSwapHelper,
-  setSwapEncodedMsgAndSignOpenHelper,
 } from './swap-market-helpers';
 
 import { chainsDataset } from '@/constants/data';
@@ -130,11 +127,9 @@ export const openMarketRoomInitialState: IOpenRoom = {
   setValuesOnCreateOpenSwapRoom: () => { },
   setValuesOnProposeOpenSwapRoom: () => { },
   createOpenSwap: () => { },
-  createProposeOpenSwap: () => { },
   setSwapEncodedMsgAndSign: () => { },
   setSwapPreferences: () => { },
-  resetOpenSwapCreationRoom: () => { },
-  resetOpenSwapProposeRoom: () => { }
+  resetOpenSwapCreationRoom: () => { }
 };
 
 export const privateMarketRoomInitialState: IPrivateRoom = {
@@ -255,7 +250,6 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         setCounterPartyNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setCounterPartyNftsDatasetHelper(state, dataset)),
       },
       resetOpenSwapCreationRoom: () => set(state => resetOpenSwapCreationRoomHelper(state)),
-      resetOpenSwapProposeRoom: () => set(state => resetOpenSwapProposeRoomHelper(state)),
       setValuesOnCreateOpenSwapRoom: (tradeId: string) => set((state) => setValuesOnCreateOpenSwapRoomHelper(state, tradeId)),
       setValuesOnProposeOpenSwapRoom: async (tradeId: string, swap: SUI_OpenSwap) => {
         const state = get();
@@ -267,14 +261,9 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         const newState = await createOpenSwapHelper(state);
         set(newState);
       },
-      createProposeOpenSwap: async () => {
-        const state = get();
-        const newState = await createProposeOpenSwapHelper(state);
-        set(newState);
-      },
       setSwapEncodedMsgAndSign: async (swapEncodedMsg: string, sign: string) => {
         const state = get();
-        const newState = await setSwapEncodedMsgAndSignOpenHelper(state, swapEncodedMsg, sign);
+        const newState = await setSwapEncodedMsgAndSignPrivateHelper(state, swapEncodedMsg, sign);
         set(newState);
       },
       setSwapPreferences: (preferences: SUI_SwapPreferences) => set((state) => setSwapPreferencesHelper(state, preferences))

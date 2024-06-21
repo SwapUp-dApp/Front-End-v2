@@ -11,15 +11,13 @@ interface IProp {
   data: SUI_NFTItem;
   setSelectedNftsForSwap: (selectedNfts: [] | SUI_NFTItem[]) => void;
   nftsSelectedForSwap: SUI_NFTItem[] | [];
-  disableNftSelection?: boolean;
 }
 
-const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nftsSelectedForSwap, disableNftSelection = false, ...props }: IProp) => {
+const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nftsSelectedForSwap, ...props }: IProp) => {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleCardClick = () => {
-    if (!disableNftSelection)
-      setIsChecked((prev) => !prev);
+    setIsChecked((prev) => !prev);
   };
 
   useEffect(() => {
@@ -50,7 +48,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
         className={cn(
           `${activeGridView === "detailed" ? "h-[196px]" : "h-[100px]"} peer bg-su_enable_bg rounded-md cursor-pointer relative ${!isChecked ? "hover:scale-105" : ""} transition duration-300 ease-in-out`,
           className,
-          (isChecked && !disableNftSelection) ? "opacity-30 backdrop-blur-(2px)" : ""
+          isChecked ? "opacity-30 backdrop-blur-(2px)" : ""
         )}
         {...props}
       >
@@ -117,7 +115,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
 
       </div>
 
-      {(isChecked && !disableNftSelection) &&
+      {isChecked &&
         <svg
           className="absolute top-3 left-3 w-8 cursor-pointer peer-hover:scale-125 transition duration-300 ease-in-out"
           viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
