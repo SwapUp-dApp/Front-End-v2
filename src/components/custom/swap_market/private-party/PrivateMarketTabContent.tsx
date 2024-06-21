@@ -63,7 +63,8 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
       }
 
       // setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));
-
+      //temp fix 
+      swap.accept_sign = sign;
 
       const approval = await getUserApproval(swap, true, wallet.signer);
 

@@ -415,7 +415,7 @@ export const setPrivateSwapsDataHelper = (
 
 
   if (state.wallet.address && state.wallet.isConnected) {
-    availablePrivateSwaps = swapsData.filter(swap => swap.swap_mode === 1);
+    availablePrivateSwaps = swapsData.filter(swap => swap.swap_mode === "1");
   }
   return {
     ...state,

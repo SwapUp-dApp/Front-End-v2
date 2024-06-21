@@ -138,7 +138,7 @@ export const generateSignString = async (swap: SUI_Swap) => {
   });
 
   let signStr = `${swap.init_address} offering to swap NFTs, ${initNfts} with the NFTs, ${acceptNfts} belonging to ${swap.accept_address}`;
-  console.log(signStr);
+  console.log("sign string :" + signStr);
 
   return signStr;
 };
