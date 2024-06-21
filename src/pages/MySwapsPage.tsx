@@ -16,42 +16,34 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@radix-ui/react-dropdown-menu";
-import { CalendarIcon } from "lucide-react";
-import { addDays, format } from "date-fns";
-import { DateRange } from "react-day-picker";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+
+
+
 //import { useNavigate } from "react-router-dom";
 //import { useSwapMarketStore } from "@/store/swap-market";
 
-export interface IPendingSwapTableItem {
-  assets: {
-    from: string[];
-    to: string[];
-  };
-  unique_trade_id: string;
-  status: 'sent' | 'received';
-  swap_mode: 'open market' | 'private';
-  offer_type: 'primary offer' | 'counter offer';
-  counter_party_wallet: string,
-  trading_chain: {
-    title: string;
-    icon: React.ReactNode;
-  },
-  request_date: string,
-}
+// import { useNavigate } from "react-router-dom";
+// import { useSwapMarketStore } from "@/store/swap-market";
+import ToastLookCard from "@/components/custom/shared/ToastLookCard";
+import { useSwapMarketStore } from "@/store/swap-market";
+import PendingSwapsTabContent from "@/components/custom/swap_market/my-swaps/PendingSwapsTabContent";
+
+// export interface IPendingSwapTableItem {
+//   assets: {
+//     from: string[];
+//     to: string[];
+//   };
+//   unique_trade_id: string;
+//   status: 'sent' | 'received';
+//   swap_mode: 'open market' | 'private';
+//   offer_type: 'primary offer' | 'counter offer';
+//   counter_party_wallet: string,
+//   trading_chain: {
+//     title: string;
+//     icon: React.ReactNode;
+//   },
+//   request_date: string,
+// }
 
 export interface ISwapHistoryTableItem {
   assets: {
@@ -70,134 +62,6 @@ export interface ISwapHistoryTableItem {
 }
 
 
-const pendingSwapTableData: IPendingSwapTableItem[] = [
-  {
-    assets: {
-      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
-      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png', '/assets/nfts/from4.png']
-    },
-    unique_trade_id: '#46Aic2o',
-    status: 'sent',
-    swap_mode: 'open market',
-    offer_type: 'primary offer',
-    counter_party_wallet: '0x6723F...7B3E5',
-    request_date: 'Apr 08, 2024',
-    trading_chain: {
-      icon: <svg className="w-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00002C12 9.31374 9.31374 12 6.00002 12C2.6863 12 0 9.31374 0 6.00002C0 2.6863 2.6863 0 6.00002 0C9.31374 0 12 2.6863 12 6.00002ZM3.87761 7.3189C3.81937 7.31884 3.76345 7.34175 3.72199 7.38265L2.65773 8.43828C2.64228 8.45355 2.63174 8.47307 2.62745 8.49436C2.62316 8.51566 2.62533 8.53774 2.63366 8.5578C2.642 8.57785 2.65613 8.59496 2.67425 8.60694C2.69236 8.61892 2.71364 8.62522 2.73536 8.62503H8.12263C8.18093 8.625 8.23685 8.60195 8.27826 8.56091L9.34251 7.50528C9.35802 7.49007 9.36861 7.47056 9.37293 7.44927C9.37725 7.42798 9.3751 7.40588 9.36675 7.38583C9.35839 7.36578 9.34423 7.34868 9.32607 7.33676C9.30792 7.32483 9.28661 7.31861 9.26488 7.3189H3.87761ZM3.87761 3.37501C3.81937 3.37495 3.76345 3.39786 3.72199 3.43876L2.65773 4.49477C2.64241 4.51005 2.63198 4.52955 2.62777 4.55077C2.62356 4.572 2.62575 4.594 2.63407 4.61398C2.64239 4.63395 2.65646 4.65101 2.6745 4.66297C2.69253 4.67492 2.71372 4.68125 2.73536 4.68114H8.12263C8.18087 4.68121 8.23679 4.6583 8.27826 4.61739L9.34251 3.56176C9.41189 3.49276 9.36276 3.37501 9.26488 3.37501H3.87761ZM8.12263 5.3344C8.18087 5.33433 8.23679 5.35724 8.27826 5.39815L9.34251 6.45377C9.35796 6.46904 9.3685 6.48857 9.37279 6.50986C9.37708 6.53115 9.37492 6.55323 9.36658 6.57329C9.35825 6.59334 9.34412 6.61046 9.326 6.62243C9.30788 6.63441 9.2866 6.64071 9.26488 6.64053H3.87761C3.81949 6.64053 3.76324 6.61765 3.72199 6.57678L2.65773 5.52115C2.64228 5.50588 2.63174 5.48636 2.62745 5.46506C2.62316 5.44377 2.62533 5.42169 2.63366 5.40163C2.642 5.38158 2.65613 5.36447 2.67425 5.35249C2.69236 5.34051 2.71364 5.33421 2.73536 5.3344H8.12263Z" fill="#66F9A1" />
-      </svg>,
-      title: 'Solana'
-    }
-  },
-  {
-    assets: {
-      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png'],
-      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
-    },
-    unique_trade_id: '#32Bic1o',
-    status: 'sent',
-    swap_mode: 'open market',
-    offer_type: 'primary offer',
-    counter_party_wallet: '0x6723F...4E1A2',
-    request_date: 'Apr 03, 2024',
-    trading_chain: {
-      icon: <svg className="w-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00002C12 9.31374 9.31374 12 6.00002 12C2.6863 12 0 9.31374 0 6.00002C0 2.6863 2.6863 0 6.00002 0C9.31374 0 12 2.6863 12 6.00002ZM3.87761 7.3189C3.81937 7.31884 3.76345 7.34175 3.72199 7.38265L2.65773 8.43828C2.64228 8.45355 2.63174 8.47307 2.62745 8.49436C2.62316 8.51566 2.62533 8.53774 2.63366 8.5578C2.642 8.57785 2.65613 8.59496 2.67425 8.60694C2.69236 8.61892 2.71364 8.62522 2.73536 8.62503H8.12263C8.18093 8.625 8.23685 8.60195 8.27826 8.56091L9.34251 7.50528C9.35802 7.49007 9.36861 7.47056 9.37293 7.44927C9.37725 7.42798 9.3751 7.40588 9.36675 7.38583C9.35839 7.36578 9.34423 7.34868 9.32607 7.33676C9.30792 7.32483 9.28661 7.31861 9.26488 7.3189H3.87761ZM3.87761 3.37501C3.81937 3.37495 3.76345 3.39786 3.72199 3.43876L2.65773 4.49477C2.64241 4.51005 2.63198 4.52955 2.62777 4.55077C2.62356 4.572 2.62575 4.594 2.63407 4.61398C2.64239 4.63395 2.65646 4.65101 2.6745 4.66297C2.69253 4.67492 2.71372 4.68125 2.73536 4.68114H8.12263C8.18087 4.68121 8.23679 4.6583 8.27826 4.61739L9.34251 3.56176C9.41189 3.49276 9.36276 3.37501 9.26488 3.37501H3.87761ZM8.12263 5.3344C8.18087 5.33433 8.23679 5.35724 8.27826 5.39815L9.34251 6.45377C9.35796 6.46904 9.3685 6.48857 9.37279 6.50986C9.37708 6.53115 9.37492 6.55323 9.36658 6.57329C9.35825 6.59334 9.34412 6.61046 9.326 6.62243C9.30788 6.63441 9.2866 6.64071 9.26488 6.64053H3.87761C3.81949 6.64053 3.76324 6.61765 3.72199 6.57678L2.65773 5.52115C2.64228 5.50588 2.63174 5.48636 2.62745 5.46506C2.62316 5.44377 2.62533 5.42169 2.63366 5.40163C2.642 5.38158 2.65613 5.36447 2.67425 5.35249C2.69236 5.34051 2.71364 5.33421 2.73536 5.3344H8.12263Z" fill="#66F9A1" />
-      </svg>,
-      title: 'Solana'
-    }
-  },
-  {
-    assets: {
-      from: ['/assets/nfts/from1.png',],
-      to: ['/assets/nfts/to3.png']
-    },
-    unique_trade_id: '#12Bic1o',
-    status: 'received',
-    swap_mode: 'private',
-    offer_type: 'counter offer',
-    counter_party_wallet: '0x6723F...4E1A2',
-    request_date: 'Apr 03, 2024',
-    trading_chain: {
-      icon: <svg className="w-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00002C12 9.31374 9.31374 12 6.00002 12C2.6863 12 0 9.31374 0 6.00002C0 2.6863 2.6863 0 6.00002 0C9.31374 0 12 2.6863 12 6.00002ZM3.87761 7.3189C3.81937 7.31884 3.76345 7.34175 3.72199 7.38265L2.65773 8.43828C2.64228 8.45355 2.63174 8.47307 2.62745 8.49436C2.62316 8.51566 2.62533 8.53774 2.63366 8.5578C2.642 8.57785 2.65613 8.59496 2.67425 8.60694C2.69236 8.61892 2.71364 8.62522 2.73536 8.62503H8.12263C8.18093 8.625 8.23685 8.60195 8.27826 8.56091L9.34251 7.50528C9.35802 7.49007 9.36861 7.47056 9.37293 7.44927C9.37725 7.42798 9.3751 7.40588 9.36675 7.38583C9.35839 7.36578 9.34423 7.34868 9.32607 7.33676C9.30792 7.32483 9.28661 7.31861 9.26488 7.3189H3.87761ZM3.87761 3.37501C3.81937 3.37495 3.76345 3.39786 3.72199 3.43876L2.65773 4.49477C2.64241 4.51005 2.63198 4.52955 2.62777 4.55077C2.62356 4.572 2.62575 4.594 2.63407 4.61398C2.64239 4.63395 2.65646 4.65101 2.6745 4.66297C2.69253 4.67492 2.71372 4.68125 2.73536 4.68114H8.12263C8.18087 4.68121 8.23679 4.6583 8.27826 4.61739L9.34251 3.56176C9.41189 3.49276 9.36276 3.37501 9.26488 3.37501H3.87761ZM8.12263 5.3344C8.18087 5.33433 8.23679 5.35724 8.27826 5.39815L9.34251 6.45377C9.35796 6.46904 9.3685 6.48857 9.37279 6.50986C9.37708 6.53115 9.37492 6.55323 9.36658 6.57329C9.35825 6.59334 9.34412 6.61046 9.326 6.62243C9.30788 6.63441 9.2866 6.64071 9.26488 6.64053H3.87761C3.81949 6.64053 3.76324 6.61765 3.72199 6.57678L2.65773 5.52115C2.64228 5.50588 2.63174 5.48636 2.62745 5.46506C2.62316 5.44377 2.62533 5.42169 2.63366 5.40163C2.642 5.38158 2.65613 5.36447 2.67425 5.35249C2.69236 5.34051 2.71364 5.33421 2.73536 5.3344H8.12263Z" fill="#66F9A1" />
-      </svg>,
-      title: 'Solana'
-    }
-  },
-  {
-    assets: {
-      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
-      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
-    },
-    unique_trade_id: '#46Aic2o',
-    status: 'received',
-    swap_mode: 'open market',
-    offer_type: 'primary offer',
-    counter_party_wallet: '0x6723F...4E1A2',
-    request_date: 'May 08, 2024',
-    trading_chain: {
-      icon: <svg className="w-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00002C12 9.31374 9.31374 12 6.00002 12C2.6863 12 0 9.31374 0 6.00002C0 2.6863 2.6863 0 6.00002 0C9.31374 0 12 2.6863 12 6.00002ZM3.87761 7.3189C3.81937 7.31884 3.76345 7.34175 3.72199 7.38265L2.65773 8.43828C2.64228 8.45355 2.63174 8.47307 2.62745 8.49436C2.62316 8.51566 2.62533 8.53774 2.63366 8.5578C2.642 8.57785 2.65613 8.59496 2.67425 8.60694C2.69236 8.61892 2.71364 8.62522 2.73536 8.62503H8.12263C8.18093 8.625 8.23685 8.60195 8.27826 8.56091L9.34251 7.50528C9.35802 7.49007 9.36861 7.47056 9.37293 7.44927C9.37725 7.42798 9.3751 7.40588 9.36675 7.38583C9.35839 7.36578 9.34423 7.34868 9.32607 7.33676C9.30792 7.32483 9.28661 7.31861 9.26488 7.3189H3.87761ZM3.87761 3.37501C3.81937 3.37495 3.76345 3.39786 3.72199 3.43876L2.65773 4.49477C2.64241 4.51005 2.63198 4.52955 2.62777 4.55077C2.62356 4.572 2.62575 4.594 2.63407 4.61398C2.64239 4.63395 2.65646 4.65101 2.6745 4.66297C2.69253 4.67492 2.71372 4.68125 2.73536 4.68114H8.12263C8.18087 4.68121 8.23679 4.6583 8.27826 4.61739L9.34251 3.56176C9.41189 3.49276 9.36276 3.37501 9.26488 3.37501H3.87761ZM8.12263 5.3344C8.18087 5.33433 8.23679 5.35724 8.27826 5.39815L9.34251 6.45377C9.35796 6.46904 9.3685 6.48857 9.37279 6.50986C9.37708 6.53115 9.37492 6.55323 9.36658 6.57329C9.35825 6.59334 9.34412 6.61046 9.326 6.62243C9.30788 6.63441 9.2866 6.64071 9.26488 6.64053H3.87761C3.81949 6.64053 3.76324 6.61765 3.72199 6.57678L2.65773 5.52115C2.64228 5.50588 2.63174 5.48636 2.62745 5.46506C2.62316 5.44377 2.62533 5.42169 2.63366 5.40163C2.642 5.38158 2.65613 5.36447 2.67425 5.35249C2.69236 5.34051 2.71364 5.33421 2.73536 5.3344H8.12263Z" fill="#66F9A1" />
-      </svg>,
-      title: 'Solana'
-    }
-  },
-  {
-    assets: {
-      from: ['/assets/nfts/from1.png', '/assets/nfts/from2.png', '/assets/nfts/from3.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png', '/assets/nfts/from4.png'],
-      to: ['/assets/nfts/to1.png', '/assets/nfts/to2.png', '/assets/nfts/to3.png']
-    },
-    unique_trade_id: '#46Aic2o',
-    status: 'sent',
-    swap_mode: 'private',
-    offer_type: 'primary offer',
-    counter_party_wallet: '0x6723F...4E1A2',
-    request_date: 'Jun 08, 2024',
-    trading_chain: {
-      icon: <svg className="w-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00002C12 9.31374 9.31374 12 6.00002 12C2.6863 12 0 9.31374 0 6.00002C0 2.6863 2.6863 0 6.00002 0C9.31374 0 12 2.6863 12 6.00002ZM3.87761 7.3189C3.81937 7.31884 3.76345 7.34175 3.72199 7.38265L2.65773 8.43828C2.64228 8.45355 2.63174 8.47307 2.62745 8.49436C2.62316 8.51566 2.62533 8.53774 2.63366 8.5578C2.642 8.57785 2.65613 8.59496 2.67425 8.60694C2.69236 8.61892 2.71364 8.62522 2.73536 8.62503H8.12263C8.18093 8.625 8.23685 8.60195 8.27826 8.56091L9.34251 7.50528C9.35802 7.49007 9.36861 7.47056 9.37293 7.44927C9.37725 7.42798 9.3751 7.40588 9.36675 7.38583C9.35839 7.36578 9.34423 7.34868 9.32607 7.33676C9.30792 7.32483 9.28661 7.31861 9.26488 7.3189H3.87761ZM3.87761 3.37501C3.81937 3.37495 3.76345 3.39786 3.72199 3.43876L2.65773 4.49477C2.64241 4.51005 2.63198 4.52955 2.62777 4.55077C2.62356 4.572 2.62575 4.594 2.63407 4.61398C2.64239 4.63395 2.65646 4.65101 2.6745 4.66297C2.69253 4.67492 2.71372 4.68125 2.73536 4.68114H8.12263C8.18087 4.68121 8.23679 4.6583 8.27826 4.61739L9.34251 3.56176C9.41189 3.49276 9.36276 3.37501 9.26488 3.37501H3.87761ZM8.12263 5.3344C8.18087 5.33433 8.23679 5.35724 8.27826 5.39815L9.34251 6.45377C9.35796 6.46904 9.3685 6.48857 9.37279 6.50986C9.37708 6.53115 9.37492 6.55323 9.36658 6.57329C9.35825 6.59334 9.34412 6.61046 9.326 6.62243C9.30788 6.63441 9.2866 6.64071 9.26488 6.64053H3.87761C3.81949 6.64053 3.76324 6.61765 3.72199 6.57678L2.65773 5.52115C2.64228 5.50588 2.63174 5.48636 2.62745 5.46506C2.62316 5.44377 2.62533 5.42169 2.63366 5.40163C2.642 5.38158 2.65613 5.36447 2.67425 5.35249C2.69236 5.34051 2.71364 5.33421 2.73536 5.3344H8.12263Z" fill="#66F9A1" />
-      </svg>,
-      title: 'Solana'
-    }
-  },
-  {
-    assets: {
-      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png'],
-      to: ['/assets/nfts/to1.png', '/assets/nfts/to3.png']
-    },
-    unique_trade_id: '#46Aic2o',
-    status: 'sent',
-    swap_mode: 'private',
-    offer_type: 'primary offer',
-    counter_party_wallet: '0x6723F...4E1A2',
-    request_date: 'Mar 08, 2023',
-    trading_chain: {
-      icon: <svg className="w-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00002C12 9.31374 9.31374 12 6.00002 12C2.6863 12 0 9.31374 0 6.00002C0 2.6863 2.6863 0 6.00002 0C9.31374 0 12 2.6863 12 6.00002ZM3.87761 7.3189C3.81937 7.31884 3.76345 7.34175 3.72199 7.38265L2.65773 8.43828C2.64228 8.45355 2.63174 8.47307 2.62745 8.49436C2.62316 8.51566 2.62533 8.53774 2.63366 8.5578C2.642 8.57785 2.65613 8.59496 2.67425 8.60694C2.69236 8.61892 2.71364 8.62522 2.73536 8.62503H8.12263C8.18093 8.625 8.23685 8.60195 8.27826 8.56091L9.34251 7.50528C9.35802 7.49007 9.36861 7.47056 9.37293 7.44927C9.37725 7.42798 9.3751 7.40588 9.36675 7.38583C9.35839 7.36578 9.34423 7.34868 9.32607 7.33676C9.30792 7.32483 9.28661 7.31861 9.26488 7.3189H3.87761ZM3.87761 3.37501C3.81937 3.37495 3.76345 3.39786 3.72199 3.43876L2.65773 4.49477C2.64241 4.51005 2.63198 4.52955 2.62777 4.55077C2.62356 4.572 2.62575 4.594 2.63407 4.61398C2.64239 4.63395 2.65646 4.65101 2.6745 4.66297C2.69253 4.67492 2.71372 4.68125 2.73536 4.68114H8.12263C8.18087 4.68121 8.23679 4.6583 8.27826 4.61739L9.34251 3.56176C9.41189 3.49276 9.36276 3.37501 9.26488 3.37501H3.87761ZM8.12263 5.3344C8.18087 5.33433 8.23679 5.35724 8.27826 5.39815L9.34251 6.45377C9.35796 6.46904 9.3685 6.48857 9.37279 6.50986C9.37708 6.53115 9.37492 6.55323 9.36658 6.57329C9.35825 6.59334 9.34412 6.61046 9.326 6.62243C9.30788 6.63441 9.2866 6.64071 9.26488 6.64053H3.87761C3.81949 6.64053 3.76324 6.61765 3.72199 6.57678L2.65773 5.52115C2.64228 5.50588 2.63174 5.48636 2.62745 5.46506C2.62316 5.44377 2.62533 5.42169 2.63366 5.40163C2.642 5.38158 2.65613 5.36447 2.67425 5.35249C2.69236 5.34051 2.71364 5.33421 2.73536 5.3344H8.12263Z" fill="#66F9A1" />
-      </svg>,
-      title: 'Solana'
-    }
-  },
-  {
-    assets: {
-      from: ['/assets/nfts/from2.png', '/assets/nfts/from3.png'],
-      to: ['/assets/nfts/to1.png', '/assets/nfts/to3.png']
-    },
-    unique_trade_id: '#46Aic2o',
-    status: 'sent',
-    swap_mode: 'private',
-    offer_type: 'primary offer',
-    counter_party_wallet: '0x6723F...4E1A2',
-    request_date: 'Dec 08, 2023',
-    trading_chain: {
-      icon: <svg className="w-4" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fillRule="evenodd" clipRule="evenodd" d="M12 6.00002C12 9.31374 9.31374 12 6.00002 12C2.6863 12 0 9.31374 0 6.00002C0 2.6863 2.6863 0 6.00002 0C9.31374 0 12 2.6863 12 6.00002ZM3.87761 7.3189C3.81937 7.31884 3.76345 7.34175 3.72199 7.38265L2.65773 8.43828C2.64228 8.45355 2.63174 8.47307 2.62745 8.49436C2.62316 8.51566 2.62533 8.53774 2.63366 8.5578C2.642 8.57785 2.65613 8.59496 2.67425 8.60694C2.69236 8.61892 2.71364 8.62522 2.73536 8.62503H8.12263C8.18093 8.625 8.23685 8.60195 8.27826 8.56091L9.34251 7.50528C9.35802 7.49007 9.36861 7.47056 9.37293 7.44927C9.37725 7.42798 9.3751 7.40588 9.36675 7.38583C9.35839 7.36578 9.34423 7.34868 9.32607 7.33676C9.30792 7.32483 9.28661 7.31861 9.26488 7.3189H3.87761ZM3.87761 3.37501C3.81937 3.37495 3.76345 3.39786 3.72199 3.43876L2.65773 4.49477C2.64241 4.51005 2.63198 4.52955 2.62777 4.55077C2.62356 4.572 2.62575 4.594 2.63407 4.61398C2.64239 4.63395 2.65646 4.65101 2.6745 4.66297C2.69253 4.67492 2.71372 4.68125 2.73536 4.68114H8.12263C8.18087 4.68121 8.23679 4.6583 8.27826 4.61739L9.34251 3.56176C9.41189 3.49276 9.36276 3.37501 9.26488 3.37501H3.87761ZM8.12263 5.3344C8.18087 5.33433 8.23679 5.35724 8.27826 5.39815L9.34251 6.45377C9.35796 6.46904 9.3685 6.48857 9.37279 6.50986C9.37708 6.53115 9.37492 6.55323 9.36658 6.57329C9.35825 6.59334 9.34412 6.61046 9.326 6.62243C9.30788 6.63441 9.2866 6.64071 9.26488 6.64053H3.87761C3.81949 6.64053 3.76324 6.61765 3.72199 6.57678L2.65773 5.52115C2.64228 5.50588 2.63174 5.48636 2.62745 5.46506C2.62316 5.44377 2.62533 5.42169 2.63366 5.40163C2.642 5.38158 2.65613 5.36447 2.67425 5.35249C2.69236 5.34051 2.71364 5.33421 2.73536 5.3344H8.12263Z" fill="#66F9A1" />
-      </svg>,
-      title: 'Solana'
-    }
-  },
-];
 
 const swapHistoryTableData: ISwapHistoryTableItem[] = [
   {
@@ -306,30 +170,24 @@ const swapHistoryTableData: ISwapHistoryTableItem[] = [
 
 
 const MySwapsPage = () => {
-  
+
   const [filteredSwapHistoryData, setFilteredSwapHistoryData] = useState<ISwapHistoryTableItem[] | []>(swapHistoryTableData);
-  const [filteredPendingSwapData, setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
+  // const [filteredPendingSwapData, setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
 
 
- // const navigate = useNavigate();
+  // const navigate = useNavigate();
   //const wallet = useSwapMarketStore(state => state.wallet);
 
   const [activeTab, setActiveTab] = useState<"pending-swaps" | "swap-history">("swap-history");
 
-  
+  const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
+  const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
 
-  //const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
- // const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
 
 
   const [isOpen, setIsOpen] = useState(false);
 
-
-
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2024, 0, 20),
-    to: addDays(new Date(2024, 0, 20), 1),
-  });
+   
 
 
 
@@ -357,6 +215,24 @@ const MySwapsPage = () => {
     setActiveTab(value);
   };
 
+  const handleShowWalletConnectionToast = () => {
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="error"
+          title="Connect to wallet!"
+          description={"Please connect to wallet for this feature!"}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 3000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
+  };
+
   const handleFilterData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
 
@@ -368,13 +244,13 @@ const MySwapsPage = () => {
     ));
     setFilteredSwapHistoryData(newFilteredDataOne);
 
-    const newFilteredDataTwo = pendingSwapTableData.filter((item) => (
-      item.status.toLocaleLowerCase().includes(value) ||
-      item.counter_party_wallet.toLowerCase().includes(value) ||
-      item.request_date.toLowerCase().includes(value) ||
-      item.unique_trade_id.toLowerCase().includes(value)
-    ));
-    setFilteredPendingSwapData(newFilteredDataTwo);
+    // const newFilteredDataTwo = pendingSwapTableData.filter((item) => (
+    //   item.status.toLocaleLowerCase().includes(value) ||
+    //   item.counter_party_wallet.toLowerCase().includes(value) ||
+    //   item.request_date.toLowerCase().includes(value) ||
+    //   item.unique_trade_id.toLowerCase().includes(value)
+    // ));
+    // setFilteredPendingSwapData(newFilteredDataTwo);
 
   };
 
@@ -399,25 +275,25 @@ const MySwapsPage = () => {
 
 
         <div className="overflow-x-scroll lg:overflow-hidden" >
-          <Tabs defaultValue="pending-swaps" className="w-full">
+          <Tabs defaultValue="swap-history" className="w-full">
             <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
               <TabsTrigger value="pending-swaps" onClick={() => handleSwitchTab("pending-swaps")} >
                 Pending
                 <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'pending-swaps' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {filteredPendingSwapData.length}
+                  {pendingSwapsLength}
                 </span>
               </TabsTrigger>
               <TabsTrigger value="swap-history" onClick={() => handleSwitchTab("swap-history")}>
                 History
                 <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'swap-history' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {filteredSwapHistoryData.length}
+                  {swapHistoryLength}
                 </span>
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="pending-swaps" className="w-full flex justify-center">
               {/* Title */}
-              <Table className="min-w-full">
+              {/* <Table className="min-w-full">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="font-semibold min-w-[288px]">Assets</TableHead>
@@ -552,16 +428,9 @@ const MySwapsPage = () => {
                                   <CustomOutlineButton onClick={handleResetFilters} >
                                     Clear filters
                                   </CustomOutlineButton>
-
                                   <Button variant={"default"} type="submit" >Apply filters</Button>
-
                                 </div>
-
-
-
                               </div>
-
-
                             </div>
                           </DrawerContent>
                         </Drawer>
@@ -616,15 +485,12 @@ const MySwapsPage = () => {
                           <div className="w-auto flex justify-start" >{
                             data.swap_mode === "private" ?
                               <span className="flex items-center justify-center gap-2 py-2 px-3  rounded-full bg-su_enable_bg capitalize" >
-
                                 {data.swap_mode}
                               </span>
                               :
                               <span className="flex items-center justify-center gap-2 p-2 rounded-full bg-su_enable_bg capitalize" >
-
                                 {data.swap_mode}
                               </span>
-
                           }</div>
                         </TableCell>
                         <TableCell className="font-medium px-4">{data.counter_party_wallet}</TableCell>
@@ -812,7 +678,9 @@ const MySwapsPage = () => {
                   </DropdownMenu>
                 </EmptyDataset>
 
-              }
+              } */}
+
+              <PendingSwapsTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
 
             </TabsContent>
 

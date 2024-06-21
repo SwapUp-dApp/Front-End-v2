@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createOpenSwapOffer, createPrivateSwapOffer, getNftsForWallet, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet, updateSwapOffer } from "../api";
-import { SUI_Swap, SUP_CreateOpenSwap, SUP_UpdateSwap } from "@/types/swap-market.types";
+import { createOpenSwapOffer, createPrivateSwapOffer, getPendingSwapList, getNftsForWallet, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet, updateSwapOffer, proposeSwap } from "../api";
+import { SUI_OpenSwap, SUI_Swap, SUP_CreateOpenSwap, SUP_UpdateSwap } from "@/types/swap-market.types";
 
 
 export const getWalletSwapHistory = (walletId: string) => {
@@ -106,6 +106,26 @@ export const useCreateOpenSwapOffer = () => {
   });
 };
 
+export const useProposeOpenSwapOffer = () => {
+  return useMutation({
+    mutationFn: async (swap: SUI_OpenSwap) => {
+      try {
+        const response = await proposeSwap(swap);
+        return response;
+      } catch (error) {
+        console.error("Failed to propose swap offer:", error);
+        throw error;
+      }
+    },
+    onError: (error) => {
+      console.error("Error occurred during propose open swap:", error);
+    },
+    onSuccess: (data) => {
+      console.log("Swap offer proposed successfully:", data);
+    },
+  });
+};
+
 export const useOpenSwapsPendingList = () => {
   return useQuery({
     queryKey: ['getNftsForWallet'],
@@ -127,6 +147,21 @@ export const usePrivateSwapsPendingList = (walletId: string) => {
     queryFn: async () => {
       try {
         const response = await getPrivateSwapPendingList(walletId);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+};
+
+//for my swap view
+export const usePendingSwapsList = (walletId: string) => {
+  return useQuery({
+    queryKey: ['getPendingSwapsForWallet', walletId],
+    queryFn: async () => {
+      try {
+        const response = await getPendingSwapList(walletId);
         return response;
       } catch (error) {
         throw error;

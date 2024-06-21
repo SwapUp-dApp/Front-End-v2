@@ -52,9 +52,6 @@ const MainLayout = () => {
 
   }, [pathname, wallet.isConnected]);
 
-
-
-  console.log("Wallet connected: ", wallet.isConnected);
   return (
     <>
       <Navbar />
