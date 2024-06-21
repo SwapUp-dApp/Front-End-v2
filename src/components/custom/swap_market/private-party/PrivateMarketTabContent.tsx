@@ -7,7 +7,7 @@ import FilterButton from '../../shared/FilterButton';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import EmptyDataset from '../../shared/EmptyDataset';
 import { getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import { SUI_Swap, SUI_SwapToken } from '@/types/swap-market.types';
+import { SUI_Swap, SUI_SwapToken, } from '@/types/swap-market.types';
 import { usePrivateSwapsPendingList, } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
@@ -31,13 +31,13 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
   const { setPrivateSwapsData, filteredAvailablePrivateSwaps, setFilteredAvailablePrivateSwapsBySearch } = useSwapMarketStore(state => state.privateMarket);
   const wallet = useSwapMarketStore(state => state.wallet);
 
-  const [,setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
 
   // const [acceptSwap, setAcceptSwap] = useState<any>();
 
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
 
-  //const { mutateAsync: updateSwapOffer } = useSwapUpdate();
+  // const { mutateAsync: updateSwapOffer } = useSwapUpdate();
 
   const handlePrivateSwapFilterData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
@@ -56,7 +56,7 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
       //update swap - 
       // setAcceptSwap(swap);
 
-      const { sign, } = await getUserSignature(swap, state.swapEncodedMsg, wallet.signer);
+      const { sign } = await getUserSignature(swap, state.swapEncodedMsg, wallet.signer);
 
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
@@ -73,6 +73,7 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
       }
 
       const triggerTranfer = await triggerTransfer(swap, wallet.signer);
+      console.log(swapAcceptance.isLoading);
 
       if (!triggerTranfer) {
         throw new Error("Swap Failed");

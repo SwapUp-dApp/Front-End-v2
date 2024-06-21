@@ -9,7 +9,6 @@ import { generateRandomTradeId } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { useSwapMarketStore } from "@/store/swap-market";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-//import { SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import OpenMarketTabContent from "@/components/custom/swap_market/open-market/OpenMarketTabContent";
 import PrivateMarketTabContent from "@/components/custom/swap_market/private-party/PrivateMarketTabContent";
 
