@@ -33,8 +33,9 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-//import { useNavigate } from "react-router-dom";
-//import { useSwapMarketStore } from "@/store/swap-market";
+import { useNavigate } from "react-router-dom";
+import { useSwapMarketStore } from "@/store/swap-market";
+import PendingSwapsTabContent from "@/components/custom/swap_market/my-swaps/PendingSwapsTabContent";
 
 export interface IPendingSwapTableItem {
   assets: {
@@ -310,21 +311,17 @@ const MySwapsPage = () => {
   const [filteredSwapHistoryData, setFilteredSwapHistoryData] = useState<ISwapHistoryTableItem[] | []>(swapHistoryTableData);
   const [filteredPendingSwapData, setFilteredPendingSwapData] = useState<IPendingSwapTableItem[] | []>(pendingSwapTableData);
 
-
- // const navigate = useNavigate();
-  //const wallet = useSwapMarketStore(state => state.wallet);
+  const navigate = useNavigate();
+  const wallet = useSwapMarketStore(state => state.wallet);
 
   const [activeTab, setActiveTab] = useState<"pending-swaps" | "swap-history">("swap-history");
 
+  const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
+  const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
+
   
 
-  //const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
- // const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
-
-
   const [isOpen, setIsOpen] = useState(false);
-
-
 
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(2024, 0, 20),
@@ -355,6 +352,24 @@ const MySwapsPage = () => {
 
   const handleSwitchTab = (value: "pending-swaps" | "swap-history") => {
     setActiveTab(value);
+  };
+
+  const handleShowWalletConnectionToast = () => {
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="error"
+          title="Connect to wallet!"
+          description={"Please connect to wallet for this feature!"}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 3000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
   };
 
   const handleFilterData = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -399,25 +414,25 @@ const MySwapsPage = () => {
 
 
         <div className="overflow-x-scroll lg:overflow-hidden" >
-          <Tabs defaultValue="pending-swaps" className="w-full">
+          <Tabs defaultValue="swap-history" className="w-full">
             <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
               <TabsTrigger value="pending-swaps" onClick={() => handleSwitchTab("pending-swaps")} >
                 Pending
                 <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'pending-swaps' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {filteredPendingSwapData.length}
+                  {pendingSwapsLength}
                 </span>
               </TabsTrigger>
               <TabsTrigger value="swap-history" onClick={() => handleSwitchTab("swap-history")}>
                 History
                 <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'swap-history' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {filteredSwapHistoryData.length}
+                  {swapHistoryLength}
                 </span>
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="pending-swaps" className="w-full flex justify-center">
               {/* Title */}
-              <Table className="min-w-full">
+              {/* <Table className="min-w-full">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="font-semibold min-w-[288px]">Assets</TableHead>
@@ -552,16 +567,9 @@ const MySwapsPage = () => {
                                   <CustomOutlineButton onClick={handleResetFilters} >
                                     Clear filters
                                   </CustomOutlineButton>
-
                                   <Button variant={"default"} type="submit" >Apply filters</Button>
-
                                 </div>
-
-
-
                               </div>
-
-
                             </div>
                           </DrawerContent>
                         </Drawer>
@@ -616,15 +624,12 @@ const MySwapsPage = () => {
                           <div className="w-auto flex justify-start" >{
                             data.swap_mode === "private" ?
                               <span className="flex items-center justify-center gap-2 py-2 px-3  rounded-full bg-su_enable_bg capitalize" >
-
                                 {data.swap_mode}
                               </span>
                               :
                               <span className="flex items-center justify-center gap-2 p-2 rounded-full bg-su_enable_bg capitalize" >
-
                                 {data.swap_mode}
                               </span>
-
                           }</div>
                         </TableCell>
                         <TableCell className="font-medium px-4">{data.counter_party_wallet}</TableCell>
@@ -812,7 +817,9 @@ const MySwapsPage = () => {
                   </DropdownMenu>
                 </EmptyDataset>
 
-              }
+              } */}
+
+<PendingSwapsTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
 
             </TabsContent>
 
