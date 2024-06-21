@@ -8,7 +8,7 @@ import SwapDetailsDialog from "@/components/custom/swap_market/SwapDetailsDialog
 import { Button } from "@/components/ui/button";
 import { getUserApproval, getUserSignature } from "@/lib/metamask";
 import { isValidTradeId } from "@/lib/utils";
-import { useOpenSwapByOpenTradId } from "@/service/queries/swap-market.query";
+import { useOpenSwapByOpenTradId, useProposeOpenSwapOffer } from "@/service/queries/swap-market.query";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_OpenSwap } from "@/types/swap-market.types";
 import { SUI_SwapCreation } from "@/types/swapup.types";
@@ -24,6 +24,7 @@ const OpenSwapProposeRoom = () => {
   const { openTradeId, tradeId } = useParams();
   const navigate = useNavigate();
 
+  const { mutateAsync: proposeOpenSwapOffer } = useProposeOpenSwapOffer();
   const { isLoading, data, isSuccess, isError, error } = useOpenSwapByOpenTradId(openTradeId!);
 
   const wallet = useSwapMarketStore(state => state.wallet);
@@ -57,30 +58,30 @@ const OpenSwapProposeRoom = () => {
 
       console.info("Updated swap: =======> \n", updatedSwap);
 
-      // const offerResult = await createSwapOffer(updatedSwap!);
+      const offerResult = await proposeOpenSwapOffer(updatedSwap!);
 
-      // if (offerResult) {
-      //   toast.custom(
-      //     (id) => (
-      //       <ToastLookCard
-      //         variant="success"
-      //         title="Offer Sent Successfully"
-      //         description={"You will receive a notification upon your counterparty's response."}
-      //         onClose={() => toast.dismiss(id)}
-      //       />
-      //     ),
-      //     {
-      //       duration: 3000,
-      //       className: 'w-full !bg-transparent',
-      //       position: "bottom-left",
-      //     }
-      //   );
-      //   setSwapCreation(prev => ({ ...prev, created: true }));
-      //   state.resetOpenSwapProposeRoom();
-      //   setTimeout(() => {
-      //     navigate('/swap-up/swap-market');
-      //   }, 3000);
-      // }
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Propose swap offer sent successfully"
+              description={"You will receive a notification upon your counterparty's response."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapCreation(prev => ({ ...prev, created: true }));
+        state.resetOpenSwapProposeRoom();
+        setTimeout(() => {
+          navigate('/swap-up/swap-market');
+        }, 3000);
+      }
 
     } catch (error: any) {
 

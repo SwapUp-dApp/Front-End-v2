@@ -633,6 +633,7 @@ export const createProposeOpenSwapHelper = async (
 
   const swap: SUI_OpenSwap = {
     ...state.openMarket.openRoom.swap,
+    id: state.openMarket.openRoom.swap.id,
     open_trade_id: state.openMarket.openRoom.swap.open_trade_id,
     trade_id: state.openMarket.openRoom.uniqueTradeId,
     init_address: room.sender.profile.walletAddress,
