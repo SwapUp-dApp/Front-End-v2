@@ -3,7 +3,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from 'sonner';
 import FilterButton from '../../shared/FilterButton';
 import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
-import { getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '../../shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
 import { usePendingSwapsList } from '@/service/queries/swap-market.query';
@@ -305,7 +305,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                   <TableCell className="font-medium pl-8">
                     <div className="w-auto flex justify-start" >  #
                       {
-                        swap.swap_mode === 0 ?
+                        swap.swap_mode === "0" ?
                           getLastCharacters(swap.open_trade_id, 7)
                           :
                           getLastCharacters(swap.trade_id, 7)
@@ -339,7 +339,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
 
                   <TableCell className="font-medium px-4">
                     <div className="w-auto flex justify-start" >{
-                      swap.swap_mode === 0 ?
+                      swap.swap_mode === "0" ?
                         <span className="flex items-center justify-center gap-2 py-2 px-3  rounded-full bg-su_enable_bg capitalize" >
                           Open market
                         </span>
