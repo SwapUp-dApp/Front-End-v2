@@ -16,10 +16,11 @@ interface IProp {
   swapCreation: SUI_SwapCreation;
   handleSwapCreation: () => void;
   state: IOpenRoom | IPrivateRoom;
+  isSwapProposeDialog?: boolean;
 }
 
 
-const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation, handleSwapCreation, state }: IProp) => {
+const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation, handleSwapCreation, state, isSwapProposeDialog = false }: IProp) => {
   return (
     <Dialog>
       <div className="relative" >
@@ -69,7 +70,7 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
                 <path d="M7.72844 0L12 4.15863H0.238525V3.0368H9.21836L6.91377 0.793135L7.72844 0ZM11.7615 5.84137V6.9632H2.78164L5.08623 9.20687L4.27156 10L0 5.84137H11.7615Z" fill="#B6B6BD" />
               </svg>
 
-              <SwapDialogSideCard data={state.receiver} />
+              <SwapDialogSideCard data={state.receiver} useNfts={isSwapProposeDialog} />
             </div>
 
             {/* Fee section*/}

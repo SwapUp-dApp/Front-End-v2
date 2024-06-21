@@ -9,9 +9,10 @@ interface IProp {
   className?: string;
   data: IPrivateRoomsLayoutSide;
   showEscroTile?: boolean;
+  useNfts?: boolean;
 }
 
-const SwapDialogSideCard = ({ className, data, showEscroTile = false, ...props }: IProp) => {
+const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = false, ...props }: IProp) => {
 
   const nftsImageMapper = (nfts: SUI_NFTItem[],) => (
     nfts.map((nft) => (
@@ -88,7 +89,7 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, ...props }
         <p>NFT assets:</p>
 
         <div className="grid grid-cols-5 gap-2 lg:gap-3" >
-          {nftsImageMapper(data.nftsSelectedForSwap)}
+          {nftsImageMapper((useNfts && data.nfts) ? data.nfts : data.nftsSelectedForSwap)}
         </div>
       </div>
     </div>

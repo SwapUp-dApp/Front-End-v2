@@ -246,6 +246,7 @@ const OpenSwapProposeRoom = () => {
             enableApproveButtonCriteria={enableApproveButtonCriteria}
             swapCreation={swapCreation}
             handleSwapCreation={handlePurposeOpenSwap}
+            isSwapProposeDialog={true}
           >
             <Button
               variant={"default"}
