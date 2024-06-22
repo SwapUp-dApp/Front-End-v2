@@ -18,7 +18,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/
 import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 import { generateRandomTradeId } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-import { getUserApproval, getUserSignature, triggerTransfer } from '@/lib/metamask';
+import { getUserApproval, getUserSignature, triggerTransfer } from '@/lib/contractCaller';
 import { SUI_SwapCreation } from '@/types/swapup.types';
 
 interface IProp {
