@@ -275,10 +275,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                     swap.open_trade_id
                     :
                     swap.trade_id}>
-                  <TableCell className="font-medium flex items-center gap-2">
-
-                    {
-                      swap.open_trade_id === null ?
+                  <TableCell className="font-medium flex items-center gap-2">   
                         <div className="flex items-center gap-1" >
                           <div >
                             {nftsImageMapper(swap.metadata.init.tokens)}
@@ -287,20 +284,9 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                             <path d="M7.72844 0L12 4.15863H0.238525V3.0368H9.21836L6.91377 0.793135L7.72844 0ZM11.7615 5.84137V6.9632H2.78164L5.08623 9.20687L4.27156 10L0 5.84137H11.7615Z" fill="#868691" />
                           </svg>
                           <div className="flex items-center gap-1" >
-                            {nftsImageMapper(swap.metadata.init.tokens)}
+                            {nftsImageMapper(swap.metadata.accept.tokens)}
                           </div>
-                        </div>
-                        :
-                        <div className="flex items-center gap-1" >
-                          {nftsImageMapper(swap.metadata.init.tokens)}
-                        </div>
-
-                    }
-
-
-
-
-
+                        </div>     
                   </TableCell>
                   <TableCell className="font-medium pl-8">
                     <div className="w-auto flex justify-start" >  #
@@ -368,7 +354,8 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                       {currentChain.name}
                     </span>
                   </TableCell>
-                  <TableCell className="font-medium px-4">{moment.utc(swap.updated_at).format('MMM DD, YYYY')}</TableCell>
+                  {/* <TableCell className="font-medium px-4">{moment.utc(swap.updated_at).format('MMM DD, YYYY')}</TableCell> */}
+                  <TableCell className="font-medium px-4">{moment.utc(swap.updated_at).format('MMM DD YYYY HH:mm:ss')}</TableCell>
                   <TableCell className="font-medium px-4 capitalize">
                     <div className="w-auto flex justify-start" >{
                       swap.offer_type === 0 ?
