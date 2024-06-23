@@ -12,7 +12,6 @@ import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
 import LoadingDataset from '../../shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
-import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
 import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 import { useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";

@@ -222,7 +222,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
                     }
                     {swap.swap_preferences.preferred_asset.type === "currency" &&
                       <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                        {swap.swap_preferences.preferred_asset.parameters.added_amount} {swap.swap_preferences.preferred_asset.parameters.preferred_currency?.name}
+                        {swap.swap_preferences.preferred_asset.parameters.added_amount} USD
                         {/* This amount is in usds needs to be converted in ETH*/}
                       </span>
                      
