@@ -153,6 +153,7 @@ export interface ISwapMarketStore {
     swapHistory?: SUI_OpenSwap[];
     privateRoom: IPrivateRoom;
     setPendingSwapsData: (pendingswapsData: SUI_OpenSwap[]) => void;
+    setSwapHistoryData: (swaphistoryData: SUI_OpenSwap[]) => void;
     setPrivateSwapsData: (swapsData: SUI_Swap[]) => void;
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
   };
