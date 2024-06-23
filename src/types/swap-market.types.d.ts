@@ -5,6 +5,8 @@ export type SUT_SwapMode = 0 | 1;
 export type SUT_SwapStatus = 1 | 2 | 3 | 4;
 export type SUT_SwapOfferType = 0 | 1;
 export type SUT_PreferredAssetType = "any" | "nft" | "currency";
+export type SUT_TradeIdType = "trade_id" | "open_trade_id";
+export type SUT_SwapRoomViewType = "default" | "view" | "propose" | "counter";
 
 
 // Swap Type starts here

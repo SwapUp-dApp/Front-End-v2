@@ -104,6 +104,9 @@
   .debug{
     @apply border border-red-500
   }
+  .tile-design{
+    @apply bg-background dark:bg-su_enable_bg text-su_ternary text-xs flex items-center gap-2 font-semibold p-2 rounded-xs
+  }
   /* Debug Classes End for dev */
 }
 
