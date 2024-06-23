@@ -220,7 +220,8 @@ const initialState: ISwapMarketStore = {
     privateRoom: privateMarketRoomInitialState,
     setPrivateSwapsData: () => { },
     setFilteredAvailablePrivateSwapsBySearch: () => { },
-    setPendingSwapsData: () => { }
+    setPendingSwapsData: () => { },
+    setSwapHistoryData: () => { }
   },
   wallet: {
     address: '',
