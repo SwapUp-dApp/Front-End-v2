@@ -19,7 +19,7 @@ export interface SUI_Swap {
   accept_sign: string;
   metadata: SUI_SwapMetadata;
   offer_type: SUT_SwapOfferType;
-  status: SUT_SwapStatus;
+  status?: SUT_SwapStatus;
   created_at?: string;
   updated_at?: string;
 }
