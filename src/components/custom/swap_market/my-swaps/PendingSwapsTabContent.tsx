@@ -119,7 +119,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
 
   return (
     <div className="space-y-4">
-      <Table className="min-w-full">
+    <Table className="min-w-full">
         <TableHeader>
           <TableRow>
             <TableHead className="font-semibold min-w-[288px]">Assets</TableHead>
@@ -270,11 +270,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
             pendingSwaps?.map((swap) => {
               const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
               return (
-                <TableRow key={
-                  swap.trade_id ?
-                    swap.open_trade_id
-                    :
-                    swap.trade_id}>
+                <TableRow key={swap.trade_id}>
                   <TableCell className="font-medium flex items-center gap-2">   
                         <div className="flex items-center gap-1" >
                           <div >
@@ -369,7 +365,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                     }</div>
                   </TableCell>
 
-                  <TableCell className="font-medium flex pr-16 justify-end">
+                  <TableCell className="font-medium flex pr-8 justify-end">
                     {
                       swap.init_address === wallet.address
                         ?

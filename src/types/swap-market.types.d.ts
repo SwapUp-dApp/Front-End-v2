@@ -2,6 +2,7 @@ import { SUI_NFTItem, SUI_RarityRankItem } from "./swapup.types";
 
 export type SUT_GetNFTsByWalletIdResponse = SUI_NFTItem[];
 export type SUT_SwapMode = 0 | 1;
+export type SUT_SwapStatus = 1 | 2 | 3 | 4;
 export type SUT_SwapOfferType = 0 | 1;
 export type SUT_PreferredAssetType = "any" | "nft" | "currency";
 
@@ -18,6 +19,7 @@ export interface SUI_Swap {
   accept_sign: string;
   metadata: SUI_SwapMetadata;
   offer_type: SUT_SwapOfferType;
+  status: SUT_SwapStatus;
   created_at?: string;
   updated_at?: string;
 }
