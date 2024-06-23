@@ -13,7 +13,7 @@ import { SUI_SwapCreation } from '@/types/swapup.types';
 interface IProp {
   children: any;
   enableApproveButtonCriteria: boolean;
-  swapCreation: SUI_SwapCreation;
+  swapCreation?: SUI_SwapCreation;
   handleSwapCreation: () => void;
   state: IOpenRoom | IPrivateRoom;
   isSwapProposeDialog?: boolean;
@@ -140,9 +140,9 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
               </div>
               <Button
                 variant={"default"}
-                disabled={swapCreation.created}
+                disabled={swapCreation?.created}
                 onClick={async () => await handleSwapCreation()}
-                isLoading={swapCreation.isLoading}
+                isLoading={swapCreation?.isLoading}
               >
                 Proceed
               </Button>

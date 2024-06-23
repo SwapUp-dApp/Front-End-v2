@@ -46,8 +46,6 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
 
   const handleResetFilters = () => { };
 
-
-
   const handleSwapAccept = async (swap: SUI_Swap) => {
     try {
 
@@ -313,7 +311,12 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
                     }
                   </TableCell>
                   <TableCell className="font-medium px-4 flex justify-start">
-                    <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                    <span
+                      onClick={() => {
+                        navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
+                      }}
+                      className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
+                    >
                       <img
                         className='w-4 h-4'
                         src={currentChain.iconUrl}
@@ -336,14 +339,19 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
                             </svg>
                           </HoverCardTrigger>
                           <HoverCardContent className="border-none bg-card  dark:bg-su_secondary_bg p-0 rounded-xs" >
-                            <button onClick={handleResetFilters} type="reset" className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg" >
-
+                            <button
+                              onClick={() => {
+                                navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
+                              }}
+                              className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg"
+                            >
                               <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
                               </svg>
 
                               View Offer
                             </button>
+
                             <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg" >
                               <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
@@ -362,7 +370,12 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
                             </svg>
                           </HoverCardTrigger>
                           <HoverCardContent className="border-none bg-card  dark:bg-su_secondary_bg p-3" >
-                            <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                            <button
+                              onClick={() => {
+                                navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
+                              }}
+                              className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
+                            >
                               <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
                               </svg>
@@ -426,7 +439,6 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
           description="Check back later or create your own swap!"
         >
 
-
           <DropdownMenu>
             <DropdownMenuTrigger className="gradient-button px-5 py-3 gap-4">
               Create Swap
@@ -466,7 +478,6 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
                 ></span>
 
               </div>
-
             </DropdownMenuContent>
           </DropdownMenu>
 

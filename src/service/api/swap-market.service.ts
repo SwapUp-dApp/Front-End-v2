@@ -12,8 +12,8 @@ export const getPendingSwapsForWallet = (walletId: string): Promise<AxiosRespons
 export const getSwapHistoryForWallet = (walletId: string): Promise<AxiosResponse> =>
   API.get(`/api/swaps/history/?address=${walletId}`);
 
-export const getSwapDetails = (swapId: string, walletId: string): Promise<AxiosResponse> =>
-  API.get(`/api/swaps?swapId=${swapId}&walletId=${walletId}`);
+export const getSwapDetails = (tradeId: string): Promise<AxiosResponse> =>
+  API.get(`/api/swaps/get-swap-details/?trade_id=${tradeId}`);
 
 export const createPrivateSwapOffer = (swap: SUI_Swap): Promise<AxiosResponse> =>
   API.post('/api/swaps/', swap);

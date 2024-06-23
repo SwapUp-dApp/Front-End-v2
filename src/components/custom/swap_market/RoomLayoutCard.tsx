@@ -20,15 +20,20 @@ import { SUI_NFTItem } from "@/types/swapup.types";
 import { defaultNftImageFallbackURL } from "@/constants";
 import { toast } from "sonner";
 import ToastLookCard from "../shared/ToastLookCard";
+import { SUT_SwapRoomViewType } from "@/types/swap-market.types";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
   counterPartyWallet?: string;
   roomKey: SUT_RoomKeyType;
-  setDataSavedInStore?: React.Dispatch<React.SetStateAction<boolean>>;
+  swapRoomViewType?: SUT_SwapRoomViewType;
+  setDataSavedInStore?: React.Dispatch<React.SetStateAction<{
+    sender: boolean;
+    receiver: boolean;
+  }>>;
 }
 
-const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedInStore }: IProp) => {
+const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedInStore, swapRoomViewType = 'default' }: IProp) => {
 
   const {
     activeGridView,
@@ -44,13 +49,14 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
     removeAllFilters,
     collections,
     setNftsDataset,
+    setFilteredNftsBySwapTokens
   } = useSwapMarketStore((state) =>
     roomKey === 'privateRoom' ?
       (layoutType === "sender" ? state.privateMarket.privateRoom.sender : state.privateMarket.privateRoom.receiver)
       : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
 
-  const [swap, setCounterPartyNftsDataset] = useSwapMarketStore(state => [state.openMarket.openRoom.swap, state.openMarket.openRoom.receiver.setCounterPartyNftsDataset]);
+  const swap = useSwapMarketStore(state => roomKey === 'privateRoom' ? state.privateMarket.privateRoom.swap : state.openMarket.openRoom.swap);
 
   const handleSearchNfts = (searchValue: string) => {
     setFilteredNftsBySearch(searchValue);
@@ -74,22 +80,111 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
         ]
       }));
 
-      if (roomKey === "openRoom" && layoutType === "receiver" && setDataSavedInStore) {
 
-        const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-          swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-        );
+      if (setDataSavedInStore) {
+        if (roomKey === 'openRoom' && layoutType === "receiver" && swap && swapRoomViewType === 'propose') {
+          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+            swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+          );
+          setFilteredNftsBySwapTokens(filteredNfts);
+          setTimeout(() => {
+            setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+          }, 200);
+        }
 
-        setCounterPartyNftsDataset(filteredNfts);
-        setSelectedNftsForSwap(filteredNfts);
+        if (layoutType === "sender" && swap && swapRoomViewType === 'view') {
+          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+            swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+          );
+          // console.log("Inside sender filter function NFTs: ", filteredNfts);
+          setFilteredNftsBySwapTokens(filteredNfts);
+          setTimeout(() => {
+            setDataSavedInStore(prev => ({ ...prev, sender: true }));
+          }, 200);
+        }
 
-        setTimeout(() => {
-          setDataSavedInStore(true);
-        }, 200);
+        if (layoutType === "receiver" && swap && swapRoomViewType === 'view') {
+          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+            swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+          );
+          // console.log("Inside receiver filter function NFTs: ", filteredNfts);
+          setFilteredNftsBySwapTokens(filteredNfts);
+          setTimeout(() => {
+            setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+          }, 200);
+        }
+      }
 
-      } else {
+      if (swapRoomViewType === "default") {
         setNftsDataset(resNfts);
       }
+
+
+
+      // if (roomKey === "openRoom") {
+
+      //   if (layoutType === 'sender' && setDataSavedInStore && swap) {
+      //     if (swapRoomViewType === "view") {
+      //       const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+      //         swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+      //       );
+      //       setFilteredNftsBySwapTokens(filteredNfts);
+      //       setTimeout(() => {
+      //         setDataSavedInStore(prev => ({ ...prev, sender: true }));
+      //       }, 200);
+
+      //     }
+      //   }
+
+      //   if (layoutType === 'receiver' && setDataSavedInStore && swap) {
+      //     if (swapRoomViewType === "propose") {
+      //       const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+      //         swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+      //       );
+
+      //       setFilteredNftsBySwapTokens(filteredNfts);
+      //       setTimeout(() => {
+      //         setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+      //       }, 200);
+      //     }
+
+      //     if (swapRoomViewType === "view") {
+      //       const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+      //         swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+      //       );
+      //       setFilteredNftsBySwapTokens(filteredNfts);
+      //       setTimeout(() => {
+      //         setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+      //       }, 200);
+      //     }
+      //   }
+
+      // } else if (roomKey = "privateRoom") {
+
+      //   if (layoutType === 'sender') {
+      //     if (swapRoomViewType === "view") {
+
+      //     }
+      //   }
+
+      //   if (layoutType === 'receiver' && swap && setDataSavedInStore) {
+
+      //     if (swapRoomViewType === "propose") {
+      //       const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+      //         swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+      //       );
+      //       setFilteredNftsBySwapTokens(filteredNfts);
+
+      //       setTimeout(() => {
+      //         setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+      //       }, 200);
+      //     }
+
+      //   }
+
+      // } else {
+      //   setNftsDataset(resNfts);
+      // }
 
     }
 
@@ -209,7 +304,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
                 setSelectedNftsForSwap={setSelectedNftsForSwap}
                 nftsSelectedForSwap={nftsSelectedForSwap}
                 disableNftSelection={
-                  (roomKey === "openRoom" && layoutType === "receiver") ? true : false
+                  ((swapRoomViewType === 'propose' && layoutType === 'receiver') || swapRoomViewType === 'view') ? true : false
                 }
               />
             ))
