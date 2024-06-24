@@ -10,7 +10,7 @@ import { SUE_SWAP_MODE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
 import { useGetSwapDetails } from "@/service/queries/swap-market.query";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUI_OpenSwap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_SwapPreferences } from "@/types/swap-market.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -26,11 +26,29 @@ const ViewSwapRoom = () => {
 
   const { isLoading, data, isSuccess, isError, error } = useGetSwapDetails(tradeId!);
 
-  // const wallet = useSwapMarketStore(state => state.wallet);
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
+  const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom.swap.swap_preferences : null);
+  const [connectWallet, wallet] = useSwapMarketStore(state => [state.connectWallet, state.wallet]);
 
-  const handleResetData = () => {
-    // state.resetOpenSwapProposeRoom();
+  const handleResetData = async () => {
+    state.resetViewSwapRoom();
+    await connectWallet();
+
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="info"
+          title="View room reset!"
+          description={"View room data deleted for both parties."}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 3000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
   };
 
 
@@ -62,10 +80,13 @@ const ViewSwapRoom = () => {
   }, [data?.data?.data, tradeId, isError, error]);
 
   useEffect(() => {
-    if ((tradeId && !isValidTradeId(tradeId)) || !swapMode) {
-      navigate(-1);
+    if ((tradeId && !isValidTradeId(tradeId)) || !(swapMode === 1 || swapMode === 0)) {
+      setTimeout(() => {
+        navigate(-1);
+      }, 1000);
     }
   }, [tradeId, swapMode]);
+
 
   return (
     <div className="space-y-4" >
@@ -77,6 +98,7 @@ const ViewSwapRoom = () => {
         existTitle="Are you sure you want to exit the trade?"
         showOpenMarketTile={swapMode === SUE_SWAP_MODE.OPEN ? true : false}
         showPrivateMarketTile={swapMode === SUE_SWAP_MODE.PRIVATE ? true : false}
+        swapPreferences={swapPreferences}
       />
 
       <div className="grid lg:grid-cols-2 gap-4 pb-16" >
@@ -154,17 +176,31 @@ const ViewSwapRoom = () => {
       <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
 
         <div className="absolute -top-14 flex justify-center w-full items-center gap-2" >
-          <Button variant={"outline"} type="submit">
-            Reject
-          </Button>
 
-          <CustomOutlineButton className="px-5 py-3">
-            Counter offer
-          </CustomOutlineButton>
+          {
+            wallet.address === state.sender.profile.walletAddress ?
+              <CustomOutlineButton className="px-5 py-3">
+                Close
+              </CustomOutlineButton>
+              :
+              <div className="flex items-center gap-2" >
+                <Button variant={"outline"} type="submit">
+                  Reject
+                </Button>
 
-          <Button variant={"default"} type="submit">
-            Accept
-          </Button>
+                <CustomOutlineButton className="px-5 py-3">
+                  Counter offer
+                </CustomOutlineButton>
+                <Button variant={"default"} type="submit">
+                  Accept
+                </Button>
+              </div>
+          }
+
+
+
+
+
         </div >
 
         {

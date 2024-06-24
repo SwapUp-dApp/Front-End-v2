@@ -263,6 +263,98 @@ export const setValuesOnViewSwapRoomHelper = async (
   };
 };
 
+export const resetViewSwapRoomHelper = (
+  state: ISwapMarketStore,
+  marketKey: 'openMarket' | 'privateMarket',
+  roomKey: 'openRoom' | 'privateRoom',
+): ISwapMarketStore => {
+
+  const market = state[marketKey] as Record<string, any>;
+  const room = market[roomKey] as Record<string, any>;
+
+  const openRoomInitialSwap = {
+    accept_address: '',
+    init_address: '',
+    accept_sign: '',
+    init_sign: '',
+    metadata: {
+      accept: {
+        tokens: []
+      },
+      init: {
+        tokens: []
+      }
+    },
+    swap_mode: SUE_SWAP_MODE.OPEN,
+    trade_id: '',
+    offer_type: 0,
+    open_trade_id: '',
+    trading_chain: '',
+    swap_preferences: {
+      expiration_date: '',
+      preferred_asset: {
+        type: 'any',
+        parameters: {}
+      }
+    }
+  };
+
+  return {
+    ...state,
+    [marketKey]: {
+      ...market,
+      [roomKey]: {
+        ...room,
+        nftsLength: 0,
+        sign: '',
+        uniqueTradeId: '',
+        swap: roomKey === 'openRoom' ? { ...openRoomInitialSwap } : undefined,
+        swapEncodedMsg: '',
+        swapUpContract: "",
+        sender: {
+          ...room.sender,
+          nfts: undefined,
+          filteredNfts: undefined,
+          filters: undefined,
+          activeGridView: 'detailed',
+          profile: {
+            ...room.sender.profile,
+            ensAddress: 'sender.swapup.eth',
+            image: '/assets/images/avatar.png',
+            isPremium: false,
+            title: 'sender',
+            walletAddress: ''
+          }
+        },
+        receiver: {
+          ...room.receiver,
+          collections: [],
+          nftsSelectedForSwap: [],
+          addedAmount: undefined,
+          nfts: undefined,
+          filteredNfts: undefined,
+          filters: undefined,
+          activeGridView: 'detailed',
+          profile: {
+            ...room.receiver.profile,
+            ensAddress: 'receiver.swapup.eth',
+            image: '/assets/images/avatar.png',
+            isPremium: false,
+            title: 'receiver',
+            walletAddress: ''
+          },
+          network: {
+            id: '1',
+            image: '/assets/svgs/ethereum.svg',
+            title: 'ethereum',
+            shortTitle: "eth"
+          }
+        }
+      },
+    },
+  };
+};
+
 // Shared Room Helper end
 
 
@@ -467,6 +559,7 @@ export const setPrivateSwapsDataHelper = (
     ...state,
     privateMarket: {
       ...state.privateMarket,
+      availablePrivateSwaps: availablePrivateSwaps,
       filteredAvailablePrivateSwaps: availablePrivateSwaps
     },
   };
@@ -486,7 +579,7 @@ export const setFilteredAvailablePrivateSwapsBySearchHelper = (
     ...state,
     privateMarket: {
       ...state.privateMarket,
-      filteredAvailablePrivateSwaps: filteredAvailablePrivateSwaps
+      filteredAvailablePrivateSwaps: filteredAvailablePrivateSwaps ? filteredAvailablePrivateSwaps : state.privateMarket.availablePrivateSwaps
     }
   };
 };
@@ -523,7 +616,7 @@ export const setFilteredNftsBySwapTokensHelper = (
           ...room[side],
           filteredNfts: newNftsDataset,
           nfts: newNftsDataset,
-          nftsSelectedForSwap: newNftsDataset,
+          nftsSelectedForSwap: [...newNftsDataset],
           collections,
         }
       }
@@ -553,6 +646,25 @@ export const setOpenSwapsDataHelper = (
   };
 };
 
+export const setMyOpenSwapsDataHelper = (
+  state: ISwapMarketStore,
+  swapsData: SUI_OpenSwap[],
+): ISwapMarketStore => {
+
+  let createdSwaps: SUI_OpenSwap[] = [];
+
+  if (state.wallet.address && state.wallet.isConnected) {
+    createdSwaps = swapsData.filter(swap => swap.init_address === state.wallet.address);
+  }
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      createdSwaps
+    },
+  };
+};
+
 export const setFilteredAvailableSwapsBySearchHelper = (
   state: ISwapMarketStore,
   searchValue: string
@@ -570,7 +682,7 @@ export const setFilteredAvailableSwapsBySearchHelper = (
     ...state,
     openMarket: {
       ...state.openMarket,
-      filteredAvailableSwaps: filteredAvailableSwaps
+      filteredAvailableSwaps: filteredAvailableSwaps ? filteredAvailableSwaps : state.openMarket.availableSwaps
     }
   };
 };
@@ -900,10 +1012,18 @@ export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<IS
       return {
         ...state,
         wallet: {
+          ...state.wallet,
           isConnected: true,
           address,
           provider,
-          signer
+          signer,
+          image,
+          ensAddress: ensAddress ? ensAddress : state.wallet.ensAddress,
+          network: {
+            ...state.wallet.network,
+            title: network.name,
+            id: String(network.chainId)
+          }
         },
         privateMarket: {
           ...state.privateMarket,

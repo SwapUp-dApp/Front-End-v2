@@ -219,7 +219,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
           </div>
 
           <div className="flex items-center gap-2">
-            <WalletAddressTile walletAddress={layoutType === "receiver" ? profile.walletAddress || counterPartyWallet! : profile.walletAddress} />
+            <WalletAddressTile walletAddress={walletAddress} />
             <ChainTile imageSrc={network.image} title={network.title} />
           </div>
         </div>

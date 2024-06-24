@@ -47,6 +47,7 @@ export interface SUI_SwapToken {
 export interface SUI_OpenSwap extends SUI_Swap {
   swap_preferences: SUI_SwapPreferences;
   open_trade_id: string;
+  number_of_offers?: number;
 
 }
 

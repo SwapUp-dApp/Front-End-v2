@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createOpenSwapOffer, createPrivateSwapOffer, getPendingSwapList, getNftsForWallet, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getSwapHistoryList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet, completeOpenSwapOffer, proposeSwap, getSwapDetails, completePrivateSwapOffer, rejectSwapOffer, cancelSwapOffer } from "../api";
+import { createOpenSwapOffer, createPrivateSwapOffer, getPendingSwapList, getNftsForWallet,getMyOpenSwapList, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getSwapHistoryList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet, completeOpenSwapOffer, proposeSwap, getSwapDetails, completePrivateSwapOffer, rejectSwapOffer, cancelSwapOffer } from "../api";
 import { SUI_OpenSwap, SUI_Swap, SUP_CreateOpenSwap, SUP_CompleteSwap, SUP_CancelSwap } from "@/types/swap-market.types";
 
 
@@ -258,6 +258,21 @@ export const usePendingSwapsList = (walletId: string) => {
     queryFn: async () => {
       try {
         const response = await getPendingSwapList(walletId);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    },
+  });
+};
+
+//for swap market page
+export const useMyOpenSwapsList = (walletId: string) => {
+  return useQuery({
+    queryKey: ['getMyOpenSwapsForWallet', walletId],
+    queryFn: async () => {
+      try {
+        const response = await getMyOpenSwapList(walletId);
         return response;
       } catch (error) {
         throw error;
