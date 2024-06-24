@@ -277,7 +277,6 @@ const SwapMarketPage = () => {
 
             <TabsContent value="private-party" className="w-full flex flex-col gap-4">
               <PrivateMarketTabContent activeTab={activeTab} handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
-              {/* Title */}
             </TabsContent>
           </Tabs>
         </div>

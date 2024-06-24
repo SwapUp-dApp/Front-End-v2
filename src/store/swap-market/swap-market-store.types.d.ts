@@ -32,6 +32,7 @@ export interface IOpenRoom {
   chainId: number;
   setValuesOnCreateOpenSwapRoom: (tradeId: string) => void;
   setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
+  setValuesOnViewSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
   createOpenSwap: () => void;
   createProposeOpenSwap: () => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
@@ -63,7 +64,7 @@ export interface IOpenMarketLayoutSide {
   setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
   setNftsDataset: (selectedNfts: SUI_NFTItem[]) => void;
-  setCounterPartyNftsDataset: (selectedNfts: SUI_NFTItem[]) => void;
+  setFilteredNftsBySwapTokens: (selectedNfts: SUI_NFTItem[]) => void;
   removeAllFilters: () => void;
 }
 
@@ -103,6 +104,7 @@ export interface IPrivateRoomsLayoutSide {
   setSelectedNftsForSwap: (selectedNfts: SUI_NFTItem[] | []) => void;
   setFilteredNftsBySearch: (searchValue: string) => void;
   setFilteredNftsByFilters: (collectionTitle: string, selectedRarityRank: SUI_RarityRankItem) => void;
+  setFilteredNftsBySwapTokens: (selectedNfts: SUI_NFTItem[]) => void;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
   setNftsDataset: (selectedNfts: SUI_NFTItem[] | []) => void;
   removeAllFilters: (doNotRemoveSelectedNfts?: boolean) => void;
@@ -122,6 +124,7 @@ export interface IPrivateRoom {
   createPrivateMarketSwap: (offer_type: SUT_SwapOfferType) => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   resetPrivateRoom: () => void;
+  setValuesOnViewSwapRoom: (tradeId: string, swap: SUI_Swap) => void;
 }
 
 export interface IWallet {
@@ -150,6 +153,7 @@ export interface ISwapMarketStore {
     swapHistory?: SUI_OpenSwap[];
     privateRoom: IPrivateRoom;
     setPendingSwapsData: (pendingswapsData: SUI_OpenSwap[]) => void;
+    setSwapHistoryData: (swaphistoryData: SUI_OpenSwap[]) => void;
     setPrivateSwapsData: (swapsData: SUI_Swap[]) => void;
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
   };

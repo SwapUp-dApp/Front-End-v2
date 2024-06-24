@@ -9,6 +9,8 @@ import UserProfile from "@/pages/UserProfile";
 import ManageOpenMarketSwaps from "@/pages/ManageOpenMarketSwaps";
 import OpenSwapCreationRoom from "@/pages/OpenSwapCreationRoom";
 import OpenSwapProposeRoom from "@/pages/OpenSwapProposeRoom";
+import ViewSwapRoom from "@/pages/ViewSwapRoom";
+import ReviewOffer from "@/pages/ReviewOffer";
 
 
 interface IRoutesType {
@@ -49,8 +51,8 @@ export const clientSideRoutes: IRoutesType[] = [
         element: <MySwapsPage />,
       },
       {
-        id: 'private-room',
-        title: "Private Room Page",
+        id: 'create-private-swap',
+        title: "Create private swap",
         path: "swap-market/private-swap/create/:counterPartyWallet/:privateTradeId",
         element: <PrivateRoom />,
       },
@@ -71,6 +73,18 @@ export const clientSideRoutes: IRoutesType[] = [
         title: "Manage Open Market Swaps",
         path: "swap-market/open-market/manage-open-market",
         element: <ManageOpenMarketSwaps />,
+      },
+      {
+        id: 'view-swap',
+        title: "View swap details",
+        path: `swap-market/view-swap/:tradeId/?`,
+        element: <ViewSwapRoom />,
+      },
+      {
+        id: 'review-offer',
+        title: "Review Offer",
+        path: `my-swaps/review-swap/:tradeId/?`,
+        element: <ReviewOffer />,
       },
       {
         id: 'user-profile',

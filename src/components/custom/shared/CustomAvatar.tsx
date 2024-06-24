@@ -1,5 +1,5 @@
 import { cn, getNameInitials } from "@/lib/utils";
-import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface IProp {
   imageSrc: string;

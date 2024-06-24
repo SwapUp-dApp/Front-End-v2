@@ -5,8 +5,8 @@ import FilterButton from '../../shared/FilterButton';
 import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
 import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '../../shared/EmptyDataset';
-import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
-import { usePendingSwapsList } from '@/service/queries/swap-market.query';
+import { SUI_OpenSwap, SUI_SwapToken,  SUI_Swap, SUP_CompleteSwap, SUP_CancelSwap } from '@/types/swap-market.types';
+import { useCancelSwapOffer, useCompletePrivateSwapOffer, usePendingSwapsList, useRejectSwapOffer } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -36,6 +36,11 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 import { Button } from "@/components/ui/button";
+import { getUserApproval, getUserSignature, triggerTransfer } from '@/lib/metamask';
+import { SUI_SwapCreation } from '@/types/swapup.types';
+import { useCompleteOpenSwapOffer } from "@/service/queries/swap-market.query";
+
+import { SUE_SWAP_MODE } from '@/constants/enums';
 
 interface IProp {
   handleShowWalletConnectionToast: () => void;
@@ -46,6 +51,14 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
   const { setPendingSwapsData, pendingSwaps } = useSwapMarketStore(state => state.privateMarket);
   const wallet = useSwapMarketStore(state => state.wallet);
 
+  const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
+  const { mutateAsync: completeOpenSwapOffer } = useCompleteOpenSwapOffer();
+  const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
+  const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
+  const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
   const [isOpen, setIsOpen] = useState(false);
 
   const [date, setDate] = React.useState<DateRange | undefined>({
@@ -59,6 +72,273 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
   // };
 
   const handleResetFilters = () => { };
+  
+  const handleSwapAccept = async (swap: SUI_Swap) => {
+    try {
+
+      setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
+
+      const { sign } = await getUserSignature(swap, state.swapEncodedMsg, wallet.signer);
+
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+
+      // setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));
+      //temp fix 
+      swap.accept_sign = sign;
+
+      const approval = await getUserApproval(swap, true, wallet.signer);
+
+      if (!approval) {
+        throw new Error("User approval not granted.");
+      }
+
+      const triggerTranfer = await triggerTransfer(swap, wallet.signer);
+      console.log(swapAcceptance.isLoading);
+
+      if (!triggerTranfer) {
+        throw new Error("Swap Failed");
+      }
+
+      const payload: SUP_CompleteSwap = {
+        ...swap,
+        status: triggerTranfer.status,
+        tx: triggerTranfer.hash,
+        notes: triggerTranfer.notes,
+        timestamp: triggerTranfer.timeStamp,
+
+      } 
+
+      //calling actual api 
+      if(swap.swap_mode === SUE_SWAP_MODE.OPEN) 
+        {
+          const offerResult = await completeOpenSwapOffer(payload);
+
+            if (offerResult) {
+              toast.custom(
+                (id) => (
+                  <ToastLookCard
+                    variant="success"
+                    title="Open Swap Completed Successfully"
+                    description={"You will receive a notification on metamask about the transaction."}
+                    onClose={() => toast.dismiss(id)}
+                  />
+                ),
+                {
+                  duration: 3000,
+                  className: 'w-full !bg-transparent',
+                  position: "bottom-left",
+                }
+              );
+              setSwapAcceptance(prev => ({ ...prev, created: true }));
+               
+              
+            }
+
+        }
+      
+      //calling actual api 
+      if(swap.swap_mode === SUE_SWAP_MODE.PRIVATE) 
+        {
+          const offerResult = await completePrivateSwapOffer(payload);
+
+            if (offerResult) {
+              toast.custom(
+                (id) => (
+                  <ToastLookCard
+                    variant="success"
+                    title="Private Swap Completed Successfully"
+                    description={"You will receive a notification on metamask about the transaction."}
+                    onClose={() => toast.dismiss(id)}
+                  />
+                ),
+                {
+                  duration: 3000,
+                  className: 'w-full !bg-transparent',
+                  position: "bottom-left",
+                }
+              );
+              setSwapAcceptance(prev => ({ ...prev, created: true }));
+               
+              
+            }
+
+        }
+
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const handleSwapReject = async (swap: SUI_Swap) => {
+    try {
+
+      setSwapRejection(prev => ({ ...prev, isLoading: true }));
+ 
+      console.log(swapRejection.isLoading);
+
+      if(swap.id) 
+        {
+          const offerResult = await rejectSwapOffer(Number(swap.id));
+          console.log(swap.id);
+            if (offerResult) {
+              toast.custom(
+                (id) => (
+                  <ToastLookCard
+                    variant="success"
+                    title="Swap Rejected Successfully"
+                    description={"You have successfully rejected the swap offer"}
+                    onClose={() => toast.dismiss(id)}
+                  />
+                ),
+                {
+                  duration: 3000,
+                  className: 'w-full !bg-transparent',
+                  position: "bottom-left",
+                }
+              );
+              setSwapRejection(prev => ({ ...prev, created: true }));
+               
+              
+            }
+
+        }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapRejection(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+
+
+  const handleSwapCancel = async (swap: SUI_OpenSwap) => {
+    try {
+
+      setSwapCancel(prev => ({ ...prev, isLoading: true }));
+ 
+      console.log(swapCancel.isLoading);
+
+      if(swap.swap_mode === SUE_SWAP_MODE.OPEN) 
+        {
+          const payload: SUP_CancelSwap = {
+            swap_mode: swap.swap_mode,
+            open_trade_id: swap.open_trade_id
+          }
+          const offerResult = await cancelSwapOffer(payload);
+          console.log(swap.id);
+            if (offerResult) {
+              toast.custom(
+                (id) => (
+                  <ToastLookCard
+                    variant="success"
+                    title="Swap Closed Successfully"
+                    description={"You have successfully closed the swap"}
+                    onClose={() => toast.dismiss(id)}
+                  />
+                ),
+                {
+                  duration: 3000,
+                  className: 'w-full !bg-transparent',
+                  position: "bottom-left",
+                }
+              );
+              setSwapCancel(prev => ({ ...prev, created: true }));
+            
+            }
+
+        }
+
+
+        if(swap.swap_mode === SUE_SWAP_MODE.PRIVATE) 
+          {
+            const payload: SUP_CancelSwap = {
+              swap_mode: swap.swap_mode,
+              trade_id: swap.trade_id
+            }
+            const offerResult = await cancelSwapOffer(payload);
+            console.log(swap.id);
+              if (offerResult) {
+                toast.custom(
+                  (id) => (
+                    <ToastLookCard
+                      variant="success"
+                      title="Swap Closed Successfully"
+                      description={"You have successfully closed the swap"}
+                      onClose={() => toast.dismiss(id)}
+                    />
+                  ),
+                  {
+                    duration: 3000,
+                    className: 'w-full !bg-transparent',
+                    position: "bottom-left",
+                  }
+                );
+                setSwapCancel(prev => ({ ...prev, created: true }));
+              
+              }
+  
+          }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapCancel(prev => ({ ...prev, isLoading: false }));
+    }
+  };
 
   const { isLoading, isError, error, data, isSuccess } = usePendingSwapsList(wallet.address);
 
@@ -119,7 +399,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
 
   return (
     <div className="space-y-4">
-      <Table className="min-w-full">
+    <Table className="min-w-full">
         <TableHeader>
           <TableRow>
             <TableHead className="font-semibold min-w-[288px]">Assets</TableHead>
@@ -270,15 +550,8 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
             pendingSwaps?.map((swap) => {
               const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
               return (
-                <TableRow key={
-                  swap.trade_id ?
-                    swap.open_trade_id
-                    :
-                    swap.trade_id}>
-                  <TableCell className="font-medium flex items-center gap-2">
-
-                    {
-                      swap.open_trade_id === null ?
+                <TableRow key={swap.trade_id}>
+                  <TableCell className="font-medium flex items-center gap-2">   
                         <div className="flex items-center gap-1" >
                           <div >
                             {nftsImageMapper(swap.metadata.init.tokens)}
@@ -287,20 +560,9 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                             <path d="M7.72844 0L12 4.15863H0.238525V3.0368H9.21836L6.91377 0.793135L7.72844 0ZM11.7615 5.84137V6.9632H2.78164L5.08623 9.20687L4.27156 10L0 5.84137H11.7615Z" fill="#868691" />
                           </svg>
                           <div className="flex items-center gap-1" >
-                            {nftsImageMapper(swap.metadata.init.tokens)}
+                            {nftsImageMapper(swap.metadata.accept.tokens)}
                           </div>
-                        </div>
-                        :
-                        <div className="flex items-center gap-1" >
-                          {nftsImageMapper(swap.metadata.init.tokens)}
-                        </div>
-
-                    }
-
-
-
-
-
+                        </div>     
                   </TableCell>
                   <TableCell className="font-medium pl-8">
                     <div className="w-auto flex justify-start" >  #
@@ -368,7 +630,8 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                       {currentChain.name}
                     </span>
                   </TableCell>
-                  <TableCell className="font-medium px-4">{moment.utc(swap.updated_at).format('MMM DD, YYYY')}</TableCell>
+                  {/* <TableCell className="font-medium px-4">{moment.utc(swap.updated_at).format('MMM DD, YYYY')}</TableCell> */}
+                  <TableCell className="font-medium px-4">{moment.utc(swap.updated_at).format('MMM DD YYYY HH:mm:ss')}</TableCell>
                   <TableCell className="font-medium px-4 capitalize">
                     <div className="w-auto flex justify-start" >{
                       swap.offer_type === 0 ?
@@ -382,7 +645,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                     }</div>
                   </TableCell>
 
-                  <TableCell className="font-medium flex pr-16 justify-end">
+                  <TableCell className="font-medium flex pr-8 justify-end">
                     {
                       swap.init_address === wallet.address
                         ?
@@ -394,15 +657,22 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                             </svg>
                           </HoverCardTrigger>
                           <HoverCardContent className="border-none bg-card  dark:bg-su_secondary_bg p-0 rounded-xs" >
-                            <button onClick={handleResetFilters} type="reset" className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg" >
-
+                          <button
+                              onClick={() => {
+                                navigate(`/swap-up/my-swaps/review-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
+                              }}
+                              className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg"
+                            >
                               <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
                               </svg>
 
                               View Offer
                             </button>
-                            <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg" >
+                           
+                            <button onClick={async () => {
+                              await  handleSwapCancel(swap);
+                            }} type="reset" className="flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg" >
                               <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
                               </svg>
@@ -421,13 +691,18 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                               </svg>
                             </HoverCardTrigger>
                             <HoverCardContent className="border-none bg-card  dark:bg-su_secondary_bg p-3" >
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
-                                </svg>
+                            <button
+                              onClick={() => {
+                                navigate(`/swap-up/my-swaps/review-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
+                              }}
+                              className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg"
+                            >
+                              <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
+                              </svg>
 
-                                View Offer
-                              </button>
+                              View Offer
+                            </button>
 
 
                               <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
@@ -440,15 +715,20 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                               </button>
 
 
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                              <button onClick={async () => {
+                              await handleSwapAccept(swap);
+                            }}
+                              type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
 
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM8.22222 14.4444L3.77778 10L5.03111 8.74667L8.22222 11.9289L14.9689 5.18222L16.2222 6.44444L8.22222 14.4444Z" fill="#75FFC1" />
-                                </svg>
+                              <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM8.22222 14.4444L3.77778 10L5.03111 8.74667L8.22222 11.9289L14.9689 5.18222L16.2222 6.44444L8.22222 14.4444Z" fill="#75FFC1" />
+                              </svg>
 
-                                Accept
-                              </button>
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                              Accept
+                            </button>
+                              <button onClick={async () => {
+                              await handleSwapReject(swap);
+                            }} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
 
 
                                 <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -468,23 +748,33 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                               </svg>
                             </HoverCardTrigger>
                             <HoverCardContent className="border-none bg-card  dark:bg-su_secondary_bg p-3" >
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
-                                </svg>
+                            <button
+                              onClick={() => {
+                                navigate(`/swap-up/my-swaps/review-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
+                              }}
+                              className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg"
+                            >
+                              <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
+                              </svg>
 
-                                View Offer
-                              </button>
+                              View Offer
+                            </button>
 
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                            <button onClick={async () => {
+                              await handleSwapAccept(swap);
+                            }}
+                              type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
 
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM8.22222 14.4444L3.77778 10L5.03111 8.74667L8.22222 11.9289L14.9689 5.18222L16.2222 6.44444L8.22222 14.4444Z" fill="#75FFC1" />
-                                </svg>
+                              <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM8.22222 14.4444L3.77778 10L5.03111 8.74667L8.22222 11.9289L14.9689 5.18222L16.2222 6.44444L8.22222 14.4444Z" fill="#75FFC1" />
+                              </svg>
 
-                                Accept
-                              </button>
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                              Accept
+                            </button>
+                               <button onClick={async () => {
+                              await handleSwapReject(swap);
+                            }} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
 
 
                                 <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
