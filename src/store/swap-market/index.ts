@@ -32,6 +32,7 @@ import {
   setPendingSwapsDataHelper,
   setSwapHistoryDataHelper,
   setValuesOnViewSwapRoomHelper,
+  resetViewSwapRoomHelper,
 } from './swap-market-helpers';
 
 import { chainsDataset } from '@/constants/data';
@@ -138,7 +139,8 @@ export const openMarketRoomInitialState: IOpenRoom = {
   setSwapPreferences: () => { },
   resetOpenSwapCreationRoom: () => { },
   resetOpenSwapProposeRoom: () => { },
-  setValuesOnViewSwapRoom: () => { }
+  setValuesOnViewSwapRoom: () => { },
+  resetViewSwapRoom: () => { }
 };
 
 export const privateMarketRoomInitialState: IPrivateRoom = {
@@ -210,7 +212,8 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
   createPrivateMarketSwap: () => { },
   setSwapEncodedMsgAndSign: () => { },
   resetPrivateRoom: () => { },
-  setValuesOnViewSwapRoom: () => { }
+  setValuesOnViewSwapRoom: () => { },
+  resetViewSwapRoom: () => { }
 };
 
 const initialState: ISwapMarketStore = {
@@ -229,6 +232,16 @@ const initialState: ISwapMarketStore = {
   wallet: {
     address: '',
     isConnected: false,
+    ensAddress: 'sender.swapup.eth',
+    image: '/assets/images/avatar.png',
+    isPremium: false,
+    title: 'sender',
+    network: {
+      id: '1',
+      image: '/assets/svgs/ethereum.svg',
+      title: 'ethereum',
+      shortTitle: "eth"
+    },
   },
   setProvider: () => { },
   connectWallet: () => { },
@@ -263,6 +276,7 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       },
       resetOpenSwapCreationRoom: () => set(state => resetOpenSwapCreationRoomHelper(state)),
       resetOpenSwapProposeRoom: () => set(state => resetOpenSwapProposeRoomHelper(state)),
+      resetViewSwapRoom: () => set(state => resetViewSwapRoomHelper(state, 'openMarket', 'openRoom')),
       setValuesOnCreateOpenSwapRoom: (tradeId: string) => set((state) => setValuesOnCreateOpenSwapRoomHelper(state, tradeId)),
       setValuesOnProposeOpenSwapRoom: async (tradeId: string, swap: SUI_OpenSwap) => {
         const state = get();
@@ -319,6 +333,7 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         setNftsDataset: (dataset: SUI_NFTItem[]) => set((state) => setNftsDatasetHelper(state, 'privateMarket', 'privateRoom', 'receiver', dataset)),
         setFilteredNftsBySwapTokens: (dataset: SUI_NFTItem[]) => set((state) => setFilteredNftsBySwapTokensHelper(state, dataset, 'privateMarket', 'privateRoom', 'receiver')),
       },
+      resetViewSwapRoom: () => set(state => resetViewSwapRoomHelper(state, 'privateMarket', 'privateRoom')),
       setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'privateMarket', 'privateRoom', tradeId, counterPartyWalletAddress)),
       setValuesOnViewSwapRoom: async (tradeId: string, swap: SUI_Swap) => {
         const state = get();

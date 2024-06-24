@@ -39,6 +39,7 @@ export interface IOpenRoom {
   setSwapPreferences: (preferences: SUI_SwapPreferences) => void;
   resetOpenSwapCreationRoom: () => void;
   resetOpenSwapProposeRoom: () => void;
+  resetViewSwapRoom: () => void;
 }
 
 export interface IOpenMarketLayoutSide {
@@ -125,6 +126,7 @@ export interface IPrivateRoom {
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   resetPrivateRoom: () => void;
   setValuesOnViewSwapRoom: (tradeId: string, swap: SUI_Swap) => void;
+  resetViewSwapRoom: () => void;
 }
 
 export interface IWallet {
@@ -132,11 +134,15 @@ export interface IWallet {
   address: string;
   provider?: ethers.BrowserProvider;
   signer?: ethers.JsonRpcSigner;
+  title: string;
+  image: string;
+  isPremium: boolean;
+  ensAddress: string;
+  network: INetwork;
 }
 
 export interface ISwapMarketStore {
   openMarket: {
-    // transaction history
     availableSwaps?: SUI_OpenSwap[];
     filteredAvailableSwaps?: SUI_OpenSwap[];
     createdSwaps?: SUI_OpenSwap[];

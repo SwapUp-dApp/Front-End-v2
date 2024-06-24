@@ -148,7 +148,6 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
     if (nftsSelectedForSwap.length > 0 && swapRoomViewType === "default") {
       setNftsToDisplay(nftsSelectedForSwap);
     }
-
   }, [nfts, nftsSelectedForSwap, swapRoomViewType, layoutType]);
 
   return (
