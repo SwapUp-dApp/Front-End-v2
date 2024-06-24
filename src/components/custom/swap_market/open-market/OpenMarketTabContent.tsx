@@ -216,16 +216,23 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
 
                     {
                       swap.swap_preferences.preferred_asset.type === "nft" &&
+                      <div  className="flex items-center gap-1">
                       <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                        {swap.swap_preferences.preferred_asset.parameters.collection} / {swap.swap_preferences.preferred_asset.parameters.rank?.from} - {swap.swap_preferences.preferred_asset.parameters.rank?.to}
-                      </span>
+                      {swap.swap_preferences.preferred_asset.parameters.collection} 
+                        </span>
+                        /
+                        <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                        {swap.swap_preferences.preferred_asset.parameters.rank?.from} - {swap.swap_preferences.preferred_asset.parameters.rank?.to}
+                        </span>
+                      </div>
                     }
                     {swap.swap_preferences.preferred_asset.type === "currency" &&
-                      <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                        {swap.swap_preferences.preferred_asset.parameters.added_amount} USD
-                        {/* This amount is in usds needs to be converted in ETH*/}
-                      </span>
-                     
+                       <div  className="flex items-center gap-1">
+                       <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                       {swap.swap_preferences.preferred_asset.parameters.added_amount} USD
+                         </span>
+                        
+                       </div>
                     }
                   </TableCell>
 

@@ -144,6 +144,7 @@ export interface ISwapMarketStore {
     history?: SUI_OpenSwap[];
     openRoom: IOpenRoom;
     setOpenSwapsData: (swapsData: SUI_OpenSwap[]) => void;
+    setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[]) => void;
     setFilteredAvailableSwapsBySearch: (searchValue: string) => void;
   },
   privateMarket: {

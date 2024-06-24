@@ -40,6 +40,9 @@ export const getSwapHistoryList = (walletId: string): Promise<AxiosResponse> =>
   API.get(`/api/swaps/swapshistory/?address=${walletId}`);
 
 //open swap
+export const getMyOpenSwapList = (walletId: string): Promise<AxiosResponse> =>
+  API.get(`/api/openswap/myopenswaps/?address=${walletId}`);
+
 export const createOpenSwapOffer = (swap: SUP_CreateOpenSwap): Promise<AxiosResponse> =>
   API.post('/api/openswap/create', swap);
 
