@@ -36,9 +36,9 @@ const UserProfile = () => {
           resetData={handleResetData}
           existDescription="By leaving profile, your changes will not be saved"
           existTitle="Are you sure you want to exit your Profile page?"
-          ensaddress={profile.ensAddress}
-          joindate="Joined Sept 2023"
-          avatarimage={profile.image}
+          ensAddress={profile.ensAddress}
+          joinData="Joined Sept 2023"
+          profileImage={profile.image}
           avatarFallbackI="No Image"
         />
 
