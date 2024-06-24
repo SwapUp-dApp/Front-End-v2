@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import API from "../Axios";
-import { SUI_Swap, SUI_OpenSwap, SUP_CreateOpenSwap, SUP_CompleteSwap } from "@/types/swap-market.types";
+import { SUI_Swap, SUI_OpenSwap, SUP_CreateOpenSwap, SUP_CompleteSwap, SUP_CancelSwap } from "@/types/swap-market.types";
 
 export const getNftsForWallet = (walletId: string): Promise<AxiosResponse> => {
   return API.get(`/api/nfts/${walletId}`);
@@ -60,6 +60,9 @@ export const completeOpenSwapOffer = (swap: SUP_CompleteSwap): Promise<AxiosResp
 
 export const rejectSwapOffer = (id: number): Promise<AxiosResponse> =>
   API.patch(`/api/openswap/reject-swap/?id=${id}`);
+
+export const cancelSwapOffer = (cancelPayload: SUP_CancelSwap ): Promise<AxiosResponse> =>
+  API.patch(`/api/openswap/cancel`, cancelPayload);
 
 export const acceptSwapOffer = (tradeId: string, opentradeId: string): Promise<AxiosResponse> =>
   API.patch(`/api/openswap/accept?swapId=${tradeId}&walletId=${opentradeId}`);

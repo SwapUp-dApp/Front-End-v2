@@ -3,7 +3,6 @@ import { defaultFallbackRoute } from "@/routes";
 import ExitPageDialog from "../shared/ExitPageDialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent } from "@/components/ui/card";
 import { getShortenWalletAddress } from "@/lib/utils";
 import CustomAvatar from "../shared/CustomAvatar";
 import SwapParameterTile from "../tiles/SwapParameterTile";
@@ -21,7 +20,7 @@ interface IProp {
   avatarFallbackI: string;
 }
 
-const ProfileHeader = ({ backClickNavigateTo, walletAddress, resetData, existDescription, existTitle, ensAddress, joinData, profileImage, avatarFallbackI }: IProp) => {
+const ProfileHeader = ({ backClickNavigateTo, walletAddress, resetData, existDescription, existTitle, ensAddress, joinData, profileImage }: IProp) => {
   return (
 
 

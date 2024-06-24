@@ -7,8 +7,8 @@ import FilterButton from '../../shared/FilterButton';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import EmptyDataset from '../../shared/EmptyDataset';
 import { getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import { SUI_Swap, SUI_SwapToken, SUP_CompleteSwap, } from '@/types/swap-market.types';
-import { useCompletePrivateSwapOffer, usePrivateSwapsPendingList, useRejectSwapOffer, } from '@/service/queries/swap-market.query';
+import { SUI_Swap, SUI_SwapToken, SUP_CancelSwap, SUP_CompleteSwap, } from '@/types/swap-market.types';
+import { useCancelSwapOffer, useCompletePrivateSwapOffer, usePrivateSwapsPendingList, useRejectSwapOffer, } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -20,7 +20,7 @@ import { generateRandomTradeId } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { getUserApproval, getUserSignature, triggerTransfer } from '@/lib/metamask';
 import { SUI_SwapCreation } from '@/types/swapup.types';
-import { SUE_SWAP_MODE } from '@/constants/enums';
+
 
 interface IProp {
   activeTab: "open-market" | "private-party";
@@ -34,8 +34,10 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
   const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
+  const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
 
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
 
@@ -139,6 +141,62 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
     }
   };
 
+  const handleSwapCancel = async (swap: SUI_Swap) => {
+    try {
+
+      setSwapCancel(prev => ({ ...prev, isLoading: true }));
+ 
+      console.log(swapCancel.isLoading);
+            const payload: SUP_CancelSwap = {
+              swap_mode: swap.swap_mode,
+              trade_id: swap.trade_id
+            }
+            const offerResult = await cancelSwapOffer(payload);
+            console.log(swap.id);
+              if (offerResult) {
+                toast.custom(
+                  (id) => (
+                    <ToastLookCard
+                      variant="success"
+                      title="Swap Closed Successfully"
+                      description={"You have successfully closed the swap"}
+                      onClose={() => toast.dismiss(id)}
+                    />
+                  ),
+                  {
+                    duration: 3000,
+                    className: 'w-full !bg-transparent',
+                    position: "bottom-left",
+                  }
+                );
+                setSwapCancel(prev => ({ ...prev, created: true }));
+              
+              }
+  
+          
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapCancel(prev => ({ ...prev, isLoading: false }));
+    }
+  };
 
   const handleSwapReject = async (swap: SUI_Swap) => {
     try {
@@ -403,7 +461,9 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
                               View Offer
                             </button>
 
-                            <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg" >
+                            <button onClick={async () => {
+                              await  handleSwapCancel(swap);
+                            }} type="reset" className="flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg" >
                               <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
                               </svg>

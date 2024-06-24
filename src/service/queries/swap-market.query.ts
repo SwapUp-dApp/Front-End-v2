@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createOpenSwapOffer, createPrivateSwapOffer, getPendingSwapList, getNftsForWallet, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getSwapHistoryList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet, completeOpenSwapOffer, proposeSwap, getSwapDetails, completePrivateSwapOffer, rejectSwapOffer } from "../api";
-import { SUI_OpenSwap, SUI_Swap, SUP_CreateOpenSwap, SUP_CompleteSwap } from "@/types/swap-market.types";
+import { createOpenSwapOffer, createPrivateSwapOffer, getPendingSwapList, getNftsForWallet, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getSwapHistoryList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet, completeOpenSwapOffer, proposeSwap, getSwapDetails, completePrivateSwapOffer, rejectSwapOffer, cancelSwapOffer } from "../api";
+import { SUI_OpenSwap, SUI_Swap, SUP_CreateOpenSwap, SUP_CompleteSwap, SUP_CancelSwap } from "@/types/swap-market.types";
 
 
 export const getWalletSwapHistory = (walletId: string) => {
@@ -102,6 +102,27 @@ export const useRejectSwapOffer = () => {
     },
     onSuccess: (data) => {
       console.log("Reject Swap completed successfully:", data);
+    },
+  });
+};
+
+
+export const useCancelSwapOffer = () => {
+  return useMutation({
+    mutationFn: async (cancelPayload: SUP_CancelSwap) => {
+      try {
+        const response = await cancelSwapOffer(cancelPayload);
+        return response;
+      } catch (error) {
+        console.error("Failed to cancel swap:", error);
+        throw error;
+      }
+    },
+    onError: (error) => {
+      console.error("Error occurred during mutation:", error);
+    },
+    onSuccess: (data) => {
+      console.log("Swap Cancel completed successfully:", data);
     },
   });
 };

@@ -93,6 +93,15 @@ export interface SUP_CompleteSwap extends Pick<
 
 }
 
+export interface SUP_CancelSwap extends Pick<
+  SUI_OpenSwap,'swap_mode'>{
+    open_trade_id?: string;
+    trade_id?: string;
+
+  }
+
+
+
 let res2 = await api.updateSwapStatus({
   id: this.existingSwap.id,
   status: 4,
