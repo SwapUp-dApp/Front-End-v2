@@ -221,6 +221,7 @@ const initialState: ISwapMarketStore = {
   openMarket: {
     openRoom: openMarketRoomInitialState,
     setOpenSwapsData: () => { },
+    setMyOpenSwapsData: () => { },
     setFilteredAvailableSwapsBySearch: () => { }
   },
   privateMarket: {
