@@ -6,7 +6,7 @@ import RoomHeader from "@/components/custom/swap_market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
 import SwapDetailsDialog from "@/components/custom/swap_market/SwapDetailsDialog";
 import { Button } from "@/components/ui/button";
-import { getUserApproval, getUserSignature } from "@/lib/metamask";
+import { getWalletProxy } from "@/lib/walletProxy";
 import { isValidTradeId } from "@/lib/utils";
 import { useOpenSwapByOpenTradId, useProposeOpenSwapOffer } from "@/service/queries/swap-market.query";
 import { useSwapMarketStore } from "@/store/swap-market";
@@ -41,7 +41,7 @@ const OpenSwapProposeRoom = () => {
         throw new Error("Failed to create swap.");
       }
 
-      const { sign, swapEncodedBytes } = await getUserSignature(createdSwap, state.swapEncodedMsg, wallet.signer);
+      const { sign, swapEncodedBytes } = await getWalletProxy().getUserSignature(createdSwap, state.swapEncodedMsg);
 
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
@@ -49,7 +49,7 @@ const OpenSwapProposeRoom = () => {
 
       await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
 
-      const approval = await getUserApproval(createdSwap, true, wallet.signer);
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
       if (!approval) {
         throw new Error("User approval not granted.");
       }

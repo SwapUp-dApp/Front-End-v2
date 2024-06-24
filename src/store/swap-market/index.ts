@@ -15,7 +15,6 @@ import {
   setValuesOnCreateOpenSwapRoomHelper,
   createOpenSwapHelper,
   createPrivateMarketSwapHelper,
-  connectToWalletHelper,
   setSwapEncodedMsgAndSignPrivateHelper,
   resetPrivateRoomDataHelper,
   setSwapPreferencesHelper,
@@ -225,9 +224,10 @@ const initialState: ISwapMarketStore = {
   wallet: {
     address: '',
     isConnected: false,
+    chainName: '',
+    chainId: '0'
   },
-  setProvider: () => { },
-  connectWallet: () => { },
+  updateWalletStateInStore: (w) => {w.isConnected = false;}
 };
 
 export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
@@ -329,11 +329,10 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
     setPrivateSwapsData: (privateswapsData: SUI_Swap[]) => set(state => setPrivateSwapsDataHelper(state, privateswapsData)),
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => set(state => setFilteredAvailablePrivateSwapsBySearchHelper(state, searchValue)),
   },
-
-  connectWallet: async () => {
+  updateWalletStateInStore: async (wallet: any) => {
     const state = get();
-    const newState = await connectToWalletHelper(state);
-    set(newState);
+    state.wallet = wallet;
+    set(state);
   }
 
 }));

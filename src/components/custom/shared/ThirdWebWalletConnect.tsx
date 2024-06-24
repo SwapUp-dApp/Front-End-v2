@@ -1,12 +1,22 @@
 // components/ConnectButtonAuth.tsx
 import { ConnectButton } from "thirdweb/react";
 import { thirdWebClient } from "../../../lib/thirdWebClient";
+import { createWallet } from "thirdweb/wallets"
 // import {
 //   LoginPayload,
 //   VerifyLoginPayloadParams,
 // } from "thirdweb/auth";
 //import { get, post } from "../lib/api";
 import { baseSepolia } from "thirdweb/chains";
+const wallets = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet", {
+    walletConfig: {
+      // Specify we do not want coinbase wallet browser extension support, just smart wallet
+      options: "smartWalletOnly"
+    }
+  })  
+];
 
 let chain = baseSepolia;
 
@@ -16,6 +26,7 @@ export default function ThirdWebWalletConnect() {
   return (
     <ConnectButton
       client={thirdWebClient}
+      wallets={wallets}
       //auth={{
         
         //  * 	`getLoginPayload` should @return {VerifyLoginPayloadParams} object.

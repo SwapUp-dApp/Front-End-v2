@@ -127,8 +127,8 @@ export interface IPrivateRoom {
 export interface IWallet {
   isConnected: boolean;
   address: string;
-  provider?: ethers.BrowserProvider;
-  signer?: ethers.JsonRpcSigner;
+  chainName: string;
+  chainId: string;
 }
 
 export interface ISwapMarketStore {
@@ -154,7 +154,7 @@ export interface ISwapMarketStore {
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
   };
 
-  wallet: IWallet;
-  connectWallet: () => void;
-  setProvider: (provider: any) => void;
+  wallet: IWallet,
+  updateWalletStateInStore: (wallet: IWallet) => void;
+  
 }

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { defaultFallbackRoute } from "@/routes";
 
 const MainLayout = () => {
-  const [wallet] = useSwapMarketStore(state => [state.wallet, state.connectWallet]);
+  const [wallet] = useSwapMarketStore(state => [state.wallet]);
   const navigate = useNavigate();
   const { pathname } = useLocation();
 

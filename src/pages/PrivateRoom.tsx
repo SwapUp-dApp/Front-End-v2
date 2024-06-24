@@ -6,7 +6,7 @@ import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate, useParams } from "react-router-dom";
 import { isValidTradeId, isValidWalletAddress } from "@/lib/utils";
-import { getUserApproval, getUserSignature } from "@/lib/metamask";
+import { getWalletProxy } from "@/lib/walletProxy";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { toast } from "sonner";
 import { useCreatePrivateSwapOffer } from "@/service/queries/swap-market.query";
@@ -38,7 +38,7 @@ const PrivateRoom = () => {
         throw new Error("Failed to create swap.");
       }
 
-      const { sign, swapEncodedBytes } = await getUserSignature(createdSwap, state.swapEncodedMsg, wallet.signer);
+      const { sign, swapEncodedBytes } = await getWalletProxy().getUserSignature(createdSwap, state.swapEncodedMsg);
 
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
@@ -46,7 +46,7 @@ const PrivateRoom = () => {
 
       await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
 
-      const approval = await getUserApproval(createdSwap, true, wallet.signer);
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
       if (!approval) {
         throw new Error("User approval not granted.");
       }
