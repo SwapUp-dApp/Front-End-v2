@@ -85,37 +85,37 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
         notes: triggerTranfer.notes,
         timestamp: triggerTranfer.timeStamp,
 
-      } 
+      };
 
       //calling actual api 
-      
-      
+
+
       //calling actual api 
-     
-          const offerResult = await completePrivateSwapOffer(payload);
 
-            if (offerResult) {
-              toast.custom(
-                (id) => (
-                  <ToastLookCard
-                    variant="success"
-                    title="Private Swap Completed Successfully"
-                    description={"You will receive a notification on metamask about the transaction."}
-                    onClose={() => toast.dismiss(id)}
-                  />
-                ),
-                {
-                  duration: 3000,
-                  className: 'w-full !bg-transparent',
-                  position: "bottom-left",
-                }
-              );
-              setSwapAcceptance(prev => ({ ...prev, created: true }));
-               
-              
-            }
+      const offerResult = await completePrivateSwapOffer(payload);
 
-        
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Private Swap Completed Successfully"
+              description={"You will receive a notification on metamask about the transaction."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapAcceptance(prev => ({ ...prev, created: true }));
+
+
+      }
+
+
 
 
     } catch (error: any) {
@@ -145,35 +145,35 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
     try {
 
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
- 
+
       console.log(swapCancel.isLoading);
-            const payload: SUP_CancelSwap = {
-              swap_mode: swap.swap_mode,
-              trade_id: swap.trade_id
-            }
-            const offerResult = await cancelSwapOffer(payload);
-            console.log(swap.id);
-              if (offerResult) {
-                toast.custom(
-                  (id) => (
-                    <ToastLookCard
-                      variant="success"
-                      title="Swap Closed Successfully"
-                      description={"You have successfully closed the swap"}
-                      onClose={() => toast.dismiss(id)}
-                    />
-                  ),
-                  {
-                    duration: 3000,
-                    className: 'w-full !bg-transparent',
-                    position: "bottom-left",
-                  }
-                );
-                setSwapCancel(prev => ({ ...prev, created: true }));
-              
-              }
-  
-          
+      const payload: SUP_CancelSwap = {
+        swap_mode: swap.swap_mode,
+        trade_id: swap.trade_id
+      };
+      const offerResult = await cancelSwapOffer(payload);
+      console.log(swap.id);
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Swap Closed Successfully"
+              description={"You have successfully closed the swap"}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapCancel(prev => ({ ...prev, created: true }));
+
+      }
+
+
 
     } catch (error: any) {
       toast.custom(
@@ -202,35 +202,34 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
     try {
 
       setSwapRejection(prev => ({ ...prev, isLoading: true }));
- 
+
       console.log(swapRejection.isLoading);
 
-      if(swap.id) 
-        {
-          const offerResult = await rejectSwapOffer(Number(swap.id));
-          console.log(swap.id);
-            if (offerResult) {
-              toast.custom(
-                (id) => (
-                  <ToastLookCard
-                    variant="success"
-                    title="Swap Rejected Successfully"
-                    description={"You have successfully rejected the swap offer"}
-                    onClose={() => toast.dismiss(id)}
-                  />
-                ),
-                {
-                  duration: 3000,
-                  className: 'w-full !bg-transparent',
-                  position: "bottom-left",
-                }
-              );
-              setSwapRejection(prev => ({ ...prev, created: true }));
-               
-              
+      if (swap.id) {
+        const offerResult = await rejectSwapOffer(Number(swap.id));
+        console.log(swap.id);
+        if (offerResult) {
+          toast.custom(
+            (id) => (
+              <ToastLookCard
+                variant="success"
+                title="Swap Rejected Successfully"
+                description={"You have successfully rejected the swap offer"}
+                onClose={() => toast.dismiss(id)}
+              />
+            ),
+            {
+              duration: 3000,
+              className: 'w-full !bg-transparent',
+              position: "bottom-left",
             }
+          );
+          setSwapRejection(prev => ({ ...prev, created: true }));
+
 
         }
+
+      }
 
     } catch (error: any) {
       toast.custom(
@@ -462,7 +461,7 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
                             </button>
 
                             <button onClick={async () => {
-                              await  handleSwapCancel(swap);
+                              await handleSwapCancel(swap);
                             }} type="reset" className="flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg" >
                               <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />

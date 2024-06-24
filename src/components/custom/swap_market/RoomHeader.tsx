@@ -1,5 +1,4 @@
 import CopyTile from "../tiles/CopyTile";
-import { defaultFallbackRoute } from "@/routes";
 import ExitPageDialog from "../shared/ExitPageDialog";
 import { getLastCharacters } from "@/lib/utils";
 import { SUI_SwapPreferences } from "@/types/swap-market.types";
@@ -14,7 +13,7 @@ interface IProp {
   title: string;
   existTitle: string;
   existDescription: string;
-  swapPreferences?: SUI_SwapPreferences;
+  swapPreferences?: SUI_SwapPreferences | null;
   showOpenMarketTile?: boolean;
   showPrivateMarketTile?: boolean;
 }
@@ -36,7 +35,7 @@ const RoomHeader = ({
         <ExitPageDialog
           title={existTitle}
           description={existDescription}
-          redirectPath={backClickNavigateTo ? backClickNavigateTo : defaultFallbackRoute}
+          redirectPath={backClickNavigateTo ? backClickNavigateTo : null}
           resetData={resetData}
         >
           <span
