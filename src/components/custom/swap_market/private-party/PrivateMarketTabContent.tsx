@@ -51,9 +51,6 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
 
       setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
 
-      //update swap - 
-      // setAcceptSwap(swap);
-
       const { sign } = await getUserSignature(swap, state.swapEncodedMsg, wallet.signer);
 
       if (!sign) {
@@ -77,52 +74,7 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
         throw new Error("Swap Failed");
       }
 
-      // const payload: SUP_UpdateSwap = {
-      //   id: swap.id ? swap.id : '',
-      //   trade_id: swap.trade_id,
-      //   accept_address: swap.accept_address,
-      //   init_address: swap.init_address,
-      //   init_sign: swap.init_sign,
-      //   trading_chain: swap.trading_chain,
-      //   swap_mode: swap.swap_mode,
-      //   offer_type: swap.offer_type,
-      //   metadata: swap.metadata,
-      //   notes: triggerTranfer.notes,
-      //   status: 4,
-      //   txt: triggerTranfer?.hash,
-      //   timestamp: triggerTranfer?.timeStamp
-      // };
-
-      // console.log("payload: ", payload);
-
-      // const offerResult = await updateSwapOffer(payload);
-
-      // if (offerResult) {
-      //   toast.custom(
-      //     (id) => (
-      //       <ToastLookCard
-      //         variant="success"
-      //         title="Offer Sent Successfully"
-      //         description={"You will receive a notification upon your counterparty's response."}
-      //         onClose={() => toast.dismiss(id)}
-      //       />
-      //     ),
-      //     {
-      //       duration: 3000,
-      //       className: 'w-full !bg-transparent',
-      //       position: "bottom-left",
-      //     }
-      //   );
-
-      //   // setAcceptSwap(prev => ({ ...prev, created: true }));
-
-      //   state.resetPrivateRoom();
-      //   setTimeout(() => {
-      //     navigate('/swap-up/swap-market');
-      //   }, 3000);
-      // }
-
-
+      
     } catch (error: any) {
       toast.custom(
         (id) => (
