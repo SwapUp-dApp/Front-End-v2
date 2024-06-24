@@ -58,5 +58,8 @@ export const closeSwapOffer = (swap: any): Promise<AxiosResponse> =>
 export const completeOpenSwapOffer = (swap: SUP_CompleteSwap): Promise<AxiosResponse> =>
   API.patch(`/api/openswap/accept`, swap);
 
+export const rejectSwapOffer = (id: number): Promise<AxiosResponse> =>
+  API.patch(`/api/openswap/reject-swap/?id=${id}`);
+
 export const acceptSwapOffer = (tradeId: string, opentradeId: string): Promise<AxiosResponse> =>
   API.patch(`/api/openswap/accept?swapId=${tradeId}&walletId=${opentradeId}`);

@@ -6,7 +6,7 @@ import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose } from "
 import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '../../shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken,  SUI_Swap, SUP_CompleteSwap } from '@/types/swap-market.types';
-import { useCompletePrivateSwapOffer, usePendingSwapsList } from '@/service/queries/swap-market.query';
+import { usePendingSwapsList, useRejectSwapOffer } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -42,6 +42,7 @@ import { useCompleteOpenSwapOffer } from "@/service/queries/swap-market.query";
 
 import { SUE_SWAP_MODE } from '@/constants/enums';
 import { completePrivateSwapOffer } from '@/service/api';
+import { toNumber } from 'ethers';
 interface IProp {
   handleShowWalletConnectionToast: () => void;
 }
@@ -52,9 +53,10 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
   const wallet = useSwapMarketStore(state => state.wallet);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const { mutateAsync: completeOpenSwapOffer } = useCompleteOpenSwapOffer();
-  const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
+  const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
   const [isOpen, setIsOpen] = useState(false);
 
   const [date, setDate] = React.useState<DateRange | undefined>({
@@ -183,6 +185,63 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
       // console.log(error);
     } finally {
       setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const handleSwapReject = async (swap: SUI_Swap) => {
+    try {
+
+      setSwapRejection(prev => ({ ...prev, isLoading: true }));
+ 
+      console.log(swapRejection.isLoading);
+
+      if(swap.id) 
+        {
+          const offerResult = await rejectSwapOffer(Number(swap.id));
+          console.log(swap.id);
+            if (offerResult) {
+              toast.custom(
+                (id) => (
+                  <ToastLookCard
+                    variant="success"
+                    title="Swap Rejected Successfully"
+                    description={"You have successfully rejected the swap offer"}
+                    onClose={() => toast.dismiss(id)}
+                  />
+                ),
+                {
+                  duration: 3000,
+                  className: 'w-full !bg-transparent',
+                  position: "bottom-left",
+                }
+              );
+              setSwapRejection(prev => ({ ...prev, created: true }));
+               
+              
+            }
+
+        }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapRejection(prev => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -570,7 +629,9 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
 
                               Accept
                             </button>
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                              <button onClick={async () => {
+                              await handleSwapReject(swap);
+                            }} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
 
 
                                 <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -614,7 +675,9 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
 
                               Accept
                             </button>
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                               <button onClick={async () => {
+                              await handleSwapReject(swap);
+                            }} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
 
 
                                 <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

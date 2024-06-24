@@ -7,8 +7,8 @@ import FilterButton from '../../shared/FilterButton';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import EmptyDataset from '../../shared/EmptyDataset';
 import { getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import { SUI_Swap, SUI_SwapToken, } from '@/types/swap-market.types';
-import { usePrivateSwapsPendingList, } from '@/service/queries/swap-market.query';
+import { SUI_Swap, SUI_SwapToken, SUP_CompleteSwap, } from '@/types/swap-market.types';
+import { useCompletePrivateSwapOffer, usePrivateSwapsPendingList, useRejectSwapOffer, } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -20,6 +20,7 @@ import { generateRandomTradeId } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { getUserApproval, getUserSignature, triggerTransfer } from '@/lib/metamask';
 import { SUI_SwapCreation } from '@/types/swapup.types';
+import { SUE_SWAP_MODE } from '@/constants/enums';
 
 interface IProp {
   activeTab: "open-market" | "private-party";
@@ -32,8 +33,9 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
   const wallet = useSwapMarketStore(state => state.wallet);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
-
-  // const [acceptSwap, setAcceptSwap] = useState<any>();
+  const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
+  const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
 
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
 
@@ -74,7 +76,46 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
         throw new Error("Swap Failed");
       }
 
+      const payload: SUP_CompleteSwap = {
+        ...swap,
+        status: triggerTranfer.status,
+        tx: triggerTranfer.hash,
+        notes: triggerTranfer.notes,
+        timestamp: triggerTranfer.timeStamp,
+
+      } 
+
+      //calling actual api 
       
+      
+      //calling actual api 
+     
+          const offerResult = await completePrivateSwapOffer(payload);
+
+            if (offerResult) {
+              toast.custom(
+                (id) => (
+                  <ToastLookCard
+                    variant="success"
+                    title="Private Swap Completed Successfully"
+                    description={"You will receive a notification on metamask about the transaction."}
+                    onClose={() => toast.dismiss(id)}
+                  />
+                ),
+                {
+                  duration: 3000,
+                  className: 'w-full !bg-transparent',
+                  position: "bottom-left",
+                }
+              );
+              setSwapAcceptance(prev => ({ ...prev, created: true }));
+               
+              
+            }
+
+        
+
+
     } catch (error: any) {
       toast.custom(
         (id) => (
@@ -95,6 +136,64 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
       // console.log(error);
     } finally {
       setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+
+  const handleSwapReject = async (swap: SUI_Swap) => {
+    try {
+
+      setSwapRejection(prev => ({ ...prev, isLoading: true }));
+ 
+      console.log(swapRejection.isLoading);
+
+      if(swap.id) 
+        {
+          const offerResult = await rejectSwapOffer(Number(swap.id));
+          console.log(swap.id);
+            if (offerResult) {
+              toast.custom(
+                (id) => (
+                  <ToastLookCard
+                    variant="success"
+                    title="Swap Rejected Successfully"
+                    description={"You have successfully rejected the swap offer"}
+                    onClose={() => toast.dismiss(id)}
+                  />
+                ),
+                {
+                  duration: 3000,
+                  className: 'w-full !bg-transparent',
+                  position: "bottom-left",
+                }
+              );
+              setSwapRejection(prev => ({ ...prev, created: true }));
+               
+              
+            }
+
+        }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapRejection(prev => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -357,7 +456,9 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
 
                               Accept
                             </button>
-                            <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                            <button onClick={async () => {
+                              await handleSwapReject(swap);
+                            }} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
 
 
                               <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
