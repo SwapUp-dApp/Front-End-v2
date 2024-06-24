@@ -33,6 +33,7 @@ import {
   setSwapHistoryDataHelper,
   setValuesOnViewSwapRoomHelper,
   resetViewSwapRoomHelper,
+  setMyOpenSwapsDataHelper,
 } from './swap-market-helpers';
 
 import { chainsDataset } from '@/constants/data';
@@ -306,6 +307,7 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       setSwapPreferences: (preferences: SUI_SwapPreferences) => set((state) => setSwapPreferencesHelper(state, preferences))
     },
     setOpenSwapsData: (swapsData: SUI_OpenSwap[]) => set(state => setOpenSwapsDataHelper(state, swapsData)),
+    setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[]) => set(state => setMyOpenSwapsDataHelper(state, createdSwaps)),
     setFilteredAvailableSwapsBySearch: (searchValue: string) => set(state => setFilteredAvailableSwapsBySearchHelper(state, searchValue))
   },
   privateMarket: {

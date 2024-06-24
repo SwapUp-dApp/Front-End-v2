@@ -646,6 +646,25 @@ export const setOpenSwapsDataHelper = (
   };
 };
 
+export const setMyOpenSwapsDataHelper = (
+  state: ISwapMarketStore,
+  swapsData: SUI_OpenSwap[],
+): ISwapMarketStore => {
+
+  let createdSwaps: SUI_OpenSwap[] = [];
+
+  if (state.wallet.address && state.wallet.isConnected) {
+    createdSwaps = swapsData.filter(swap => swap.init_address === state.wallet.address);
+  }
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      createdSwaps
+    },
+  };
+};
+
 export const setFilteredAvailableSwapsBySearchHelper = (
   state: ISwapMarketStore,
   searchValue: string
