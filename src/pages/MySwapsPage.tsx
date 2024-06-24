@@ -125,7 +125,7 @@ const MySwapsPage = () => {
 
 
         <div className="overflow-x-scroll lg:overflow-hidden" >
-          <Tabs defaultValue="swap-history" className="w-full">
+          <Tabs defaultValue="pending-swaps" className="w-full">
             <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
               <TabsTrigger value="pending-swaps" onClick={() => handleSwitchTab("pending-swaps")} >
                 Pending

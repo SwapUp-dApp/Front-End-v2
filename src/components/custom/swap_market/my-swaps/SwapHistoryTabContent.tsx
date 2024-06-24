@@ -6,7 +6,7 @@ import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose } from "
 import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '../../shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
-import { usePendingSwapsList } from '@/service/queries/swap-market.query';
+import { useSwapHistoryList } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -46,7 +46,7 @@ const SwapHistoryTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
 
   const handleResetFilters = () => { };
 
-  const { isLoading, isError, error, data, isSuccess } = usePendingSwapsList(wallet.address);
+  const { isLoading, isError, error, data, isSuccess } = useSwapHistoryList(wallet.address);
 
   useEffect(() => {
     if (data?.data && isSuccess) {
@@ -270,27 +270,27 @@ const SwapHistoryTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                   <TableCell className="font-medium px-4 capitalize">
                     <div className="w-auto flex justify-start" >{
                       swap.status === 2 ?
-                        <div>
+                        <div className="flex items-center gap-1">
                             <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="2" cy="2" r="2" fill="#75FFC1"/>
                             </svg>Completed 
                         </div>
                         :
                         swap.status === 3 ?
-                        <div>
+                        <div className="flex items-center gap-1">
                             <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="2" cy="2" r="2" fill="#FF7585"/>
                             </svg>Declined
                         </div>
                         :
                         swap.status === 4 ?
-                        <div>
+                        <div className="flex items-center gap-1">
                             <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="2" cy="2" r="2" fill="#FF7585"/>
                             </svg>Cancelled 
                         </div>
                         :
-                        <div>
+                        <div className="flex items-center gap-1">
                         <svg width="4" height="4" viewBox="0 0 4 4" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="2" cy="2" r="2" fill="#FF7585"/>
                         </svg>Unknown
