@@ -83,14 +83,14 @@ export interface SUP_CreateOpenSwap extends Pick<
   };
 }
 
-export interface SUP_UpdateSwap extends Pick<
+export interface SUP_CompleteSwap extends Pick<
   SUI_OpenSwap,
-  'init_address' | 'accept_address' | 'init_sign' | 'trade_id' | 'trading_chain' | 'swap_mode' | 'offer_type' | 'metadata'> {
+  'accept_sign' | 'accept_address' | 'id'> {
   status: number;
-  txt: string;
+  tx: string;
   notes: string;
   timestamp: string;
-  id: string;
+
 }
 
 let res2 = await api.updateSwapStatus({

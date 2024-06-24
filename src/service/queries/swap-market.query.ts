@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createOpenSwapOffer, createPrivateSwapOffer, getPendingSwapList, getNftsForWallet, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getSwapHistoryList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet, updateSwapOffer, proposeSwap, getSwapDetails } from "../api";
-import { SUI_OpenSwap, SUI_Swap, SUP_CreateOpenSwap, SUP_UpdateSwap } from "@/types/swap-market.types";
+import { createOpenSwapOffer, createPrivateSwapOffer, getPendingSwapList, getNftsForWallet, getOpenSwapByOpenTradeId, getOpenSwapPendingList, getSwapHistoryList, getPendingSwapsForWallet, getPrivateSwapPendingList, getSwapHistoryForWallet, completeOpenSwapOffer, proposeSwap, getSwapDetails, completePrivateSwapOffer } from "../api";
+import { SUI_OpenSwap, SUI_Swap, SUP_CreateOpenSwap, SUP_CompleteSwap } from "@/types/swap-market.types";
 
 
 export const getWalletSwapHistory = (walletId: string) => {
@@ -65,14 +65,14 @@ export const useCreatePrivateSwapOffer = () => {
   });
 };
 
-export const useSwapUpdate = () => {
+export const useCompleteOpenSwapOffer = () => {
   return useMutation({
-    mutationFn: async (swap: SUP_UpdateSwap) => {
+    mutationFn: async (swap: SUP_CompleteSwap) => {
       try {
-        const response = await updateSwapOffer(swap);
+        const response = await completeOpenSwapOffer(swap);
         return response;
       } catch (error) {
-        console.error("Failed to accept swap offer:", error);
+        console.error("Failed to complete open swap:", error);
         throw error;
       }
     },
@@ -80,10 +80,50 @@ export const useSwapUpdate = () => {
       console.error("Error occurred during mutation:", error);
     },
     onSuccess: (data) => {
-      console.log("Swap offer created successfully:", data);
+      console.log("Open Swap completed successfully:", data);
     },
   });
 };
+
+export const useCompletePrivateSwapOffer = () => {
+  return useMutation({
+    mutationFn: async (swap: SUP_CompleteSwap) => {
+      try {
+        const response = await completePrivateSwapOffer(swap);
+        return response;
+      } catch (error) {
+        console.error("Failed to complete private swap:", error);
+        throw error;
+      }
+    },
+    onError: (error) => {
+      console.error("Error occurred during mutation:", error);
+    },
+    onSuccess: (data) => {
+      console.log("Private Swap completed successfully:", data);
+    },
+  });
+};
+
+// export const useSwapUpdate = () => {
+//   return useMutation({
+//     mutationFn: async (swap: SUP_CompleteSwap) => {
+//       try {
+//         const response = await updateSwapOffer(swap);
+//         return response;
+//       } catch (error) {
+//         console.error("Failed to accept swap offer:", error);
+//         throw error;
+//       }
+//     },
+//     onError: (error) => {
+//       console.error("Error occurred during mutation:", error);
+//     },
+//     onSuccess: (data) => {
+//       console.log("Swap offer created successfully:", data);
+//     },
+//   });
+// };
 
 export const useGetSwapDetails = (tradeId: string) => {
   return useQuery({

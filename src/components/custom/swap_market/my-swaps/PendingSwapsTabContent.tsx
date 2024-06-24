@@ -5,8 +5,8 @@ import FilterButton from '../../shared/FilterButton';
 import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
 import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '../../shared/EmptyDataset';
-import { SUI_OpenSwap, SUI_SwapToken,  SUI_Swap } from '@/types/swap-market.types';
-import { usePendingSwapsList } from '@/service/queries/swap-market.query';
+import { SUI_OpenSwap, SUI_SwapToken,  SUI_Swap, SUP_CompleteSwap } from '@/types/swap-market.types';
+import { useCompletePrivateSwapOffer, usePendingSwapsList } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -38,7 +38,10 @@ import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton"
 import { Button } from "@/components/ui/button";
 import { getUserApproval, getUserSignature, triggerTransfer } from '@/lib/metamask';
 import { SUI_SwapCreation } from '@/types/swapup.types';
+import { useCompleteOpenSwapOffer } from "@/service/queries/swap-market.query";
 
+import { SUE_SWAP_MODE } from '@/constants/enums';
+import { completePrivateSwapOffer } from '@/service/api';
 interface IProp {
   handleShowWalletConnectionToast: () => void;
 }
@@ -50,6 +53,8 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
+  const { mutateAsync: completeOpenSwapOffer } = useCompleteOpenSwapOffer();
+  const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
   const [isOpen, setIsOpen] = useState(false);
 
   const [date, setDate] = React.useState<DateRange | undefined>({
@@ -63,7 +68,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
   // };
 
   const handleResetFilters = () => { };
-
+  
   const handleSwapAccept = async (swap: SUI_Swap) => {
     try {
 
@@ -92,7 +97,72 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
         throw new Error("Swap Failed");
       }
 
+      const payload: SUP_CompleteSwap = {
+        ...swap,
+        status: triggerTranfer.status,
+        tx: triggerTranfer.hash,
+        notes: triggerTranfer.notes,
+        timestamp: triggerTranfer.timeStamp,
+
+      } 
+
+      //calling actual api 
+      if(swap.swap_mode === SUE_SWAP_MODE.OPEN) 
+        {
+          const offerResult = await completeOpenSwapOffer(payload);
+
+            if (offerResult) {
+              toast.custom(
+                (id) => (
+                  <ToastLookCard
+                    variant="success"
+                    title="Open Swap Completed Successfully"
+                    description={"You will receive a notification on metamask about the transaction."}
+                    onClose={() => toast.dismiss(id)}
+                  />
+                ),
+                {
+                  duration: 3000,
+                  className: 'w-full !bg-transparent',
+                  position: "bottom-left",
+                }
+              );
+              setSwapAcceptance(prev => ({ ...prev, created: true }));
+               
+              
+            }
+
+        }
       
+      //calling actual api 
+      if(swap.swap_mode === SUE_SWAP_MODE.PRIVATE) 
+        {
+          const offerResult = await completePrivateSwapOffer(payload);
+
+            if (offerResult) {
+              toast.custom(
+                (id) => (
+                  <ToastLookCard
+                    variant="success"
+                    title="Private Swap Completed Successfully"
+                    description={"You will receive a notification on metamask about the transaction."}
+                    onClose={() => toast.dismiss(id)}
+                  />
+                ),
+                {
+                  duration: 3000,
+                  className: 'w-full !bg-transparent',
+                  position: "bottom-left",
+                }
+              );
+              setSwapAcceptance(prev => ({ ...prev, created: true }));
+               
+              
+            }
+
+        }
+
+
     } catch (error: any) {
       toast.custom(
         (id) => (

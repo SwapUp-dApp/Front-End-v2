@@ -37,7 +37,7 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
 
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
 
-  // const { mutateAsync: updateSwapOffer } = useSwapUpdate();
+
 
   const handlePrivateSwapFilterData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
