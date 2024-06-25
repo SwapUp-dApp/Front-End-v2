@@ -15,6 +15,7 @@ import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
 import LoadingDataset from '../../shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
+import { useProfileStore } from '@/store/profile';
 
 interface IProp {
   activeTab: "open-market" | "private-party";
@@ -24,7 +25,7 @@ interface IProp {
 const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IProp) => {
 
   const { setOpenSwapsData, createdSwaps, filteredAvailableSwaps, setFilteredAvailableSwapsBySearch } = useSwapMarketStore(state => state.openMarket);
-  const wallet = useSwapMarketStore(state => state.wallet);
+  const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
 
 
@@ -39,12 +40,12 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
     if (data?.data && isSuccess) {
 
       if (data.data.data.length > 0) {
-        setOpenSwapsData(data.data.data as SUI_OpenSwap[]);
+        setOpenSwapsData(data.data.data as SUI_OpenSwap[], wallet);
       }
     }
 
     if (error && isError) {
-      setOpenSwapsData([]);
+      setOpenSwapsData([], wallet);
       toast.custom(
         (id) => (
           <ToastLookCard

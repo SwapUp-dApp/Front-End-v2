@@ -4,7 +4,7 @@ import { applyThemeClass } from './lib/utils.ts';
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
-
+import { ThirdwebProvider } from 'thirdweb/react';
 import { useThemeStore } from './store/theme-store.ts';
 
 import App from './App.tsx';
@@ -20,7 +20,9 @@ function Main() {
     <React.StrictMode>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <App />
+          <ThirdwebProvider>
+            <App />
+          </ThirdwebProvider>          
           <Toaster />
         </QueryClientProvider>
       </BrowserRouter>

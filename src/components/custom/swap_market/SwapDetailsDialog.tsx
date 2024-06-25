@@ -7,8 +7,8 @@ import CopyTile from '../tiles/CopyTile';
 import AvoidingFeeDialog from './AvoidingFeeDialog';
 import StaySafeDialog from './StaySafeDialog';
 import SwapDialogSideCard from './SwapDialogSideCard';
-import { IOpenRoom, IPrivateRoom } from '@/store/swap-market/swap-market-store.types';
-import { SUI_SwapCreation } from '@/types/swapup.types';
+import { IOpenRoom, IPrivateRoom } from '@/types/swap-market-store.types';
+import { SUI_SwapCreation } from '@/types/global.types';
 
 interface IProp {
   children: any;

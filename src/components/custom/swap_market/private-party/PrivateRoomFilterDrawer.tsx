@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
 import { availableRarityRanking } from "@/constants";
-import { SUI_RarityRankItem } from "@/types/swapup.types";
+import { SUI_RarityRankItem } from "@/types/global.types";
 
 
 const FormSchema = z.object({

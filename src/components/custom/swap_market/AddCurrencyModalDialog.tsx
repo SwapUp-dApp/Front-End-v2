@@ -9,7 +9,7 @@ import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { amountConvertFormSchema } from "./RoomFooterSide";
-import { SUI_ChainItem } from "@/types/swapup.types";
+import { SUI_ChainItem } from "@/types/global.types";
 
 
 interface IProp {

@@ -18,7 +18,7 @@ import { availableCollections, chainsDataset } from "@/constants/data";
 import { SUFS_OpenSwapParameters } from "@/schema";
 import { availableRarityRanking } from "@/constants";
 import { SUI_SwapCurrencyItem, SUI_SwapPreferences, SUT_PreferredAssetType } from "@/types/swap-market.types";
-import { SUI_CurrencyItem } from "@/types/swapup.types";
+import { SUI_CurrencyItem } from "@/types/global.types";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useEffect } from "react";
 

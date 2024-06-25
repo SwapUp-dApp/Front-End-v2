@@ -18,8 +18,9 @@ import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/
 import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 import { generateRandomTradeId } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
-import { getUserApproval, getUserSignature, triggerTransfer } from '@/lib/metamask';
-import { SUI_SwapCreation } from '@/types/swapup.types';
+import { getWalletProxy } from '@/lib/walletProxy';
+import { SUI_SwapCreation } from '@/types/global.types';
+import { useProfileStore } from '@/store/profile';
 
 
 interface IProp {
@@ -30,7 +31,7 @@ interface IProp {
 const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IProp) => {
   const navigate = useNavigate();
   const { setPrivateSwapsData, filteredAvailablePrivateSwaps, setFilteredAvailablePrivateSwapsBySearch } = useSwapMarketStore(state => state.privateMarket);
-  const wallet = useSwapMarketStore(state => state.wallet);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -55,7 +56,10 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
 
       setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
 
-      const { sign } = await getUserSignature(swap, state.swapEncodedMsg, wallet.signer);
+      //update swap - 
+      // setAcceptSwap(swap);
+
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
@@ -65,26 +69,25 @@ const PrivateMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }:
       //temp fix 
       swap.accept_sign = sign;
 
-      const approval = await getUserApproval(swap, true, wallet.signer);
+      const approval = await getWalletProxy().getUserApproval(swap, true);
 
       if (!approval) {
         throw new Error("User approval not granted.");
       }
 
-      const triggerTranfer = await triggerTransfer(swap, wallet.signer);
+      const triggerTranfer = await getWalletProxy().triggerTransfer(swap);
       console.log(swapAcceptance.isLoading);
 
-      if (!triggerTranfer) {
-        throw new Error("Swap Failed");
-      }
+      // if (!triggerTranfer) {
+      //   throw new Error("Swap Failed");
+      // }
 
       const payload: SUP_CompleteSwap = {
         ...swap,
-        status: triggerTranfer.status,
-        tx: triggerTranfer.hash,
-        notes: triggerTranfer.notes,
-        timestamp: triggerTranfer.timeStamp,
-
+        status: triggerTranfer?.status || 0,
+        tx: triggerTranfer?.hash || "",
+        notes: triggerTranfer?.notes || "",
+        timestamp: triggerTranfer?.timeStamp || "",
       };
 
       //calling actual api 

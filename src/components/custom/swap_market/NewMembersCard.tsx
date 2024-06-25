@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { getNameInitials, resolveAssetPath } from "@/lib/utils";
-import { IMember } from "@/pages/SwapMarketPage";
+import { IMember } from '@/constants/data' ;
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
 interface IProp {

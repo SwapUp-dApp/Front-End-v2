@@ -1,5 +1,6 @@
 import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUT_SwapOfferType } from "@/types/swap-market.types";
-import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
+import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
+import { IProfile, IWallet } from "./profile.types";
 
 export type SUT_GridViewType = 'detailed' | 'overview';
 export type SUT_PrivateRoomLayoutType = "sender" | "receiver";
@@ -33,8 +34,8 @@ export interface IOpenRoom {
   setValuesOnCreateOpenSwapRoom: (tradeId: string) => void;
   setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
   setValuesOnViewSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
-  createOpenSwap: () => void;
-  createProposeOpenSwap: () => void;
+  createOpenSwap: (initWalletAddress: string) => void;
+  createProposeOpenSwap: (initWalletAddress: string) => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   setSwapPreferences: (preferences: SUI_SwapPreferences) => void;
   resetOpenSwapCreationRoom: () => void;
@@ -45,17 +46,10 @@ export interface IOpenRoom {
 export interface IOpenMarketLayoutSide {
   activeGridView: SUT_GridViewType;
   toggleGridView: (value: SUT_GridViewType) => void;
-  profile: {
-    title: string;
-    image: string;
-    isPremium?: boolean;
-    walletAddress: string;
-    ensAddress: string;
-  };
+  profile: IProfile;
   collections: string[] | [];
   addedAmount?: IOpenMarketAddedAmount;
   availableChains: SUI_ChainItem[];
-  network: INetwork;
   filters?: IOpenMarketFilterItem;
   nfts?: SUI_NFTItem[];
   filteredNfts?: SUI_NFTItem[];
@@ -87,17 +81,10 @@ export interface IPrivateRoomsLayoutSide {
   activeGridView: SUT_GridViewType;
 
   toggleGridView: (value: SUT_GridViewType) => void;
-  profile: {
-    title: string;
-    image: string;
-    isPremium?: boolean;
-    walletAddress: string;
-    ensAddress: string;
-  };
+  profile: IProfile;
   collections: string[] | [];
   addedAmount?: IAddedAmount;
   availableChains: SUI_ChainItem[];
-  network: INetwork;
   filters?: IPrivateRoomFilterItem;
   nfts?: SUI_NFTItem[];
   filteredNfts?: SUI_NFTItem[];
@@ -122,23 +109,11 @@ export interface IPrivateRoom {
   swapUpContract: string;
   chainId: number;
   setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => void;
-  createPrivateMarketSwap: (offer_type: SUT_SwapOfferType) => void;
+  createPrivateMarketSwap: (offer_type: SUT_SwapOfferType,  initWalletAddress: strimg) => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   resetPrivateRoom: () => void;
   setValuesOnViewSwapRoom: (tradeId: string, swap: SUI_Swap) => void;
   resetViewSwapRoom: () => void;
-}
-
-export interface IWallet {
-  isConnected: boolean;
-  address: string;
-  provider?: ethers.BrowserProvider;
-  signer?: ethers.JsonRpcSigner;
-  title: string;
-  image: string;
-  isPremium: boolean;
-  ensAddress: string;
-  network: INetwork;
 }
 
 export interface ISwapMarketStore {
@@ -149,8 +124,8 @@ export interface ISwapMarketStore {
     pendingSwaps?: SUI_OpenSwap[];
     history?: SUI_OpenSwap[];
     openRoom: IOpenRoom;
-    setOpenSwapsData: (swapsData: SUI_OpenSwap[]) => void;
-    setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[]) => void;
+    setOpenSwapsData: (swapsData: SUI_OpenSwap[], wallet: IWallet) => void;
+    setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => void;
     setFilteredAvailableSwapsBySearch: (searchValue: string) => void;
   },
   privateMarket: {
@@ -163,9 +138,5 @@ export interface ISwapMarketStore {
     setSwapHistoryData: (swaphistoryData: SUI_OpenSwap[]) => void;
     setPrivateSwapsData: (swapsData: SUI_Swap[]) => void;
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
-  };
-
-  wallet: IWallet;
-  connectWallet: () => void;
-  setProvider: (provider: any) => void;
+  }
 }
