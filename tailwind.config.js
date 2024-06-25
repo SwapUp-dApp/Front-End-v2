@@ -93,7 +93,8 @@ module.exports = {
         '2xs': '10px',
         '3xs': '8px',
         '4xs': '6px',
-        "1.5xl": '22px'
+        "1.5xl": '22px',
+        "2.5xl": '28px'
       },
       width: {
         '4.5': "18px"

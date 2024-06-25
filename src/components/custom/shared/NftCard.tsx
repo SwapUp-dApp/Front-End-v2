@@ -1,7 +1,7 @@
 import { defaultNftImageFallbackURL } from "@/constants";
 import { cn, getDefaultNftImageOnError, getEtherScanContractNftUrl, getOpenSeaNftUrl } from "@/lib/utils";
-import { SUT_GridViewType } from "@/store/swap-market/swap-market-store.types";
-import { SUI_NFTItem } from "@/types/swapup.types";
+import { SUT_GridViewType } from "@/types/swap-market-store.types";
+import { SUI_NFTItem } from "@/types/global.types";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 

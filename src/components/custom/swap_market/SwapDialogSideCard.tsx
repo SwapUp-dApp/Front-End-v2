@@ -2,8 +2,8 @@ import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import CustomAvatar from "../shared/CustomAvatar";
 import WalletAddressTile from "../tiles/WalletAddressTile";
 import ChainTile from "../tiles/ChainTile";
-import { IPrivateRoomsLayoutSide } from "@/store/swap-market/swap-market-store.types";
-import { SUI_NFTItem } from "@/types/swapup.types";
+import { IPrivateRoomsLayoutSide } from "@/types/swap-market-store.types";
+import { SUI_NFTItem } from "@/types/global.types";
 
 interface IProp {
   className?: string;
@@ -43,7 +43,7 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
     >
       <div className="flex items-center gap-1 lg:gap-2">
         <CustomAvatar
-          imageSrc={data.profile.image}
+          imageSrc={data.profile.avatar}
           fallbackName={data.profile.title}
           sizeClasses="w-4 h-4 lg:w-6 lg:h-6"
           textSizeClasses="text-2xs lg:text-xs"
@@ -51,9 +51,9 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
         <h2 className="font-semibold text-xs lg:text-sm line-clamp-1 w-2/3 lg:w-auto">{data.profile.ensAddress}</h2>
       </div>
 
-      <WalletAddressTile walletAddress={data.profile.walletAddress} className="text-2xs lg:text-xs">
+      <WalletAddressTile walletAddress={data.profile.wallet.address} className="text-2xs lg:text-xs">
         <div className="flex items-center gap-2" >
-          <ChainTile imageSrc={data.network.image} title={data.network.title} showChainTitleOnMobileScreen className="text-2xs lg:text-xs" />
+          <ChainTile imageSrc={data.profile.wallet.network.iconUrl} title={data.profile.wallet.network.name} showChainTitleOnMobileScreen className="text-2xs lg:text-xs" />
           {
             showEscroTile &&
             <span className=" flex items-center gap-2 p-2 bg-su_enable_bg text-su_primary font-semibold text-2xs lg:text-xs rounded-xs" >

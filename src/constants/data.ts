@@ -1,4 +1,4 @@
-import { SUI_ChainItem, SUI_NFTItem } from "@/types/swapup.types";
+import { SUI_ChainItem, SUI_NFTItem } from "@/types/global.types";
 
 export const tempNftsData: SUI_NFTItem[] = [
   {
@@ -6074,5 +6074,151 @@ export const availableCollections: ICollectionItem[] = [
   {
     label: 'VeeFriends',
     value: 'veefriends'
+  },
+];
+
+export interface IMember {
+  id: string;
+  image?: string;
+  title: string;
+  topRated?: boolean;
+}
+
+export const membersData: IMember[] = [
+  {
+    id: '1',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '2',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '3',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '4',
+    image: '',
+    title: 'John D'
+  },
+  {
+    id: '5',
+    image: '',
+    title: 'John D'
+  },
+  {
+    id: '6',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '7',
+    image: '',
+    title: 'John D'
+  },
+  {
+    id: '8',
+    image: '',
+    title: 'John D'
+  },
+  {
+    id: '9',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '10',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '11',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '12',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '13',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+];
+
+export const tradersData: IMember[] = [
+  {
+    id: '1',
+    image: 'assets/images/avatar.png',
+    title: 'John D',
+    topRated: true
+  },
+  {
+    id: '2',
+    image: 'assets/images/avatar.png',
+    title: 'John D',
+    topRated: true
+  },
+  {
+    id: '3',
+    image: 'assets/images/avatar.png',
+    title: 'John D',
+    topRated: true
+  },
+  {
+    id: '4',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '5',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '6',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '7',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '8',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '9',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '10',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '11',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '12',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
+  },
+  {
+    id: '13',
+    image: 'assets/images/avatar.png',
+    title: 'John D'
   },
 ];

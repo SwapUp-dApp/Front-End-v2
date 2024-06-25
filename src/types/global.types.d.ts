@@ -4,12 +4,7 @@ export interface SUI_NavItem {
   path: string;
   protected: boolean;
 }
-export interface INetwork {
-  id: string;
-  title: string;
-  shortTitle: string;
-  image: string;
-};
+
 export interface INFTItem {
   id: string;
   title: string;

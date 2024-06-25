@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 interface IProp {
   children: any;
-  redirectPath: string;
+  redirectPath: string | null;
   title: string;
   description: string;
   resetData: () => void;
@@ -17,7 +17,7 @@ const ExitPageDialog = ({ children, description, title, redirectPath, resetData 
 
   const handleExit = () => {
     resetData();
-    navigate(redirectPath);
+    redirectPath ? navigate(redirectPath) : navigate(-1);
   };
 
 

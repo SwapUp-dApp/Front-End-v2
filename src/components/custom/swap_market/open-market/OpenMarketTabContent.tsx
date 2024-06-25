@@ -15,6 +15,7 @@ import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
 import LoadingDataset from '../../shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
+import { useProfileStore } from '@/store/profile';
 
 interface IProp {
   activeTab: "open-market" | "private-party";
@@ -24,7 +25,7 @@ interface IProp {
 const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IProp) => {
 
   const { setOpenSwapsData, createdSwaps, filteredAvailableSwaps, setFilteredAvailableSwapsBySearch } = useSwapMarketStore(state => state.openMarket);
-  const wallet = useSwapMarketStore(state => state.wallet);
+  const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
 
 
@@ -39,12 +40,12 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
     if (data?.data && isSuccess) {
 
       if (data.data.data.length > 0) {
-        setOpenSwapsData(data.data.data as SUI_OpenSwap[]);
+        setOpenSwapsData(data.data.data as SUI_OpenSwap[], wallet);
       }
     }
 
     if (error && isError) {
-      setOpenSwapsData([]);
+      setOpenSwapsData([], wallet);
       toast.custom(
         (id) => (
           <ToastLookCard
@@ -216,15 +217,23 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
 
                     {
                       swap.swap_preferences.preferred_asset.type === "nft" &&
+                      <div  className="flex items-center gap-1">
                       <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                        {swap.swap_preferences.preferred_asset.parameters.collection} / {swap.swap_preferences.preferred_asset.parameters.rank?.from} - {swap.swap_preferences.preferred_asset.parameters.rank?.to}
-                      </span>
+                      {swap.swap_preferences.preferred_asset.parameters.collection} 
+                        </span>
+                        /
+                        <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                        {swap.swap_preferences.preferred_asset.parameters.rank?.from} - {swap.swap_preferences.preferred_asset.parameters.rank?.to}
+                        </span>
+                      </div>
                     }
                     {swap.swap_preferences.preferred_asset.type === "currency" &&
-                      <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                        {swap.swap_preferences.preferred_asset.parameters.added_amount} ETH
-                        {/* This amount is in usds needs to be converted in ETH*/}
-                      </span>
+                       <div  className="flex items-center gap-1">
+                       <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                       {swap.swap_preferences.preferred_asset.parameters.added_amount} USD
+                         </span>
+                        
+                       </div>
                     }
                   </TableCell>
 
@@ -238,8 +247,8 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
                       <path d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z" fill="white" />
                       <defs>
                         <linearGradient id="paint0_linear_2344_40905" x1="32" y1="6.08" x2="-1.86631" y2="14.9716" gradientUnits="userSpaceOnUse">
-                          <stop stop-color="#51C0FF" />
-                          <stop offset="1" stop-color="#9452FF" />
+                          <stop stopColor="#51C0FF" />
+                          <stop offset="1" stopColor="#9452FF" />
                         </linearGradient>
                       </defs>
                     </svg>

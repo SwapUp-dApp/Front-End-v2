@@ -94,28 +94,30 @@ export const walletProxy = () => {
     swap: SUI_Swap
   ) => {
   
-    const domain = {
-      name: "swap up",
-      version: "1.0",
-      chainId: Environment.CHAIN_ID,
-      verifyingContract: Environment.SWAPUP_CONTRACT
-    };
-  
-    const types = {
-      set: [
-        { name: "sender", type: "address" },
-        { name: "msg", type: "string" }
-      ]
-    };
-  
+    const typedData = {
+      domain : {
+        name: "swap up",
+        version: "1.0",
+        chainId: Environment.CHAIN_ID,
+        verifyingContract: Environment.SWAPUP_CONTRACT
+      },
+      types : {
+        set: [
+          { name: "sender", type: "address" },
+          { name: "msg", type: "string" }
+        ]
+      },
+      value : {
+          sender: swap.init_address,
+          msg: await generateSignString(swap)
+      }
+    }
+
     try {
-  
-      // let sign = await signer.signTypedData(domain, types, {
-      //   sender: swap.init_address,
-      //   msg: await generateSignString(swap)
-      // });
-      let sign = "";
-  
+      
+      //let sign = await connectedWalletAccount?.signMessage({message: "typedData.value.msg"});
+      //let sign = await connectedWalletAccount?.signTypedData(typedData);
+      let sign = "sample signature";  
       console.log("sign--->", sign);
       return sign;
   
@@ -161,6 +163,7 @@ export const walletProxy = () => {
   };
   
   const getUserApproval = async (swap: SUI_Swap, init = true) => {
+    return true;
     //if there are multiple NFT's in different smart contracts then we will have to call approve for all
     //get unique contracts from swap.metadata.init.tokens
     let tokens =
@@ -191,6 +194,7 @@ export const walletProxy = () => {
   
   
   const triggerApprovalForAll = async (nftContractAddress: string) => {
+    
     const contract = new ethers.Contract(
       nftContractAddress,
       abi.nft,
@@ -214,6 +218,14 @@ export const walletProxy = () => {
   };
   
   const triggerTransfer = async (swap: SUI_Swap) => {
+    let res = {
+      status: 0,
+      hash: "tx.hash",
+      notes: "",
+      timeStamp: ''
+    };
+    return res
+
     const contract = new ethers.Contract(
       Environment.SWAPUP_CONTRACT,
       abi.swapUp,

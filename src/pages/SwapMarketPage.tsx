@@ -11,172 +11,21 @@ import { useSwapMarketStore } from "@/store/swap-market";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import OpenMarketTabContent from "@/components/custom/swap_market/open-market/OpenMarketTabContent";
 import PrivateMarketTabContent from "@/components/custom/swap_market/private-party/PrivateMarketTabContent";
-
-
-export interface IMember {
-  id: string;
-  image?: string;
-  title: string;
-  topRated?: boolean;
-}
-
-
+import { useProfileStore } from "@/store/profile";
+import { membersData, tradersData } from "@/constants/data";
 
 const SwapMarketPage = () => {
   const navigate = useNavigate();
-  const wallet = useSwapMarketStore(state => state.wallet);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const [activeTab, setActiveTab] = useState<"open-market" | "private-party">("private-party");
-
 
   const openMarketSwapLength = useSwapMarketStore(state => (state.openMarket.filteredAvailableSwaps || []).length + (state.openMarket.createdSwaps || []).length);
   const privateSwapLength = useSwapMarketStore(state => (state.privateMarket.filteredAvailablePrivateSwaps || []).length);
 
-  const membersData: IMember[] = [
-    {
-      id: '1',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '2',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '3',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '4',
-      image: '',
-      title: 'John D'
-    },
-    {
-      id: '5',
-      image: '',
-      title: 'John D'
-    },
-    {
-      id: '6',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '7',
-      image: '',
-      title: 'John D'
-    },
-    {
-      id: '8',
-      image: '',
-      title: 'John D'
-    },
-    {
-      id: '9',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '10',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '11',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '12',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '13',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-  ];
-
-  const tradersData: IMember[] = [
-    {
-      id: '1',
-      image: 'assets/images/avatar.png',
-      title: 'John D',
-      topRated: true
-    },
-    {
-      id: '2',
-      image: 'assets/images/avatar.png',
-      title: 'John D',
-      topRated: true
-    },
-    {
-      id: '3',
-      image: 'assets/images/avatar.png',
-      title: 'John D',
-      topRated: true
-    },
-    {
-      id: '4',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '5',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '6',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '7',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '8',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '9',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '10',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '11',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '12',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-    {
-      id: '13',
-      image: 'assets/images/avatar.png',
-      title: 'John D'
-    },
-  ];
-
-
   const handleSwitchTab = (value: "open-market" | "private-party") => {
     setActiveTab(value);
   };
-
-
 
   const handleShowWalletConnectionToast = () => {
     toast.custom(
@@ -277,7 +126,6 @@ const SwapMarketPage = () => {
 
             <TabsContent value="private-party" className="w-full flex flex-col gap-4">
               <PrivateMarketTabContent activeTab={activeTab} handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
-              {/* Title */}
             </TabsContent>
           </Tabs>
         </div>

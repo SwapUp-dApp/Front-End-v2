@@ -1,33 +1,31 @@
-import { useSwapMarketStore } from "@/store/swap-market";
 import { useEffect, useState } from "react";
 import ThirdWebWalletConnect from "./ThirdWebWalletConnect";
 import { useActiveAccount, useActiveWallet, useActiveWalletChain } from "thirdweb/react";
+import { useProfileStore } from "@/store/profile";
+import { getWalletProxy } from "@/lib/walletProxy";
 //import { resolveText, resolveAvatar, resolveName, resolveAddress } from "thirdweb/extensions/ens";
 
 
 const ConnectWalletButton = () => {
 
-  //const [isConnecting, setIsConnecting] = useState(false);
-  const [wallet, updateWalletStateInStore] = useSwapMarketStore(state => [state.wallet, state.updateWalletStateInStore]);
-  const [profile, network] = useSwapMarketStore(state => [
-          state.privateMarket.privateRoom.sender.profile,
-          state.privateMarket.privateRoom.sender.network,
-        ]);
+  const [profile, updateWalletInProfileState] = useProfileStore(state => [state.profile, state.updateWalletInProfileState]);
+  
   const activeAccount = useActiveAccount();
   const activeChain = useActiveWalletChain();
 
   useEffect(() => {
     
     if (activeAccount) {
-      wallet.address = activeAccount.address;
-      wallet.isConnected = true;          
+      profile.wallet.address = activeAccount.address;
+      profile.wallet.isConnected = true;
+      getWalletProxy().setConnectedWalletAccount(activeAccount); 
     } else {
-      wallet.isConnected = false;
+      profile.wallet.isConnected = false;
     }
-    console.log(`wallet connection: ${wallet.isConnected} - ${wallet.address} connected to chain ${wallet.chainName}`);
+    console.log(`wallet connection: ${profile.wallet.isConnected} - ${profile.wallet.address} connected to chain ${profile.wallet.network.name}`);
 
     const reconnect = async () => {
-      await updateWalletStateInStore(wallet);
+      await updateWalletInProfileState(profile.wallet);
     };
     reconnect();
      
@@ -35,13 +33,13 @@ const ConnectWalletButton = () => {
   
   useEffect(() => {
     if (activeChain) {
-      wallet.chainName = "" + activeChain?.name
-      wallet.chainId = String(activeChain?.id)
+      profile.wallet.network.name = "" + activeChain?.name
+      profile.wallet.network.id = String(activeChain?.id)
     }
-    console.log(`wallet connection: ${wallet.isConnected} - ${wallet.address} connected to chain ${wallet.chainName}`);
+    console.log(`wallet connection: ${profile.wallet.isConnected} - ${profile.wallet.address} connected to chain ${profile.wallet.network.name}`);
 
     const reconnect = async () => {
-      await updateWalletStateInStore(wallet);
+      await updateWalletInProfileState(profile.wallet);
     };
     reconnect();
   }, [activeChain?.id]);

@@ -1,4 +1,4 @@
-import { SUI_NavItem, SUI_RarityRankItem } from "@/types/swapup.types";
+import { SUI_NavItem, SUI_RarityRankItem } from "@/types/global.types";
 
 export const navItemsData: SUI_NavItem[] = [
   {

@@ -1,9 +1,12 @@
-import { SUI_NFTItem, SUI_RarityRankItem } from "./swapup.types";
+import { SUI_NFTItem, SUI_RarityRankItem } from "./global.types";
 
 export type SUT_GetNFTsByWalletIdResponse = SUI_NFTItem[];
 export type SUT_SwapMode = 0 | 1;
+export type SUT_SwapStatus = 1 | 2 | 3 | 4;
 export type SUT_SwapOfferType = 0 | 1;
 export type SUT_PreferredAssetType = "any" | "nft" | "currency";
+export type SUT_TradeIdType = "trade_id" | "open_trade_id";
+export type SUT_SwapRoomViewType = "default" | "view" | "propose" | "counter";
 
 
 // Swap Type starts here
@@ -18,6 +21,7 @@ export interface SUI_Swap {
   accept_sign: string;
   metadata: SUI_SwapMetadata;
   offer_type: SUT_SwapOfferType;
+  status?: SUT_SwapStatus;
   created_at?: string;
   updated_at?: string;
 }
@@ -43,6 +47,7 @@ export interface SUI_SwapToken {
 export interface SUI_OpenSwap extends SUI_Swap {
   swap_preferences: SUI_SwapPreferences;
   open_trade_id: string;
+  number_of_offers?: number;
 
 }
 
@@ -79,25 +84,21 @@ export interface SUP_CreateOpenSwap extends Pick<
   };
 }
 
-export interface SUP_UpdateSwap extends Pick<
+export interface SUP_CompleteSwap extends Pick<
   SUI_OpenSwap,
-  'init_address' | 'accept_address' | 'init_sign' | 'trade_id' | 'trading_chain' | 'swap_mode' | 'offer_type' | 'metadata'> {
+  'accept_sign' | 'accept_address' | 'id'> {
   status: number;
-  txt: string;
+  tx: string;
   notes: string;
   timestamp: string;
-  id: string;
 }
 
-let res2 = await api.updateSwapStatus({
-  id: this.existingSwap.id,
-  status: 4,
-  txn: res?.hash,
-  notes: res?.notes,
-  metadata: JSON.stringify(this.existingSwap.metadata),
-  timestamp: Math.floor(new Date().getTime() / 1000)
-});
+export interface SUP_CancelSwap extends Pick<
+  SUI_OpenSwap,'swap_mode'>{
+    open_trade_id?: string;
+    trade_id?: string;
 
+  }
 
 // Swap api payload types ends here
 

@@ -1,6 +1,6 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage, } from "@/components/ui/form";
-import { SUI_ChainItem, SUI_NFTItem } from "@/types/swapup.types";
+import { SUI_ChainItem, SUI_NFTItem } from "@/types/global.types";
 import AddCurrencyModalDialog from "./AddCurrencyModalDialog";
 
 import { z } from "zod";
@@ -10,13 +10,15 @@ import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/store/swap-market/swap-market-store.types";
+import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/types/swap-market-store.types";
+import { SUT_SwapRoomViewType } from "@/types/swap-market.types";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
-  setEnableApproveButtonCriteria: React.Dispatch<React.SetStateAction<boolean>>;
+  setEnableApproveButtonCriteria?: React.Dispatch<React.SetStateAction<boolean>>;
   roomKey: SUT_RoomKeyType;
   showRemoveNftButton?: boolean;
+  swapRoomViewType?: SUT_SwapRoomViewType;
 }
 
 export const amountConvertFormSchema = z.object({
@@ -29,7 +31,7 @@ export const amountConvertFormSchema = z.object({
   }),
 });
 
-const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, showRemoveNftButton = true }: IProp) => {
+const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, showRemoveNftButton = true, swapRoomViewType = "default" }: IProp) => {
 
   const {
     setSelectedNftsForSwap,
@@ -53,7 +55,9 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
 
   const removeAllSelectedNft = () => {
     setSelectedNftsForSwap([]);
-    setEnableApproveButtonCriteria(false);
+    if (setEnableApproveButtonCriteria) {
+      setEnableApproveButtonCriteria(false);
+    }
   };
 
   const nftsImageMapper = (nftsForMap: SUI_NFTItem[], lengthToShowParam: number) => {
@@ -131,12 +135,20 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
 
 
   useEffect(() => {
-    if (roomKey === "openRoom" && layoutType === "receiver" && nfts?.length) {
-      setNftsToDisplay(nfts);
-    } else {
+    if (nfts) {
+      if ((swapRoomViewType === 'propose' && layoutType === "receiver") && nfts?.length) {
+        setNftsToDisplay(nfts);
+      }
+
+      if (swapRoomViewType === 'view' && nfts?.length > 0) {
+        setNftsToDisplay(nfts);
+      }
+    }
+
+    if (nftsSelectedForSwap.length > 0 && swapRoomViewType === "default") {
       setNftsToDisplay(nftsSelectedForSwap);
     }
-  }, [roomKey, layoutType, nfts, nftsSelectedForSwap]);
+  }, [nfts, nftsSelectedForSwap, swapRoomViewType, layoutType]);
 
   return (
     <aside className="space-y-2.5 lg:space-y-2 w-1/2 p-4 border border-su_disabled"  >

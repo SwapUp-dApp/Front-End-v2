@@ -12,29 +12,34 @@ import EmptyDataset from "../shared/EmptyDataset";
 import PrivateRoomFilterDrawer from "./private-party/PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
-import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/store/swap-market/swap-market-store.types";
+import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/types/swap-market-store.types";
 import { useSwapMarketStore } from "@/store/swap-market";
 import LoadingDataset from "../shared/LoadingDataset";
 import { useNFTsByWallet } from "@/service/queries/swap-market.query";
-import { SUI_NFTItem } from "@/types/swapup.types";
+import { SUI_NFTItem } from "@/types/global.types";
 import { defaultNftImageFallbackURL } from "@/constants";
 import { toast } from "sonner";
 import ToastLookCard from "../shared/ToastLookCard";
+import { SUT_SwapRoomViewType } from "@/types/swap-market.types";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
   counterPartyWallet?: string;
+  senderWallet?: string;
   roomKey: SUT_RoomKeyType;
-  setDataSavedInStore?: React.Dispatch<React.SetStateAction<boolean>>;
+  swapRoomViewType?: SUT_SwapRoomViewType;
+  setDataSavedInStore?: React.Dispatch<React.SetStateAction<{
+    sender: boolean;
+    receiver: boolean;
+  }>>;
 }
 
-const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedInStore }: IProp) => {
+const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey, setDataSavedInStore, swapRoomViewType = 'default' }: IProp) => {
 
   const {
     activeGridView,
     toggleGridView,
     profile,
-    network,
     filteredNfts,
     setSelectedNftsForSwap,
     nftsSelectedForSwap,
@@ -44,20 +49,21 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
     removeAllFilters,
     collections,
     setNftsDataset,
+    setFilteredNftsBySwapTokens
   } = useSwapMarketStore((state) =>
     roomKey === 'privateRoom' ?
       (layoutType === "sender" ? state.privateMarket.privateRoom.sender : state.privateMarket.privateRoom.receiver)
       : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
 
-  const [swap, setCounterPartyNftsDataset] = useSwapMarketStore(state => [state.openMarket.openRoom.swap, state.openMarket.openRoom.receiver.setCounterPartyNftsDataset]);
+  const swap = useSwapMarketStore(state => roomKey === 'privateRoom' ? state.privateMarket.privateRoom.swap : state.openMarket.openRoom.swap);
 
   const handleSearchNfts = (searchValue: string) => {
     setFilteredNftsBySearch(searchValue);
   };
 
 
-  const walletAddress = ((layoutType === "receiver") && (counterPartyWallet)) ? counterPartyWallet : profile.walletAddress;
+  const walletAddress = ((layoutType === "receiver") && (counterPartyWallet)) ? counterPartyWallet : senderWallet!;
   const { isLoading, data, isSuccess, isError, error } = useNFTsByWallet(walletAddress);
 
   useEffect(() => {
@@ -74,20 +80,42 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
         ]
       }));
 
-      if (roomKey === "openRoom" && layoutType === "receiver" && setDataSavedInStore) {
 
-        const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-          swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-        );
+      if (setDataSavedInStore) {
+        if (roomKey === 'openRoom' && layoutType === "receiver" && swap && swapRoomViewType === 'propose') {
+          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+            swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+          );
+          setFilteredNftsBySwapTokens(filteredNfts);
+          setTimeout(() => {
+            setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+          }, 200);
+        }
 
-        setCounterPartyNftsDataset(filteredNfts);
-        setSelectedNftsForSwap(filteredNfts);
+        if (layoutType === "sender" && swap && swapRoomViewType === 'view') {
+          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+            swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+          );
+          // console.log("Inside sender filter function NFTs: ", filteredNfts);
+          setFilteredNftsBySwapTokens(filteredNfts);
+          setTimeout(() => {
+            setDataSavedInStore(prev => ({ ...prev, sender: true }));
+          }, 200);
+        }
 
-        setTimeout(() => {
-          setDataSavedInStore(true);
-        }, 200);
+        if (layoutType === "receiver" && swap && swapRoomViewType === 'view') {
+          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+            swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+          );
+          // console.log("Inside receiver filter function NFTs: ", filteredNfts);
+          setFilteredNftsBySwapTokens(filteredNfts);
+          setTimeout(() => {
+            setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+          }, 200);
+        }
+      }
 
-      } else {
+      if (swapRoomViewType === "default") {
         setNftsDataset(resNfts);
       }
 
@@ -119,13 +147,13 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
       <CardHeader className="flex flex-col p-0 gap-3" >
         <div className={`flex justify-between items-center`} >
           <div className="flex items-center gap-2 lg:gap-3">
-            <CustomAvatar imageSrc={profile.image} fallbackName={profile.title} isPremium={profile?.isPremium} />
+            <CustomAvatar imageSrc={profile.avatar} fallbackName={profile.title} isPremium={profile?.isPremium} />
             <h2 className="font-semibold text-sm lg:text-lg line-clamp-1 w-2/3 lg:w-auto">{profile.ensAddress}</h2>
           </div>
 
           <div className="flex items-center gap-2">
-            <WalletAddressTile walletAddress={layoutType === "receiver" ? profile.walletAddress || counterPartyWallet! : profile.walletAddress} />
-            <ChainTile imageSrc={network.image} title={network.title} />
+            <WalletAddressTile walletAddress={walletAddress} />
+            <ChainTile imageSrc={profile.wallet.network.iconUrl} title={profile.wallet.network.name} />
           </div>
         </div>
 
@@ -209,7 +237,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, roomKey, setDataSavedI
                 setSelectedNftsForSwap={setSelectedNftsForSwap}
                 nftsSelectedForSwap={nftsSelectedForSwap}
                 disableNftSelection={
-                  (roomKey === "openRoom" && layoutType === "receiver") ? true : false
+                  ((swapRoomViewType === 'propose' && layoutType === 'receiver') || swapRoomViewType === 'view') ? true : false
                 }
               />
             ))

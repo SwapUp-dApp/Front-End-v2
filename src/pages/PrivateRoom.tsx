@@ -12,12 +12,13 @@ import { toast } from "sonner";
 import { useCreatePrivateSwapOffer } from "@/service/queries/swap-market.query";
 import { SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import SwapDetailsDialog from "@/components/custom/swap_market/SwapDetailsDialog";
-import { SUI_SwapCreation } from "@/types/swapup.types";
-
+import { SUI_SwapCreation } from "@/types/global.types";
+import { useProfileStore } from "@/store/profile";
 
 const PrivateRoom = () => {
-  const wallet = useSwapMarketStore(state => state.wallet);
+  
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
+  const wallet = useProfileStore(state => state.profile.wallet)
 
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [swapCreation, setSwapCreation] = useState<SUI_SwapCreation>({ isLoading: false, created: false });
@@ -31,7 +32,7 @@ const PrivateRoom = () => {
     try {
       setSwapCreation(prev => ({ ...prev, isLoading: true }));
 
-      await state.createPrivateMarketSwap(SUE_SWAP_OFFER_TYPE.PRIMARY);
+      await state.createPrivateMarketSwap(SUE_SWAP_OFFER_TYPE.PRIMARY, wallet.address);
       const createdSwap = useSwapMarketStore.getState().privateMarket.privateRoom.swap;
 
       if (!createdSwap) {
@@ -153,7 +154,7 @@ const PrivateRoom = () => {
       />
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" />
+        <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" senderWallet={wallet.address} />
         {counterPartyWallet &&
           <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} roomKey="privateRoom" />}
       </div>
