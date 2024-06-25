@@ -17,7 +17,7 @@ import { membersData, tradersData } from "@/constants/data";
 const SwapMarketPage = () => {
   const navigate = useNavigate();
   const wallet = useProfileStore(state => state.profile.wallet);
-
+  
   const [activeTab, setActiveTab] = useState<"open-market" | "private-party">("private-party");
 
   const openMarketSwapLength = useSwapMarketStore(state => (state.openMarket.filteredAvailableSwaps || []).length + (state.openMarket.createdSwaps || []).length);
@@ -85,10 +85,10 @@ const SwapMarketPage = () => {
                   </div>
                 </CreatePrivateSwapDialog>
 
-                <span
+                {/* <span
                   className={`${wallet.isConnected ? "hidden" : "absolute"} cursor-pointer top-0 left-0 w-full h-full bg-transparent rounded-full`}
                   onClick={handleShowWalletConnectionToast}
-                ></span>
+                ></span> */}
 
               </div>
 
