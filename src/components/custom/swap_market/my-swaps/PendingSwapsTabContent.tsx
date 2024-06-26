@@ -615,7 +615,10 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                     }
                   </TableCell>
                   <TableCell className="font-medium px-4 flex justify-start">
-                    <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                    <span
+                      onClick={() => { navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`); }}
+                      className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
+                    >
                       <img
                         className='w-4 h-4'
                         src={currentChain.iconUrl}
@@ -700,7 +703,10 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
                               </button>
 
 
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                              <button
+                                onClick={() => { navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`); }}
+                                className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
+                              >
 
                                 <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M17.381 10.9091C17.8667 10.9091 18.2714 11.0727 18.5143 11.4C18.8381 11.7273 19 12.1364 19 12.5455L12.5238 15L6.85714 13.3636V6H8.39524L14.3048 8.20909C14.7095 8.37273 14.9524 8.7 14.9524 9.10909C14.9524 9.35455 14.8714 9.6 14.7095 9.76364C14.5476 9.92727 14.3048 10.0909 13.981 10.0909H11.7143L10.3381 9.51818L10.0952 10.2545L11.7143 10.9091H17.381ZM2 6H5.2381V15H2V6Z" fill="#868691" />
