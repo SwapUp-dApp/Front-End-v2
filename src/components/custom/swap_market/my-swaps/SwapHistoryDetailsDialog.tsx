@@ -1,15 +1,9 @@
 import { ScrollBar, ScrollArea } from '@/components/ui/scroll-area';
 import { getEtherScanTransactionURL, getLastCharacters } from '@/lib/utils';
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import CustomOutlineButton from '@/components/custom/shared/CustomOutlineButton';
 import CopyTile from '@/components/custom/tiles/CopyTile';
 import AvoidingFeeDialog from '@/components/custom/swap_market/AvoidingFeeDialog';
-import StaySafeDialog from '@/components/custom/swap_market/StaySafeDialog';
-import SwapDialogSideCard from '@/components/custom/swap_market/SwapDialogSideCard';
-import { IOpenRoom, IPrivateRoom } from '@/types/swap-market-store.types';
-import { SUI_SwapCreation } from '@/types/global.types';
-import { SUI_OpenSwap, SUI_Swap } from '@/types/swap-market.types';
+import { SUI_OpenSwap } from '@/types/swap-market.types';
 import { Link } from 'react-router-dom';
 import SwapHistoryDialogSideCard from './SwapHistoryDialogSideCard';
 
@@ -22,11 +16,11 @@ interface IProp {
 const SwapHistoryDetailsDialog = ({ children, swap }: IProp) => {
   return (
     <Dialog key={Math.random()}>
-
-
-      <DialogTrigger className="absolute w-full h-full top-0 left-0 bg-transparent">
+      <div className="relative" >
         {children}
-      </DialogTrigger>
+        <DialogTrigger className="absolute w-full h-full top-0 left-0 bg-transparent !p-0">
+        </DialogTrigger>
+      </div>
 
 
       <DialogContent className="max-h-[calc(100vh_-_100px)] p-0" >
@@ -51,10 +45,9 @@ const SwapHistoryDetailsDialog = ({ children, swap }: IProp) => {
                       {swap.status === 2 && "Completed"}
                       {swap.status === 3 && "Declined"}
                       {swap.status === 4 && "Cancelled"}
-
-
                     </span>
                   </span>
+
                   <div className="flex items-center gap-2 text-xs text-su_secondary" >
                     <Link to={getEtherScanTransactionURL(swap.tx || "")} target="_blank" ><span className="hidden lg:inline-block" >Etherscan link</span></Link>
 

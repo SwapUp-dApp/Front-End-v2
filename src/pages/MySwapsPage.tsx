@@ -2,30 +2,15 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-
-
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { useSwapMarketStore } from "@/store/swap-market";
 import PendingSwapsTabContent from "@/components/custom/swap_market/my-swaps/PendingSwapsTabContent";
 import SwapHistoryTabContent from "@/components/custom/swap_market/my-swaps/SwapHistoryTabContent";
 
-
-
-
-
-
-
-
-
 const MySwapsPage = () => {
-
-
-
   const [activeTab, setActiveTab] = useState<"pending-swaps" | "swap-history">("swap-history");
-
   const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
   const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
- 
 
   const handleSwitchTab = (value: "pending-swaps" | "swap-history") => {
     setActiveTab(value);
@@ -49,28 +34,8 @@ const MySwapsPage = () => {
     );
   };
 
-  const handleFilterData = () => {
-   // const value = event.target.value.toLowerCase();
+  const handleFilterData = () => { };
 
-  //   const newFilteredDataOne = swapHistoryTableData.filter((item) => (
-  //     item.status.toLocaleLowerCase().includes(value) ||
-  //     item.counter_party_wallet.toLowerCase().includes(value) ||
-  //     item.offerreview_date.toLowerCase().includes(value) ||
-  //     item.unique_trade_id.toLowerCase().includes(value)
-  //   ));
-  //   setFilteredSwapHistoryData(newFilteredDataOne);
-
-    // const newFilteredDataTwo = pendingSwapTableData.filter((item) => (
-    //   item.status.toLocaleLowerCase().includes(value) ||
-    //   item.counter_party_wallet.toLowerCase().includes(value) ||
-    //   item.request_date.toLowerCase().includes(value) ||
-    //   item.unique_trade_id.toLowerCase().includes(value)
-    // ));
-    // setFilteredPendingSwapData(newFilteredDataTwo);
-
-  };
-
-  //const handleResetFilters = () => { };
   return (
     <>
       <section className="space-y-4" >
@@ -89,40 +54,31 @@ const MySwapsPage = () => {
           />
         </div>
 
+        <Tabs defaultValue="pending-swaps" className="w-full">
+          <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
+            <TabsTrigger value="pending-swaps" onClick={() => handleSwitchTab("pending-swaps")} >
+              Pending
+              <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'pending-swaps' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
+                {pendingSwapsLength}
+              </span>
+            </TabsTrigger>
 
-        <div className="overflow-x-scroll lg:overflow-hidden" >
-          <Tabs defaultValue="pending-swaps" className="w-full">
-            <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
-              <TabsTrigger value="pending-swaps" onClick={() => handleSwitchTab("pending-swaps")} >
-                Pending
-                <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'pending-swaps' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {pendingSwapsLength}
-                </span>
-              </TabsTrigger>
-              <TabsTrigger value="swap-history" onClick={() => handleSwitchTab("swap-history")}>
-                History
-                <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'swap-history' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {swapHistoryLength}
-                </span>
-              </TabsTrigger>
-            </TabsList>
+            <TabsTrigger value="swap-history" onClick={() => handleSwitchTab("swap-history")}>
+              History
+              <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'swap-history' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
+                {swapHistoryLength}
+              </span>
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="pending-swaps" className="w-full flex justify-center">
-              {/* Title */}
+          <TabsContent value="pending-swaps">
+            <PendingSwapsTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
+          </TabsContent>
 
-              <PendingSwapsTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
-
-            </TabsContent>
-
-            <TabsContent value="swap-history" className="w-full flex flex-col gap-4">
-
-              {/* Title */}
-              <SwapHistoryTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
-
-            </TabsContent>
-          </Tabs>
-        </div>
-
+          <TabsContent value="swap-history">
+            <SwapHistoryTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
+          </TabsContent>
+        </Tabs>
       </section >
     </>
   );

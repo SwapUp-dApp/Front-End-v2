@@ -1,7 +1,5 @@
 import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 
-import { IPrivateRoomsLayoutSide } from "@/types/swap-market-store.types";
-import { SUI_NFTItem } from "@/types/global.types";
 import { SUI_OpenSwap, SUI_SwapToken } from "@/types/swap-market.types";
 import { chainsDataset } from "@/constants/data";
 import CustomAvatar from "../../shared/CustomAvatar";
