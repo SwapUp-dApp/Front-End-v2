@@ -6,15 +6,16 @@ import RoomHeader from "@/components/custom/swap_market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
 import SwapDetailsDialog from "@/components/custom/swap_market/SwapDetailsDialog";
 import { Button } from "@/components/ui/button";
-import { getUserApproval, getUserSignature } from "@/lib/metamask";
+import { getWalletProxy } from "@/lib/walletProxy";
 import { isValidTradeId } from "@/lib/utils";
 import { useOpenSwapByOpenTradId, useProposeOpenSwapOffer } from "@/service/queries/swap-market.query";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_OpenSwap } from "@/types/swap-market.types";
-import { SUI_SwapCreation } from "@/types/swapup.types";
+import { SUI_SwapCreation } from "@/types/global.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { useProfileStore } from "@/store/profile";
 
 const OpenSwapProposeRoom = () => {
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
@@ -27,21 +28,21 @@ const OpenSwapProposeRoom = () => {
   const { mutateAsync: proposeOpenSwapOffer } = useProposeOpenSwapOffer();
   const { isLoading, data, isSuccess, isError, error } = useOpenSwapByOpenTradId(openTradeId!);
 
-  const wallet = useSwapMarketStore(state => state.wallet);
+  const wallet = useProfileStore(state => state.profile.wallet);
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
 
   const handlePurposeOpenSwap = async () => {
     try {
       setSwapCreation(prev => ({ ...prev, isLoading: true }));
 
-      await state.createProposeOpenSwap();
+      await state.createProposeOpenSwap(wallet.address);
       const createdSwap = useSwapMarketStore.getState().openMarket.openRoom.proposeSwap;
 
       if (!createdSwap) {
         throw new Error("Failed to create swap.");
       }
 
-      const { sign, swapEncodedBytes } = await getUserSignature(createdSwap, state.swapEncodedMsg, wallet.signer);
+      const { sign, swapEncodedBytes } = await getWalletProxy().getUserSignature(createdSwap, state.swapEncodedMsg);
 
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
@@ -49,7 +50,7 @@ const OpenSwapProposeRoom = () => {
 
       await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
 
-      const approval = await getUserApproval(createdSwap, true, wallet.signer);
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
       if (!approval) {
         throw new Error("User approval not granted.");
       }
@@ -175,8 +176,8 @@ const OpenSwapProposeRoom = () => {
 
       <div className="grid lg:grid-cols-2 gap-4 pb-16" >
         {
-          isSuccess && state.sender.profile.walletAddress ?
-            <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" />
+          isSuccess && wallet.address ?
+            <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={wallet.address} />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
               {
@@ -203,9 +204,9 @@ const OpenSwapProposeRoom = () => {
             </div>
         }
 
-        {isSuccess && (state.receiver.profile.walletAddress) ?
+        {isSuccess && (state.receiver.profile.wallet.address) ?
           <RoomLayoutCard
-            counterPartyWallet={state.receiver.profile.walletAddress}
+            counterPartyWallet={state.receiver.profile.wallet.address}
             layoutType={"receiver"}
             roomKey="openRoom"
             setDataSavedInStore={setDataSavedInStore}

@@ -1,6 +1,6 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage, } from "@/components/ui/form";
-import { SUI_ChainItem, SUI_NFTItem } from "@/types/swapup.types";
+import { SUI_ChainItem, SUI_NFTItem } from "@/types/global.types";
 import AddCurrencyModalDialog from "./AddCurrencyModalDialog";
 
 import { z } from "zod";
@@ -10,7 +10,7 @@ import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/store/swap-market/swap-market-store.types";
+import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/types/swap-market-store.types";
 import { SUT_SwapRoomViewType } from "@/types/swap-market.types";
 
 interface IProp {

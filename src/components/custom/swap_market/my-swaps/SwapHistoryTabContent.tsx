@@ -25,6 +25,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-u
 
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 import { Button } from "@/components/ui/button";
+import { useProfileStore } from '@/store/profile';
 
 interface IProp {
   handleShowWalletConnectionToast: () => void;
@@ -33,16 +34,9 @@ interface IProp {
 const SwapHistoryTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
   const navigate = useNavigate();
   const { setSwapHistoryData, swapHistory } = useSwapMarketStore(state => state.privateMarket);
-  const wallet = useSwapMarketStore(state => state.wallet);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const [isOpen, setIsOpen] = useState(false);
-
-
-
-  // const handlePrivateSwapFilterData = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = event.target.value.toLowerCase();
-  //   setFilteredAvailablePrivateSwapsBySearch(value);
-  // };
 
   const handleResetFilters = () => { };
 

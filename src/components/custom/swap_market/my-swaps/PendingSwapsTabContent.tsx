@@ -36,11 +36,12 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 import { Button } from "@/components/ui/button";
-import { getUserApproval, getUserSignature, triggerTransfer } from '@/lib/metamask';
-import { SUI_SwapCreation } from '@/types/swapup.types';
+import { getWalletProxy } from '@/lib/walletProxy';
+import { SUI_SwapCreation } from "@/types/global.types";
 import { useCompleteOpenSwapOffer } from "@/service/queries/swap-market.query";
 
 import { SUE_SWAP_MODE } from '@/constants/enums';
+import { useProfileStore } from '@/store/profile';
 
 interface IProp {
   handleShowWalletConnectionToast: () => void;
@@ -49,7 +50,7 @@ interface IProp {
 const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
   const navigate = useNavigate();
   const { setPendingSwapsData, pendingSwaps } = useSwapMarketStore(state => state.privateMarket);
-  const wallet = useSwapMarketStore(state => state.wallet);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -78,7 +79,7 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
 
       setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
 
-      const { sign } = await getUserSignature(swap, state.swapEncodedMsg, wallet.signer);
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
@@ -88,13 +89,13 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
       //temp fix 
       swap.accept_sign = sign;
 
-      const approval = await getUserApproval(swap, true, wallet.signer);
+      const approval = await getWalletProxy().getUserApproval(swap, true);
 
       if (!approval) {
         throw new Error("User approval not granted.");
       }
 
-      const triggerTranfer = await triggerTransfer(swap, wallet.signer);
+      const triggerTranfer = await getWalletProxy().triggerTransfer(swap);
       console.log(swapAcceptance.isLoading);
 
       if (!triggerTranfer) {
@@ -107,7 +108,6 @@ const PendingSwapsTabContent = ({ handleShowWalletConnectionToast }: IProp) => {
         tx: triggerTranfer.hash,
         notes: triggerTranfer.notes,
         timestamp: triggerTranfer.timeStamp,
-
       };
 
       //calling actual api 

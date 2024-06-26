@@ -1,4 +1,4 @@
-import { SUI_NFTItem, SUI_RarityRankItem } from "./swapup.types";
+import { SUI_NFTItem, SUI_RarityRankItem } from "./global.types";
 
 export type SUT_GetNFTsByWalletIdResponse = SUI_NFTItem[];
 export type SUT_SwapMode = 0 | 1;
@@ -91,7 +91,6 @@ export interface SUP_CompleteSwap extends Pick<
   tx: string;
   notes: string;
   timestamp: string;
-
 }
 
 export interface SUP_CancelSwap extends Pick<
@@ -100,18 +99,6 @@ export interface SUP_CancelSwap extends Pick<
     trade_id?: string;
 
   }
-
-
-
-let res2 = await api.updateSwapStatus({
-  id: this.existingSwap.id,
-  status: 4,
-  txn: res?.hash,
-  notes: res?.notes,
-  metadata: JSON.stringify(this.existingSwap.metadata),
-  timestamp: Math.floor(new Date().getTime() / 1000)
-});
-
 
 // Swap api payload types ends here
 

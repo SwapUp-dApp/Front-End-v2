@@ -6,10 +6,11 @@ import ProfileAssetsLayout from "@/components/custom/profile/ProfileAssetsLayout
 import { useSwapMarketStore } from "@/store/swap-market";
 import ProfileHeader from "@/components/custom/profile/ProfileHeader";
 import ProfilePointsCard from "@/components/custom/profile/ProfilePointsCard";
+import { useProfileStore } from "@/store/profile";
 
 const UserProfile = () => {
   const [activeTab, setActiveTab] = useState<"wallet-overview" | "assets" | "points">("assets");
-  const wallet = useSwapMarketStore(state => state.wallet);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
 
@@ -20,9 +21,6 @@ const UserProfile = () => {
   };
 
   const testWalletAddress: string = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
-
-
-
 
   const handleResetData = () => {
     // resetRoom('privateMarket', 'privateRoom');
@@ -38,7 +36,7 @@ const UserProfile = () => {
           existTitle="Are you sure you want to exit your Profile page?"
           ensAddress={profile.ensAddress}
           joinData="Joined Sept 2023"
-          profileImage={profile.image}
+          profileImage={profile.avatar}
           avatarFallbackI="No Image"
         />
 
