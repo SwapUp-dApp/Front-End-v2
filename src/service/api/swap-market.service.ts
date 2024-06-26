@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import API from "../Axios";
-import { SUI_Swap, SUI_OpenSwap, SUP_CreateOpenSwap, SUP_CompleteSwap, SUP_CancelSwap } from "@/types/swap-market.types";
+import { SUI_Swap, SUI_OpenSwap, SUP_CreateOpenSwap, SUP_CompleteSwap, SUP_CancelSwap, SUP_CounterSwap } from "@/types/swap-market.types";
 
 export const getNftsForWallet = (walletId: string): Promise<AxiosResponse> => {
   return API.get(`/api/nfts/${walletId}`);
@@ -28,6 +28,9 @@ export const completePrivateSwapOffer = (swap: SUP_CompleteSwap): Promise<AxiosR
 
 export const updateSwapStatus = (swapStatus: any): Promise<AxiosResponse> =>
   API.patch('/api/swaps/status', swapStatus);
+
+export const counterSwapOffer = (payload: SUP_CounterSwap): Promise<AxiosResponse> =>
+  API.patch('/api/swaps/counter-offer', payload);
 
 export const getPrivateSwapPendingList = (walletId: string): Promise<AxiosResponse> =>
   API.get(`/api/swaps/private-swaplist/?address=${walletId}`);
@@ -64,7 +67,7 @@ export const completeOpenSwapOffer = (swap: SUP_CompleteSwap): Promise<AxiosResp
 export const rejectSwapOffer = (id: number): Promise<AxiosResponse> =>
   API.patch(`/api/openswap/reject-swap/?id=${id}`);
 
-export const cancelSwapOffer = (cancelPayload: SUP_CancelSwap ): Promise<AxiosResponse> =>
+export const cancelSwapOffer = (cancelPayload: SUP_CancelSwap): Promise<AxiosResponse> =>
   API.patch(`/api/openswap/cancel`, cancelPayload);
 
 export const acceptSwapOffer = (tradeId: string, opentradeId: string): Promise<AxiosResponse> =>

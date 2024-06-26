@@ -16,9 +16,9 @@ import { SUI_SwapCreation } from "@/types/global.types";
 import { useProfileStore } from "@/store/profile";
 
 const PrivateRoom = () => {
-  
+
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
-  const wallet = useProfileStore(state => state.profile.wallet)
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [swapCreation, setSwapCreation] = useState<SUI_SwapCreation>({ isLoading: false, created: false });
@@ -138,8 +138,8 @@ const PrivateRoom = () => {
       navigate(-1);
     }
 
-    if (counterPartyWallet && privateTradeId) {
-      state.setValuesOnCreatingRoom(privateTradeId, counterPartyWallet);
+    if (counterPartyWallet && privateTradeId && wallet) {
+      state.setValuesOnCreatingRoom(privateTradeId, counterPartyWallet, wallet);
     }
   }, [counterPartyWallet, privateTradeId]);
 

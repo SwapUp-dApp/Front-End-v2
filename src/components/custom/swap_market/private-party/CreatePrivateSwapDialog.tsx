@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { useSwapMarketStore } from "@/store/swap-market";
+// import { useSwapMarketStore } from "@/store/swap-market";
+// import { useProfileStore } from "@/store/profile";
 
 const formSchema = z.object({
   walletAddress: z.string().min(1, {
@@ -28,7 +29,8 @@ interface IProp {
 
 const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
   const navigate = useNavigate();
-  const setValuesOnCreatingRoom = useSwapMarketStore(state => state.privateMarket.privateRoom.setValuesOnCreatingRoom);
+  // const wallet = useProfileStore(state => state.profile.wallet);
+  // const setValuesOnCreatingRoom = useSwapMarketStore(state => state.privateMarket.privateRoom.setValuesOnCreatingRoom);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,7 +43,7 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
     const { walletAddress } = values;
     const uniqueTradeId = generateRandomTradeId();
 
-    setValuesOnCreatingRoom(uniqueTradeId, walletAddress);
+    // setValuesOnCreatingRoom(uniqueTradeId, walletAddress, wallet);
     navigate(`/swap-up/swap-market/private-swap/create/${walletAddress}/${uniqueTradeId}`);
   }
 
