@@ -1,12 +1,13 @@
 import { SUI_Swap, SUI_OpenSwap, SUI_SwapPreferences, SUT_SwapOfferType, SUI_SwapToken } from "@/types/swap-market.types";
 import { IOpenRoom, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "../../types/swap-market-store.types";
 import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
-import { ethers } from "ethers";
-import { SUE_SWAP_MODE } from "@/constants/enums";
+import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { Environment } from "@/config";
 import { chainsDataset } from "@/constants/data";
 import { getInitialProfile } from "../profile/profile-helpers";
 import { IWallet } from "@/types/profile.types";
+import { send } from "process";
+import { profile } from "console";
 
 // Shared Room Helper start
 export const toggleGridViewHelper = (
@@ -42,6 +43,8 @@ export const setSelectedNftsForSwapHelper = (
 ): ISwapMarketStore => {
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;
+
+  const uniqueSelectedNftsObjects: SUI_NFTItem[] | [] = [...new Set(selectedNfts)];
   return {
     ...state,
     [marketKey]: {
@@ -50,7 +53,7 @@ export const setSelectedNftsForSwapHelper = (
         ...room,
         [side]: {
           ...room[side],
-          nftsSelectedForSwap: selectedNfts,
+          nftsSelectedForSwap: uniqueSelectedNftsObjects,
         },
       },
     },
@@ -318,7 +321,6 @@ export const resetViewSwapRoomHelper = (
         uniqueTradeId: '',
         swap: roomKey === 'openRoom' ? { ...openRoomInitialSwap } : undefined,
         swapEncodedMsg: '',
-        swapUpContract: "",
         sender: {
           ...room.sender,
           nfts: undefined,
@@ -349,6 +351,42 @@ export const resetViewSwapRoomHelper = (
   };
 };
 
+export const createCounterSwapOfferHelper = async (
+  state: ISwapMarketStore,
+  marketKey: 'openMarket' | 'privateMarket',
+  roomKey: 'openRoom' | 'privateRoom',
+): Promise<ISwapMarketStore> => {
+  const market = state[marketKey] as Record<string, any>;
+  const room = market[roomKey] as Record<string, any>;
+
+  const swap: SUI_OpenSwap = {
+    ...room.swap,
+    offer_type: SUE_SWAP_OFFER_TYPE.COUNTER,
+    metadata: {
+      init: {
+        tokens: room.sender.nftsSelectedForSwap ?
+          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) : []
+      },
+      accept: {
+        tokens: room.receiver.nftsSelectedForSwap ?
+          getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap) : []
+      },
+    }
+  };
+
+
+  return {
+    ...state,
+    [marketKey]: {
+      ...market,
+      [roomKey]: {
+        ...room,
+        swap,
+      },
+    },
+  };
+};
+
 // Shared Room Helper end
 
 
@@ -358,10 +396,11 @@ export const setValuesOnCreatingPrivateRoomHelper = (
   marketKey: 'openMarket' | 'privateMarket',
   roomKey: 'openRoom' | 'privateRoom',
   tradeId: string,
-  counterPartyWalletAddress: string
+  counterPartyWalletAddress: string,
+  senderWalletInfo: IWallet
 ): ISwapMarketStore => {
   const market = state[marketKey] as Record<string, any>;
-  const room = market[roomKey] as Record<string, any>;
+  const room = market[roomKey] as IPrivateRoom;
   return {
     ...state,
     [marketKey]: {
@@ -369,13 +408,20 @@ export const setValuesOnCreatingPrivateRoomHelper = (
       [roomKey]: {
         ...room,
         uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
-        receiver: { 
+        sender: {
+          ...room.sender,
+          profile: {
+            ...room.sender.profile,
+            wallet: senderWalletInfo
+          }
+        },
+        receiver: {
           ...room.receiver,
           profile: {
             ...room.receiver.profile,
-            wallet:{
+            wallet: {
               ...room.receiver.profile.wallet,
-              address: counterPartyWalletAddress ? counterPartyWalletAddress : room.receiver.profile.walletAddress,
+              address: counterPartyWalletAddress ? counterPartyWalletAddress : room.receiver.profile.wallet.address,
             }
           },
         },
@@ -468,7 +514,6 @@ export const resetPrivateRoomDataHelper = (
         uniqueTradeId: '',
         swap: undefined,
         swapEncodedMsg: '',
-        swapUpContract: "",
         sender: {
           ...state.privateMarket.privateRoom.sender,
           collections: [],
@@ -692,6 +737,7 @@ export const setFilteredAvailableSwapsBySearchHelper = (
 export const setValuesOnCreateOpenSwapRoomHelper = (
   state: ISwapMarketStore,
   tradeId: string,
+  senderWalletInfo: IWallet
 ): ISwapMarketStore => {
   const market = state['openMarket'] as Record<string, any>;
   const room = market['openRoom'] as IOpenRoom;
@@ -703,6 +749,13 @@ export const setValuesOnCreateOpenSwapRoomHelper = (
       openRoom: {
         ...room,
         uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
+        sender: {
+          ...room.sender,
+          profile: {
+            ...room.sender.profile,
+            wallet: senderWalletInfo
+          }
+        }
       },
     },
   };
@@ -711,7 +764,8 @@ export const setValuesOnCreateOpenSwapRoomHelper = (
 export const setValuesOnProposeOpenSwapRoomHelper = async (
   state: ISwapMarketStore,
   tradeId: string,
-  swap: SUI_OpenSwap
+  swap: SUI_OpenSwap,
+  senderWalletInfo: IWallet
 ): Promise<ISwapMarketStore> => {
   const market = state['openMarket'] as Record<string, any>;
   const room = market['openRoom'] as IOpenRoom;
@@ -724,6 +778,13 @@ export const setValuesOnProposeOpenSwapRoomHelper = async (
         ...room,
         uniqueTradeId: tradeId,
         swap,
+        sender: {
+          ...room.sender,
+          profile: {
+            ...room.sender.profile,
+            wallet: senderWalletInfo
+          }
+        },
         receiver: {
           ...room.receiver,
           addedAmount: {
@@ -734,7 +795,7 @@ export const setValuesOnProposeOpenSwapRoomHelper = async (
             ...room.receiver.profile,
             wallet: {
               ...room.receiver.profile.wallet,
-              address:swap.init_address,
+              address: swap.init_address,
             }
           }
         }

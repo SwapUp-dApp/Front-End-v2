@@ -29,10 +29,9 @@ export interface IOpenRoom {
   swapEncodedMsg: string;
   sign: string;
   nftsLength: number;
-  swapUpOpenContract: string;
   chainId: number;
-  setValuesOnCreateOpenSwapRoom: (tradeId: string) => void;
-  setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
+  setValuesOnCreateOpenSwapRoom: (tradeId: string, senderWalletInfo: IWallet) => void;
+  setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap, senderWalletInfo: IWallet) => void;
   setValuesOnViewSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
   createOpenSwap: (initWalletAddress: string) => void;
   createProposeOpenSwap: (initWalletAddress: string) => void;
@@ -41,6 +40,7 @@ export interface IOpenRoom {
   resetOpenSwapCreationRoom: () => void;
   resetOpenSwapProposeRoom: () => void;
   resetViewSwapRoom: () => void;
+  createCounterSwapOffer: () => void;
 }
 
 export interface IOpenMarketLayoutSide {
@@ -106,14 +106,14 @@ export interface IPrivateRoom {
   swapEncodedMsg: string;
   sign: string;
   nftsLength: number;
-  swapUpContract: string;
   chainId: number;
-  setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => void;
-  createPrivateMarketSwap: (offer_type: SUT_SwapOfferType,  initWalletAddress: strimg) => void;
+  setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string, senderWalletInfo: IWallet) => void;
+  createPrivateMarketSwap: (offer_type: SUT_SwapOfferType, initWalletAddress: string) => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   resetPrivateRoom: () => void;
   setValuesOnViewSwapRoom: (tradeId: string, swap: SUI_Swap) => void;
   resetViewSwapRoom: () => void;
+  createCounterSwapOffer: () => void;
 }
 
 export interface ISwapMarketStore {
@@ -138,5 +138,5 @@ export interface ISwapMarketStore {
     setSwapHistoryData: (swaphistoryData: SUI_OpenSwap[]) => void;
     setPrivateSwapsData: (swapsData: SUI_Swap[]) => void;
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
-  }
+  };
 }

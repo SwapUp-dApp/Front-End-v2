@@ -19,7 +19,7 @@ interface IComboboxProps {
   title?: string;
 }
 
-export function Combobox({ items, className, value, onChange, title = "item" }: IComboboxProps) {
+const Combobox = ({ items, className, value, onChange, title = "item" }: IComboboxProps) => {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -77,4 +77,6 @@ export function Combobox({ items, className, value, onChange, title = "item" }: 
       </PopoverContent>
     </Popover>
   );
-}
+};
+
+export default Combobox;

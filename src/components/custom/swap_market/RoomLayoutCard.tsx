@@ -96,7 +96,6 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
           const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
             swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
           );
-          // console.log("Inside sender filter function NFTs: ", filteredNfts);
           setFilteredNftsBySwapTokens(filteredNfts);
           setTimeout(() => {
             setDataSavedInStore(prev => ({ ...prev, sender: true }));
@@ -113,6 +112,33 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
             setDataSavedInStore(prev => ({ ...prev, receiver: true }));
           }, 200);
         }
+
+        if (layoutType === "sender" && swap && swapRoomViewType === 'counter') {
+          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+            swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+          );
+          setNftsDataset(resNfts);
+          setSelectedNftsForSwap([...filteredNfts]);
+          setTimeout(() => {
+            setDataSavedInStore(prev => ({ ...prev, sender: true }));
+          }, 200);
+        }
+
+        if (layoutType === "receiver" && swap && swapRoomViewType === 'counter') {
+          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+            swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+          );
+          // console.log("Inside receiver filter function NFTs: ", filteredNfts);
+          setNftsDataset(filteredNfts);
+          setSelectedNftsForSwap([...filteredNfts]);
+          setTimeout(() => {
+            setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+          }, 200);
+        }
+
+
+
+
       }
 
       if (swapRoomViewType === "default") {
@@ -237,7 +263,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
                 setSelectedNftsForSwap={setSelectedNftsForSwap}
                 nftsSelectedForSwap={nftsSelectedForSwap}
                 disableNftSelection={
-                  ((swapRoomViewType === 'propose' && layoutType === 'receiver') || swapRoomViewType === 'view') ? true : false
+                  (((swapRoomViewType === 'propose' || swapRoomViewType === 'counter') && layoutType === 'receiver') || swapRoomViewType === 'view') ? true : false
                 }
               />
             ))
