@@ -128,7 +128,7 @@ const OpenSwapProposeRoom = () => {
   useEffect(() => {
     const setValues = async () => {
       if (data?.data?.data && tradeId) {
-        await state.setValuesOnProposeOpenSwapRoom(tradeId, data.data.data as SUI_OpenSwap);
+        await state.setValuesOnProposeOpenSwapRoom(tradeId, data.data.data as SUI_OpenSwap, wallet);
       }
     };
 

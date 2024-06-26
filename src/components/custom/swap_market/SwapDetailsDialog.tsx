@@ -19,7 +19,6 @@ interface IProp {
   isSwapProposeDialog?: boolean;
 }
 
-
 const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation, handleSwapCreation, state, isSwapProposeDialog = false }: IProp) => {
   return (
     <Dialog>

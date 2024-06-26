@@ -8,10 +8,11 @@ import SwapDetailsDialog from "@/components/custom/swap_market/SwapDetailsDialog
 import { Button } from "@/components/ui/button";
 import { SUE_SWAP_MODE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
-import { useGetSwapDetails } from "@/service/queries/swap-market.query";
+import { getWalletProxy } from "@/lib/walletProxy";
+import { useCounterSwapOffer, useGetSwapDetails } from "@/service/queries/swap-market.query";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUI_OpenSwap, SUI_SwapPreferences } from "@/types/swap-market.types";
-import { SUI_SwapCreation } from "@/types/swapup.types";
+import { SUI_SwapCreation } from "@/types/global.types";
+import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CounterSwap } from "@/types/swap-market.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -31,11 +32,90 @@ const CounterOfferSwapRoom = () => {
 
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
   const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom.swap.swap_preferences : null);
-  const [connectWallet] = useSwapMarketStore(state => [state.connectWallet]);
+
+  const { mutateAsync: createCounterSwapOffer } = useCounterSwapOffer();
+
+  const handleCreatePrivatePartySwap = async () => {
+    try {
+      setSwapCreation(prev => ({ ...prev, isLoading: true }));
+
+      await state.createCounterSwapOffer();
+      const createdSwap: any = (swapMode === SUE_SWAP_MODE.OPEN) ? useSwapMarketStore.getState().openMarket.openRoom.swap : useSwapMarketStore.getState().privateMarket.privateRoom.swap;
+
+      if (!createdSwap) {
+        throw new Error("Failed to create swap.");
+      }
+
+      const { sign, swapEncodedBytes } = await getWalletProxy().getUserSignature(createdSwap, state.swapEncodedMsg);
+
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+
+      await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
+
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
+      if (!approval) {
+        throw new Error("User approval not granted.");
+      }
+
+
+      const payload: SUP_CounterSwap = {
+        ...createdSwap,
+        init_sign: sign
+      };
+
+      const offerResult = await createCounterSwapOffer(payload);
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Counter offer Sent Successfully"
+              description={"You will receive a notification upon your counterparty's response."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapCreation(prev => ({ ...prev, created: true }));
+        state.resetViewSwapRoom();
+        setTimeout(() => {
+          navigate('/swap-up/swap-market');
+        }, 3000);
+      }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapCreation(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
 
   const handleResetData = async () => {
     state.resetViewSwapRoom();
-    await connectWallet();
 
     toast.custom(
       (id) => (
@@ -54,11 +134,25 @@ const CounterOfferSwapRoom = () => {
     );
   };
 
-
   useEffect(() => {
     const setValues = async () => {
       if (data?.data?.data && tradeId) {
-        await state.setValuesOnViewSwapRoom(tradeId, data.data.data as SUI_OpenSwap);
+        const response: SUI_OpenSwap = data?.data?.data as SUI_OpenSwap;
+        const counterSwap: SUI_OpenSwap = {
+          ...response,
+          init_address: response.accept_address,
+          accept_address: response.init_address,
+          init_sign: '',
+          metadata: {
+            init: {
+              tokens: response.metadata.accept.tokens
+            },
+            accept: {
+              tokens: response.metadata.init.tokens
+            }
+          }
+        };
+        await state.setValuesOnViewSwapRoom(tradeId, counterSwap);
       }
     };
     setValues();
@@ -118,12 +212,13 @@ const CounterOfferSwapRoom = () => {
 
       <div className="grid lg:grid-cols-2 gap-4 pb-16" >
         {
-          isSuccess && state.sender.profile.walletAddress ?
+          isSuccess && state.sender.profile.wallet.address ?
             <RoomLayoutCard
               layoutType={"sender"}
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               swapRoomViewType="counter"
               setDataSavedInStore={setDataSavedInStore}
+              senderWallet={state.sender.profile.wallet.address}
             />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
@@ -151,9 +246,9 @@ const CounterOfferSwapRoom = () => {
             </div>
         }
 
-        {isSuccess && (state.receiver.profile.walletAddress) ?
+        {isSuccess && (state.receiver.profile.wallet.address) ?
           <RoomLayoutCard
-            counterPartyWallet={state.receiver.profile.walletAddress}
+            counterPartyWallet={state.receiver.profile.wallet.address}
             layoutType={"receiver"}
             roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
             setDataSavedInStore={setDataSavedInStore}
@@ -195,7 +290,7 @@ const CounterOfferSwapRoom = () => {
             state={state}
             enableApproveButtonCriteria={enableApproveButtonCriteria}
             swapCreation={swapCreation}
-            handleSwapCreation={() => { }}
+            handleSwapCreation={handleCreatePrivatePartySwap}
           >
             <Button
               variant={"default"}
@@ -218,7 +313,7 @@ const CounterOfferSwapRoom = () => {
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
               <LoadingDataset
                 isLoading={!dataSavedInStore.sender}
-                title="Loading sender NFTs"
+                title="Loading sender's selected NFTs"
                 description=""
               />
             </div>
@@ -231,12 +326,13 @@ const CounterOfferSwapRoom = () => {
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="receiver"
               swapRoomViewType="counter"
+              showRemoveNftButton={false}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
               <LoadingDataset
                 isLoading={!dataSavedInStore.receiver}
-                title="Loading counter-party NFTs"
+                title="Loading counter-party's selected NFTs"
                 description=""
               />
             </div>
