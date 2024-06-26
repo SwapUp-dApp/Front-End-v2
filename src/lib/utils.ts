@@ -61,6 +61,11 @@ export const getEtherScanContractNftUrl = (token: string, nftId: string) => {
   return `${baseUrl}/token/${token}?a=${nftId}`;
 };
 
+export const getEtherScanTransactionURL = (tx: string) => {
+  const baseUrl = Environment.ETHERSCAN_BASE_URL;
+  return `${baseUrl}/tx/${tx}`;
+};
+
 export const getOpenSeaNftUrl = (token: string, nftId: string) => {
   const baseUrl = Environment.OPENSEA_BASE_URL;
   const network = Environment.NETWORK;

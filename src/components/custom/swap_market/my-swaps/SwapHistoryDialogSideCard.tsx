@@ -1,27 +1,29 @@
 import { cn, getDefaultNftImageOnError } from "@/lib/utils";
-import CustomAvatar from "../shared/CustomAvatar";
-import WalletAddressTile from "../tiles/WalletAddressTile";
-import ChainTile from "../tiles/ChainTile";
+
 import { IPrivateRoomsLayoutSide } from "@/types/swap-market-store.types";
 import { SUI_NFTItem } from "@/types/global.types";
+import { SUI_OpenSwap, SUI_SwapToken } from "@/types/swap-market.types";
+import { chainsDataset } from "@/constants/data";
+import CustomAvatar from "../../shared/CustomAvatar";
+import ChainTile from "../../tiles/ChainTile";
+import WalletAddressTile from "../../tiles/WalletAddressTile";
 
 interface IProp {
   className?: string;
-  data: IPrivateRoomsLayoutSide;
-  showEscroTile?: boolean;
-  useNfts?: boolean;
+  swap: SUI_OpenSwap;
+  side: "sender" | "receiver";
 }
 
-const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = false, ...props }: IProp) => {
+const SwapHistoryDialogSideCard = ({ className, swap, side, ...props }: IProp) => {
 
-  const nftsImageMapper = (nfts: SUI_NFTItem[],) => (
+  const nftsImageMapper = (nfts: SUI_SwapToken[],) => (
     nfts.map((nft) => (
       <div
         className="group relative w-8 h-8 rounded-xs lg:w-12 lg:h-12 object-cover lg:rounded-sm border-[1.5px] border-white/20"
-        key={nft.tokenId}>
+        key={nft.id}>
         <img
           className="w-full h-full object-cover rounded-xs lg:rounded-sm"
-          src={nft.media[0].gateway}
+          src={nft.image_url}
           onError={getDefaultNftImageOnError}
           alt="nft"
         />
@@ -33,6 +35,7 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
     return Number(usdAmount) / Number(chainAmount);
   };
 
+  const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
   return (
     <div
       className={cn(
@@ -43,25 +46,18 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
     >
       <div className="flex items-center gap-1 lg:gap-2">
         <CustomAvatar
-          imageSrc={data.profile.avatar}
-          fallbackName={data.profile.title}
+          imageSrc={""}
+          fallbackName={side}
           sizeClasses="w-4 h-4 lg:w-6 lg:h-6"
           textSizeClasses="text-2xs lg:text-xs"
         />
-        <h2 className="font-semibold text-xs lg:text-sm line-clamp-1 w-2/3 lg:w-auto">{data.profile.ensAddress}</h2>
+        <h2 className="font-semibold text-xs lg:text-sm line-clamp-1 w-2/3 lg:w-auto">{side === "sender" ? "sender.swapup.eth" : "receiver.swapup.eth"}</h2>
       </div>
 
-      <WalletAddressTile walletAddress={data.profile.wallet.address} className="text-2xs lg:text-xs">
+      <WalletAddressTile walletAddress={side === "sender" ? swap.init_address : swap.accept_address} className="text-2xs lg:text-xs">
         <div className="flex items-center gap-2" >
-          <ChainTile imageSrc={data.profile.wallet.network.iconUrl} title={data.profile.wallet.network.name} showChainTitleOnMobileScreen className="text-2xs lg:text-xs" />
-          {
-            showEscroTile &&
-            <span className=" flex items-center gap-2 p-2 bg-su_enable_bg text-su_primary font-semibold text-2xs lg:text-xs rounded-xs" >
-              <span className="rounded-full w-2 h-2 bg-su_positive" ></span>
+          <ChainTile imageSrc={currentChain.iconUrl} title={currentChain.name} showChainTitleOnMobileScreen className="text-2xs lg:text-xs" />
 
-              Escrow
-            </span>
-          }
         </div>
       </WalletAddressTile>
 
@@ -71,15 +67,17 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
         <div className="flex gap-2" >
           <img
             className="w-4"
-            src={data.addedAmount?.coin.iconUrl}
+            src={currentChain.iconUrl}
             alt=""
           />
 
           <p className="text-su_primary" >
-            {data.addedAmount && getConvertedAmount(data.addedAmount.usdAmount, data.addedAmount.coin.price).toFixed(6)}
-            {' '} {data.addedAmount?.coin.symbol} {' '}
+            {/* {swap.addedAmount && getConvertedAmount(data.addedAmount.usdAmount, data.addedAmount.coin.price).toFixed(6)}
+            {' '} {data.addedAmount?.coin.symbol} {' '} */}
+            0.00 ETH
             <span className="text-su_secondary" >
-              / $ {data.addedAmount?.usdAmount}
+              /$ 0.00
+              {/* {data.addedAmount?.usdAmount} */}
             </span>
           </p>
         </div>
@@ -89,11 +87,11 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
         <p>NFT assets:</p>
 
         <div className="grid grid-cols-5 gap-2 lg:gap-3" >
-          {nftsImageMapper((useNfts && data.nfts) ? data.nfts : data.nftsSelectedForSwap)}
+          {nftsImageMapper(side === "sender" ? swap.metadata.init.tokens : swap.metadata.accept.tokens)}
         </div>
       </div>
     </div>
   );
 };
 
-export default SwapDialogSideCard;
+export default SwapHistoryDialogSideCard;

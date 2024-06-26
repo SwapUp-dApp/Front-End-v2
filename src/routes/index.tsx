@@ -11,6 +11,7 @@ import OpenSwapCreationRoom from "@/pages/OpenSwapCreationRoom";
 import OpenSwapProposeRoom from "@/pages/OpenSwapProposeRoom";
 import ViewSwapRoom from "@/pages/ViewSwapRoom";
 import CounterOfferSwapRoom from "@/pages/CouterOfferSwapRoom";
+import SwapUpWebsite from "@/pages/SwapUpWebsite";
 
 
 interface IRoutesType {
@@ -96,7 +97,7 @@ export const clientSideRoutes: IRoutesType[] = [
         id: 'not-found-page',
         title: "Not found Page",
         path: "*",
-        element: <NotFoundPage />,
+        element: <SwapUpWebsite />,
       }
     ]
   },
@@ -104,9 +105,6 @@ export const clientSideRoutes: IRoutesType[] = [
     id: 'not-found-page',
     title: "Not found Page",
     path: "*",
-    element: <NotFoundPage />,
+    element: <SwapUpWebsite />,
   }
 ];
-
-
-
