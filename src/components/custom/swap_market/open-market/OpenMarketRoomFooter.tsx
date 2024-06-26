@@ -1,6 +1,6 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage, } from "@/components/ui/form";
-import { SUI_ChainItem, SUI_NFTItem } from "@/types/swapup.types";
+import { SUI_ChainItem, SUI_NFTItem } from "@/types/global.types";
 import AddCurrencyModalDialog from "../AddCurrencyModalDialog";
 
 import { z } from "zod";

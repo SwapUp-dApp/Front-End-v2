@@ -1,6 +1,6 @@
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage, } from "@/components/ui/form";
-import { SUI_ChainItem, SUI_NFTItem } from "@/types/swapup.types";
+import { SUI_ChainItem, SUI_NFTItem } from "@/types/global.types";
 import AddCurrencyModalDialog from "./AddCurrencyModalDialog";
 
 import { z } from "zod";
@@ -10,7 +10,7 @@ import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/store/swap-market/swap-market-store.types";
+import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/types/swap-market-store.types";
 import { SUT_SwapRoomViewType } from "@/types/swap-market.types";
 
 interface IProp {
@@ -145,9 +145,6 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
       }
     }
 
-    if (nftsSelectedForSwap.length > 0 && swapRoomViewType === "default") {
-      setNftsToDisplay(nftsSelectedForSwap);
-    }
   }, [nfts, nftsSelectedForSwap, swapRoomViewType, layoutType]);
 
   return (
@@ -156,7 +153,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
         <h2 className="dark:text-white text-xs">You offer:</h2>
 
         {
-          (nftsToDisplay.length > 0 && showRemoveNftButton) &&
+          ((nftsToDisplay.length > 0 || nftsSelectedForSwap.length > 0) && showRemoveNftButton) &&
           <span
             className="flex items-center gap-1 lg:gap-2 text-2xs lg:text-xs font-semibold cursor-pointer"
             onClick={() => removeAllSelectedNft()}
@@ -172,23 +169,50 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
 
       <div className="flex items-center justify-between" >
         {
-          nftsToDisplay.length === 0 &&
-          <p className="text-xs text-su_secondary">Awaiting asset selection. You can choose up to 20 assets.</p>
-        }
+          (swapRoomViewType === 'view' || (swapRoomViewType === 'propose' && layoutType === "receiver")) ?
+            <div>
+              {
+                (nfts && nfts.length === 0) &&
+                <p className="text-xs text-su_secondary">Awaiting asset selection. You can choose up to 20 assets.</p>
+              }
 
-        {
-          nftsToDisplay.length > 0 &&
-          <>
-            {/* For Desktop */}
-            <div className="hidden lg:flex items-center gap-1.5 lg:gap-2" >
-              {nftsImageMapper(nftsToDisplay, 6)}
-            </div>
+              {
+                (nfts && nfts.length > 0) &&
+                <>
+                  {/* For Desktop */}
+                  <div className="hidden lg:flex items-center gap-1.5 lg:gap-2" >
+                    {nftsImageMapper(nfts, 6)}
+                  </div>
 
-            {/* For Mobile */}
-            <div className="lg:hidden flex items-center gap-1.5 lg:gap-2" >
-              {nftsImageMapper(nftsToDisplay, 4)}
+                  {/* For Mobile */}
+                  <div className="lg:hidden flex items-center gap-1.5 lg:gap-2" >
+                    {nftsImageMapper(nfts, 4)}
+                  </div>
+                </>
+              }
             </div>
-          </>
+            :
+            <div>
+              {
+                (nftsSelectedForSwap && nftsSelectedForSwap.length === 0) &&
+                <p className="text-xs text-su_secondary">Awaiting asset selection. You can choose up to 20 assets.</p>
+              }
+
+              {
+                (nftsSelectedForSwap && nftsSelectedForSwap.length > 0) &&
+                <>
+                  {/* For Desktop */}
+                  <div className="hidden lg:flex items-center gap-1.5 lg:gap-2" >
+                    {nftsImageMapper(nftsSelectedForSwap, 6)}
+                  </div>
+
+                  {/* For Mobile */}
+                  <div className="lg:hidden flex items-center gap-1.5 lg:gap-2" >
+                    {nftsImageMapper(nftsSelectedForSwap, 4)}
+                  </div>
+                </>
+              }
+            </div>
         }
 
         <div className="hidden lg:inline-block" >

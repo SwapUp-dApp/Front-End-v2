@@ -1,15 +1,15 @@
 import Footer from "@/components/custom/shared/Footer";
 import Navbar from "@/components/custom/shared/Navbar";
 import { navItemsData } from "@/constants";
-import { useSwapMarketStore } from "@/store/swap-market";
 import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { toast } from "sonner";
 import { defaultFallbackRoute } from "@/routes";
+import { useProfileStore } from "@/store/profile";
 
 const MainLayout = () => {
-  const [wallet] = useSwapMarketStore(state => [state.wallet, state.connectWallet]);
+  const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
   const { pathname } = useLocation();
 

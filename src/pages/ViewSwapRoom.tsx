@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { SUE_SWAP_MODE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
 import { useGetSwapDetails } from "@/service/queries/swap-market.query";
+import { useProfileStore } from "@/store/profile";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_OpenSwap, SUI_SwapPreferences } from "@/types/swap-market.types";
 import { useEffect, useState } from "react";
@@ -27,13 +28,13 @@ const ViewSwapRoom = () => {
   const { isLoading, data, isSuccess, isError, error } = useGetSwapDetails(tradeId!);
 
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
+
   const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom.swap.swap_preferences : null);
-  const [connectWallet, wallet] = useSwapMarketStore(state => [state.connectWallet, state.wallet]);
+  const profile = useProfileStore(state => state.profile);
 
   const handleResetData = async () => {
     state.resetViewSwapRoom();
-    await connectWallet();
-
+    
     toast.custom(
       (id) => (
         <ToastLookCard
@@ -103,12 +104,13 @@ const ViewSwapRoom = () => {
 
       <div className="grid lg:grid-cols-2 gap-4 pb-16" >
         {
-          isSuccess && state.sender.profile.walletAddress ?
+          isSuccess && state.sender.profile.wallet.address ?
             <RoomLayoutCard
               layoutType={"sender"}
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               swapRoomViewType="view"
               setDataSavedInStore={setDataSavedInStore}
+              senderWallet={state.sender.profile.wallet.address}
             />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
@@ -136,9 +138,9 @@ const ViewSwapRoom = () => {
             </div>
         }
 
-        {isSuccess && (state.receiver.profile.walletAddress) ?
+        {isSuccess && (state.receiver.profile.wallet.address) ?
           <RoomLayoutCard
-            counterPartyWallet={state.receiver.profile.walletAddress}
+            counterPartyWallet={state.receiver.profile.wallet.address}
             layoutType={"receiver"}
             roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
             setDataSavedInStore={setDataSavedInStore}
@@ -178,7 +180,7 @@ const ViewSwapRoom = () => {
         <div className="absolute -top-14 flex justify-center w-full items-center gap-2" >
 
           {
-            wallet.address === state.sender.profile.walletAddress ?
+            profile.wallet.address === state.sender.profile.wallet.address ?
               <CustomOutlineButton className="px-5 py-3">
                 Close
               </CustomOutlineButton>

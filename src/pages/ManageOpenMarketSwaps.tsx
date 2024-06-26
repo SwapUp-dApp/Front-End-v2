@@ -20,23 +20,19 @@ import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 import { useCancelSwapOffer, useMyOpenSwapsList } from "@/service/queries/swap-market.query";
 import { chainsDataset } from "@/constants/data";
 import moment from "moment";
-import { SUI_SwapCreation } from "@/types/swapup.types";
+import { SUI_SwapCreation } from "@/types/global.types";
 import { SUE_SWAP_MODE } from "@/constants/enums";
-
-
-
-
+import { useProfileStore } from "@/store/profile";
 
 
 const ManageOpenMarketSwaps = () => {
 
   const navigate = useNavigate();
   const { setMyOpenSwapsData, createdSwaps } = useSwapMarketStore(state => state.openMarket);
-  const wallet = useSwapMarketStore(state => state.wallet);
-//  const state = useSwapMarketStore(state => state.openMarket.openRoom);
+  const wallet = useProfileStore(state => state.profile.wallet);
+
   const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
- // const [filteredOpenSwapData, setFilteredOpenSwapData] = useState<IOpenMarketTableItem[] | []>(openMarketTableData);
 
   const handleShowWalletConnectionToast = () => {
     toast.custom(
@@ -213,12 +209,12 @@ const ManageOpenMarketSwaps = () => {
     if (data?.data && isSuccess) {
 
       if (data.data.data.length > 0) {
-        setMyOpenSwapsData(data.data.data as SUI_OpenSwap[]);
+        setMyOpenSwapsData(data.data.data as SUI_OpenSwap[], wallet);
       }
     }
 
     if (error && isError) {
-      setMyOpenSwapsData([]);
+      setMyOpenSwapsData([], wallet);
       toast.custom(
         (id) => (
           <ToastLookCard

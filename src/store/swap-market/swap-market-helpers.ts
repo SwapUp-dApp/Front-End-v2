@@ -1,10 +1,13 @@
 import { SUI_Swap, SUI_OpenSwap, SUI_SwapPreferences, SUT_SwapOfferType, SUI_SwapToken } from "@/types/swap-market.types";
-import { IOpenRoom, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "./swap-market-store.types";
-import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/swapup.types";
-import { ethers } from "ethers";
-import { SUE_SWAP_MODE } from "@/constants/enums";
+import { IOpenRoom, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "../../types/swap-market-store.types";
+import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
+import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { Environment } from "@/config";
 import { chainsDataset } from "@/constants/data";
+import { getInitialProfile } from "../profile/profile-helpers";
+import { IWallet } from "@/types/profile.types";
+import { send } from "process";
+import { profile } from "console";
 
 // Shared Room Helper start
 export const toggleGridViewHelper = (
@@ -40,6 +43,8 @@ export const setSelectedNftsForSwapHelper = (
 ): ISwapMarketStore => {
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;
+
+  const uniqueSelectedNftsObjects: SUI_NFTItem[] | [] = [...new Set(selectedNfts)];
   return {
     ...state,
     [marketKey]: {
@@ -48,7 +53,7 @@ export const setSelectedNftsForSwapHelper = (
         ...room,
         [side]: {
           ...room[side],
-          nftsSelectedForSwap: selectedNfts,
+          nftsSelectedForSwap: uniqueSelectedNftsObjects,
         },
       },
     },
@@ -244,7 +249,10 @@ export const setValuesOnViewSwapRoomHelper = async (
           },
           profile: {
             ...room.sender.profile,
-            walletAddress: swap.init_address
+            wallet: {
+              ...room.sender.profile.wallet,
+              address: swap.init_address
+            }
           }
         },
         receiver: {
@@ -255,7 +263,10 @@ export const setValuesOnViewSwapRoomHelper = async (
           },
           profile: {
             ...room.receiver.profile,
-            walletAddress: swap.accept_address
+            wallet: {
+              ...room.sender.profile.wallet,
+              address: swap.accept_address
+            }
           }
         }
       },
@@ -310,21 +321,13 @@ export const resetViewSwapRoomHelper = (
         uniqueTradeId: '',
         swap: roomKey === 'openRoom' ? { ...openRoomInitialSwap } : undefined,
         swapEncodedMsg: '',
-        swapUpContract: "",
         sender: {
           ...room.sender,
           nfts: undefined,
           filteredNfts: undefined,
           filters: undefined,
           activeGridView: 'detailed',
-          profile: {
-            ...room.sender.profile,
-            ensAddress: 'sender.swapup.eth',
-            image: '/assets/images/avatar.png',
-            isPremium: false,
-            title: 'sender',
-            walletAddress: ''
-          }
+          profile: getInitialProfile("sender")
         },
         receiver: {
           ...room.receiver,
@@ -335,14 +338,7 @@ export const resetViewSwapRoomHelper = (
           filteredNfts: undefined,
           filters: undefined,
           activeGridView: 'detailed',
-          profile: {
-            ...room.receiver.profile,
-            ensAddress: 'receiver.swapup.eth',
-            image: '/assets/images/avatar.png',
-            isPremium: false,
-            title: 'receiver',
-            walletAddress: ''
-          },
+          profile: getInitialProfile("receiver"),
           network: {
             id: '1',
             image: '/assets/svgs/ethereum.svg',
@@ -350,6 +346,42 @@ export const resetViewSwapRoomHelper = (
             shortTitle: "eth"
           }
         }
+      },
+    },
+  };
+};
+
+export const createCounterSwapOfferHelper = async (
+  state: ISwapMarketStore,
+  marketKey: 'openMarket' | 'privateMarket',
+  roomKey: 'openRoom' | 'privateRoom',
+): Promise<ISwapMarketStore> => {
+  const market = state[marketKey] as Record<string, any>;
+  const room = market[roomKey] as Record<string, any>;
+
+  const swap: SUI_OpenSwap = {
+    ...room.swap,
+    offer_type: SUE_SWAP_OFFER_TYPE.COUNTER,
+    metadata: {
+      init: {
+        tokens: room.sender.nftsSelectedForSwap ?
+          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) : []
+      },
+      accept: {
+        tokens: room.receiver.nftsSelectedForSwap ?
+          getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap) : []
+      },
+    }
+  };
+
+
+  return {
+    ...state,
+    [marketKey]: {
+      ...market,
+      [roomKey]: {
+        ...room,
+        swap,
       },
     },
   };
@@ -364,10 +396,11 @@ export const setValuesOnCreatingPrivateRoomHelper = (
   marketKey: 'openMarket' | 'privateMarket',
   roomKey: 'openRoom' | 'privateRoom',
   tradeId: string,
-  counterPartyWalletAddress: string
+  counterPartyWalletAddress: string,
+  senderWalletInfo: IWallet
 ): ISwapMarketStore => {
   const market = state[marketKey] as Record<string, any>;
-  const room = market[roomKey] as Record<string, any>;
+  const room = market[roomKey] as IPrivateRoom;
   return {
     ...state,
     [marketKey]: {
@@ -375,26 +408,36 @@ export const setValuesOnCreatingPrivateRoomHelper = (
       [roomKey]: {
         ...room,
         uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
+        sender: {
+          ...room.sender,
+          profile: {
+            ...room.sender.profile,
+            wallet: senderWalletInfo
+          }
+        },
         receiver: {
           ...room.receiver,
           profile: {
             ...room.receiver.profile,
-            walletAddress: counterPartyWalletAddress ? counterPartyWalletAddress : room.receiver.profile.walletAddress,
+            wallet: {
+              ...room.receiver.profile.wallet,
+              address: counterPartyWalletAddress ? counterPartyWalletAddress : room.receiver.profile.wallet.address,
+            }
           },
         },
       },
     },
   };
 };
-export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, offer_type: SUT_SwapOfferType): Promise<ISwapMarketStore> => {
+export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, offer_type: SUT_SwapOfferType, initWalletAddress: string): Promise<ISwapMarketStore> => {
   const room = state.privateMarket.privateRoom as IPrivateRoom;
 
   const swap: SUI_Swap = {
     trade_id: state.privateMarket.privateRoom.uniqueTradeId,
     swap_mode: SUE_SWAP_MODE.PRIVATE,
     trading_chain: String(Environment.CHAIN_ID),
-    init_address: room.sender.profile.walletAddress,
-    accept_address: room.receiver.profile.walletAddress,
+    init_address: initWalletAddress,
+    accept_address: room.receiver.profile.wallet.address,
     accept_sign: '',
     init_sign: '',
     offer_type,
@@ -471,7 +514,6 @@ export const resetPrivateRoomDataHelper = (
         uniqueTradeId: '',
         swap: undefined,
         swapEncodedMsg: '',
-        swapUpContract: "",
         sender: {
           ...state.privateMarket.privateRoom.sender,
           collections: [],
@@ -493,7 +535,10 @@ export const resetPrivateRoomDataHelper = (
           activeGridView: 'detailed',
           profile: {
             ...state.privateMarket.privateRoom.receiver.profile,
-            walletAddress: '',
+            wallet: {
+              ...state.privateMarket.privateRoom.receiver.profile.wallet,
+              address: '',
+            }
             // we need to remove the profile completely in future
           }
         }
@@ -510,9 +555,9 @@ export const setPendingSwapsDataHelper = (
 
   let availablePendingSwaps: SUI_OpenSwap[] = [];
 
-  if (state.wallet.address && state.wallet.isConnected) {
-    availablePendingSwaps = pendingSwaps;
-  }
+  // if (state.profile.wallet.address && state.wallet.isConnected) {
+  // }
+  availablePendingSwaps = pendingSwaps;
   return {
     ...state,
     privateMarket: {
@@ -531,9 +576,9 @@ export const setSwapHistoryDataHelper = (
   let availableSwapHistory: SUI_OpenSwap[] = [];
 
 
-  if (state.wallet.address && state.wallet.isConnected) {
-    availableSwapHistory = swapHistory;
-  }
+  // if (state.wallet.address && state.wallet.isConnected) {
+  // }
+  availableSwapHistory = swapHistory;
   return {
     ...state,
     privateMarket: {
@@ -552,9 +597,9 @@ export const setPrivateSwapsDataHelper = (
   let availablePrivateSwaps: SUI_Swap[] = [];
 
 
-  if (state.wallet.address && state.wallet.isConnected) {
-    availablePrivateSwaps = swapsData.filter(swap => swap.swap_mode === 1);
-  }
+  // if (state.wallet.address && state.wallet.isConnected) {
+  // }
+  availablePrivateSwaps = swapsData.filter(swap => swap.swap_mode === 1);
   return {
     ...state,
     privateMarket: {
@@ -626,14 +671,15 @@ export const setFilteredNftsBySwapTokensHelper = (
 export const setOpenSwapsDataHelper = (
   state: ISwapMarketStore,
   swapsData: SUI_OpenSwap[],
+  wallet: IWallet
 ): ISwapMarketStore => {
 
   let availableSwaps: SUI_OpenSwap[] = [];
   let createdSwaps: SUI_OpenSwap[] = [];
 
-  if (state.wallet.address && state.wallet.isConnected) {
-    availableSwaps = swapsData.filter(swap => swap.init_address !== state.wallet.address);
-    createdSwaps = swapsData.filter(swap => swap.init_address === state.wallet.address);
+  if (wallet.address && wallet.isConnected) {
+    availableSwaps = swapsData.filter(swap => swap.init_address !== wallet.address);
+    createdSwaps = swapsData.filter(swap => swap.init_address === wallet.address);
   }
   return {
     ...state,
@@ -649,12 +695,13 @@ export const setOpenSwapsDataHelper = (
 export const setMyOpenSwapsDataHelper = (
   state: ISwapMarketStore,
   swapsData: SUI_OpenSwap[],
+  wallet: IWallet
 ): ISwapMarketStore => {
 
   let createdSwaps: SUI_OpenSwap[] = [];
 
-  if (state.wallet.address && state.wallet.isConnected) {
-    createdSwaps = swapsData.filter(swap => swap.init_address === state.wallet.address);
+  if (wallet.address && wallet.isConnected) {
+    createdSwaps = swapsData.filter(swap => swap.init_address === wallet.address);
   }
   return {
     ...state,
@@ -690,6 +737,7 @@ export const setFilteredAvailableSwapsBySearchHelper = (
 export const setValuesOnCreateOpenSwapRoomHelper = (
   state: ISwapMarketStore,
   tradeId: string,
+  senderWalletInfo: IWallet
 ): ISwapMarketStore => {
   const market = state['openMarket'] as Record<string, any>;
   const room = market['openRoom'] as IOpenRoom;
@@ -701,6 +749,13 @@ export const setValuesOnCreateOpenSwapRoomHelper = (
       openRoom: {
         ...room,
         uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
+        sender: {
+          ...room.sender,
+          profile: {
+            ...room.sender.profile,
+            wallet: senderWalletInfo
+          }
+        }
       },
     },
   };
@@ -709,7 +764,8 @@ export const setValuesOnCreateOpenSwapRoomHelper = (
 export const setValuesOnProposeOpenSwapRoomHelper = async (
   state: ISwapMarketStore,
   tradeId: string,
-  swap: SUI_OpenSwap
+  swap: SUI_OpenSwap,
+  senderWalletInfo: IWallet
 ): Promise<ISwapMarketStore> => {
   const market = state['openMarket'] as Record<string, any>;
   const room = market['openRoom'] as IOpenRoom;
@@ -722,6 +778,13 @@ export const setValuesOnProposeOpenSwapRoomHelper = async (
         ...room,
         uniqueTradeId: tradeId,
         swap,
+        sender: {
+          ...room.sender,
+          profile: {
+            ...room.sender.profile,
+            wallet: senderWalletInfo
+          }
+        },
         receiver: {
           ...room.receiver,
           addedAmount: {
@@ -730,7 +793,10 @@ export const setValuesOnProposeOpenSwapRoomHelper = async (
           },
           profile: {
             ...room.receiver.profile,
-            walletAddress: swap.init_address
+            wallet: {
+              ...room.receiver.profile.wallet,
+              address: swap.init_address,
+            }
           }
         }
       },
@@ -759,13 +825,14 @@ export const setSwapPreferencesHelper = (
 
 export const createOpenSwapHelper = async (
   state: ISwapMarketStore,
+  initWalletAddress: string
 ): Promise<ISwapMarketStore> => {
   const room = state.openMarket.openRoom as IOpenRoom;
 
   const swap: SUI_OpenSwap = {
     ...state.openMarket.openRoom.swap,
     open_trade_id: state.openMarket.openRoom.uniqueTradeId,
-    init_address: room.sender.profile.walletAddress,
+    init_address: initWalletAddress,
     swap_mode: SUE_SWAP_MODE.OPEN,
     trading_chain: String(Environment.CHAIN_ID),
     metadata: {
@@ -794,6 +861,7 @@ export const createOpenSwapHelper = async (
 
 export const createProposeOpenSwapHelper = async (
   state: ISwapMarketStore,
+  initWalletAddress: string
 ): Promise<ISwapMarketStore> => {
   const room = state.openMarket.openRoom as IOpenRoom;
 
@@ -802,7 +870,7 @@ export const createProposeOpenSwapHelper = async (
     id: state.openMarket.openRoom.swap.id,
     open_trade_id: state.openMarket.openRoom.swap.open_trade_id,
     trade_id: state.openMarket.openRoom.uniqueTradeId,
-    init_address: room.sender.profile.walletAddress,
+    init_address: initWalletAddress,
     accept_address: room.swap.init_address,
     swap_mode: SUE_SWAP_MODE.OPEN,
     trading_chain: String(Environment.CHAIN_ID),
@@ -945,10 +1013,7 @@ export const resetOpenSwapProposeRoomHelper = (
           filteredNfts: undefined,
           filters: undefined,
           activeGridView: 'detailed',
-          profile: {
-            ...state.openMarket.openRoom.receiver.profile,
-            walletAddress: '',
-          }
+          profile: getInitialProfile('receiver')
         }
       }
     },
@@ -968,110 +1033,11 @@ export const setSwapEncodedMsgAndSignOpenHelper = async (
       openRoom: {
         ...state.openMarket.openRoom,
         swapEncodedMsg: swapEncodedMsg,
-        swap: state.openMarket.openRoom.swap && {
-          ...state.openMarket.openRoom.swap,
+        proposeSwap: state.openMarket.openRoom.proposeSwap && {
+          ...state.openMarket.openRoom.proposeSwap,
           init_sign: sign
         }
       }
     }
   };
-};
-//==========================================
-
-
-// Wallet connect helpers start
-export const connectToWalletHelper = async (state: ISwapMarketStore): Promise<ISwapMarketStore> => {
-  if (typeof window.ethereum !== 'undefined') {
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      const signer = await provider.getSigner();
-
-      // console.log("signer---->", signer);
-
-      const address = await signer.getAddress();
-      let ensAddress = null;
-      // ensAddress = await provider.lookupAddress(address);
-
-      const network = await provider.getNetwork();
-
-      let image = '';
-
-      if (ensAddress) {
-        // Fetch ENS avatar if available
-        const ensResolver = await provider.getResolver(ensAddress);
-        if (ensResolver) {
-          const avatar = await ensResolver.getAvatar();
-
-          if (avatar) {
-            image = avatar;
-          }
-        }
-      }
-
-      return {
-        ...state,
-        wallet: {
-          ...state.wallet,
-          isConnected: true,
-          address,
-          provider,
-          signer,
-          image,
-          ensAddress: ensAddress ? ensAddress : state.wallet.ensAddress,
-          network: {
-            ...state.wallet.network,
-            title: network.name,
-            id: String(network.chainId)
-          }
-        },
-        privateMarket: {
-          ...state.privateMarket,
-          privateRoom: {
-            ...state.privateMarket.privateRoom,
-            sender: {
-              ...state.privateMarket.privateRoom.sender,
-              profile: {
-                ...state.privateMarket.privateRoom.sender.profile,
-                image,
-                ensAddress: ensAddress ? ensAddress : state.privateMarket.privateRoom.sender.profile.ensAddress,
-                walletAddress: address,
-              },
-              network: {
-                ...state.privateMarket.privateRoom.sender.network,
-                title: network.name,
-                id: String(network.chainId)
-              }
-            }
-          }
-        },
-        openMarket: {
-          ...state.openMarket,
-          openRoom: {
-            ...state.openMarket.openRoom,
-            sender: {
-              ...state.openMarket.openRoom.sender,
-              profile: {
-                ...state.openMarket.openRoom.sender.profile,
-                image,
-                ensAddress: ensAddress ? ensAddress : state.openMarket.openRoom.sender.profile.ensAddress,
-                walletAddress: address,
-              },
-              network: {
-                ...state.openMarket.openRoom.sender.network,
-                title: network.name,
-                id: String(network.chainId)
-              }
-            }
-          }
-        }
-      };
-    } catch (error) {
-      console.error("Failed to connect wallet:", error);
-    }
-  } else {
-    console.error("No wallet provider found");
-  }
-
-  return state;
 };

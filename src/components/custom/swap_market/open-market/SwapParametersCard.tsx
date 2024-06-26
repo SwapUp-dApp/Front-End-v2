@@ -12,15 +12,15 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import ToastLookCard from "../../shared/ToastLookCard";
 import { Input } from "@/components/ui/input";
-import { Combobox } from "@/components/ui/combobox";
 import CurrencySelectCombobox from "../../shared/CurrencySelectCombobox";
 import { availableCollections, chainsDataset } from "@/constants/data";
 import { SUFS_OpenSwapParameters } from "@/schema";
 import { availableRarityRanking } from "@/constants";
 import { SUI_SwapCurrencyItem, SUI_SwapPreferences, SUT_PreferredAssetType } from "@/types/swap-market.types";
-import { SUI_CurrencyItem } from "@/types/swapup.types";
+import { SUI_CurrencyItem } from "@/types/global.types";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useEffect } from "react";
+import Combobox from "../../shared/Combobox";
 
 
 const currenciesDataset: SUI_CurrencyItem[] = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));

@@ -10,6 +10,7 @@ import ManageOpenMarketSwaps from "@/pages/ManageOpenMarketSwaps";
 import OpenSwapCreationRoom from "@/pages/OpenSwapCreationRoom";
 import OpenSwapProposeRoom from "@/pages/OpenSwapProposeRoom";
 import ViewSwapRoom from "@/pages/ViewSwapRoom";
+import CounterOfferSwapRoom from "@/pages/CouterOfferSwapRoom";
 import SwapUpWebsite from "@/pages/SwapUpWebsite";
 
 
@@ -81,6 +82,12 @@ export const clientSideRoutes: IRoutesType[] = [
         element: <ViewSwapRoom />,
       },
       {
+        id: 'counter-offer',
+        title: "Counter Offer",
+        path: `swap-market/counter-offer/:tradeId/?`,
+        element: <CounterOfferSwapRoom />,
+      },
+      {
         id: 'user-profile',
         title: "Profile",
         path: "profile",
@@ -101,6 +108,3 @@ export const clientSideRoutes: IRoutesType[] = [
     element: <SwapUpWebsite />,
   }
 ];
-
-
-

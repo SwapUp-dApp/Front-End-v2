@@ -6,18 +6,19 @@ import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate, useParams } from "react-router-dom";
 import { isValidTradeId, isValidWalletAddress } from "@/lib/utils";
-import { getUserApproval, getUserSignature } from "@/lib/metamask";
+import { getWalletProxy } from "@/lib/walletProxy";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { toast } from "sonner";
 import { useCreatePrivateSwapOffer } from "@/service/queries/swap-market.query";
 import { SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import SwapDetailsDialog from "@/components/custom/swap_market/SwapDetailsDialog";
-import { SUI_SwapCreation } from "@/types/swapup.types";
-
+import { SUI_SwapCreation } from "@/types/global.types";
+import { useProfileStore } from "@/store/profile";
 
 const PrivateRoom = () => {
-  const wallet = useSwapMarketStore(state => state.wallet);
+
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [swapCreation, setSwapCreation] = useState<SUI_SwapCreation>({ isLoading: false, created: false });
@@ -31,14 +32,14 @@ const PrivateRoom = () => {
     try {
       setSwapCreation(prev => ({ ...prev, isLoading: true }));
 
-      await state.createPrivateMarketSwap(SUE_SWAP_OFFER_TYPE.PRIMARY);
+      await state.createPrivateMarketSwap(SUE_SWAP_OFFER_TYPE.PRIMARY, wallet.address);
       const createdSwap = useSwapMarketStore.getState().privateMarket.privateRoom.swap;
 
       if (!createdSwap) {
         throw new Error("Failed to create swap.");
       }
 
-      const { sign, swapEncodedBytes } = await getUserSignature(createdSwap, state.swapEncodedMsg, wallet.signer);
+      const { sign, swapEncodedBytes } = await getWalletProxy().getUserSignature(createdSwap, state.swapEncodedMsg);
 
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
@@ -46,7 +47,7 @@ const PrivateRoom = () => {
 
       await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
 
-      const approval = await getUserApproval(createdSwap, true, wallet.signer);
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
       if (!approval) {
         throw new Error("User approval not granted.");
       }
@@ -137,8 +138,8 @@ const PrivateRoom = () => {
       navigate(-1);
     }
 
-    if (counterPartyWallet && privateTradeId) {
-      state.setValuesOnCreatingRoom(privateTradeId, counterPartyWallet);
+    if (counterPartyWallet && privateTradeId && wallet) {
+      state.setValuesOnCreatingRoom(privateTradeId, counterPartyWallet, wallet);
     }
   }, [counterPartyWallet, privateTradeId]);
 
@@ -153,7 +154,7 @@ const PrivateRoom = () => {
       />
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" />
+        <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" senderWallet={wallet.address} />
         {counterPartyWallet &&
           <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} roomKey="privateRoom" />}
       </div>

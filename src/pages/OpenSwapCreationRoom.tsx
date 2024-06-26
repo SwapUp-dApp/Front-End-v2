@@ -27,6 +27,7 @@ import ChainTile from "@/components/custom/tiles/ChainTile";
 import { SUP_CreateOpenSwap } from "@/types/swap-market.types";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { useCreateOpenSwapOffer } from "@/service/queries/swap-market.query";
+import { useProfileStore } from "@/store/profile";
 
 interface ISwapCreation {
   isLoading: boolean;
@@ -39,6 +40,8 @@ const OpenSwapCreationRoom = () => {
   const [swapCreation, setSwapCreation] = useState<ISwapCreation>({ isLoading: false, created: false });
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
+  const wallet = useProfileStore(state => state.profile.wallet);
+
   const { expiration_date, preferred_asset } = state.swap.swap_preferences;
   const navigate = useNavigate();
   const { openTradeId } = useParams();
@@ -144,7 +147,7 @@ const OpenSwapCreationRoom = () => {
 
   useEffect(() => {
     if (openTradeId && isValidTradeId(openTradeId)) {
-      state.setValuesOnCreateOpenSwapRoom(openTradeId);
+      state.setValuesOnCreateOpenSwapRoom(openTradeId, wallet);
     }
   }, [openTradeId]);
 
@@ -181,7 +184,7 @@ const OpenSwapCreationRoom = () => {
       />
 
       <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" />
+        <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={wallet.address} />
         <SwapParametersCard setIsValidParametersForm={setIsValidParametersForm} />
       </div>
 
@@ -191,7 +194,7 @@ const OpenSwapCreationRoom = () => {
         <div className="absolute -top-14 flex justify-center w-full" >
           {/* Swap Details Dialog */}
           <Dialog>
-            <div className="relative" onClick={async () => await state.createOpenSwap()} >
+            <div className="relative" onClick={async () => await state.createOpenSwap(wallet.address)} >
               <Button
                 variant={"default"}
                 type="submit"
