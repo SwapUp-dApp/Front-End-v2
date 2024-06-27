@@ -41,23 +41,23 @@ export const landingPageNavData: SUI_NavItem[] = [
     protected: true,
   },
   {
-      key: "roadmap",
-      title: "Roadmap",
-      path: "/",
-      protected: true,
+    key: "roadmap",
+    title: "Roadmap",
+    path: "/",
+    protected: true,
   },
   {
-      key: "utility",
-      title: "Utility",
-      path: "/",
-      protected: true,
-    },
-    {
-      key: "education",
-      title: "Education",
-      path: "/",
-      protected: true,
-    },
+    key: "utility",
+    title: "Utility",
+    path: "/",
+    protected: true,
+  },
+  {
+    key: "education",
+    title: "Education",
+    path: "/",
+    protected: true,
+  },
 ];
 
 export const availableRarityRanking: SUI_RarityRankItem[] = [
@@ -68,7 +68,3 @@ export const availableRarityRanking: SUI_RarityRankItem[] = [
   { from: 2501, to: 5000 },
   { from: 5001, to: 10000 },
 ];
-
-export const testWalletAddress: string = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
-
-export const defaultNftImageFallbackURL = "/assets/nfts/default.svg";

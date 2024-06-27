@@ -16,13 +16,10 @@ import moment from 'moment';
 import LoadingDataset from '../../shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
 import { useProfileStore } from '@/store/profile';
+import { showWalletConnectionToast } from '@/lib/helpers';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
-interface IProp {
-  activeTab: "open-market" | "private-party";
-  handleShowWalletConnectionToast: () => void;
-}
-
-const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IProp) => {
+const OpenMarketTabContent = () => {
 
   const { setOpenSwapsData, createdSwaps, filteredAvailableSwaps, setFilteredAvailableSwapsBySearch } = useSwapMarketStore(state => state.openMarket);
   const wallet = useProfileStore(state => state.profile.wallet);
@@ -97,8 +94,8 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
       <div className="flex items-center justify-between" >
         <div className="flex items-center justify-between gap-4" >
           <h2 className="text-1.5xl font-medium" >Created</h2>
-          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'private-party' ? 'bg-muted text-muted-foreground' : 'bg-muted'}`}>
-            {createdSwaps?.length || 0}
+          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(createdSwaps || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
+            {(createdSwaps || []).length}
           </span>
         </div>
 
@@ -108,7 +105,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
             onClick={() => {
               wallet.isConnected ? navigate(`/swap-up/swap-market/open-market/manage-open-market`)
                 :
-                handleShowWalletConnectionToast();
+                showWalletConnectionToast();
             }}
           >
             <svg width="16" height="16" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -131,7 +128,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
       <div className="flex items-center justify-between" >
         <div className="flex items-center justify-between gap-4" >
           <h2 className="text-1.5xl font-medium" >Available</h2>
-          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'private-party' ? 'bg-muted text-muted-foreground' : 'bg-muted'}`}>
+          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(filteredAvailableSwaps || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
             {filteredAvailableSwaps?.length || 0}
           </span>
         </div>
@@ -148,117 +145,124 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
         />
       </div>
 
-      <Table className="min-w-full">
-        <TableHeader>
-          <TableRow>
-            <TableHead className="font-semibold">Assets</TableHead>
-            <TableHead className="font-semibold min-w-[150px] pl-8" >Unique trade ID</TableHead>
-            <TableHead className="font-semibold px-4" >Owner's wallet</TableHead>
-            <TableHead className="font-semibold px-4" >Trading chain</TableHead>
-            <TableHead className="font-semibold px-4" >Open swap date</TableHead>
-            <TableHead className="font-semibold px-4" >Expiry date</TableHead>
-            <TableHead className="font-semibold px-4" >Swap Preferences</TableHead>
-            <TableHead className="w-[130px] pr-2" >
-              <FilterButton
-                className="text-white !text-sm cursor-pointer"
-                iconClasses="text-white"
-                onClick={() =>
-                  toast.info("Filter", {
-                    duration: 2000,
-                    description: "This feature is under construction!",
-                    action: {
-                      label: "Close",
-                      onClick: () => { },
-                    },
-                    className: '!bg-gradient-primary border-none',
-                    descriptionClassName: '!text-white',
-                  })
-                }
-              />
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody className="divide-y">
-          {
-            filteredAvailableSwaps?.map((swap) => {
-              const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
-
-              return (
-                <TableRow key={swap.open_trade_id}>
-                  <TableCell className="font-medium flex items-center gap-2">
-                    <div className="flex items-center gap-1" >
-                      {nftsImageMapper(swap.metadata.init.tokens)}
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium pl-8">#{getLastCharacters(swap.open_trade_id, 7)}</TableCell>
-                  <TableCell className="font-medium px-4">{getShortenWalletAddress(swap.init_address)}</TableCell>
-                  <TableCell className="font-medium px-4 flex justify-start">
-                    <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                      <img
-                        className='w-4 h-4'
-                        src={currentChain.iconUrl}
-                        alt=""
-                      />
-
-                      {currentChain.name}
-                    </span>
-                  </TableCell>
-                  <TableCell className="font-medium px-4">{moment.utc(swap.created_at).format('MMM DD, YYYY')}</TableCell>
-                  <TableCell className="font-medium px-4">{moment.utc(swap.swap_preferences.expiration_date).local().format('MMM DD, YYYY')}</TableCell>
-                  <TableCell className="font-medium px-4 capitalize">
-
-                    {
-                      swap.swap_preferences.preferred_asset.type === "any" &&
-                      <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                        Any
-                      </span>
+      {
+        (filteredAvailableSwaps || []).length > 0 &&
+        <ScrollArea className='min-w-full' >
+          <Table className="min-w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="align-top font-semibold">Assets</TableHead>
+                <TableHead className="align-top font-semibold min-w-[150px] pl-8" >Unique trade ID</TableHead>
+                <TableHead className="align-top font-semibold px-4" >Owner's wallet</TableHead>
+                <TableHead className="align-top font-semibold px-4" >Trading chain</TableHead>
+                <TableHead className="align-top font-semibold px-4 min-w-[130px] line-clamp-1 h-1" >Open swap date</TableHead>
+                <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Expiry date</TableHead>
+                <TableHead className="align-top font-semibold px-4" >Swap Preferences</TableHead>
+                <TableHead className="align-top min-w-[130px] pr-2" >
+                  <FilterButton
+                    className="text-white !text-sm cursor-pointer"
+                    iconClasses="text-white"
+                    showTitleOnMobile
+                    onClick={() =>
+                      toast.info("Filter", {
+                        duration: 2000,
+                        description: "This feature is under construction!",
+                        action: {
+                          label: "Close",
+                          onClick: () => { },
+                        },
+                        className: '!bg-gradient-primary border-none',
+                        descriptionClassName: '!text-white',
+                      })
                     }
+                  />
+                </TableHead>
+              </TableRow>
+            </TableHeader>
 
-                    {
-                      swap.swap_preferences.preferred_asset.type === "nft" &&
-                      <div className="flex items-center gap-1">
+            <TableBody className="divide-y">
+              {
+                filteredAvailableSwaps?.map((swap) => {
+                  const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
+
+                  return (
+                    <TableRow key={swap.open_trade_id}>
+                      <TableCell className="text-xs font-medium flex items-center gap-2">
+                        <div className="flex items-center gap-1" >
+                          {nftsImageMapper(swap.metadata.init.tokens)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-xs font-medium pl-8">#{getLastCharacters(swap.open_trade_id, 7)}</TableCell>
+                      <TableCell className="text-xs font-medium px-4">{getShortenWalletAddress(swap.init_address)}</TableCell>
+                      <TableCell className="text-xs font-medium px-4 flex justify-start">
                         <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                          {swap.swap_preferences.preferred_asset.parameters.collection}
-                        </span>
-                        /
-                        <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                          {swap.swap_preferences.preferred_asset.parameters.rank?.from} - {swap.swap_preferences.preferred_asset.parameters.rank?.to}
-                        </span>
-                      </div>
-                    }
-                    {swap.swap_preferences.preferred_asset.type === "currency" &&
-                      <div className="flex items-center gap-1">
-                        <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                          {swap.swap_preferences.preferred_asset.parameters.added_amount} USD
-                        </span>
+                          <img
+                            className='w-4 h-4'
+                            src={currentChain.iconUrl}
+                            alt=""
+                          />
 
-                      </div>
-                    }
-                  </TableCell>
+                          {currentChain.name}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-xs font-medium px-4">{moment.utc(swap.created_at).format('MMM DD, YYYY')}</TableCell>
+                      <TableCell className="text-xs font-medium px-4">{moment.utc(swap.swap_preferences.expiration_date).local().format('MMM DD, YYYY')}</TableCell>
+                      <TableCell className="text-xs font-medium px-4 capitalize">
 
-                  <TableCell className="font-medium flex pr-8 justify-end">
-                    <svg
-                      onClick={() => { navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`); }}
+                        {
+                          swap.swap_preferences.preferred_asset.type === "any" &&
+                          <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                            Any
+                          </span>
+                        }
 
-                      className="w-12 h-6 cursor-pointer"
-                      viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="1" y="1" width="30" height="30" rx="15" stroke="url(#paint0_linear_2344_40905)" strokeWidth="2" />
-                      <path d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z" fill="white" />
-                      <defs>
-                        <linearGradient id="paint0_linear_2344_40905" x1="32" y1="6.08" x2="-1.86631" y2="14.9716" gradientUnits="userSpaceOnUse">
-                          <stop stopColor="#51C0FF" />
-                          <stop offset="1" stopColor="#9452FF" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                  </TableCell>
-                </TableRow>
-              );
-            })
-          }
-        </TableBody>
-      </Table>
+                        {
+                          swap.swap_preferences.preferred_asset.type === "nft" &&
+                          <div className="flex items-center gap-1 flex-wrap">
+                            <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                              {swap.swap_preferences.preferred_asset.parameters.collection}
+                            </span>
+                            /
+                            <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                              {swap.swap_preferences.preferred_asset.parameters.rank?.from} - {swap.swap_preferences.preferred_asset.parameters.rank?.to}
+                            </span>
+                          </div>
+                        }
+
+                        {swap.swap_preferences.preferred_asset.type === "currency" &&
+                          <div className="flex items-center gap-1">
+                            <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                              {swap.swap_preferences.preferred_asset.parameters.added_amount} USD
+                            </span>
+
+                          </div>
+                        }
+                      </TableCell>
+                      <TableCell className="text-xs font-medium flex pr-8 justify-end">
+                        <svg
+                          onClick={() => { navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`); }}
+
+                          className="w-12 h-6 cursor-pointer"
+                          viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect x="1" y="1" width="30" height="30" rx="15" stroke="url(#paint0_linear_2344_40905)" strokeWidth="2" />
+                          <path d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z" fill="white" />
+                          <defs>
+                            <linearGradient id="paint0_linear_2344_40905" x1="32" y1="6.08" x2="-1.86631" y2="14.9716" gradientUnits="userSpaceOnUse">
+                              <stop stopColor="#51C0FF" />
+                              <stop offset="1" stopColor="#9452FF" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              }
+            </TableBody>
+          </Table>
+          <ScrollBar orientation='horizontal' className='h-2' />
+        </ScrollArea>
+      }
 
       <LoadingDataset
         isLoading={isLoading}
@@ -267,7 +271,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
       />
 
       {
-        (!isLoading && ((filteredAvailableSwaps || []).length === 0)) &&
+        (isSuccess && ((filteredAvailableSwaps || []).length === 0)) &&
         <EmptyDataset
           title="No Open Swaps Available"
           description="Check back later or create your own swap!"
@@ -277,7 +281,7 @@ const OpenMarketTabContent = ({ activeTab, handleShowWalletConnectionToast }: IP
             onClick={() => {
               wallet.isConnected ?
                 navigate(`/swap-up/swap-market/open-swap/create/${generateRandomTradeId()}`)
-                : handleShowWalletConnectionToast();
+                : showWalletConnectionToast();
             }}
           >
             Create open swap

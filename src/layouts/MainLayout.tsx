@@ -5,8 +5,8 @@ import { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { toast } from "sonner";
-import { defaultFallbackRoute } from "@/routes";
 import { useProfileStore } from "@/store/profile";
+import { defaults } from "@/constants/defaults";
 
 const MainLayout = () => {
   const wallet = useProfileStore(state => state.profile.wallet);
@@ -42,24 +42,21 @@ const MainLayout = () => {
           :
           (
             handleShowWalletConnectionToast(),
-            navigate(defaultFallbackRoute)
+            navigate(defaults.fallback.route)
           );
 
       }
     }
-
-
-
   }, [pathname, wallet.isConnected]);
 
   return (
-    <>
+    <div>
       <Navbar />
       <section className="px-6 lg:px-10 py-4" >
         <Outlet />
       </section>
       <Footer />
-    </>
+    </div>
   );
 };
 

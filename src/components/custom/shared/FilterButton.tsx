@@ -4,9 +4,10 @@ interface IProp extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   filterApplied?: boolean;
   className?: string;
   iconClasses?: string;
+  showTitleOnMobile?: boolean;
 }
 
-const FilterButton = ({ filterApplied = false, className, iconClasses, ...props }: IProp) => {
+const FilterButton = ({ filterApplied = false, className, iconClasses, showTitleOnMobile = false, ...props }: IProp) => {
   return (
     <span
       className={cn(
@@ -37,7 +38,7 @@ const FilterButton = ({ filterApplied = false, className, iconClasses, ...props 
           </svg>
       }
 
-      <span className="hidden lg:block capitalize">filter</span>
+      <span className={`${showTitleOnMobile ? "inline-block" : 'hidden'} lg:inline-block capitalize`}>filter</span>
     </span>
   );
 };
