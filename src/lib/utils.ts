@@ -2,10 +2,10 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import axios from "axios";
 import { Environment } from "@/config";
-import { defaultNftImageFallbackURL } from "@/constants";
 import { chainsDataset } from "@/constants/data";
 import { validate as uuidValidate } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
+import { defaults } from "@/constants/defaults";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -25,6 +25,11 @@ export const applyThemeClass = (theme: 'dark' | 'light' | 'system') => {
 
 export const getIsActiveNav = (path: string, pathname: string) => {
   return pathname.toLowerCase().startsWith(path.toLowerCase());
+};
+
+export const getActiveTabFromPathname = (pathname: string): string => {
+  const parts = pathname.split('/').filter(part => part !== '');
+  return parts.length > 0 ? parts[parts.length - 1] : '';
 };
 
 export const isValidTradeId = (tradeId: string): boolean => {
@@ -73,32 +78,32 @@ export const getOpenSeaNftUrl = (token: string, nftId: string) => {
   return `${baseUrl}/assets/${network}/${token}/${nftId}`;
 };
 
-const options = {
-  method: 'GET',
-  url: 'https://coinranking1.p.rapidapi.com/coins',
-  params: {
-    referenceCurrencyUuid: 'yhjMzLPhuIDl',
-    timePeriod: '24h',
-    'tiers[0]': '1',
-    orderBy: 'marketCap',
-    orderDirection: 'desc',
-    limit: '50',
-    offset: '0'
-  },
-  headers: {
-    'X-RapidAPI-Key': '54b84c30c5msh0e4a7ee7fa87fc2p1e8e3ajsn27e01700ad9c',
-    'X-RapidAPI-Host': 'coinranking1.p.rapidapi.com'
-  }
-};
+// const options = {
+//   method: 'GET',
+//   url: 'https://coinranking1.p.rapidapi.com/coins',
+//   params: {
+//     referenceCurrencyUuid: 'yhjMzLPhuIDl',
+//     timePeriod: '24h',
+//     'tiers[0]': '1',
+//     orderBy: 'marketCap',
+//     orderDirection: 'desc',
+//     limit: '50',
+//     offset: '0'
+//   },
+//   headers: {
+//     'X-RapidAPI-Key': '54b84c30c5msh0e4a7ee7fa87fc2p1e8e3ajsn27e01700ad9c',
+//     'X-RapidAPI-Host': 'coinranking1.p.rapidapi.com'
+//   }
+// };
 
-export const getCoinsData = async () => {
-  try {
-    const response = await axios.request(options);
-    console.log(response.data);
-  } catch (error) {
-    console.error(error);
-  }
-};
+// export const getCoinsData = async () => {
+//   try {
+//     const response = await axios.request(options);
+//     console.log(response.data);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
 export const isValidWalletAddress = (address: string) => {
   const regex = /^0x[0-9a-fA-F]{40}$/;
@@ -106,7 +111,7 @@ export const isValidWalletAddress = (address: string) => {
 };
 
 export const getDefaultNftImageOnError = (e: any) => {
-  e.currentTarget.src = defaultNftImageFallbackURL;
+  e.currentTarget.src = defaults.fallback.nftImageUrl;
 };
 
 export const resolveAssetPath = (path: string) => {

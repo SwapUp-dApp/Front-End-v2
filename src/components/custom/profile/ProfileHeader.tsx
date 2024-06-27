@@ -1,11 +1,11 @@
 import CopyTile from "../tiles/CopyTile";
-import { defaultFallbackRoute } from "@/routes";
 import ExitPageDialog from "../shared/ExitPageDialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { getShortenWalletAddress } from "@/lib/utils";
 import CustomAvatar from "../shared/CustomAvatar";
 import SwapParameterTile from "../tiles/SwapParameterTile";
+import { defaults } from "@/constants/defaults";
 
 
 interface IProp {
@@ -30,7 +30,7 @@ const ProfileHeader = ({ backClickNavigateTo, walletAddress, resetData, existDes
         <ExitPageDialog
           title={existTitle}
           description={existDescription}
-          redirectPath={backClickNavigateTo ? backClickNavigateTo : defaultFallbackRoute}
+          redirectPath={backClickNavigateTo ? backClickNavigateTo : defaults.fallback.route}
           resetData={resetData}
         >
           <span
