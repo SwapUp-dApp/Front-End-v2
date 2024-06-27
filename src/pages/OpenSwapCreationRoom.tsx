@@ -251,7 +251,7 @@ const OpenSwapCreationRoom = () => {
 
                       <SwapParameterTile
                         title="Expiration date:"
-                        value={`${moment.utc(expiration_date).local().format('MMM DD, YYYY hh:mm a')}`}
+                        value={`${moment.utc(expiration_date).local().format('MMM DD, YYYY HH:mm:ss')}`}
                       />
 
                       {preferred_asset.type === 'nft' &&

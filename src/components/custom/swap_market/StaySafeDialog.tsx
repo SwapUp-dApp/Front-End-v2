@@ -14,12 +14,12 @@ const StaySafeDialog = ({ children }: IProp) => {
         {children}
       </DialogTrigger>
 
-      <DialogContent className="w-[400px] p-4" >
+      <DialogContent className="w-[600px] p-4" >
         <div className="space-y-3" >
           {/* header */}
           <div className="space-y-2">
             <div className="flex justify-between items-start">
-              <h2 className="font-semibold text-xl" >Stay safe!</h2>
+              <h2 className="font-semibold text-2xl" >Stay safe!</h2>
 
               <DialogClose className="p-1 rounded-xs hover:bg-su_active_bg" >
                 <svg className="w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -28,12 +28,12 @@ const StaySafeDialog = ({ children }: IProp) => {
               </DialogClose>
             </div>
 
-            <p className="text-base font-medium text-secondary dark:text-su_secondary">Here are some helpful tips for trading safely and avoiding scammers.</p>
+            <p className="text-1.5xl font-medium text-secondary dark:text-su_secondary">Here are some helpful tips for trading safely and avoiding scammers.</p>
           </div>
 
           <div className="custom-border-card" >
-            <h2 className="text-sm text-primary font-bold text-text dark:text-su_primary" >Verify assets are correct</h2>
-            <p className="text-xs dark:text-su_secondary" >
+            <h2 className="text-1.5xl text-primary font-bold text-text dark:text-su_primary" >Verify assets are correct</h2>
+            <p className="text-xl dark:text-su_secondary" >
               <span>
                 Click the
                 <svg className="w-3.5 inline-block mx-2" viewBox="0 0 14 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -45,8 +45,8 @@ const StaySafeDialog = ({ children }: IProp) => {
           </div>
 
           <div className="custom-border-card" >
-            <h2 className="text-sm text-primary font-bold text-text dark:text-su_primary" >Use wallet security apps</h2>
-            <p className="text-xs dark:text-su_secondary" >
+            <h2 className="text-1.5xl text-primary font-bold text-text dark:text-su_primary" >Use wallet security apps</h2>
+            <p className="text-xl dark:text-su_secondary" >
               Web3 is always evolving, and so are the security risks. Wallet security companies like
               <Link to={'https://www.kerberus.com/en?ref=SWAPUP'} target="_blank" className="link-style px-2" >Kerberus</Link>
               provide extension based solutions to help keep you safe while browsing the internet and transacting in web3.
@@ -54,8 +54,8 @@ const StaySafeDialog = ({ children }: IProp) => {
           </div>
 
           <div className="custom-border-card" >
-            <h2 className="text-sm text-primary font-bold text-text dark:text-su_primary" >Avoid rushed trades</h2>
-            <p className="text-xs dark:text-su_secondary" >
+            <h2 className="text-1.5xl text-primary font-bold text-text dark:text-su_primary" >Avoid rushed trades</h2>
+            <p className="text-xl dark:text-su_secondary" >
               Don't do business with someone who is rushing the trade. It should be timely and beneficial for both of you.
             </p>
           </div>
