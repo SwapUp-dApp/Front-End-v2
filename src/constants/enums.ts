@@ -31,3 +31,8 @@ export enum SUE_SWAP_STATUS_TO_STRING {
   value3 = 'declined',
   value4 = 'canceled',
 }
+
+export enum SUE_SWAP_REQUEST_TO_STRING {
+  true = 'sent',
+  false = 'received'
+}

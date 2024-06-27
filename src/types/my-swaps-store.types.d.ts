@@ -8,7 +8,7 @@ export type SUT_MySwapsTabType = "pending" | "history";
 export interface IPendingFilters {
   offersFromCurrentChain: boolean;
   requestedDate: string;
-  swapOfferStatus: SUT_PendingFiltersStatusType;
+  swapRequestStatus: SUT_PendingFiltersStatusType;
   swapMode: SUT_FiltersSwapModeType;
 }
 
@@ -23,8 +23,8 @@ export interface IMySwapsStore {
   filteredHistorySwaps?: SUI_OpenSwap[];
   pendingFilters: IPendingFilters;
   historyFilters: IHistoryFilters;
-  setFilteredMySwapsBySearch: (searchValue: string, tabType: SUT_MySwapsTabType) => void;
-  setFilteredPendingSwapByFilters: (filters: IPendingFilters) => void;
+  setFilteredMySwapsBySearch: (searchValue: string, tabType: SUT_MySwapsTabType, loginWalletAddress: string) => void;
+  setFilteredPendingSwapByFilters: (filters: IPendingFilters, loginWalletAddress: string) => void;
   setFilteredHistorySwapByFilters: (filters: IHistoryFilters) => void;
   resetAllFilters: (tabType: SUT_MySwapsTabType) => void;
   resetStatusFilters: (tabType: SUT_MySwapsTabType) => void;

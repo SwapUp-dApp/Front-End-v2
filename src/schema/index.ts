@@ -95,13 +95,21 @@ export const Schema_PendingMySwapsFiltersForm = z.object({
   }).optional(),
   requestedDate: z.date({
     required_error: "requested date is required!",
-  }),
+  }).optional(),
   swapRequestStatus: z.enum(["all", "sent", "received"], {
     required_error: "Please select a swap offer status.",
   }),
-  swapMode: z.enum(["all", "open market", "private market"], {
+  swapMode: z.enum(["all", "open-market", "private-party"], {
     required_error: "Please select a swap mode.",
   }),
+}).superRefine((data, ctx) => {
+  if (data.offersFromCurrentChain === false && data.requestedDate === undefined && data.swapMode === 'all' && data.swapRequestStatus === "all") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["requestedDate"],
+      message: "Please select at least one filter item to apply filters.",
+    });
+  }
 });
 
 export const Schema_HistoryMySwapsFiltersForm = z.object({
@@ -114,10 +122,17 @@ export const Schema_HistoryMySwapsFiltersForm = z.object({
   swapStatus: z.enum(["all", "completed", "declined", "canceled"], {
     required_error: "Please select a swap status.",
   }),
-  swapMode: z.enum(["all", "open market", "private market"], {
+  swapMode: z.enum(["all", "open-market", "private-party"], {
     required_error: "Please select a swap mode.",
   }),
-})
+}).superRefine((data, ctx) => {
+  if (data.offersFromCurrentChain === false && data.requestedDate === undefined && data.swapMode === 'all' && data.swapStatus === "all") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["requestedDate"],
+      message: "Please select at least one filter item to apply filters.",
+    });
+  }
+});
 
-/*=== My swaps filters schema ends ===*/
 

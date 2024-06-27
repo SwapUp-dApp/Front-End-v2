@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import FilterButton from '../../shared/FilterButton';
-import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { cn, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '../../shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
 import { useSwapHistoryList } from '@/service/queries/swap-market.query';
@@ -10,14 +10,13 @@ import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
 import LoadingDataset from '../../shared/LoadingDataset';
-import { useSwapMarketStore } from '@/store/swap-market';
 import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 import { useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 
 import { useProfileStore } from '@/store/profile';
 import SwapHistoryDetailsDialog from './SwapHistoryDetailsDialog';
-import { SUE_SWAP_MODE } from '@/constants/enums';
+import { SUE_SWAP_MODE, SUE_SWAP_STATUS, SUE_SWAP_STATUS_TO_STRING } from '@/constants/enums';
 import BadgeTile from '../../tiles/BadgeTile';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { showWalletConnectionToast } from '@/lib/helpers';
@@ -28,8 +27,9 @@ import { useMySwapStore } from '@/store/my-swaps';
 const SwapHistoryTabContent = () => {
   const navigate = useNavigate();
   const [setMySwapsData, filteredHistorySwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredHistorySwaps]);
-  const wallet = useProfileStore(state => state.profile.wallet);
 
+  const wallet = useProfileStore(state => state.profile.wallet);
+  const [historyFilters] = useMySwapStore(state => [state.historyFilters]);
   const { isLoading, isError, error, data, isSuccess } = useSwapHistoryList(wallet.address);
 
   useEffect(() => {
@@ -87,111 +87,124 @@ const SwapHistoryTabContent = () => {
 
   return (
     <div className="space-y-4 w-full">
-      {
-        (filteredHistorySwaps || []).length > 0 &&
-        <ScrollArea className='min-w-full' >
-          <Table className="min-w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="align-top font-semibold min-w-[200px]">Assets</TableHead>
-                <TableHead className="align-top font-semibold min-w-[150px] pl-8" >Unique trade ID</TableHead>
-                <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Counter-party wallet address</TableHead>
-                <TableHead className="align-top font-semibold px-4 min-w-[135px]" >Swap mode</TableHead>
-                <TableHead className="align-top font-semibold px-4" >Trading chain</TableHead>
-                <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Offer review date</TableHead>
-                <TableHead className="align-top font-semibold px-4" >Status</TableHead>
-                <TableHead className="align-top w-[130px] pr-2" >
 
-                  <HistorySwapsFilterDrawer>
-                    <FilterButton showTitleOnMobile />
-                  </HistorySwapsFilterDrawer>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
+      <ScrollArea className='min-w-full' >
+        <Table className="min-w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="align-top font-semibold min-w-[200px]">Assets</TableHead>
+              <TableHead className="align-top font-semibold min-w-[150px] pl-8" >Unique trade ID</TableHead>
+              <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Counter-party wallet address</TableHead>
+              <TableHead className="align-top font-semibold px-4 min-w-[135px]" >Swap mode</TableHead>
+              <TableHead className="align-top font-semibold px-4" >Trading chain</TableHead>
+              <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Offer review date</TableHead>
+              <TableHead className="align-top font-semibold px-4" >Status</TableHead>
+              <TableHead className="align-top w-[130px] pr-2" >
 
-            <TableBody className="divide-y">
-              {
-                filteredHistorySwaps?.map((swap) => {
-                  const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
-                  return (
-                    <TableRow key={swap.trade_id}>
-                      <TableCell className="text-xs font-medium flex items-center gap-2">
+                <HistorySwapsFilterDrawer>
+                  <FilterButton
+                    showTitleOnMobile
+                    filterApplied={
+                      historyFilters.offersFromCurrentChain === true ||
+                      historyFilters.requestedDate !== '' ||
+                      historyFilters.swapMode !== 'all' ||
+                      historyFilters.swapStatus !== 'all'
+                    }
+                  />
+                </HistorySwapsFilterDrawer>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
 
-                        <div className='flex items-center gap-1'>
-                          {nftsImageMapper(swap.metadata.init.tokens, 2)}
-                        </div>
+          <TableBody className="divide-y">
+            {
+              filteredHistorySwaps?.map((swap) => {
+                const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
+                return (
+                  <TableRow key={swap.trade_id}>
+                    <TableCell className="text-xs font-medium flex items-center gap-2">
 
-                        <svg className="w-4" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M7.72844 0L12 4.15863H0.238525V3.0368H9.21836L6.91377 0.793135L7.72844 0ZM11.7615 5.84137V6.9632H2.78164L5.08623 9.20687L4.27156 10L0 5.84137H11.7615Z" fill="#868691" />
+                      <div className='flex items-center gap-1'>
+                        {nftsImageMapper(swap.metadata.init.tokens, 2)}
+                      </div>
+
+                      <svg className="w-4" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.72844 0L12 4.15863H0.238525V3.0368H9.21836L6.91377 0.793135L7.72844 0ZM11.7615 5.84137V6.9632H2.78164L5.08623 9.20687L4.27156 10L0 5.84137H11.7615Z" fill="#868691" />
+                      </svg>
+
+                      <div className="flex items-center gap-1" >
+                        {nftsImageMapper(swap.metadata.accept.tokens, 2)}
+                      </div>
+
+                    </TableCell>
+
+                    <TableCell className="text-xs font-medium pl-8">
+                      <div className="w-auto flex justify-start" >  #
+                        {getLastCharacters(swap.trade_id, 7)}</div>
+                    </TableCell>
+
+                    <TableCell className="text-xs font-medium px-4">
+                      {
+                        swap.init_address === wallet.address ?
+                          <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.accept_address)}</div>
+                          :
+                          <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.init_address)}</div>
+                      }
+                    </TableCell>
+
+                    <TableCell className="text-xs font-medium px-4">
+                      {swap.swap_mode === SUE_SWAP_MODE.OPEN ? <BadgeTile>Open market</BadgeTile> : <BadgeTile>private market</BadgeTile>}
+                    </TableCell>
+
+                    <TableCell className="text-xs font-medium px-4 ">
+                      <BadgeTile>
+                        <img
+                          className='w-3 h-3'
+                          src={currentChain.iconUrl}
+                          alt=""
+                        />
+
+                        {currentChain.name}
+                      </BadgeTile>
+                    </TableCell>
+
+                    <TableCell className="text-xs font-medium px-4">{moment.utc(swap.updated_at).format('MMM Do, YYYY')}</TableCell>
+
+                    <TableCell className="text-xs font-medium px-4 capitalize">
+                      <div className="w-auto flex items-center gap-2" >
+                        <span
+                          className={cn(
+                            "rounded-full w-1.5 h-1.5 ",
+                            swap.status === SUE_SWAP_STATUS.COMPLETED && "bg-su_positive",
+                            swap.status === SUE_SWAP_STATUS.DECLINED && "bg-su_positive",
+                            swap.status === SUE_SWAP_STATUS.CANCELED && "bg-su_negative",
+                          )}
+                        >
+                        </span>
+
+                        <span className='capitalize' >
+                          {SUE_SWAP_STATUS_TO_STRING[`value${swap.status!}`]}
+                        </span>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="text-xs font-medium flex pr-3 lg:pr-14 align-top justify-end relative">
+                      <SwapHistoryDetailsDialog swap={swap}>
+                        <svg className='w-4' viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M8 3.3C7.42135 3.3 6.86639 3.53178 6.45722 3.94436C6.04805 4.35695 5.81818 4.91652 5.81818 5.5C5.81818 6.08348 6.04805 6.64306 6.45722 7.05564C6.86639 7.46822 7.42135 7.7 8 7.7C8.57865 7.7 9.13361 7.46822 9.54278 7.05564C9.95195 6.64306 10.1818 6.08348 10.1818 5.5C10.1818 4.91652 9.95195 4.35695 9.54278 3.94436C9.13361 3.53178 8.57865 3.3 8 3.3ZM8 9.16667C7.03558 9.16667 6.11065 8.78036 5.4287 8.09272C4.74675 7.40509 4.36364 6.47246 4.36364 5.5C4.36364 4.52754 4.74675 3.59491 5.4287 2.90728C6.11065 2.21964 7.03558 1.83333 8 1.83333C8.96442 1.83333 9.88935 2.21964 10.5713 2.90728C11.2532 3.59491 11.6364 4.52754 11.6364 5.5C11.6364 6.47246 11.2532 7.40509 10.5713 8.09272C9.88935 8.78036 8.96442 9.16667 8 9.16667ZM8 0C4.36364 0 1.25818 2.28067 0 5.5C1.25818 8.71933 4.36364 11 8 11C11.6364 11 14.7418 8.71933 16 5.5C14.7418 2.28067 11.6364 0 8 0Z" fill="#B6B6BD" />
                         </svg>
 
-                        <div className="flex items-center gap-1" >
-                          {nftsImageMapper(swap.metadata.accept.tokens, 2)}
-                        </div>
+                      </SwapHistoryDetailsDialog>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            }
+          </TableBody>
+        </Table>
+        <ScrollBar orientation='horizontal' className='h-2' />
+      </ScrollArea>
 
-                      </TableCell>
-
-                      <TableCell className="text-xs font-medium pl-8">
-                        <div className="w-auto flex justify-start" >  #
-                          {getLastCharacters(swap.trade_id, 7)}</div>
-                      </TableCell>
-
-                      <TableCell className="text-xs font-medium px-4">
-                        {
-                          swap.init_address === wallet.address ?
-                            <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.accept_address)}</div>
-                            :
-                            <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.init_address)}</div>
-                        }
-                      </TableCell>
-
-                      <TableCell className="text-xs font-medium px-4">
-                        {swap.swap_mode === SUE_SWAP_MODE.OPEN ? <BadgeTile>Open market</BadgeTile> : <BadgeTile>private market</BadgeTile>}
-                      </TableCell>
-
-                      <TableCell className="text-xs font-medium px-4 ">
-                        <BadgeTile>
-                          <img
-                            className='w-3 h-3'
-                            src={currentChain.iconUrl}
-                            alt=""
-                          />
-
-                          {currentChain.name}
-                        </BadgeTile>
-                      </TableCell>
-
-                      <TableCell className="text-xs font-medium px-4">{moment.utc(swap.updated_at).format('MMM Do, YYYY')}</TableCell>
-
-                      <TableCell className="text-xs font-medium px-4 capitalize">
-                        <div className="w-auto flex items-center gap-2" >
-                          <span className={`rounded-full w-1.5 h-1.5 ${swap.status === 2 && "bg-su_positive"}  ${swap.status === 3 && "bg-su_negative"} ${swap.status === 4 && "bg-su_negative"}`} ></span>
-
-                          <span>
-                            {swap.status === 2 && "Completed"}
-                            {swap.status === 3 && "Declined"}
-                            {swap.status === 4 && "Cancelled"}
-                          </span>
-                        </div>
-                      </TableCell>
-
-                      <TableCell className="text-xs font-medium flex pr-3 lg:pr-14 align-top justify-end relative">
-                        <SwapHistoryDetailsDialog swap={swap}>
-                          <svg className='w-4' viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 3.3C7.42135 3.3 6.86639 3.53178 6.45722 3.94436C6.04805 4.35695 5.81818 4.91652 5.81818 5.5C5.81818 6.08348 6.04805 6.64306 6.45722 7.05564C6.86639 7.46822 7.42135 7.7 8 7.7C8.57865 7.7 9.13361 7.46822 9.54278 7.05564C9.95195 6.64306 10.1818 6.08348 10.1818 5.5C10.1818 4.91652 9.95195 4.35695 9.54278 3.94436C9.13361 3.53178 8.57865 3.3 8 3.3ZM8 9.16667C7.03558 9.16667 6.11065 8.78036 5.4287 8.09272C4.74675 7.40509 4.36364 6.47246 4.36364 5.5C4.36364 4.52754 4.74675 3.59491 5.4287 2.90728C6.11065 2.21964 7.03558 1.83333 8 1.83333C8.96442 1.83333 9.88935 2.21964 10.5713 2.90728C11.2532 3.59491 11.6364 4.52754 11.6364 5.5C11.6364 6.47246 11.2532 7.40509 10.5713 8.09272C9.88935 8.78036 8.96442 9.16667 8 9.16667ZM8 0C4.36364 0 1.25818 2.28067 0 5.5C1.25818 8.71933 4.36364 11 8 11C11.6364 11 14.7418 8.71933 16 5.5C14.7418 2.28067 11.6364 0 8 0Z" fill="#B6B6BD" />
-                          </svg>
-
-                        </SwapHistoryDetailsDialog>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              }
-            </TableBody>
-          </Table>
-          <ScrollBar orientation='horizontal' className='h-2' />
-        </ScrollArea>
-      }
 
       <LoadingDataset
         isLoading={isLoading}
@@ -200,7 +213,7 @@ const SwapHistoryTabContent = () => {
       />
 
       {
-        (!isSuccess && ((filteredHistorySwaps || []).length === 0)) &&
+        (isSuccess && ((filteredHistorySwaps || []).length === 0)) &&
         <EmptyDataset
           title="No Pending Swaps Offers Yet"
           description="Your pending swap inbox is empty create your own swap!"

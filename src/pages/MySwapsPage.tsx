@@ -5,16 +5,18 @@ import { defaults } from "@/constants/defaults";
 import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
 import { useMySwapStore } from "@/store/my-swaps";
 import { SUT_MySwapsTabType } from "@/types/my-swaps-store.types";
+import { useProfileStore } from "@/store/profile";
 
 const MySwapsPage = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [setFilteredMySwapsBySearch, pendingSwapsLength, swapHistoryLength] = useMySwapStore(state => [state.setFilteredMySwapsBySearch, (state.filteredPendingSwaps || []).length, (state.filteredHistorySwaps || []).length]);
+  const walletAddress = useProfileStore(state => state.profile.wallet.address);
 
   const handleSwapsDataBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value;
     const tabType: SUT_MySwapsTabType = getActiveTabFromPathname(pathname) as SUT_MySwapsTabType;
-    setFilteredMySwapsBySearch(searchValue, tabType);
+    setFilteredMySwapsBySearch(searchValue, tabType, walletAddress);
   };
 
   return (
