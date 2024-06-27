@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import FilterButton from '../../shared/FilterButton';
-import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose } from "@/components/ui/drawer";
 import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '../../shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken, SUI_Swap, SUP_CompleteSwap, SUP_CancelSwap } from '@/types/swap-market.types';
@@ -15,20 +14,7 @@ import { useSwapMarketStore } from '@/store/swap-market';
 import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
 import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 import { useNavigate } from "react-router-dom";
-import * as React from "react";
-import { addDays, format } from "date-fns";
-import { DateRange } from "react-day-picker";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { ToggleGroup, ToggleGroupItem, } from "@/components/ui/toggle-group";
-
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
-import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
-import { Button } from "@/components/ui/button";
 import { getWalletProxy } from '@/lib/walletProxy';
 import { SUI_SwapCreation } from "@/types/global.types";
 import { useCompleteOpenSwapOffer } from "@/service/queries/swap-market.query";
@@ -38,11 +24,13 @@ import { useProfileStore } from '@/store/profile';
 import BadgeTile from '../../tiles/BadgeTile';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { showWalletConnectionToast } from '@/lib/helpers';
+import PendingSwapsFilterDrawer from './PendingSwapsFilterDrawer';
+import { useMySwapStore } from '@/store/my-swaps';
 
 
 const PendingSwapsTabContent = () => {
   const navigate = useNavigate();
-  const { setPendingSwapsData, pendingSwaps } = useSwapMarketStore(state => state.privateMarket);
+  const [setMySwapsData, filteredPendingSwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredPendingSwaps]);
   const wallet = useProfileStore(state => state.profile.wallet);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -53,15 +41,6 @@ const PendingSwapsTabContent = () => {
   const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
   const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
   const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2024, 0, 20),
-    to: addDays(new Date(2024, 0, 20), 1),
-  });
-
-
-  const handleResetFilters = () => { };
 
   const handleSwapAccept = async (swap: SUI_Swap) => {
     try {
@@ -328,12 +307,11 @@ const PendingSwapsTabContent = () => {
     if (data?.data && isSuccess) {
 
       if (data.data.data.length > 0) {
-        setPendingSwapsData(data.data.data as SUI_OpenSwap[]);
+        setMySwapsData(data.data.data as SUI_OpenSwap[], 'pending');
       }
     }
 
     if (error && isError) {
-      setPendingSwapsData([]);
       toast.custom(
         (id) => (
           <ToastLookCard
@@ -381,7 +359,7 @@ const PendingSwapsTabContent = () => {
   return (
     <div className="space-y-4">
       {
-        (pendingSwaps || []).length > 0 &&
+        (filteredPendingSwaps || []).length > 0 &&
         <ScrollArea className='min-w-full' >
           <Table className="min-w-full">
             <TableHeader>
@@ -395,138 +373,16 @@ const PendingSwapsTabContent = () => {
                 <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Request date</TableHead>
                 <TableHead className="align-top font-semibold px-4 min-w-[150px]" >Type</TableHead>
                 <TableHead className="align-top w-[130px] pr-2" >
-                  <Drawer direction="right" open={isOpen} onClose={() => setIsOpen(false)} >
-                    <DrawerTrigger onClick={() => setIsOpen(true)} >
-                      <FilterButton />
-                    </DrawerTrigger>
-                    <DrawerContent className="p-3 h-screen w-1/3 right-0 bg-transparent" >
-                      <div className="rounded-sm h-full w-full bg-su_secondary_bg flex flex-col gap-4 p-4" >
-                        <DrawerTitle className="text-su_primary" >
-                          <div className="flex justify-between items-start">
-                            <h2 className="font-semibold text-xl pt-2" >Filter options</h2>
-                            <DrawerClose
-                              onClick={() => setIsOpen(false)}
-                              className="p-1 rounded-xs hover:bg-su_active_bg" >
-                              <svg className="w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-                              </svg>
-                            </DrawerClose>
-                          </div>
-
-                          <p className="text-su_secondary text-base font-medium" >Refine your search with custom filters:</p>
-                        </DrawerTitle>
-
-                        <div className="space-y-3" >
-
-
-                          <div className="flex items-center space-x-2">
-                            <Switch id="airplane-mode" />
-                            <Label htmlFor="airplane-mode">Show offers from only current chain</Label>
-                          </div>
-
-
-                          <div className="h-full space-y-2">
-                            <div className="flex justify-between items-center text-sm" >
-                              <p>Status</p>
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
-                                <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M6 12C4.46667 12 3.13067 11.4918 1.992 10.4753C0.853333 9.45889 0.200444 8.18933 0.0333333 6.66667H1.4C1.55556 7.82222 2.06956 8.77778 2.942 9.53333C3.81444 10.2889 4.83378 10.6667 6 10.6667C7.3 10.6667 8.40289 10.214 9.30867 9.30867C10.2144 8.40333 10.6671 7.30045 10.6667 6C10.6662 4.69956 10.2136 3.59689 9.30867 2.692C8.40378 1.78711 7.30089 1.33422 6 1.33333C5.23333 1.33333 4.51667 1.51111 3.85 1.86667C3.18333 2.22222 2.62222 2.71111 2.16667 3.33333H4V4.66667H0V0.666667H1.33333V2.23333C1.9 1.52222 2.59178 0.972222 3.40867 0.583333C4.22556 0.194444 5.08933 0 6 0C6.83333 0 7.614 0.158445 8.342 0.475333C9.07 0.792222 9.70333 1.21978 10.242 1.758C10.7807 2.29622 11.2084 2.92956 11.5253 3.658C11.8422 4.38645 12.0004 5.16711 12 6C11.9996 6.83289 11.8413 7.61356 11.5253 8.342C11.2093 9.07045 10.7816 9.70378 10.242 10.242C9.70244 10.7802 9.06911 11.208 8.342 11.5253C7.61489 11.8427 6.83422 12.0009 6 12Z" fill="#B6B6BD" />
-                                </svg>
-
-                                Reset
-                              </button>
-
-                            </div>
-
-                            <div className="flex justify-between items-center text-sm" >
-                              <ToggleGroup type="single">
-                                <ToggleGroupItem value="all" aria-label="Toggle bold">All</ToggleGroupItem>
-                                <ToggleGroupItem value="sent" aria-label="Toggle bold" >Sent</ToggleGroupItem>
-                                <ToggleGroupItem value="received" aria-label="Toggle bold">Received</ToggleGroupItem>
-                              </ToggleGroup>
-                            </div>
-
-
-                            <div className="flex justify-between items-center text-sm" >
-                              <p>Swap mode</p>
-                              <button onClick={handleResetFilters} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
-                                <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M6 12C4.46667 12 3.13067 11.4918 1.992 10.4753C0.853333 9.45889 0.200444 8.18933 0.0333333 6.66667H1.4C1.55556 7.82222 2.06956 8.77778 2.942 9.53333C3.81444 10.2889 4.83378 10.6667 6 10.6667C7.3 10.6667 8.40289 10.214 9.30867 9.30867C10.2144 8.40333 10.6671 7.30045 10.6667 6C10.6662 4.69956 10.2136 3.59689 9.30867 2.692C8.40378 1.78711 7.30089 1.33422 6 1.33333C5.23333 1.33333 4.51667 1.51111 3.85 1.86667C3.18333 2.22222 2.62222 2.71111 2.16667 3.33333H4V4.66667H0V0.666667H1.33333V2.23333C1.9 1.52222 2.59178 0.972222 3.40867 0.583333C4.22556 0.194444 5.08933 0 6 0C6.83333 0 7.614 0.158445 8.342 0.475333C9.07 0.792222 9.70333 1.21978 10.242 1.758C10.7807 2.29622 11.2084 2.92956 11.5253 3.658C11.8422 4.38645 12.0004 5.16711 12 6C11.9996 6.83289 11.8413 7.61356 11.5253 8.342C11.2093 9.07045 10.7816 9.70378 10.242 10.242C9.70244 10.7802 9.06911 11.208 8.342 11.5253C7.61489 11.8427 6.83422 12.0009 6 12Z" fill="#B6B6BD" />
-                                </svg>
-
-                                Reset
-                              </button>
-                            </div>
-                            <div className="flex justify-between items-center text-sm" >
-                              <ToggleGroup type="single">
-                                <ToggleGroupItem value="all" aria-label="Toggle bold">All</ToggleGroupItem>
-                                <ToggleGroupItem value="openmarket" aria-label="Toggle bold" >Open Market</ToggleGroupItem>
-                                <ToggleGroupItem value="privateparty" aria-label="Toggle bold">Private Party</ToggleGroupItem>
-                              </ToggleGroup>
-                            </div>
-
-                            <div className="flex justify-between items-center text-sm" >
-                              <p>Request date:</p>
-                            </div>
-                            <div className="flex justify-between items-center text-sm" >
-
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Button
-                                    id="date"
-                                    variant={"outline"}
-                                    className={cn(
-                                      "w-[300px] justify-start text-left font-normal",
-                                      !date && "text-muted-foreground"
-                                    )}
-                                  >
-                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                    {date?.from ? (
-                                      date.to ? (
-                                        <>
-                                          {format(date.from, "LLL dd, y")} -{" "}
-                                          {format(date.to, "LLL dd, y")}
-                                        </>
-                                      ) : (
-                                        format(date.from, "LLL dd, y")
-                                      )
-                                    ) : (
-                                      <span>Pick a date</span>
-                                    )}
-                                  </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar
-                                    initialFocus
-                                    mode="range"
-                                    defaultMonth={date?.from}
-                                    selected={date}
-                                    onSelect={setDate}
-                                    numberOfMonths={2}
-                                  />
-                                </PopoverContent>
-                              </Popover>
-
-                            </div>
-
-                          </div>
-                          <div className="w-full grid grid-cols-2 gap-4" >
-                            <CustomOutlineButton onClick={handleResetFilters} >
-                              Clear filters
-                            </CustomOutlineButton>
-                            <Button variant={"default"} type="submit" >Apply filters</Button>
-                          </div>
-                        </div>
-                      </div>
-                    </DrawerContent>
-                  </Drawer>
+                  <PendingSwapsFilterDrawer>
+                    <FilterButton showTitleOnMobile />
+                  </PendingSwapsFilterDrawer>
                 </TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody className="divide-y">
               {
-                pendingSwaps?.map((swap) => {
+                filteredPendingSwaps?.map((swap) => {
                   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
                   return (
                     <TableRow key={swap.trade_id}>
@@ -763,7 +619,7 @@ const PendingSwapsTabContent = () => {
       />
 
       {
-        (isSuccess && ((pendingSwaps || []).length === 0)) &&
+        (isSuccess && ((filteredPendingSwaps || []).length === 0)) &&
         <EmptyDataset
           title="No Pending Swaps Offers Yet"
           description="Your pending swap inbox is empty create your own swap!"

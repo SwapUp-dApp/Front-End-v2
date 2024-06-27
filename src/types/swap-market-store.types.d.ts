@@ -121,8 +121,6 @@ export interface ISwapMarketStore {
     availableSwaps?: SUI_OpenSwap[];
     filteredAvailableSwaps?: SUI_OpenSwap[];
     createdSwaps?: SUI_OpenSwap[];
-    pendingSwaps?: SUI_OpenSwap[];
-    history?: SUI_OpenSwap[];
     openRoom: IOpenRoom;
     setOpenSwapsData: (swapsData: SUI_OpenSwap[], wallet: IWallet) => void;
     setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => void;
@@ -131,11 +129,7 @@ export interface ISwapMarketStore {
   privateMarket: {
     availablePrivateSwaps?: SUI_Swap[];
     filteredAvailablePrivateSwaps?: SUI_Swap[];
-    pendingSwaps?: SUI_OpenSwap[];
-    swapHistory?: SUI_OpenSwap[];
     privateRoom: IPrivateRoom;
-    setPendingSwapsData: (pendingswapsData: SUI_OpenSwap[]) => void;
-    setSwapHistoryData: (swaphistoryData: SUI_OpenSwap[]) => void;
     setPrivateSwapsData: (swapsData: SUI_Swap[]) => void;
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
   };

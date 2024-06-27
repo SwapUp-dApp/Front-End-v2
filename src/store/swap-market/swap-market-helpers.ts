@@ -6,8 +6,6 @@ import { Environment } from "@/config";
 import { chainsDataset } from "@/constants/data";
 import { getInitialProfile } from "../profile/profile-helpers";
 import { IWallet } from "@/types/profile.types";
-import { send } from "process";
-import { profile } from "console";
 
 // Shared Room Helper start
 export const toggleGridViewHelper = (
@@ -543,47 +541,6 @@ export const resetPrivateRoomDataHelper = (
           }
         }
       }
-    },
-  };
-};
-
-//my-swaps functions
-export const setPendingSwapsDataHelper = (
-  state: ISwapMarketStore,
-  pendingSwaps: SUI_OpenSwap[],
-): ISwapMarketStore => {
-
-  let availablePendingSwaps: SUI_OpenSwap[] = [];
-
-  // if (state.profile.wallet.address && state.wallet.isConnected) {
-  // }
-  availablePendingSwaps = pendingSwaps;
-  return {
-    ...state,
-    privateMarket: {
-      ...state.privateMarket,
-      pendingSwaps: availablePendingSwaps
-    },
-  };
-};
-
-//my-swaps functions
-export const setSwapHistoryDataHelper = (
-  state: ISwapMarketStore,
-  swapHistory: SUI_OpenSwap[],
-): ISwapMarketStore => {
-
-  let availableSwapHistory: SUI_OpenSwap[] = [];
-
-
-  // if (state.wallet.address && state.wallet.isConnected) {
-  // }
-  availableSwapHistory = swapHistory;
-  return {
-    ...state,
-    privateMarket: {
-      ...state.privateMarket,
-      swapHistory: availableSwapHistory
     },
   };
 };

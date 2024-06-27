@@ -1,15 +1,10 @@
 // import LeaderboardCard from "@/components/custom/swap_market/LeaderboardCard";
 import NewMembersCard from "@/components/custom/swap_market/NewMembersCard";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
 import { generateRandomTradeId, getActiveTabFromPathname } from "@/lib/utils";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useSwapMarketStore } from "@/store/swap-market";
-
-import OpenMarketTabContent from "@/components/custom/swap_market/open-market/OpenMarketTabContent";
-import PrivateMarketTabContent from "@/components/custom/swap_market/private-party/PrivateMarketTabContent";
 import { useProfileStore } from "@/store/profile";
 import { membersData, tradersData } from "@/constants/data";
 import { showWalletConnectionToast } from "@/lib/helpers";
