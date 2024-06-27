@@ -186,15 +186,14 @@ const CounterOfferSwapRoom = () => {
 
 
   useEffect(() => {
-    if ((state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length) &&
-      (state.sender.addedAmount && state.receiver.addedAmount)
+    if ((state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length)
     ) {
       setEnableApproveButtonCriteria(true);
     } else {
       setEnableApproveButtonCriteria(false);
     }
 
-  }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap, state.sender.addedAmount, state.receiver.addedAmount]);
+  }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap]);
 
 
   return (
