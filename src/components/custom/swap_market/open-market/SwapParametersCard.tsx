@@ -12,7 +12,6 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import ToastLookCard from "../../shared/ToastLookCard";
 import { Input } from "@/components/ui/input";
-import { Combobox } from "@/components/ui/combobox";
 import CurrencySelectCombobox from "../../shared/CurrencySelectCombobox";
 import { availableCollections, chainsDataset } from "@/constants/data";
 import { SUFS_OpenSwapParameters } from "@/schema";
@@ -21,6 +20,7 @@ import { SUI_SwapCurrencyItem, SUI_SwapPreferences, SUT_PreferredAssetType } fro
 import { SUI_CurrencyItem } from "@/types/global.types";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useEffect } from "react";
+import Combobox from "../../shared/Combobox";
 
 
 const currenciesDataset: SUI_CurrencyItem[] = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
@@ -118,12 +118,12 @@ const SwapParametersCard = ({ setIsValidParametersForm }: IProp) => {
         Swap parameters
       </h2>
 
-      <ToastLookCard
+      {/* <ToastLookCard
         variant="info"
         title="Escrow swap ahead"
         description="The initial proposer escrows assets in the smart contract, signaling a serious offer with limited negotiations. Changing assets later incurs extra gas fees."
         hideCloseButton
-      />
+      /> */}
 
       <Form {...form}>
         <form className="space-y-3">
@@ -145,7 +145,7 @@ const SwapParametersCard = ({ setIsValidParametersForm }: IProp) => {
                       )}
                     >
                       {field.value ?
-                        <span className="text-su_primary" >{moment(field.value).format('MMM DD, YYYY hh:mm a')}</span>
+                        <span className="text-su_primary" >{moment(field.value).format('MMM DD, YYYY HH:mm A')}</span>
                         :
                         (
                           <span>Set expiration date</span>

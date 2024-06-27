@@ -17,7 +17,7 @@ import { membersData, tradersData } from "@/constants/data";
 const SwapMarketPage = () => {
   const navigate = useNavigate();
   const wallet = useProfileStore(state => state.profile.wallet);
-  
+
   const [activeTab, setActiveTab] = useState<"open-market" | "private-party">("private-party");
 
   const openMarketSwapLength = useSwapMarketStore(state => (state.openMarket.filteredAvailableSwaps || []).length + (state.openMarket.createdSwaps || []).length);
@@ -100,7 +100,7 @@ const SwapMarketPage = () => {
         <div className="flex flex-col lg:flex-row items-center gap-3" >
           <NewMembersCard users={membersData} />
           <NewMembersCard cardType="trader" users={tradersData} />
-          <LeaderboardCard users={membersData} />
+          {/* <LeaderboardCard users={membersData} /> */}
         </div>
 
         <div className="overflow-x-scroll lg:overflow-hidden" >

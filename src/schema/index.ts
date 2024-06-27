@@ -62,12 +62,12 @@ export const SUFS_OpenSwapParameters = z.object({
       });
     }
 
-    if (data.currencies && data.currencies.length < 3) {
+    if (data.currencies && data.currencies.length < 1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["currencies"],
         message:
-          "Please select at least three currencies you want to receive.",
+          "Please select at least one currency you want to receive.",
       });
     }
   }

@@ -24,6 +24,8 @@ export interface SUI_Swap {
   status?: SUT_SwapStatus;
   created_at?: string;
   updated_at?: string;
+  tx?: string;
+  notes?: string;
 }
 
 export interface SUI_SwapMetadata {
@@ -94,11 +96,16 @@ export interface SUP_CompleteSwap extends Pick<
 }
 
 export interface SUP_CancelSwap extends Pick<
-  SUI_OpenSwap,'swap_mode'>{
-    open_trade_id?: string;
-    trade_id?: string;
+  SUI_OpenSwap, 'swap_mode'> {
+  open_trade_id?: string;
+  trade_id?: string;
+}
 
-  }
+export interface SUP_CounterSwap extends Pick<
+  SUI_OpenSwap, 'metadata', 'init_sign', 'init_address', 'accept_address', 'id', 'trading_chain', 'offer_type',
+> {
+  open_trade_id?: string;
+}
 
 // Swap api payload types ends here
 

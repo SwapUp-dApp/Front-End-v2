@@ -59,7 +59,7 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
             <span className=" flex items-center gap-2 p-2 bg-su_enable_bg text-su_primary font-semibold text-2xs lg:text-xs rounded-xs" >
               <span className="rounded-full w-2 h-2 bg-su_positive" ></span>
 
-              Escro
+              Escrow
             </span>
           }
         </div>

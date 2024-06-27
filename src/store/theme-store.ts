@@ -7,7 +7,7 @@ interface IThemeState {
 }
 
 const initialState: IThemeState = {
-  theme: (localStorage.getItem('vite-ui-theme') as ('dark' | 'light' | 'system')) || 'dark',
+  theme: (localStorage.getItem('swapup-ui-theme') as ('dark' | 'light' | 'system')) || 'dark',
   toggleTheme: () => { },
 };
 
@@ -16,7 +16,7 @@ export const useThemeStore = create<IThemeState>(set => ({
   toggleTheme: () =>
     set(state => {
       const newTheme = state.theme === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('vite-ui-theme', newTheme);
+      localStorage.setItem('swapup-ui-theme', newTheme);
       applyThemeClass(newTheme);
       return { ...state, theme: newTheme };
     }),

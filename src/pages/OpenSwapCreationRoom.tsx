@@ -40,7 +40,7 @@ const OpenSwapCreationRoom = () => {
   const [swapCreation, setSwapCreation] = useState<ISwapCreation>({ isLoading: false, created: false });
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
-  const wallet = useProfileStore(state=>state.profile.wallet);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const { expiration_date, preferred_asset } = state.swap.swap_preferences;
   const navigate = useNavigate();
@@ -147,7 +147,7 @@ const OpenSwapCreationRoom = () => {
 
   useEffect(() => {
     if (openTradeId && isValidTradeId(openTradeId)) {
-      state.setValuesOnCreateOpenSwapRoom(openTradeId);
+      state.setValuesOnCreateOpenSwapRoom(openTradeId, wallet);
     }
   }, [openTradeId]);
 
@@ -251,7 +251,7 @@ const OpenSwapCreationRoom = () => {
 
                       <SwapParameterTile
                         title="Expiration date:"
-                        value={`${moment.utc(expiration_date).local().format('MMM DD, YYYY hh:mm a')}`}
+                        value={`${moment.utc(expiration_date).local().format('MMM DD, YYYY HH:mm:ss')}`}
                       />
 
                       {preferred_asset.type === 'nft' &&

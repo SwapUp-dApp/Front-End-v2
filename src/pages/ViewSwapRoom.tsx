@@ -34,7 +34,7 @@ const ViewSwapRoom = () => {
 
   const handleResetData = async () => {
     state.resetViewSwapRoom();
-    
+
     toast.custom(
       (id) => (
         <ToastLookCard
@@ -182,7 +182,7 @@ const ViewSwapRoom = () => {
           {
             profile.wallet.address === state.sender.profile.wallet.address ?
               <CustomOutlineButton className="px-5 py-3">
-                Close
+                Close Swap
               </CustomOutlineButton>
               :
               <div className="flex items-center gap-2" >

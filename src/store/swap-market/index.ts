@@ -33,6 +33,7 @@ import {
   setValuesOnViewSwapRoomHelper,
   resetViewSwapRoomHelper,
   setMyOpenSwapsDataHelper,
+  createCounterSwapOfferHelper,
 } from './swap-market-helpers';
 
 import { chainsDataset } from '@/constants/data';
@@ -43,7 +44,6 @@ import { IWallet } from '@/types/profile.types';
 
 
 export const openMarketRoomInitialState: IOpenRoom = {
-  swapUpOpenContract: Environment.SWAPUP_CONTRACT,
   chainId: Environment.CHAIN_ID,
   uniqueTradeId: '',
   nftsLength: 0,
@@ -118,11 +118,11 @@ export const openMarketRoomInitialState: IOpenRoom = {
   resetOpenSwapCreationRoom: () => { },
   resetOpenSwapProposeRoom: () => { },
   setValuesOnViewSwapRoom: () => { },
-  resetViewSwapRoom: () => { }
+  resetViewSwapRoom: () => { },
+  createCounterSwapOffer: () => { }
 };
 
 export const privateMarketRoomInitialState: IPrivateRoom = {
-  swapUpContract: Environment.SWAPUP_CONTRACT,
   chainId: Environment.CHAIN_ID,
   uniqueTradeId: '',
   nftsLength: 0,
@@ -131,7 +131,7 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
   sender: {
     activeGridView: 'detailed',
     toggleGridView: () => { },
-    
+
     profile: getInitialProfile("sender"),
     collections: [],
     nfts: [],
@@ -168,7 +168,8 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
   setSwapEncodedMsgAndSign: () => { },
   resetPrivateRoom: () => { },
   setValuesOnViewSwapRoom: () => { },
-  resetViewSwapRoom: () => { }
+  resetViewSwapRoom: () => { },
+  createCounterSwapOffer: () => { }
 };
 
 const initialState: ISwapMarketStore = {
@@ -217,10 +218,10 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       resetOpenSwapCreationRoom: () => set(state => resetOpenSwapCreationRoomHelper(state)),
       resetOpenSwapProposeRoom: () => set(state => resetOpenSwapProposeRoomHelper(state)),
       resetViewSwapRoom: () => set(state => resetViewSwapRoomHelper(state, 'openMarket', 'openRoom')),
-      setValuesOnCreateOpenSwapRoom: (tradeId: string) => set((state) => setValuesOnCreateOpenSwapRoomHelper(state, tradeId)),
-      setValuesOnProposeOpenSwapRoom: async (tradeId: string, swap: SUI_OpenSwap) => {
+      setValuesOnCreateOpenSwapRoom: (tradeId: string, senderWalletInfo: IWallet) => set((state) => setValuesOnCreateOpenSwapRoomHelper(state, tradeId, senderWalletInfo)),
+      setValuesOnProposeOpenSwapRoom: async (tradeId: string, swap: SUI_OpenSwap, senderWalletInfo) => {
         const state = get();
-        const newState = await setValuesOnProposeOpenSwapRoomHelper(state, tradeId, swap);
+        const newState = await setValuesOnProposeOpenSwapRoomHelper(state, tradeId, swap, senderWalletInfo);
         set(newState);
       },
       setValuesOnViewSwapRoom: async (tradeId: string, swap: SUI_OpenSwap) => {
@@ -238,6 +239,11 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         const newState = await createProposeOpenSwapHelper(state, initWalletAddress);
         set(newState);
       },
+      createCounterSwapOffer: async () => {
+        const state = get();
+        const newState = await createCounterSwapOfferHelper(state, 'openMarket', 'openRoom');
+        set(newState);
+      },
       setSwapEncodedMsgAndSign: async (swapEncodedMsg: string, sign: string) => {
         const state = get();
         const newState = await setSwapEncodedMsgAndSignOpenHelper(state, swapEncodedMsg, sign);
@@ -245,8 +251,8 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       },
       setSwapPreferences: (preferences: SUI_SwapPreferences) => set((state) => setSwapPreferencesHelper(state, preferences))
     },
-    setOpenSwapsData: (swapsData: SUI_OpenSwap[], wallet:IWallet) => set(state => setOpenSwapsDataHelper(state, swapsData, wallet)),
-    setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[], wallet:IWallet) => set(state => setMyOpenSwapsDataHelper(state, createdSwaps, wallet)),
+    setOpenSwapsData: (swapsData: SUI_OpenSwap[], wallet: IWallet) => set(state => setOpenSwapsDataHelper(state, swapsData, wallet)),
+    setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => set(state => setMyOpenSwapsDataHelper(state, createdSwaps, wallet)),
     setFilteredAvailableSwapsBySearch: (searchValue: string) => set(state => setFilteredAvailableSwapsBySearchHelper(state, searchValue))
   },
   privateMarket: {
@@ -275,7 +281,7 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         setFilteredNftsBySwapTokens: (dataset: SUI_NFTItem[]) => set((state) => setFilteredNftsBySwapTokensHelper(state, dataset, 'privateMarket', 'privateRoom', 'receiver')),
       },
       resetViewSwapRoom: () => set(state => resetViewSwapRoomHelper(state, 'privateMarket', 'privateRoom')),
-      setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'privateMarket', 'privateRoom', tradeId, counterPartyWalletAddress)),
+      setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string, senderWalletInfo: IWallet) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'privateMarket', 'privateRoom', tradeId, counterPartyWalletAddress, senderWalletInfo)),
       setValuesOnViewSwapRoom: async (tradeId: string, swap: SUI_Swap) => {
         const state = get();
         const newState = await setValuesOnViewSwapRoomHelper(state, tradeId, 'privateMarket', 'privateRoom', swap);
@@ -284,6 +290,11 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       createPrivateMarketSwap: async (offer_type: SUT_SwapOfferType, initWalletAddress: string) => {
         const state = get();
         const newState = await createPrivateMarketSwapHelper(state, offer_type, initWalletAddress);
+        set(newState);
+      },
+      createCounterSwapOffer: async () => {
+        const state = get();
+        const newState = await createCounterSwapOfferHelper(state, 'privateMarket', 'privateRoom');
         set(newState);
       },
       setSwapEncodedMsgAndSign: async (swapEncodedMsg: string, sign: string) => {
@@ -299,5 +310,5 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
     setPrivateSwapsData: (privateswapsData: SUI_Swap[]) => set(state => setPrivateSwapsDataHelper(state, privateswapsData)),
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => set(state => setFilteredAvailablePrivateSwapsBySearchHelper(state, searchValue)),
   },
-  
+
 }));
