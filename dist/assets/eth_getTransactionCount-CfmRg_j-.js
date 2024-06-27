@@ -1,1 +1,0 @@
-import{b as n,ci as c}from"./index-Cq-SXoro.js";async function u(t,o){const e=await t({method:"eth_getTransactionCount",params:[o.address,o.blockNumber?n(o.blockNumber):o.blockTag||"pending"]});return c(e)}export{u as eth_getTransactionCount};
