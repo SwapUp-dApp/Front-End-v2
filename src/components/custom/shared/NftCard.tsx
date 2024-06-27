@@ -1,9 +1,9 @@
-import { defaultNftImageFallbackURL } from "@/constants";
 import { cn, getDefaultNftImageOnError, getEtherScanContractNftUrl, getOpenSeaNftUrl } from "@/lib/utils";
 import { SUT_GridViewType } from "@/types/swap-market-store.types";
 import { SUI_NFTItem } from "@/types/global.types";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { defaults } from "@/constants/defaults";
 
 interface IProp {
   className?: string;
@@ -41,7 +41,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
 
   const imageURL = data.media.length > 0 ?
     data.media[0].gateway :
-    defaultNftImageFallbackURL;
+    defaults.fallback.nftImageUrl;
   return (
     <div
       className="relative"

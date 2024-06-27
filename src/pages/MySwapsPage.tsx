@@ -1,38 +1,15 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { useSwapMarketStore } from "@/store/swap-market";
-import PendingSwapsTabContent from "@/components/custom/swap_market/my-swaps/PendingSwapsTabContent";
-import SwapHistoryTabContent from "@/components/custom/swap_market/my-swaps/SwapHistoryTabContent";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { getActiveTabFromPathname } from "@/lib/utils";
+import { defaults } from "@/constants/defaults";
+import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
 
 const MySwapsPage = () => {
-  const [activeTab, setActiveTab] = useState<"pending-swaps" | "swap-history">("swap-history");
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const pendingSwapsLength = useSwapMarketStore(state => (state.privateMarket.pendingSwaps || []).length);
   const swapHistoryLength = useSwapMarketStore(state => (state.privateMarket.swapHistory || []).length);
-
-  const handleSwitchTab = (value: "pending-swaps" | "swap-history") => {
-    setActiveTab(value);
-  };
-
-  const handleShowWalletConnectionToast = () => {
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="error"
-          title="Connect to wallet!"
-          description={"Please connect to wallet for this feature!"}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
-    );
-  };
 
   const handleFilterData = () => { };
 
@@ -54,31 +31,33 @@ const MySwapsPage = () => {
           />
         </div>
 
-        <Tabs defaultValue="pending-swaps" className="w-full">
-          <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
-            <TabsTrigger value="pending-swaps" onClick={() => handleSwitchTab("pending-swaps")} >
-              Pending
-              <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'pending-swaps' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                {pendingSwapsLength}
-              </span>
-            </TabsTrigger>
+        <CustomTabContainer >
+          {
+            defaults.mySwaps.tabs.map(tab => {
+              const activeTab = getActiveTabFromPathname(pathname);
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => navigate(tab.path)}
+                  className={`relative flex bg-transparent ${activeTab === tab.key ? "text-su_primary" : "text-muted-foreground"} items-center gap-3 text-sm font-bold px-3 `}
+                >
+                  {tab.title}
 
-            <TabsTrigger value="swap-history" onClick={() => handleSwitchTab("swap-history")}>
-              History
-              <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'swap-history' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                {swapHistoryLength}
-              </span>
-            </TabsTrigger>
-          </TabsList>
+                  <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === tab.key ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
+                    {tab.key === 'pending' && pendingSwapsLength}
+                    {tab.key === 'history' && swapHistoryLength}
+                  </span>
 
-          <TabsContent value="pending-swaps">
-            <PendingSwapsTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
-          </TabsContent>
+                  <span className={`${activeTab === tab.key ? "absolute -bottom-3.5 left-0 border-b-2 border-su_primary w-full" : ""}`} ></span>
+                </button>
+              );
+            })
+          }
+        </CustomTabContainer>
 
-          <TabsContent value="swap-history">
-            <SwapHistoryTabContent handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
-          </TabsContent>
-        </Tabs>
+        <div className="w-full" >
+          <Outlet />
+        </div>
       </section >
     </>
   );

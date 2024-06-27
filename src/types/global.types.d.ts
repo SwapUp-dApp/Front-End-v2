@@ -5,6 +5,12 @@ export interface SUI_NavItem {
   protected: boolean;
 }
 
+export interface SUI_TabItem {
+  key: string;
+  title: string;
+  path: string;
+}
+
 export interface INFTItem {
   id: string;
   title: string;

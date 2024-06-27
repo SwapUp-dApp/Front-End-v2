@@ -13,9 +13,9 @@ import { useSwapMarketStore } from "@/store/swap-market";
 import LoadingDataset from "../shared/LoadingDataset";
 import { useNFTsByWallet } from "@/service/queries/swap-market.query";
 import { SUI_NFTItem } from "@/types/global.types";
-import { defaultNftImageFallbackURL } from "@/constants";
 import { toast } from "sonner";
 import ToastLookCard from "../shared/ToastLookCard";
+import { defaults } from "@/constants/defaults";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
@@ -57,8 +57,8 @@ const ProfileAssetsLayout = ({ layoutType, walletAddress }: IProp) => {
         rarityRank: Number(item.tokenId),
         media: item.media.length > 0 ? item.media : [
           {
-            gateway: defaultNftImageFallbackURL,
-            raw: defaultNftImageFallbackURL
+            gateway: defaults.fallback.nftImageUrl,
+            raw: defaults.fallback.nftImageUrl
           }
         ]
       })));
