@@ -8,17 +8,21 @@ import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
 import { Button } from "@/components/ui/button";
 import { SUE_SWAP_MODE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
-import { useGetSwapDetails } from "@/service/queries/swap-market.query";
+import { getWalletProxy } from "@/lib/walletProxy";
+import { useCompleteOpenSwapOffer, useCompletePrivateSwapOffer, useGetSwapDetails } from "@/service/queries/swap-market.query";
 import { useProfileStore } from "@/store/profile";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUI_OpenSwap, SUI_SwapPreferences } from "@/types/swap-market.types";
+import { SUI_SwapCreation } from "@/types/global.types";
+import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CompleteSwap } from "@/types/swap-market.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const ViewSwapRoom = () => {
   const [dataSavedInStore, setDataSavedInStore] = useState({ sender: false, receiver: false });
-
+  const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const { mutateAsync: completeOpenSwapOffer } = useCompleteOpenSwapOffer();
+  const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const swapMode = Number(searchParams.get('swapMode'));
@@ -52,6 +56,129 @@ const ViewSwapRoom = () => {
     );
   };
 
+  const handleSwapAccept = async () => {
+    try {
+
+
+      setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
+      const swap = state.swap!
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
+
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+
+      // setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));
+      //temp fix 
+      swap.accept_sign = sign;
+
+      const approval = await getWalletProxy().getUserApproval(swap, true);
+
+      if (!approval) {
+        throw new Error("User approval not granted.");
+      }
+
+      const triggerTranfer = await getWalletProxy().triggerTransfer(swap);
+      console.log(swapAcceptance.isLoading);
+
+      if (!triggerTranfer) {
+        throw new Error("Swap Failed");
+      }
+
+      const payload: SUP_CompleteSwap = {
+        ...swap,
+        status: triggerTranfer.status,
+        tx: triggerTranfer.hash,
+        notes: triggerTranfer.notes,
+        timestamp: triggerTranfer.timeStamp,
+      };
+
+      //calling actual api 
+      if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
+        const offerResult = await completeOpenSwapOffer(payload);
+
+        if (offerResult) {
+          toast.custom(
+            (id) => (
+              <ToastLookCard
+                variant="success"
+                title="Open Swap Completed Successfully"
+                description={"You will receive a notification on metamask about the transaction."}
+                onClose={() => toast.dismiss(id)}
+              />
+            ),
+            {
+              duration: 3000,
+              className: 'w-full !bg-transparent',
+              position: "bottom-left",
+            }
+          );
+          setSwapAcceptance(prev => ({ ...prev, created: true }));
+          setTimeout(() => {
+
+            navigate(-1);
+          }, 500);
+
+
+        }
+
+      }
+
+      //calling actual api 
+      if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
+        const offerResult = await completePrivateSwapOffer(payload);
+
+        if (offerResult) {
+          toast.custom(
+            (id) => (
+              <ToastLookCard
+                variant="success"
+                title="Private Swap Completed Successfully"
+                description={"You will receive a notification on metamask about the transaction."}
+                onClose={() => toast.dismiss(id)}
+              />
+            ),
+            {
+              duration: 3000,
+              className: 'w-full !bg-transparent',
+              position: "bottom-left",
+            }
+          );
+          setSwapAcceptance(prev => ({ ...prev, created: true }));
+
+          setTimeout(() => {
+
+            navigate(-1);
+          }, 500);
+
+
+        }
+
+      }
+
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
+    }
+  };
 
   useEffect(() => {
     const setValues = async () => {
@@ -193,7 +320,9 @@ const ViewSwapRoom = () => {
                 <CustomOutlineButton className="px-5 py-3">
                   Counter offer
                 </CustomOutlineButton>
-                <Button variant={"default"} type="submit">
+                <Button onClick={async () => {
+                  await handleSwapAccept();
+                }} isLoading={swapAcceptance.isLoading} disabled={swapAcceptance.created} variant={"default"} type="submit">
                   Accept
                 </Button>
               </div>
