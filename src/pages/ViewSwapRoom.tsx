@@ -9,20 +9,25 @@ import { Button } from "@/components/ui/button";
 import { SUE_SWAP_MODE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
-import { useCompleteOpenSwapOffer, useCompletePrivateSwapOffer, useGetSwapDetails } from "@/service/queries/swap-market.query";
+import { useCancelSwapOffer, useCompleteOpenSwapOffer, useCompletePrivateSwapOffer, useGetSwapDetails, useRejectSwapOffer } from "@/service/queries/swap-market.query";
 import { useProfileStore } from "@/store/profile";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_SwapCreation } from "@/types/global.types";
-import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CompleteSwap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CancelSwap, SUP_CompleteSwap } from "@/types/swap-market.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 const ViewSwapRoom = () => {
   const [dataSavedInStore, setDataSavedInStore] = useState({ sender: false, receiver: false });
+  const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+  const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const { mutateAsync: completeOpenSwapOffer } = useCompleteOpenSwapOffer();
   const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
+  const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
+  const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const swapMode = Number(searchParams.get('swapMode'));
@@ -59,7 +64,6 @@ const ViewSwapRoom = () => {
   const handleSwapAccept = async () => {
     try {
 
-
       setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
       const swap = state.swap!
       const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
@@ -68,8 +72,6 @@ const ViewSwapRoom = () => {
         throw new Error("Failed to obtain swap signature.");
       }
 
-      // setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));
-      //temp fix 
       swap.accept_sign = sign;
 
       const approval = await getWalletProxy().getUserApproval(swap, true);
@@ -118,10 +120,7 @@ const ViewSwapRoom = () => {
 
             navigate(-1);
           }, 500);
-
-
         }
-
       }
 
       //calling actual api 
@@ -145,17 +144,11 @@ const ViewSwapRoom = () => {
             }
           );
           setSwapAcceptance(prev => ({ ...prev, created: true }));
-
           setTimeout(() => {
-
             navigate(-1);
           }, 500);
-
-
         }
-
       }
-
 
     } catch (error: any) {
       toast.custom(
@@ -177,6 +170,158 @@ const ViewSwapRoom = () => {
       // console.log(error);
     } finally {
       setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const handleSwapReject = async () => {
+    try {
+
+      setSwapRejection(prev => ({ ...prev, isLoading: true }));
+      const swap = state.swap!
+      console.log(swapRejection.isLoading);
+
+      if (swap.id) {
+        const offerResult = await rejectSwapOffer(Number(swap.id));
+        console.log(swap.id);
+        if (offerResult) {
+          toast.custom(
+            (id) => (
+              <ToastLookCard
+                variant="success"
+                title="Swap Rejected Successfully"
+                description={"You have successfully rejected the swap offer"}
+                onClose={() => toast.dismiss(id)}
+              />
+            ),
+            {
+              duration: 3000,
+              className: 'w-full !bg-transparent',
+              position: "bottom-left",
+            }
+          );
+          setSwapRejection(prev => ({ ...prev, created: true }));
+
+          setTimeout(() => {
+            navigate(-1);
+          }, 500);
+        }
+
+      }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapRejection(prev => ({ ...prev, isLoading: false }));
+    }
+  };
+
+  const handleSwapCancel = async () => {
+    try {
+      setSwapCancel(prev => ({ ...prev, isLoading: true }));
+      const swap = state.swap!
+      console.log(swapCancel.isLoading);
+
+      // if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
+      //   const state = useSwapMarketStore(state => state.openMarket.openRoom);
+      //   let swapobj = state.swap
+      //   const payload: SUP_CancelSwap = {
+      //     swap_mode: swap.swap_mode,
+      //     open_trade_id: swap.open_trade_id
+      //   };
+      //   const offerResult = await cancelSwapOffer(payload);
+      //   console.log(swap.id);
+      //   if (offerResult) {
+      //     toast.custom(
+      //       (id) => (
+      //         <ToastLookCard
+      //           variant="success"
+      //           title="Swap Closed Successfully"
+      //           description={"You have successfully closed the swap"}
+      //           onClose={() => toast.dismiss(id)}
+      //         />
+      //       ),
+      //       {
+      //         duration: 3000,
+      //         className: 'w-full !bg-transparent',
+      //         position: "bottom-left",
+      //       }
+      //     );
+      //     setSwapCancel(prev => ({ ...prev, created: true }));
+      //     setTimeout(() => {
+
+      //       navigate(-1);
+      //     }, 500);
+      //   }
+      // }
+
+      if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
+        const payload: SUP_CancelSwap = {
+          swap_mode: swap.swap_mode,
+          trade_id: swap.trade_id
+        };
+        const offerResult = await cancelSwapOffer(payload);
+        console.log(swap.id);
+        if (offerResult) {
+          toast.custom(
+            (id) => (
+              <ToastLookCard
+                variant="success"
+                title="Swap Closed Successfully"
+                description={"You have successfully closed the swap"}
+                onClose={() => toast.dismiss(id)}
+              />
+            ),
+            {
+              duration: 3000,
+              className: 'w-full !bg-transparent',
+              position: "bottom-left",
+            }
+          );
+          setSwapCancel(prev => ({ ...prev, created: true }));
+          setTimeout(() => {
+
+            navigate(-1);
+          }, 500);
+        }
+
+      }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Error"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 5000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+
+      // console.log(error);
+    } finally {
+      setSwapCancel(prev => ({ ...prev, isLoading: false }));
     }
   };
 
@@ -308,12 +453,17 @@ const ViewSwapRoom = () => {
 
           {
             profile.wallet.address === state.sender.profile.wallet.address ?
-              <CustomOutlineButton className="px-5 py-3">
-                Close Swap
+              <CustomOutlineButton onClick={async () => {
+                await handleSwapCancel();
+              }} className="px-5 py-3">
+                Cancel Swap
               </CustomOutlineButton>
               :
               <div className="flex items-center gap-2" >
-                <Button variant={"outline"} type="submit">
+                <Button onClick={async () => {
+                  await handleSwapReject();
+                }}
+                  variant={"outline"} type="submit">
                   Reject
                 </Button>
 
@@ -327,11 +477,6 @@ const ViewSwapRoom = () => {
                 </Button>
               </div>
           }
-
-
-
-
-
         </div >
 
         {

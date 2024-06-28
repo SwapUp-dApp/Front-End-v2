@@ -75,7 +75,7 @@ const PendingSwapsTabContent = () => {
       }
 
       // setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));
-      //temp fix 
+      //temp fix
       swap.accept_sign = sign;
 
       const approval = await getWalletProxy().getUserApproval(swap, true);
@@ -237,7 +237,6 @@ const PendingSwapsTabContent = () => {
     try {
 
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
-
       console.log(swapCancel.isLoading);
 
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
@@ -264,11 +263,8 @@ const PendingSwapsTabContent = () => {
             }
           );
           setSwapCancel(prev => ({ ...prev, created: true }));
-
         }
-
       }
-
 
       if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
         const payload: SUP_CancelSwap = {
