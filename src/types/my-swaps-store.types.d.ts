@@ -27,7 +27,5 @@ export interface IMySwapsStore {
   setFilteredPendingSwapByFilters: (filters: IPendingFilters, loginWalletAddress: string) => void;
   setFilteredHistorySwapByFilters: (filters: IHistoryFilters) => void;
   resetAllFilters: (tabType: SUT_MySwapsTabType) => void;
-  resetStatusFilters: (tabType: SUT_MySwapsTabType) => void;
-  resetModeFilters: (tabType: SUT_MySwapsTabType) => void;
   setMySwapsData: (data: SUI_OpenSwap[], tabType: SUT_MySwapsTabType) => void;
 }

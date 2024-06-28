@@ -111,8 +111,8 @@ const SwapHistoryTabContent = () => {
               <TableHead className="align-top font-semibold min-w-[150px] pl-8" >Unique trade ID</TableHead>
               <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Counter-party wallet address</TableHead>
               <TableHead className="align-top font-semibold px-4 min-w-[135px]" >Swap mode</TableHead>
-              <TableHead className="align-top font-semibold px-4" >Trading chain</TableHead>
-              <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Offer review date</TableHead>
+              <TableHead className="align-top font-semibold px-4 min-w-[135px]" >Trading chain</TableHead>
+              <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1 min-w-[135px]" >Offer review date</TableHead>
               <TableHead className="align-top font-semibold px-4" >Status</TableHead>
               <TableHead className="w-[130px] pr-2 relative" >
                 <div className="absolute top-2 left-4">
@@ -151,7 +151,8 @@ const SwapHistoryTabContent = () => {
 
                     <TableCell className="text-xs font-medium pl-8">
                       <div className="w-auto flex justify-start" >  #
-                        {getLastCharacters(swap.trade_id, 7)}</div>
+                        {getLastCharacters(swap.trade_id, 7)}
+                      </div>
                     </TableCell>
 
                     <TableCell className="text-xs font-medium px-4">
@@ -175,7 +176,7 @@ const SwapHistoryTabContent = () => {
                           alt=""
                         />
 
-                        {currentChain.name}
+                        <span className='line-clamp-1' >{currentChain.name}</span>
                       </BadgeTile>
                     </TableCell>
 
@@ -199,7 +200,7 @@ const SwapHistoryTabContent = () => {
                       </div>
                     </TableCell>
 
-                    <TableCell className=" pb-10 text-xs font-medium pr-3 lg:pr-14">
+                    <TableCell className="pb-10 text-xs font-medium pr-3 lg:pr-14">
                       <div className="flex justify-end">
                         <SwapHistoryDetailsDialog swap={swap}>
                           <svg className='w-4' viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">

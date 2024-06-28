@@ -71,7 +71,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
             </span>
 
 
-            <div className={`hidden ${!isChecked ? "group-hover:flex" : ""} absolute p-2 rounded-sm bg-white text-black flex-col gap-1 ${activeGridView === "detailed" ? "-bottom-8 left-2 text-sm" : "-bottom-6 z-10 text-3xs"} font-semibold`} >
+            <div className={`hidden ${!isChecked ? "group-hover:flex" : ""} absolute p-2 rounded-sm bg-white text-black flex-col gap-1 ${activeGridView === "detailed" ? "-bottom-8 left-2 text-sm" : "-bottom-6 z-10 text-3xs"} font-semibold z-50`} >
               <p>Top 0.1%</p>
               <div>
                 <p className="leading-tight">Rarity rank: {data.rarityRank} / 2000</p>

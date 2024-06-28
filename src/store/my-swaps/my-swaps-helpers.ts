@@ -57,72 +57,22 @@ export const setFilteredMySwapsBySearchHelper = (state: IMySwapsStore, searchVal
 };
 
 export const setFilteredPendingSwapByFiltersHelper = (state: IMySwapsStore, filters: IPendingFilters, loginWalletAddress: string): IMySwapsStore => {
-
-  let filteredSwapsByStatus: SUI_OpenSwap[] = [];
-  let filteredSwapsBySwapMode: SUI_OpenSwap[] = [];
-  let filteredSwapsByDate: SUI_OpenSwap[] = [];
-  let filteredSwapsByChainId: SUI_OpenSwap[] = [];
-
-  if (filters.swapRequestStatus !== 'all') {
-    filteredSwapsByStatus = (state.pendingSwaps || [])?.filter(swap => swap.init_address === loginWalletAddress);
-  }
-
-  if (filters.swapMode !== 'all') {
-    const swapModeKey = filters.swapMode === 'open-market' ? 'OPEN' : 'PRIVATE';
-    filteredSwapsBySwapMode = (state.pendingSwaps || [])?.filter(swap => swap.swap_mode === SUE_SWAP_MODE[swapModeKey]);
-  }
-
-  if (filters.requestedDate !== 'all') {
-    filteredSwapsByDate = (state.pendingSwaps || [])?.filter(swap => swap.updated_at === filters.requestedDate);
-  }
-
-  if (filters.offersFromCurrentChain) {
-    filteredSwapsByChainId = (state.pendingSwaps || [])?.filter(swap => swap.trading_chain === String(Environment.CHAIN_ID));
-  }
-
-  const filteredItems = [...new Set([...filteredSwapsByStatus, ...filteredSwapsBySwapMode, ...filteredSwapsByChainId, ...filteredSwapsByDate])];
-
-  return ({
+  const filteredItems = getPendingFilteredSwaps(state, filters, loginWalletAddress);
+  return {
     ...state,
     pendingFilters: filters,
-    filteredPendingSwaps: filteredItems.length > 0 ? filteredItems : []
-  });
+    filteredPendingSwaps: filteredItems
+  };
 };
 
 export const setFilteredHistorySwapByFiltersHelper = (state: IMySwapsStore, filters: IHistoryFilters): IMySwapsStore => {
-  let filteredSwapsByStatus: SUI_OpenSwap[] = [];
-  let filteredSwapsBySwapMode: SUI_OpenSwap[] = [];
-  let filteredSwapsByDate: SUI_OpenSwap[] = [];
-  let filteredSwapsByChainId: SUI_OpenSwap[] = [];
+  const filteredItems = getHistoryFilteredSwaps(state, filters);
 
-  if (filters.swapStatus !== 'all') {
-    const swapStatusKey = filters.swapStatus.toUpperCase();
-    filteredSwapsByStatus = (state.pendingSwaps || [])?.filter(swap => swap.status === SUE_SWAP_STATUS[swapStatusKey as keyof typeof SUE_SWAP_STATUS]);
-
-    console.log("History filters: ", SUE_SWAP_STATUS[swapStatusKey as keyof typeof SUE_SWAP_STATUS]);
-  }
-
-  if (filters.swapMode !== 'all') {
-    const swapModeKey = filters.swapMode === 'open-market' ? 'OPEN' : 'PRIVATE';
-    filteredSwapsBySwapMode = (state.pendingSwaps || [])?.filter(swap => swap.swap_mode === SUE_SWAP_MODE[swapModeKey]);
-  }
-
-  if (filters.requestedDate !== 'all') {
-    filteredSwapsByDate = (state.pendingSwaps || [])?.filter(swap => swap.updated_at === filters.requestedDate);
-  }
-
-  if (filters.offersFromCurrentChain) {
-    filteredSwapsByChainId = (state.pendingSwaps || [])?.filter(swap => swap.trading_chain === String(Environment.CHAIN_ID));
-  }
-
-  const filteredItems = [...new Set([...filteredSwapsByStatus, ...filteredSwapsBySwapMode, ...filteredSwapsByChainId, ...filteredSwapsByDate])];
-
-
-  return ({
+  return {
     ...state,
     historyFilters: filters,
-    filteredHistorySwaps: filteredItems.length > 0 ? filteredItems : []
-  });
+    filteredHistorySwaps: filteredItems
+  };
 };
 
 export const resetAllFiltersHelper = (state: IMySwapsStore, tabType: SUT_MySwapsTabType): IMySwapsStore => {
@@ -153,42 +103,36 @@ export const resetAllFiltersHelper = (state: IMySwapsStore, tabType: SUT_MySwaps
 
 };
 
-export const resetStatusFiltersHelper = (state: IMySwapsStore, tabType: SUT_MySwapsTabType): IMySwapsStore => {
-  if (tabType === 'pending') {
-    return ({
-      ...state,
-      pendingFilters: {
-        ...state.pendingFilters,
-        swapRequestStatus: 'all',
-      },
-    });
-  } else {
-    return ({
-      ...state,
-      historyFilters: {
-        ...state.historyFilters,
-        swapStatus: 'all'
-      },
-    });
-  }
+const getPendingFilteredSwaps = (state: IMySwapsStore, filters: IPendingFilters, loginWalletAddress: string) => {
+  const filteredItems = state.pendingSwaps?.reduce((filteredSwaps, swap) => {
+    if (
+      (filters.swapRequestStatus === 'all' ||
+        (filters.swapRequestStatus === 'sent' && swap.init_address.toLowerCase() === loginWalletAddress.toLowerCase()) ||
+        (filters.swapRequestStatus === 'received' && swap.accept_address.toLowerCase() === loginWalletAddress.toLowerCase())
+      ) &&
+      (filters.swapMode === 'all' || swap.swap_mode === SUE_SWAP_MODE[filters.swapMode === 'open-market' ? 'OPEN' : 'PRIVATE']) &&
+      (!filters.requestedDate || swap.updated_at === filters.requestedDate) &&
+      (!filters.offersFromCurrentChain || swap.trading_chain === String(Environment.CHAIN_ID))
+    ) {
+      filteredSwaps.push(swap);
+    }
+    return filteredSwaps;
+  }, [] as SUI_OpenSwap[]);
+
+  return filteredItems;
 };
 
-export const resetModeFiltersHelper = (state: IMySwapsStore, tabType: SUT_MySwapsTabType): IMySwapsStore => {
-  if (tabType === 'pending') {
-    return ({
-      ...state,
-      pendingFilters: {
-        ...state.pendingFilters,
-        swapMode: 'all',
-      },
-    });
-  } else {
-    return ({
-      ...state,
-      historyFilters: {
-        ...state.historyFilters,
-        swapMode: 'all'
-      },
-    });
-  }
+const getHistoryFilteredSwaps = (state: IMySwapsStore, filters: IHistoryFilters) => {
+  const filteredItems = state.historySwaps?.reduce((filteredSwaps, swap) => {
+    if (
+      (filters.swapStatus === 'all' || swap.status === SUE_SWAP_STATUS[filters.swapStatus.toUpperCase() as keyof typeof SUE_SWAP_STATUS]) &&
+      (filters.swapMode === 'all' || swap.swap_mode === SUE_SWAP_MODE[filters.swapMode === 'open-market' ? 'OPEN' : 'PRIVATE']) &&
+      (!filters.requestedDate || swap.updated_at === filters.requestedDate) &&
+      (!filters.offersFromCurrentChain || swap.trading_chain === String(Environment.CHAIN_ID))
+    ) {
+      filteredSwaps.push(swap);
+    }
+    return filteredSwaps;
+  }, [] as SUI_OpenSwap[]);
+  return filteredItems;
 };
