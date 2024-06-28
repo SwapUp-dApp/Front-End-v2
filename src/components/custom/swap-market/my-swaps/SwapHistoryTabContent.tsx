@@ -187,7 +187,7 @@ const SwapHistoryTabContent = () => {
                           className={cn(
                             "rounded-full w-1.5 h-1.5 ",
                             swap.status === SUE_SWAP_STATUS.COMPLETED && "bg-su_positive",
-                            swap.status === SUE_SWAP_STATUS.DECLINED && "bg-su_positive",
+                            swap.status === SUE_SWAP_STATUS.DECLINED && "bg-su_negative",
                             swap.status === SUE_SWAP_STATUS.CANCELED && "bg-su_negative",
                           )}
                         >
