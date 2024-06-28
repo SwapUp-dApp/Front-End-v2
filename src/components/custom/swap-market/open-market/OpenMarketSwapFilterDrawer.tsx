@@ -1,22 +1,16 @@
 import { useState } from "react";
-import moment from "moment";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn, generateRandomKey } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Schema_OpenMarketFiltersForm, Schema_PendingMySwapsFiltersForm } from "@/schema";
+import { Schema_OpenMarketFiltersForm, } from "@/schema";
 
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { SUT_PendingFiltersStatusType, SUT_FiltersSwapModeType, IPendingFilters } from "@/types/my-swaps-store.types";
 import { Switch } from "@/components/ui/switch";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { useMySwapStore } from "@/store/my-swaps";
 import { useProfileStore } from "@/store/profile";
 import { SUI_CurrencyItem } from "@/types/global.types";
 import { SUT_PreferredAssetType } from "@/types/swap-market.types";
@@ -54,6 +48,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
   const onSubmit = async (data: z.infer<typeof Schema_OpenMarketFiltersForm>) => {
 
     const { offersFromCurrentChain } = data;
+    console.log("Data: ", data);
 
     setIsOpen(false);
   };
