@@ -28,8 +28,6 @@ import {
   resetOpenSwapProposeRoomHelper,
   createProposeOpenSwapHelper,
   setSwapEncodedMsgAndSignOpenHelper,
-  setPendingSwapsDataHelper,
-  setSwapHistoryDataHelper,
   setValuesOnViewSwapRoomHelper,
   resetViewSwapRoomHelper,
   setMyOpenSwapsDataHelper,
@@ -183,8 +181,6 @@ const initialState: ISwapMarketStore = {
     privateRoom: privateMarketRoomInitialState,
     setPrivateSwapsData: () => { },
     setFilteredAvailablePrivateSwapsBySearch: () => { },
-    setPendingSwapsData: () => { },
-    setSwapHistoryData: () => { }
   },
 };
 
@@ -305,8 +301,6 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       resetPrivateRoom: () => set((state) => resetPrivateRoomDataHelper(state)),
 
     },
-    setPendingSwapsData: (pendingswapsData: SUI_OpenSwap[]) => set(state => setPendingSwapsDataHelper(state, pendingswapsData)),
-    setSwapHistoryData: (swaphistoryData: SUI_OpenSwap[]) => set(state => setSwapHistoryDataHelper(state, swaphistoryData)),
     setPrivateSwapsData: (privateswapsData: SUI_Swap[]) => set(state => setPrivateSwapsDataHelper(state, privateswapsData)),
     setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => set(state => setFilteredAvailablePrivateSwapsBySearchHelper(state, searchValue)),
   },

@@ -60,6 +60,15 @@ export const getLastCharacters = (value: string, lastCharacters: number) => {
 export const generateRandomTradeId = (): string => {
   return uuidv4();
 };
+export const generateRandomKey = (length: number): string => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+[]{}|;:,.<>?';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters.charAt(randomIndex);
+  }
+  return result;
+};
 
 export const getEtherScanContractNftUrl = (token: string, nftId: string) => {
   const baseUrl = Environment.ETHERSCAN_BASE_URL;

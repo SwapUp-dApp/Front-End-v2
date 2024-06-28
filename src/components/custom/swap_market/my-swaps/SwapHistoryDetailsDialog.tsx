@@ -1,11 +1,12 @@
 import { ScrollBar, ScrollArea } from '@/components/ui/scroll-area';
-import { getEtherScanTransactionURL, getLastCharacters } from '@/lib/utils';
+import { cn, getEtherScanTransactionURL, getLastCharacters } from '@/lib/utils';
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@/components/ui/dialog';
 import CopyTile from '@/components/custom/tiles/CopyTile';
 import AvoidingFeeDialog from '@/components/custom/swap_market/AvoidingFeeDialog';
 import { SUI_OpenSwap } from '@/types/swap-market.types';
 import { Link } from 'react-router-dom';
 import SwapHistoryDialogSideCard from './SwapHistoryDialogSideCard';
+import { SUE_SWAP_STATUS, SUE_SWAP_STATUS_TO_STRING } from '@/constants/enums';
 
 interface IProp {
   children: any;
@@ -39,12 +40,18 @@ const SwapHistoryDetailsDialog = ({ children, swap }: IProp) => {
                   </CopyTile>
 
                   <span className=" flex items-center gap-2 p-2 bg-su_enable_bg text-su_primary font-semibold text-2xs lg:text-xs rounded-xs" >
-                    <span className={`rounded-full w-2 h-2 ${swap.status === 2 && "bg-su_positive"}  ${swap.status === 3 && "bg-su_negative"} ${swap.status === 4 && "bg-su_negative"}`} ></span>
+                    <span
+                      className={cn(
+                        "rounded-full w-2 h-2 ",
+                        swap.status === SUE_SWAP_STATUS.COMPLETED && "bg-su_positive",
+                        swap.status === SUE_SWAP_STATUS.DECLINED && "bg-su_positive",
+                        swap.status === SUE_SWAP_STATUS.CANCELED && "bg-su_negative",
+                      )}
+                    >
+                    </span>
 
-                    <span>
-                      {swap.status === 2 && "Completed"}
-                      {swap.status === 3 && "Declined"}
-                      {swap.status === 4 && "Cancelled"}
+                    <span className='capitalize' >
+                      {SUE_SWAP_STATUS_TO_STRING[`value${swap.status!}`]}
                     </span>
                   </span>
 
@@ -138,7 +145,7 @@ const SwapHistoryDetailsDialog = ({ children, swap }: IProp) => {
           </div>
         </ScrollArea>
       </DialogContent>
-    </Dialog>
+    </Dialog >
   );
 };
 
