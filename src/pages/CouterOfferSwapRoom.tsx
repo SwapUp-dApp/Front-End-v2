@@ -59,7 +59,9 @@ const CounterOfferSwapRoom = () => {
         throw new Error("User approval not granted.");
       }
 
-
+      //Update the swap offer in BC as a counter offer.
+      await getWalletProxy().createAndUpdateSwap(createdSwap, "COUNTER");
+      
       const payload: SUP_CounterSwap = {
         ...createdSwap,
         init_sign: sign

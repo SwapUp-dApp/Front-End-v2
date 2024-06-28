@@ -61,14 +61,12 @@ const ViewSwapRoom = () => {
     );
   };
 
-
   const handleCounterSwap = async () => {
     const swap = state.swap!
     console.log(swap.trade_id);
 
     navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
   };
-
 
   const handleSwapAccept = async () => {
     try {
@@ -89,19 +87,19 @@ const ViewSwapRoom = () => {
         throw new Error("User approval not granted.");
       }
 
-      const triggerTranfer = await getWalletProxy().triggerTransfer(swap);
+      const txRcpt = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
       console.log(swapAcceptance.isLoading);
 
-      if (!triggerTranfer) {
+      if (!txRcpt) {
         throw new Error("Swap Failed");
       }
 
       const payload: SUP_CompleteSwap = {
         ...swap,
-        status: triggerTranfer.status,
-        tx: triggerTranfer.hash,
-        notes: triggerTranfer.notes,
-        timestamp: triggerTranfer.timeStamp,
+        status: txRcpt.status,
+        tx: txRcpt.hash,
+        notes: txRcpt.notes,
+        timestamp: txRcpt.timeStamp,
       };
 
       //calling actual api 
@@ -190,6 +188,7 @@ const ViewSwapRoom = () => {
       console.log(swapRejection.isLoading);
 
       if (swap.id) {
+        await getWalletProxy().createAndUpdateSwap(swap, "REJECT");
         const offerResult = await rejectSwapOffer(Number(swap.id));
         console.log(swap.id);
         if (offerResult) {
