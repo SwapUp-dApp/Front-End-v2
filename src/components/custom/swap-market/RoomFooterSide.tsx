@@ -150,7 +150,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
   return (
     <aside className="space-y-2.5 lg:space-y-2 w-1/2 p-4 border border-su_disabled"  >
       <div className="flex justify-between items-center text-su_secondary " >
-        <h2 className="dark:text-white text-xs">You offer:</h2>
+        <h2 className="dark:text-white text-xs">Offer:</h2>
 
         {
           ((nftsToDisplay.length > 0 || nftsSelectedForSwap.length > 0) && showRemoveNftButton) &&
