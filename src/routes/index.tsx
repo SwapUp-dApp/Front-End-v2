@@ -13,11 +13,11 @@ import ViewSwapRoom from "@/pages/ViewSwapRoom";
 import CounterOfferSwapRoom from "@/pages/CouterOfferSwapRoom";
 import SwapUpWebsite from "@/pages/SwapUpWebsite";
 import { Navigate } from "react-router-dom";
-import OpenMarketTabContent from "@/components/custom/swap_market/open-market/OpenMarketTabContent";
-import PrivateMarketTabContent from "@/components/custom/swap_market/private-party/PrivateMarketTabContent";
+import OpenMarketTabContent from "@/components/custom/swap-market/open-market/OpenMarketTabContent";
+import PrivateMarketTabContent from "@/components/custom/swap-market/private-party/PrivateMarketTabContent";
 import { defaults } from "@/constants/defaults";
-import PendingSwapsTabContent from "@/components/custom/swap_market/my-swaps/PendingSwapsTabContent";
-import SwapHistoryTabContent from "@/components/custom/swap_market/my-swaps/SwapHistoryTabContent";
+import PendingSwapsTabContent from "@/components/custom/swap-market/my-swaps/PendingSwapsTabContent";
+import SwapHistoryTabContent from "@/components/custom/swap-market/my-swaps/SwapHistoryTabContent";
 
 
 export interface SUI_RoutesType {

@@ -5,7 +5,7 @@ import GridToggleButton from "../shared/GridToggleButton";
 import { Input } from "@/components/ui/input";
 import NftCard from "../shared/NftCard";
 import EmptyDataset from "../shared/EmptyDataset";
-import PrivateRoomFilterDrawer from "../swap_market/private-party/PrivateRoomFilterDrawer";
+import PrivateRoomFilterDrawer from "../swap-market/private-party/PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
 import { SUT_PrivateRoomLayoutType } from "@/types/swap-market-store.types";
