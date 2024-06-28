@@ -5,7 +5,7 @@ import GridToggleButton from "../shared/GridToggleButton";
 import { Input } from "@/components/ui/input";
 import NftCard from "../shared/NftCard";
 import EmptyDataset from "../shared/EmptyDataset";
-import PrivateRoomFilterDrawer from "../swap_market/private-party/PrivateRoomFilterDrawer";
+import PrivateRoomFilterDrawer from "../swap-market/private-party/PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
 import { SUT_PrivateRoomLayoutType } from "@/types/swap-market-store.types";
@@ -86,35 +86,25 @@ const ProfileAssetsLayout = ({ layoutType, walletAddress }: IProp) => {
   }, [data, isSuccess, isError]);
 
   return (
-    <Card className="border-none flex flex-col gap-4 dark:bg-su_primary_bg p-2 lg:p-6 space-x-9" >
-      <CardHeader className="flex flex-col p-0 gap-3  " >
+    <Card className="border-none flex flex-col gap-4 dark:bg-su_primary_bg " >
 
+      <div className="space-y-2" >
+        <CardHeader className="px-0 flex flex-col lg:flex-row lg:items-center lg:justify-between " >
 
-
-        <div className={`flex gap-4 items-center`} >
-
+          <Card className="h-[60px] border-none bg-card  dark:bg-su_secondary_bg p-3 " >
+            <CardContent className={`p-2 flex flex-col gap-2`}>
+              <div className="flex items-start justify-between">
+                <h2  >156.1225 SOL </h2>
+                <h2 className="dark:text-su_ternary text-xs p-1 " >   Total Estimated NFT Value</h2>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="flex items-center gap-2" >
-
-
-            <Card className="h-[60px] w-full border-none bg-card  dark:bg-su_secondary_bg p-3 " >
-              <CardContent className={`p-2 flex flex-col gap-2`}>
-                <div className="flex items-start justify-between">
-                  <h2  >156.1225 SOL </h2>
-                  <h2 className="dark:text-su_ternary text-xs p-1 " >   Total Estimated NFT Value</h2>
-                </div>
-
-
-              </CardContent>
-            </Card>
-
-
-
-
             <GridToggleButton activeGridView={activeGridView} toggleView={toggleGridView} />
 
             <Input
-              className="w-3/4 !p-3.5 bg-su_enable_bg"
+              className="lg:min-w-[350px] !p-3.5 bg-su_enable_bg"
               placeholder="Search by asset name or ID"
               onChange={(event: ChangeEvent<HTMLInputElement>) => handleSearchNfts(event.target.value)}
               icon={
@@ -127,54 +117,53 @@ const ProfileAssetsLayout = ({ layoutType, walletAddress }: IProp) => {
             <PrivateRoomFilterDrawer setFilteredNftsByFilters={setFilteredNftsByFilters} removeAllFilters={removeAllFilters} collections={collections} >
               <FilterButton filterApplied={filters ? true : false} />
             </PrivateRoomFilterDrawer>
-
-
           </div>
-        </div>
-      </CardHeader>
 
-      {
-        filters &&
-        <ScrollArea className="w-[300px] md:w-auto overflow-x-scroll md:overflow-hidden py-2 mx-auto md:mx-0" >
-          <div className="w-[500px] md:w-auto flex justify-between items-start " >
-            <div className="flex items-center gap-2 lg:gap-6">
-              <p className="text-xs text-text dark:text-su_secondary flex items-center gap-2" >
-                Preferred rarity rank:
-                <span className="flex gap-2 items-center bg-su_enable_bg rounded-xs px-3 py-2 capitalize text-primary font-semibold" >
-                  <svg className="w-3" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M7.7175 2.85714L6 0L4.2825 2.85714H7.7175ZM1.7175 7.14286L0 10H12L10.2825 7.14286H1.7175ZM9.855 6.42857L8.145 3.57143H3.855L2.145 6.42857H9.855Z" fill="white" />
-                  </svg>
+        </CardHeader>
 
-                  <>{filters.rarityRank.from} - {filters.rarityRank.to}</>
-                </span>
-              </p>
+        {
+          filters &&
+          <ScrollArea className="w-[300px] md:w-auto overflow-x-scroll md:overflow-hidden py-2 mx-auto md:mx-0" >
+            <div className="w-[500px] md:w-auto flex justify-between items-start " >
+              <div className="flex items-center gap-2 lg:gap-6">
+                <p className="text-xs text-text dark:text-su_secondary flex items-center gap-2" >
+                  Preferred rarity rank:
+                  <span className="flex gap-2 items-center bg-su_enable_bg rounded-xs px-3 py-2 capitalize text-primary font-semibold" >
+                    <svg className="w-3" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7.7175 2.85714L6 0L4.2825 2.85714H7.7175ZM1.7175 7.14286L0 10H12L10.2825 7.14286H1.7175ZM9.855 6.42857L8.145 3.57143H3.855L2.145 6.42857H9.855Z" fill="white" />
+                    </svg>
 
-              <p className="text-xs text-text dark:text-su_secondary flex items-center gap-2 " >
-                Collection:
-                <span className="flex gap-2 items-center bg-su_enable_bg rounded-xs px-3 py-2 capitalize text-primary font-semibold" >
-                  {filters.collection}
-                </span>
-              </p>
+                    <>{filters.rarityRank.from} - {filters.rarityRank.to}</>
+                  </span>
+                </p>
+
+                <p className="text-xs text-text dark:text-su_secondary flex items-center gap-2 " >
+                  Collection:
+                  <span className="flex gap-2 items-center bg-su_enable_bg rounded-xs px-3 py-2 capitalize text-primary font-semibold" >
+                    {filters.collection}
+                  </span>
+                </p>
+              </div>
+              <span
+                className="text-sm font-semibold py-2 px-3 hover:bg-su_enable_bg cursor-pointer flex items-center gap-2 rounded-xs"
+                onClick={() => removeAllFilters()}
+              >
+                Clear all
+
+                <svg className="w-3" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M11.1194 1.94157L11.6497 1.41124L10.5891 0.350586L10.0587 0.880919L6.00069 4.939L1.94265 0.880919L1.41232 0.350586L0.351652 1.41124L0.88198 1.94157L4.94003 5.99967L0.88189 10.0578L0.351562 10.5882L1.41223 11.6488L1.94256 11.1185L6.00069 7.06033L10.0588 11.1185L10.5891 11.6488L11.6498 10.5882L11.1195 10.0578L7.06134 5.99967L11.1194 1.94157Z" fill="#B6B6BD" />
+                </svg>
+              </span>
             </div>
-            <span
-              className="text-sm font-semibold py-2 px-3 hover:bg-su_enable_bg cursor-pointer flex items-center gap-2 rounded-xs"
-              onClick={() => removeAllFilters()}
-            >
-              Clear all
-
-              <svg className="w-3" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fillRule="evenodd" clipRule="evenodd" d="M11.1194 1.94157L11.6497 1.41124L10.5891 0.350586L10.0587 0.880919L6.00069 4.939L1.94265 0.880919L1.41232 0.350586L0.351652 1.41124L0.88198 1.94157L4.94003 5.99967L0.88189 10.0578L0.351562 10.5882L1.41223 11.6488L1.94256 11.1185L6.00069 7.06033L10.0588 11.1185L10.5891 11.6488L11.6498 10.5882L11.1195 10.0578L7.06134 5.99967L11.1194 1.94157Z" fill="#B6B6BD" />
-              </svg>
-            </span>
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      }
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        }
+      </div>
 
       <CardContent
         className={`grid gap-3 lg:gap-4 ${activeGridView === "detailed" ?
-          "grid-cols-2 md:grid-cols-3 lg:grid-cols-3 5xl:grid-cols-5 3xl:grid-cols-4" :
-          "grid-cols-3 md:grid-cols-4 lg:grid-cols-5 3xl:grid-cols-6 5xl:grid-cols-8"} p-0`}
+          "grid-cols-2 md:grid-cols-3 lg:grid-cols-7 5xl:grid-cols-9 3xl:grid-cols-8" :
+          "grid-cols-3 md:grid-cols-4 lg:grid-cols-10 3xl:grid-cols-11 5xl:grid-cols-13"} p-0 `}
       >
         {
           filteredNfts && filteredNfts.length > 0

@@ -1,8 +1,19 @@
+// -- // @ts-nocheck
+
 import { Environment } from "@/config";
 import { abi } from "@/constants/abi";
 import { SUI_Swap } from "@/types/swap-market.types";
-import { ethers, JsonRpcSigner } from 'ethers';
+import { ethers } from 'ethers';
+import { ethers6Adapter } from "thirdweb/adapters/ethers6";
 import { Account } from "thirdweb/wallets";
+import { ErrorDecoder } from 'ethers-decode-error'
+import type { DecodedError } from "ethers-decode-error";
+import { thirdWebClient, currentChain } from "./thirdWebClient.ts";
+
+interface IAsset {
+  assetAddress: string,
+  value: number
+}
 
 let walletInstance: ReturnType<typeof walletProxy> | null = null;
 
@@ -24,146 +35,35 @@ export const walletProxy = () => {
     return connectedWalletAccount;
   }
 
+  const getEthersProviderAndSigner = async () => {
+    // convert a thirdweb account to ethers signer
+    let provider = await ethers6Adapter.provider.toEthers({client: thirdWebClient, chain: currentChain});
+    let signer = await ethers6Adapter.signer.toEthers({
+      client: thirdWebClient,
+      chain: currentChain,
+      account: connectedWalletAccount!,
+    });
+    return {provider, signer};
+  }
+  
+  const getSwapupContractInstance = async () => {
+    const {signer} = await getEthersProviderAndSigner();
+    const contract = new ethers.Contract(
+      Environment.SWAPUP_CONTRACT,
+      abi.swapUp,
+      signer
+    );
+    return contract;
+  }
+
   const getUserSignature = async (
     swap: SUI_Swap,
     swapEncodedMsg: string,
   ) => {
-  
-    let swapEncodedBytes = await getSwapEncodedBytes(swap);
-    const sign = await getWalletSignature(swap);
-    if (swapEncodedBytes !== swapEncodedMsg) {
-      
-      if (sign) {
-        return { sign, swapEncodedBytes };
-      }
-    }
-  
-    return { sign, swapEncodedBytes };
-  
+    return { sign: "sign", swapEncodedBytes: "" };
   }
-  
-  const getSwapEncodedBytes = async (swap: SUI_Swap) => {
-    // console.log("meta", swap);
-  
-    const abiEncoder = new ethers.AbiCoder();
-    const encodedInitNftBytesArray = swap.metadata.init.tokens.map(
-      (nft) => {
-        let type = nft.type === "ERC721" ? 721 : 1155;
-        return abiEncoder.encode(
-          ["string", "address", "uint", "uint"],
-          [nft.address, nft.address, nft.id, type]
-        );
-      }
-    );
-    const encodedAcceptNftBytesArray = swap.metadata.accept.tokens.map(
-      (nft) => {
-        let type = nft.type === "ERC721" ? 721 : 1155;
-        return abiEncoder.encode(
-          ["string", "address", "uint", "uint"],
-          [nft.address, nft.address, nft.id, type]
-        );
-      }
-    );
-    const encodedInitBytes = abiEncoder.encode(
-      ["bytes[]", "string", "address", "uint"],
-      [
-        encodedInitNftBytesArray,
-        swap.init_address,
-        swap.init_address,
-        swap.metadata.init.tokens.length
-      ]
-    );
-    const encodedAcceptBytes = abiEncoder.encode(
-      ["bytes[]", "string", "address", "uint"],
-      [
-        encodedAcceptNftBytesArray,
-        swap.accept_address,
-        swap.accept_address,
-        swap.metadata.accept.tokens.length
-      ]
-    );
-  
-    let finalBytes = abiEncoder.encode(
-      ["bytes[]"],
-      [[encodedInitBytes, encodedAcceptBytes]]
-    );
-    return finalBytes;
-  }
-  
-  const getWalletSignature = async (
-    swap: SUI_Swap
-  ) => {
-  
-    const typedData = {
-      domain : {
-        name: "swap up",
-        version: "1.0",
-        chainId: Environment.CHAIN_ID,
-        verifyingContract: Environment.SWAPUP_CONTRACT
-      },
-      types : {
-        set: [
-          { name: "sender", type: "address" },
-          { name: "msg", type: "string" }
-        ]
-      },
-      value : {
-          sender: swap.init_address,
-          msg: await generateSignString(swap)
-      }
-    }
 
-    try {
-      
-      //let sign = await connectedWalletAccount?.signMessage({message: "typedData.value.msg"});
-      //let sign = await connectedWalletAccount?.signTypedData(typedData);
-      let sign = "sample signature";  
-      console.log("sign--->", sign);
-      return sign;
-  
-    } catch (err) {
-      console.log(err);
-      return null;
-    }
-  };
-  
-  const generateSignString = async (swap: SUI_Swap) => {
-    const initNfts = swap.metadata.init.tokens.map((tkn, i) => {
-      return i === swap.metadata.init.tokens.length - 1
-        ? `[
-          id: ${tkn.id}, 
-          type: ${tkn.type.substring(3)}, 
-          contract address: ${tkn.address}
-        ]`
-        : `[
-          id: ${tkn.id}, 
-          type: ${tkn.type.substring(3)}, 
-          contract address: ${tkn.address}
-        ]`;
-    });
-  
-    const acceptNfts = swap.metadata.accept.tokens.map((tkn, i) => {
-      return i === swap.metadata.accept.tokens.length - 1
-        ? `[
-          id: ${tkn.id}, 
-          type: ${tkn.type.substring(3)}, 
-          contract address: ${tkn.address}
-        ]`
-        : `[
-          id: ${tkn.id}, 
-          type: ${tkn.type.substring(3)}, 
-          contract address: ${tkn.address}
-        ]`;
-    });
-  
-    let signStr = `${swap.init_address} offering to swap NFTs, ${initNfts} with the NFTs, ${acceptNfts} belonging to ${swap.accept_address}`;
-    console.log("sign string :" + signStr);
-  
-    return signStr;
-  };
-  
   const getUserApproval = async (swap: SUI_Swap, init = true) => {
-    return true;
     //if there are multiple NFT's in different smart contracts then we will have to call approve for all
     //get unique contracts from swap.metadata.init.tokens
     let tokens =
@@ -176,7 +76,7 @@ export const walletProxy = () => {
     //initiate all the approves at once and then wait
     for (const elem of uniqueContracts) {
       try {
-        let tx = await triggerApprovalForAll(elem);
+        let tx = await setApprovalForAll(elem);
         if (tx) transactions.push(tx);
       } catch (err) {
         //errors like user rejecting the transaction in metamask
@@ -192,119 +92,139 @@ export const walletProxy = () => {
     return true;
   };
   
-  
-  const triggerApprovalForAll = async (nftContractAddress: string) => {
-    
+  //This function checks if our swap contract is given approval to move NFT minted from a contract 
+  const setApprovalForAll = async (contractAddress: string) => {
+    const {signer} = await getEthersProviderAndSigner();
     const contract = new ethers.Contract(
-      nftContractAddress,
+      contractAddress,
       abi.nft,
-      null
+      signer
     );
-  
-  //   console.log(contract);
-  
-  //   const approved4all = await contract.isApprovedForAll(
-  //     await signer.getAddress(),
-  //     Environment.SWAPUP_CONTRACT
-  //   );
-  
-  //   console.log(approved4all);
-  //   if (approved4all) return null;
+    
+    const approved4all = await contract.isApprovedForAll(
+      signer,
+      Environment.SWAPUP_CONTRACT
+    );
+    
+    console.log('ApprovedForAll : ' + approved4all);
+    if (approved4all) return null;
   
     const tx = await contract.setApprovalForAll(Environment.SWAPUP_CONTRACT, true);
     console.log(tx.hash);
   
     return tx;
-  };
-  
-  const triggerTransfer = async (swap: SUI_Swap) => {
-    let res = {
-      status: 0,
-      hash: "tx.hash",
-      notes: "",
-      timeStamp: ''
-    };
-    return res
+  }
 
-    const contract = new ethers.Contract(
-      Environment.SWAPUP_CONTRACT,
-      abi.swapUp,
-      null
-    );
-    console.log(contract);
-    let swapEncodedBytes = await getSwapEncodedBytes(swap);
+  const createAndUpdateSwap = async (swap: SUI_Swap, swapAction: string) => {
+    let contract = await getSwapupContractInstance();
+    
     try {
-      let gas = 200000 + 60000 * 10;
-      const tx = await contract["swap(bytes,bytes)"](
-        swapEncodedBytes,
-        swap.init_sign,
-        {
-          gasLimit: gas
-        }
-      );
-      console.log(tx);
+      let initAssets: IAsset[] = [];
+      let acceptAssets: IAsset[] = [];
+      swap.metadata.init.tokens.forEach(ele => {
+        initAssets.push({assetAddress: ele.address, value: Number(ele.id)})
+      });
+      swap.metadata.accept.tokens.forEach(ele => {
+        acceptAssets.push({assetAddress: ele.address, value: Number(ele.id)})
+      });
+      let feeInETH = await contract.getFeeInETH();
+      console.log(feeInETH)
+      
+      let swapType = swap.swap_mode == 1 ? 'PRIVATE' : 'OPEN'
+      if(swapType === 'OPEN') return null; //prevent open market swaps for now.
+
+      let tx = null;
+      switch(swapAction){
+        case 'CREATE':
+            tx = await contract["createSwap(string, address, tuple(address, uint256)[], tuple(address, uint256)[], string)"](
+                swap.trade_id,
+                swap.accept_address,
+                initAssets,
+                acceptAssets,
+                swapType,
+                {
+                  value: feeInETH, //add a bit more to 
+                }
+              );
+            console.log(tx);
+            break;
+        case 'COUNTER':
+            tx = await contract["counterSwap(string, tuple(address, uint256)[], tuple(address, uint256)[])"](
+                swap.trade_id,
+                initAssets,
+                acceptAssets,
+                {
+                  value: feeInETH, //add a bit more to 
+                }
+              );
+            console.log(tx);
+            break;
+          case 'ACCEPT':
+          case 'REJECT' :
+            tx = await contract["completeSwap(string, tuple(address, uint256)[], tuple(address, uint256)[], string)"](
+                swap.trade_id,
+                initAssets,
+                acceptAssets,
+                swapAction === 'ACCEPT' ? 'COMPLETED' : 'REJECTED',
+                {
+                  value: feeInETH, //add a bit more to 
+                }
+              );
+            console.log(tx);
+            break;
+      }
+      
       let res = await getTransactionReceipt(tx);
       console.log("rec", res);
       return res;
     } catch (err) {
       console.log("txErr", err);
       return null; //transaction rejected or other issues
+    }   
+    
+  }
+
+  const getFeeInETH = async () => {
+    let contract = await getSwapupContractInstance();
+    
+    try {
+      const tx = await contract.getFeeInETH();
+      console.log(tx);      
+    } catch (err) {
+        const errorDecoder = ErrorDecoder.create()
+        const decodedError: DecodedError = await errorDecoder.decode(err)
+        console.log(`TX Error: ${decodedError.type}, ${decodedError.reason}`)
+        return null; //transaction rejected or other issues
     }
-  };
+  }
   
+  //get the current state of an existing swap from BC
+  const getSwap = async (swapId: string) => {
+    let contract = await getSwapupContractInstance();    
+    try {
+      const tx = await contract.swaps(swapId);
+      console.log(tx);      
+    } catch (err) {
+        const errorDecoder = ErrorDecoder.create()
+        const decodedError: DecodedError = await errorDecoder.decode(err)
+        console.log(`TX Error: ${decodedError.type}, ${decodedError.reason}`)
+        return null; //transaction rejected or other issues
+    }
+  }
+
   const getTransactionReceipt = async (tx: any) => {
-    /*** Transaction Receipt Logic (https://docs.ethers.org/v5/api/providers/types/#providers-TransactionResponse)
-  If the transaction execution failed (i.e. the receipt status is 0), a CALL_EXCEPTION error will be rejected with the following properties:
-    error.transaction - the original transaction
-    error.transactionHash - the hash of the transaction
-    error.receipt - the actual receipt, with the status of 0
-  If the transaction is replaced by another transaction, a TRANSACTION_REPLACED error will be rejected with the following properties:
-    error.hash - the hash of the original transaction which was replaced
-    error.reason - a string reason; one of "repriced", "cancelled" or "replaced"
-    error.cancelled - a boolean; a "repriced" transaction is not considered cancelled, but "cancelled" and "replaced" are
-    error.replacement - the replacement transaction (a TransactionResponse)
-    error.receipt - the receipt of the replacement transaction (a TransactionReceipt)
-  *** Transaction Receipt Logic */
-  
-    let res = {
-      status: 0,
-      hash: tx.hash,
-      notes: "",
-      timeStamp: ''
-    };
-  
     try {
       // Wait for the transaction to be mined
       let rcpt = await tx.wait();
-      const timestamp = await getTimestamp(tx);
-      // The transaction was mined without issue
-      res.status = rcpt.status;
-      res.notes = `from: ${rcpt.from}`;
-      res.timeStamp = timestamp;
-  
+      console.log(rcpt);
+      return rcpt;
     } catch (error: any) {
-      if (error.code === 'TRANSACTION_REPLACED') {
-        res.notes = `${error.reason}: ${error.hash} - ${error.replacement?.hash}`;
-        if (error.cancelled) {
-          // The transaction was cancelled or replaced
-          res.status = 0;
-        } else {
-          // Repriced
-          // The user used "speed up" or something similar in their client, but we now have the updated info
-          if (error.receipt.status === 1) {
-            res.status = 1;
-            res.notes += ` - repriced with success - replacement hash ${error.receipt.hash}`;
-          } else {
-            res.status = 0;
-            res.notes += ` - repriced with failure - replacement hash ${error.receipt.hash}`;
-          }
-        }
-      } else {
-        // Handle other types of errors
-        console.error(error);
-      }
+        const errorDecoder = ErrorDecoder.create()
+        const decodedError: DecodedError = await errorDecoder.decode(error);
+        
+        console.log(`BC Error: ${decodedError.type}, ${decodedError.reason}`);    
     }
-    return res;
+    return null;    
   };
   
   const getTimestamp = async (tx: any) => {
@@ -313,13 +233,14 @@ export const walletProxy = () => {
     const block = await provider.getBlock(receipt.blockNumber);
     return block.timestamp;
   };
-
+  
   return {
     setConnectedWalletAccount,
     getConnectedWalletAccount,
-    getUserSignature,
     getUserApproval,
-    triggerApprovalForAll,
-    triggerTransfer
+    getUserSignature,
+    createAndUpdateSwap,
+    getFeeInETH,
+    getSwap
   }
 }

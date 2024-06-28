@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import RoomHeader from "@/components/custom/swap_market/RoomHeader";
-import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
+import RoomHeader from "@/components/custom/swap-market/RoomHeader";
+import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import { Button } from "@/components/ui/button";
-import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
+import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate, useParams } from "react-router-dom";
 import { isValidTradeId, isValidWalletAddress } from "@/lib/utils";
@@ -11,7 +11,7 @@ import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { toast } from "sonner";
 import { useCreatePrivateSwapOffer } from "@/service/queries/swap-market.query";
 import { SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
-import SwapDetailsDialog from "@/components/custom/swap_market/SwapDetailsDialog";
+import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
 import { SUI_SwapCreation } from "@/types/global.types";
 import { useProfileStore } from "@/store/profile";
 
@@ -53,10 +53,11 @@ const PrivateRoom = () => {
       }
       const updatedSwap = await useSwapMarketStore.getState().privateMarket.privateRoom.swap;
 
+      // Create a record in the blockchain for this.
+      await getWalletProxy().createAndUpdateSwap(updatedSwap!, "CREATE");
+
       // console.info("Updated swap: =======> \n", updatedSwap);
-
       const offerResult = await createSwapOffer(updatedSwap!);
-
       if (offerResult) {
         toast.custom(
           (id) => (

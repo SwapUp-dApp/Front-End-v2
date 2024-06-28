@@ -1,10 +1,10 @@
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
-import RoomHeader from "@/components/custom/swap_market/RoomHeader";
-import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
-import SwapDetailsDialog from "@/components/custom/swap_market/SwapDetailsDialog";
+import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
+import RoomHeader from "@/components/custom/swap-market/RoomHeader";
+import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
+import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
 import { Button } from "@/components/ui/button";
 import { SUE_SWAP_MODE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
@@ -59,7 +59,9 @@ const CounterOfferSwapRoom = () => {
         throw new Error("User approval not granted.");
       }
 
-
+      //Update the swap offer in BC as a counter offer.
+      await getWalletProxy().createAndUpdateSwap(createdSwap, "COUNTER");
+      
       const payload: SUP_CounterSwap = {
         ...createdSwap,
         init_sign: sign
@@ -186,15 +188,14 @@ const CounterOfferSwapRoom = () => {
 
 
   useEffect(() => {
-    if ((state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length) &&
-      (state.sender.addedAmount && state.receiver.addedAmount)
+    if ((state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length)
     ) {
       setEnableApproveButtonCriteria(true);
     } else {
       setEnableApproveButtonCriteria(false);
     }
 
-  }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap, state.sender.addedAmount, state.receiver.addedAmount]);
+  }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap]);
 
 
   return (

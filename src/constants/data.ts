@@ -3675,6 +3675,7 @@ export const tempNftsData: SUI_NFTItem[] = [
   }
 ];
 
+
 export const chainsDataset: SUI_ChainItem[] = [
   {
     "uuid": "Qwsogvtv82FCd",
@@ -3682,6 +3683,50 @@ export const chainsDataset: SUI_ChainItem[] = [
     "name": "Bitcoin",
     "color": "#f7931A",
     "iconUrl": "https://cdn.coinranking.com/bOabBYkcX/bitcoin_btc.svg",
+    "marketCap": "1362094847982",
+    "price": "69116.38159744212",
+    "listedAt": 1330214400,
+    "tier": 1,
+    "change": "2.32",
+    "rank": 1,
+    "sparkline": [
+      "67678.27333750899",
+      "68078.16648696543",
+      "68006.95711747608",
+      "68222.26886988756",
+      "68134.87370417532",
+      "68100.87755517043",
+      "67992.16034829117",
+      "67699.38313727707",
+      "67684.72957947114",
+      "67743.8151105456",
+      "67857.74795549725",
+      "67905.42237596658",
+      "67893.27680189084",
+      "67759.63558059534",
+      "68177.83648249497",
+      "68599.43600384788",
+      "68360.42429155689",
+      "68414.4079513366",
+      "68606.72113888698",
+      "68928.42417577517",
+      "68975.56006621268",
+      "69139.06662987017",
+      "69061.02386096823",
+      "69082.09050662573"
+    ],
+    "lowVolume": false,
+    "coinrankingUrl": "https://coinranking.com/coin/Qwsogvtv82FCd+bitcoin-btc",
+    "24hVolume": "21884806754",
+    "btcPrice": "1",
+    "contractAddresses": []
+  },
+  {
+    "uuid": "84532",
+    "symbol": "ETH",
+    "name": "Base-Sepolia",
+    "color": "#f7931A",
+    "iconUrl": "/assets/svgs/base-sepolia.svg",
     "marketCap": "1362094847982",
     "price": "69116.38159744212",
     "listedAt": 1330214400,
@@ -6033,6 +6078,66 @@ interface ICollectionItem {
   value: string;
   label: string;
 }
+
+interface CommunityCardDetails {
+  src: string;
+  title: string;
+  desc: string;
+}
+
+export const communityCardDetails: CommunityCardDetails[] = [
+  {
+    src: "/assets/landing-page/contract.png",
+    title: "Efficient Smart Contracts",
+    desc: "swift contract execution ensures reliability"
+  },
+  {
+    src: "/assets/landing-page/plug.png",
+    title: "Robust API development",
+    desc: "Powerful APIs for seamless system integration."
+  },
+  {
+    src: "/assets/landing-page/code.png",
+    title: "Audited code",
+    desc: "Verified code ensures security and reliability."
+  },
+  {
+    src: "/assets/landing-page/multi-chain.png",
+    title: "Multichain",
+    desc: "Supports diverse blockchain networks for enhanced capabilities."
+  },
+  {
+    src: "/assets/landing-page/open-trade.png",
+    title: "Open trades",
+    desc: "Transparent trading environment for asset exchange."
+  },
+  {
+    src: "/assets/landing-page/user.png",
+    title: "User centric platform",
+    desc: "Tailored platform for user satisfaction and convenience."
+  },
+  {
+    src: "/assets/landing-page/community.png",
+    title: "Community driven",
+    desc: "Developed collaboratively with active community input."
+  },
+  {
+    src: "/assets/landing-page/safety.png",
+    title: "Safety",
+    desc: "SwapUp offers a secure and trustless solutions."
+  },
+  {
+    src: "/assets/landing-page/security.png",
+    title: "Security",
+    desc: "SwapUp provides a secure avenue for trading."
+  },
+  {
+    src: "/assets/landing-page/web3.png",
+    title: "Web 3 Value",
+    desc: "Building a business for web3, with web3 principles."
+  },
+
+]
 
 export const availableCollections: ICollectionItem[] = [
   {
