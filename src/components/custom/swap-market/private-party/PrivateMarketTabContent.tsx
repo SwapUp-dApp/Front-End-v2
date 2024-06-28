@@ -23,6 +23,7 @@ import { SUI_SwapCreation } from '@/types/global.types';
 import { useProfileStore } from '@/store/profile';
 import { showWalletConnectionToast } from '@/lib/helpers';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import OpenMarketSwapFilterDrawer from '../open-market/OpenMarketSwapFilterDrawer';
 
 
 const PrivateMarketTabContent = () => {
@@ -344,24 +345,8 @@ const PrivateMarketTabContent = () => {
                 <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Counter-party wallet</TableHead>
                 <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Trading chain</TableHead>
                 <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Creation date</TableHead>
-                <TableHead className="align-top min-w-[130px] pr-2" >
-                  <FilterButton
-                    className="text-white !text-sm cursor-pointer"
-                    iconClasses="text-white"
-                    showTitleOnMobile
-                    onClick={() =>
-                      toast.info("Filter", {
-                        duration: 2000,
-                        description: "Filter feature is under construction!",
-                        action: {
-                          label: "Close",
-                          onClick: () => { },
-                        },
-                        className: '!bg-gradient-primary border-none',
-                        descriptionClassName: '!text-white',
-                      })
-                    }
-                  />
+                <TableHead className="min-w-[100px] pr-2 relative" >
+                  <OpenMarketSwapFilterDrawer><div className="absolute top-2 left-2"><FilterButton showTitleOnMobile /></div></OpenMarketSwapFilterDrawer>
                 </TableHead>
               </TableRow>
             </TableHeader>

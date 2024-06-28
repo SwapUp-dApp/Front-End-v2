@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import FilterButton from '../../shared/FilterButton';
@@ -26,8 +26,9 @@ import { useMySwapStore } from '@/store/my-swaps';
 
 const SwapHistoryTabContent = () => {
   const navigate = useNavigate();
-  const [setMySwapsData, filteredHistorySwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredHistorySwaps]);
+  const [filtersApplied, setFiltersApplied] = useState(false);
 
+  const [setMySwapsData, filteredHistorySwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredHistorySwaps]);
   const wallet = useProfileStore(state => state.profile.wallet);
   const [historyFilters] = useMySwapStore(state => [state.historyFilters]);
   const { isLoading, isError, error, data, isSuccess } = useSwapHistoryList(wallet.address);
@@ -59,6 +60,20 @@ const SwapHistoryTabContent = () => {
     }
 
   }, [isError, error, data, isSuccess]);
+
+  useEffect(() => {
+    if (
+      historyFilters.offersFromCurrentChain === true ||
+      historyFilters.requestedDate !== '' ||
+      historyFilters.swapMode !== 'all' ||
+      historyFilters.swapStatus !== 'all'
+    ) {
+      setFiltersApplied(true);
+    } else {
+      setFiltersApplied(false);
+    }
+
+  }, [historyFilters.offersFromCurrentChain, historyFilters.requestedDate, historyFilters.swapMode, historyFilters.swapStatus]);
 
   const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
     return (
@@ -99,19 +114,15 @@ const SwapHistoryTabContent = () => {
               <TableHead className="align-top font-semibold px-4" >Trading chain</TableHead>
               <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Offer review date</TableHead>
               <TableHead className="align-top font-semibold px-4" >Status</TableHead>
-              <TableHead className="align-top w-[130px] pr-2" >
-
-                <HistorySwapsFilterDrawer>
-                  <FilterButton
-                    showTitleOnMobile
-                    filterApplied={
-                      historyFilters.offersFromCurrentChain === true ||
-                      historyFilters.requestedDate !== '' ||
-                      historyFilters.swapMode !== 'all' ||
-                      historyFilters.swapStatus !== 'all'
-                    }
-                  />
-                </HistorySwapsFilterDrawer>
+              <TableHead className="w-[130px] pr-2 relative" >
+                <div className="absolute top-2 left-4">
+                  <HistorySwapsFilterDrawer>
+                    <FilterButton
+                      showTitleOnMobile
+                      filterApplied={filtersApplied}
+                    />
+                  </HistorySwapsFilterDrawer>
+                </div>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -188,13 +199,14 @@ const SwapHistoryTabContent = () => {
                       </div>
                     </TableCell>
 
-                    <TableCell className="text-xs font-medium flex pr-3 lg:pr-14 align-top justify-end relative">
-                      <SwapHistoryDetailsDialog swap={swap}>
-                        <svg className='w-4' viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M8 3.3C7.42135 3.3 6.86639 3.53178 6.45722 3.94436C6.04805 4.35695 5.81818 4.91652 5.81818 5.5C5.81818 6.08348 6.04805 6.64306 6.45722 7.05564C6.86639 7.46822 7.42135 7.7 8 7.7C8.57865 7.7 9.13361 7.46822 9.54278 7.05564C9.95195 6.64306 10.1818 6.08348 10.1818 5.5C10.1818 4.91652 9.95195 4.35695 9.54278 3.94436C9.13361 3.53178 8.57865 3.3 8 3.3ZM8 9.16667C7.03558 9.16667 6.11065 8.78036 5.4287 8.09272C4.74675 7.40509 4.36364 6.47246 4.36364 5.5C4.36364 4.52754 4.74675 3.59491 5.4287 2.90728C6.11065 2.21964 7.03558 1.83333 8 1.83333C8.96442 1.83333 9.88935 2.21964 10.5713 2.90728C11.2532 3.59491 11.6364 4.52754 11.6364 5.5C11.6364 6.47246 11.2532 7.40509 10.5713 8.09272C9.88935 8.78036 8.96442 9.16667 8 9.16667ZM8 0C4.36364 0 1.25818 2.28067 0 5.5C1.25818 8.71933 4.36364 11 8 11C11.6364 11 14.7418 8.71933 16 5.5C14.7418 2.28067 11.6364 0 8 0Z" fill="#B6B6BD" />
-                        </svg>
-
-                      </SwapHistoryDetailsDialog>
+                    <TableCell className=" pb-10 text-xs font-medium pr-3 lg:pr-14">
+                      <div className="flex justify-end">
+                        <SwapHistoryDetailsDialog swap={swap}>
+                          <svg className='w-4' viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 3.3C7.42135 3.3 6.86639 3.53178 6.45722 3.94436C6.04805 4.35695 5.81818 4.91652 5.81818 5.5C5.81818 6.08348 6.04805 6.64306 6.45722 7.05564C6.86639 7.46822 7.42135 7.7 8 7.7C8.57865 7.7 9.13361 7.46822 9.54278 7.05564C9.95195 6.64306 10.1818 6.08348 10.1818 5.5C10.1818 4.91652 9.95195 4.35695 9.54278 3.94436C9.13361 3.53178 8.57865 3.3 8 3.3ZM8 9.16667C7.03558 9.16667 6.11065 8.78036 5.4287 8.09272C4.74675 7.40509 4.36364 6.47246 4.36364 5.5C4.36364 4.52754 4.74675 3.59491 5.4287 2.90728C6.11065 2.21964 7.03558 1.83333 8 1.83333C8.96442 1.83333 9.88935 2.21964 10.5713 2.90728C11.2532 3.59491 11.6364 4.52754 11.6364 5.5C11.6364 6.47246 11.2532 7.40509 10.5713 8.09272C9.88935 8.78036 8.96442 9.16667 8 9.16667ZM8 0C4.36364 0 1.25818 2.28067 0 5.5C1.25818 8.71933 4.36364 11 8 11C11.6364 11 14.7418 8.71933 16 5.5C14.7418 2.28067 11.6364 0 8 0Z" fill="#B6B6BD" />
+                          </svg>
+                        </SwapHistoryDetailsDialog>
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -202,6 +214,15 @@ const SwapHistoryTabContent = () => {
             }
           </TableBody>
         </Table>
+
+        {
+          (((filteredHistorySwaps || []).length === 0) && filtersApplied) &&
+          <EmptyDataset
+            title="No Results Found"
+            description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
+            showBackgroundPicture={false}
+          />
+        }
         <ScrollBar orientation='horizontal' className='h-2' />
       </ScrollArea>
 
@@ -213,7 +234,7 @@ const SwapHistoryTabContent = () => {
       />
 
       {
-        (isSuccess && ((filteredHistorySwaps || []).length === 0)) &&
+        (isSuccess && ((filteredHistorySwaps || []).length === 0) && !filtersApplied) &&
         <EmptyDataset
           title="No Pending Swaps Offers Yet"
           description="Your pending swap inbox is empty create your own swap!"

@@ -18,6 +18,7 @@ import { useSwapMarketStore } from '@/store/swap-market';
 import { useProfileStore } from '@/store/profile';
 import { showWalletConnectionToast } from '@/lib/helpers';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import OpenMarketSwapFilterDrawer from './OpenMarketSwapFilterDrawer';
 
 const OpenMarketTabContent = () => {
 
@@ -116,13 +117,16 @@ const OpenMarketTabContent = () => {
         }
       </div>
 
-      <div className="flex items-center gap-3" >
-        {createdSwaps &&
-          createdSwaps.map(swap => (
-            <CreatedSwapsCards key={swap.open_trade_id} swap={swap} />
-          ))
-        }
-      </div>
+      <ScrollArea className='w-full' >
+        <div className="flex items-center gap-3" >
+          {createdSwaps &&
+            createdSwaps.map(swap => (
+              <CreatedSwapsCards key={swap.open_trade_id} swap={swap} />
+            ))
+          }
+        </div>
+        <ScrollBar orientation='horizontal' className='h-2' />
+      </ScrollArea>
 
       {/* Filter Data and Title */}
       <div className="flex items-center justify-between" >
@@ -158,24 +162,8 @@ const OpenMarketTabContent = () => {
                 <TableHead className="align-top font-semibold px-4 min-w-[130px] line-clamp-1 h-1" >Open swap date</TableHead>
                 <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Expiry date</TableHead>
                 <TableHead className="align-top font-semibold px-4" >Swap Preferences</TableHead>
-                <TableHead className="align-top min-w-[130px] pr-2" >
-                  <FilterButton
-                    className="text-white !text-sm cursor-pointer"
-                    iconClasses="text-white"
-                    showTitleOnMobile
-                    onClick={() =>
-                      toast.info("Filter", {
-                        duration: 2000,
-                        description: "This feature is under construction!",
-                        action: {
-                          label: "Close",
-                          onClick: () => { },
-                        },
-                        className: '!bg-gradient-primary border-none',
-                        descriptionClassName: '!text-white',
-                      })
-                    }
-                  />
+                <TableHead className="pr-2 relative" >
+                  <div className='absolute top-2' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile /></OpenMarketSwapFilterDrawer></div>
                 </TableHead>
               </TableRow>
             </TableHeader>
