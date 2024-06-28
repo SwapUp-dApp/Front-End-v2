@@ -44,7 +44,7 @@ const SwapHistoryDetailsDialog = ({ children, swap }: IProp) => {
                       className={cn(
                         "rounded-full w-2 h-2 ",
                         swap.status === SUE_SWAP_STATUS.COMPLETED && "bg-su_positive",
-                        swap.status === SUE_SWAP_STATUS.DECLINED && "bg-su_positive",
+                        swap.status === SUE_SWAP_STATUS.DECLINED && "bg-su_negative",
                         swap.status === SUE_SWAP_STATUS.CANCELED && "bg-su_negative",
                       )}
                     >
