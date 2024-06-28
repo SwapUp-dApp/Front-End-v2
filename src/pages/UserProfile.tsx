@@ -63,9 +63,9 @@ const UserProfile = () => {
             {/* Wallet Overview Tiles */}
             <div className="flex flex-col lg:flex-row items-start gap-3" >
 
-              <WalletOverviewCard cardType="totalwalletvalue" Value="1685.69" TitleDesc="Total Wallet Value" />
-              <WalletOverviewCard cardType="cryptostored" Value="235.12" TitleDesc="Crypto stored in the smart contract" />
-              <WalletOverviewCard cardType="NFTs" Value="7" TitleDesc="NFTs located in the smart contract" />
+              <WalletOverviewCard cardType="totalwalletvalue" Value="1685.69" description="Total Wallet Value" />
+              <WalletOverviewCard cardType="cryptostored" Value="235.12" description="Crypto stored in the smart contract" />
+              <WalletOverviewCard cardType="NFTs" Value="7" description="NFTs located in the smart contract" />
 
             </div>
 
@@ -79,11 +79,11 @@ const UserProfile = () => {
 
             {/* Points & Swappot  */}
 
-            <div className="flex flex-col lg:flex-row items-center gap-3 " >
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4" >
 
-              <ProfilePointsCard cardType="tradescreated" Title="Trades Created" TitleDesc="Active trade Proposals you have created" Points="50" />
-              <ProfilePointsCard cardType="tradescreated" Title="Trades Completed" TitleDesc="Successfully finalized trade transactions" Points="50" />
-              <ProfilePointsCard cardType="tradescreated" Title="Trades Shared" TitleDesc="Trades you've shared publicly" Points="50" />
+              <ProfilePointsCard image="/assets/images/badge.png" title="Trades Created" description="Active trade Proposals you have created" points="50" />
+              <ProfilePointsCard image="/assets/images/badge.png" title="Trades Completed" description="Successfully finalized trade transactions" points="50" />
+              <ProfilePointsCard image="/assets/images/badge.png" title="Trades Shared" description="Trades you've shared publicly" points="50" />
 
             </div>
             <div className="flex gap-4 items-center">

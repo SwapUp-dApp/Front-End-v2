@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { IHistoryFilters, IMySwapsStore, IPendingFilters, SUT_MySwapsTabType } from "@/types/my-swaps-store.types";
-import { resetAllFiltersHelper, resetModeFiltersHelper, resetStatusFiltersHelper, setFilteredHistorySwapByFiltersHelper, setFilteredMySwapsBySearchHelper, setFilteredPendingSwapByFiltersHelper, setMySwapsDataHelper } from './my-swaps-helpers';
+import { resetAllFiltersHelper, setFilteredHistorySwapByFiltersHelper, setFilteredMySwapsBySearchHelper, setFilteredPendingSwapByFiltersHelper, setMySwapsDataHelper } from './my-swaps-helpers';
 import { SUI_OpenSwap } from '@/types/swap-market.types';
 
 const initialState: IMySwapsStore = {
@@ -21,8 +21,6 @@ const initialState: IMySwapsStore = {
   setFilteredPendingSwapByFilters: () => { },
   setFilteredHistorySwapByFilters: () => { },
   resetAllFilters: () => { },
-  resetStatusFilters: () => { },
-  resetModeFilters: () => { },
 };
 
 
@@ -35,6 +33,4 @@ export const useMySwapStore = create<IMySwapsStore>((set, get): IMySwapsStore =>
   setFilteredPendingSwapByFilters: (filters: IPendingFilters, loginWalletAddress: string) => set(state => setFilteredPendingSwapByFiltersHelper(state, filters, loginWalletAddress)),
   setFilteredHistorySwapByFilters: (filters: IHistoryFilters) => set(state => setFilteredHistorySwapByFiltersHelper(state, filters)),
   resetAllFilters: (tabType: SUT_MySwapsTabType) => set(state => resetAllFiltersHelper(state, tabType)),
-  resetModeFilters: (tabType: SUT_MySwapsTabType) => set(state => resetModeFiltersHelper(state, tabType)),
-  resetStatusFilters: (tabType: SUT_MySwapsTabType) => set(state => resetStatusFiltersHelper(state, tabType)),
 }));

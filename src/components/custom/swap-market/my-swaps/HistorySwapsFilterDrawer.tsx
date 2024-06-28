@@ -26,7 +26,7 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
   const [formKey, setFormKey] = useState(generateRandomKey(6));
 
-  const [historyFilters, resetAllFilters, resetModeFilters, resetStatusFilters, setFilteredHistorySwapByFilters] = useMySwapStore(state => [state.historyFilters, state.resetAllFilters, state.resetModeFilters, state.resetStatusFilters, state.setFilteredHistorySwapByFilters]);
+  const [historyFilters, resetAllFilters, setFilteredHistorySwapByFilters] = useMySwapStore(state => [state.historyFilters, state.resetAllFilters, state.setFilteredHistorySwapByFilters]);
 
   const swapModeFilterFormData: SUT_FiltersSwapModeType[] = ["all", 'open-market', 'private-party'];
   const swapStatusFilterFormData: SUT_HistoryFiltersStatusType[] = ["all", "completed", "declined", "canceled"];
@@ -40,6 +40,19 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
       swapStatus: historyFilters.swapStatus || 'all'
     }
   });
+
+  const getHistoryFiltersObject = () => {
+    const { offersFromCurrentChain, requestedDate, swapMode, swapStatus } = form.getValues();
+
+    const newHistoryFilters: IHistoryFilters = {
+      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
+      requestedDate: requestedDate ? moment.utc(requestedDate).format() : '',
+      swapMode: swapMode ? swapMode : 'all',
+      swapStatus: swapStatus ? swapStatus : 'all'
+    };
+
+    return newHistoryFilters;
+  };
 
   const onSubmit = async (data: z.infer<typeof Schema_HistoryMySwapsFiltersForm>) => {
     const { requestedDate, swapMode, swapStatus, offersFromCurrentChain } = data;
@@ -57,29 +70,21 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
 
 
   const handleResetMode = () => {
+    setFilteredHistorySwapByFilters(getHistoryFiltersObject());
     form.setValue('swapMode', 'all');
-    resetModeFilters('history');
-
     setFormKey(generateRandomKey(6));
   };
 
   const handleResetStatus = () => {
-    form.setValue('swapStatus', 'all');
-    resetStatusFilters('history');
-
+    setFilteredHistorySwapByFilters(getHistoryFiltersObject());
     setFormKey(generateRandomKey(6));
+    form.setValue('swapStatus', 'all');
   };
 
   const handleResetAll = () => {
-    form.reset({
-      requestedDate: undefined,
-      offersFromCurrentChain: false,
-      swapStatus: historyFilters.swapStatus || 'all',
-      swapMode: historyFilters.swapMode || 'all'
-    });
-    resetAllFilters('history');
-
     setFormKey(generateRandomKey(6));
+    form.reset();
+    resetAllFilters('history');
   };
 
 

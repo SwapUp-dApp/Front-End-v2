@@ -30,7 +30,7 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
   const [formKey, setFormKey] = useState(generateRandomKey(6));
 
   const walletAddress = useProfileStore(state => state.profile.wallet.address);
-  const [pendingFilters, resetAllFilters, resetModeFilters, resetStatusFilters, setFilteredPendingSwapByFilters] = useMySwapStore(state => [state.pendingFilters, state.resetAllFilters, state.resetModeFilters, state.resetStatusFilters, state.setFilteredPendingSwapByFilters]);
+  const [pendingFilters, resetAllFilters, setFilteredPendingSwapByFilters] = useMySwapStore(state => [state.pendingFilters, state.resetAllFilters, state.setFilteredPendingSwapByFilters]);
 
   const swapModeFilterFormData: SUT_FiltersSwapModeType[] = ["all", 'open-market', 'private-party'];
   const swapStatusFilterFormData: SUT_PendingFiltersStatusType[] = ["all", 'sent', 'received'];
@@ -44,6 +44,19 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
       swapRequestStatus: pendingFilters.swapRequestStatus || 'all'
     }
   });
+
+  const getPendingFiltersObject = () => {
+    const { offersFromCurrentChain, requestedDate, swapMode, swapRequestStatus } = form.getValues();
+
+    const pendingFilters: IPendingFilters = {
+      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
+      requestedDate: requestedDate ? moment.utc(requestedDate).format() : '',
+      swapMode: swapMode ? swapMode : 'all',
+      swapRequestStatus: swapRequestStatus ? swapRequestStatus : 'all'
+    };
+
+    return pendingFilters;
+  };
 
   const onSubmit = async (data: z.infer<typeof Schema_PendingMySwapsFiltersForm>) => {
 
@@ -62,28 +75,21 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
 
   const handleResetMode = () => {
     form.setValue('swapMode', 'all');
-    resetModeFilters('pending');
+    setFilteredPendingSwapByFilters(getPendingFiltersObject(), walletAddress);
 
     setFormKey(generateRandomKey(6));
   };
 
   const handleResetStatus = () => {
     form.setValue('swapRequestStatus', 'all');
-    resetStatusFilters('pending');
-
+    setFilteredPendingSwapByFilters(getPendingFiltersObject(), walletAddress);
     setFormKey(generateRandomKey(6));
   };
 
   const handleResetAll = () => {
-    form.reset({
-      requestedDate: undefined,
-      offersFromCurrentChain: false,
-      swapMode: pendingFilters.swapMode || 'all',
-      swapRequestStatus: pendingFilters.swapRequestStatus || 'all'
-    });
-    resetAllFilters('pending');
-
     setFormKey(generateRandomKey(6));
+    form.reset();
+    resetAllFilters('pending');
   };
 
 
