@@ -6079,6 +6079,66 @@ interface ICollectionItem {
   label: string;
 }
 
+interface CommunityCardDetails {
+  src: string;
+  title: string;
+  desc: string;
+}
+
+export const communityCardDetails: CommunityCardDetails[] = [
+  {
+    src: "/assets/landing-page/contract.png",
+    title: "Efficient Smart Contracts",
+    desc: "swift contract execution ensures reliability"
+  },
+  {
+    src: "/assets/landing-page/plug.png",
+    title: "Robust API development",
+    desc: "Powerful APIs for seamless system integration."
+  },
+  {
+    src: "/assets/landing-page/code.png",
+    title: "Audited code",
+    desc: "Verified code ensures security and reliability."
+  },
+  {
+    src: "/assets/landing-page/multi-chain.png",
+    title: "Multichain",
+    desc: "Supports diverse blockchain networks for enhanced capabilities."
+  },
+  {
+    src: "/assets/landing-page/open-trade.png",
+    title: "Open trades",
+    desc: "Transparent trading environment for asset exchange."
+  },
+  {
+    src: "/assets/landing-page/user.png",
+    title: "User centric platform",
+    desc: "Tailored platform for user satisfaction and convenience."
+  },
+  {
+    src: "/assets/landing-page/community.png",
+    title: "Community driven",
+    desc: "Developed collaboratively with active community input."
+  },
+  {
+    src: "/assets/landing-page/safety.png",
+    title: "Safety",
+    desc: "SwapUp offers a secure and trustless solutions."
+  },
+  {
+    src: "/assets/landing-page/security.png",
+    title: "Security",
+    desc: "SwapUp provides a secure avenue for trading."
+  },
+  {
+    src: "/assets/landing-page/web3.png",
+    title: "Web 3 Value",
+    desc: "Building a business for web3, with web3 principles."
+  },
+
+]
+
 export const availableCollections: ICollectionItem[] = [
   {
     label: 'CryptoPunks',

@@ -52,6 +52,7 @@ module.exports = {
           foreground: "hsl(var(--card-foreground))",
         },
         su_primary_bg: "rgba(13, 13, 35, 1)",
+        su_primary_black: "rgba(13, 13, 35, 0.8)",
         su_active_bg: "rgba(255, 255, 255, 0.15)",
         su_enable_bg: "rgba(255, 255, 255, 0.08)",
         su_overlay_bg: "rgba(13, 13, 35, 0.8)",
@@ -60,6 +61,8 @@ module.exports = {
         su_blue: "#51C0FF",
         su_purple: "#9452FF",
         su_primary: "rgba(255, 255, 255, 1)",
+        su_primary_light: "rgba(255, 255, 255, 0.9)",
+        su_primary_lighter: "rgba(255, 255, 255, 0.65)",
         su_secondary: "rgba(182, 182, 189, 1)",
         su_ternary: "rgba(134, 134, 145, 1)",
         su_disabled: "rgba(86, 86, 101, 1)",
@@ -76,7 +79,14 @@ module.exports = {
         su_warning: "rgba(255, 193, 117, 1)",
         su_warning_week: "rgba(255, 193, 117, 0.3)",
         su_warning_bg: "rgb(49, 39, 47)",
-        su_brand: "rgba(117, 134, 255, 1)"
+        su_brand: "rgba(117, 134, 255, 1)",
+        su_light_purple: "rgba(208, 204, 244, 1)",
+        su_light_pink: "rgba(249, 207, 242, 1)",
+        su_tea_green: "rgba(207, 240, 206, 1)",
+        su_buttermilk: "rgba(247, 242, 187, 1)",
+        su_greyed_bg: "rgba(243, 243, 244, 1)",
+        su_greyed: "rgba(204, 204, 208, 1)",
+
       },
       backgroundImage: (theme) => ({
         "gradient-primary": `linear-gradient(to right, ${theme(
