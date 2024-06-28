@@ -12,7 +12,7 @@ import moment from 'moment';
 import LoadingDataset from '../../shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
 import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
-import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
+import CreatePrivateSwapDialog from "@/components/custom/swap-market/private-party/CreatePrivateSwapDialog";
 import { useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { getWalletProxy } from '@/lib/walletProxy';
@@ -30,15 +30,17 @@ import { useMySwapStore } from '@/store/my-swaps';
 
 const PendingSwapsTabContent = () => {
   const navigate = useNavigate();
-  const [setMySwapsData, filteredPendingSwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredPendingSwaps]);
-  const wallet = useProfileStore(state => state.profile.wallet);
 
+  const wallet = useProfileStore(state => state.profile.wallet);
+  const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
+  const [pendingFilters] = useMySwapStore(state => [state.pendingFilters]);
+  const [setMySwapsData, filteredPendingSwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredPendingSwaps]);
+
+  const [filtersApplied, setFiltersApplied] = useState(false);
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
 
-  const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
-  const [pendingFilters] = useMySwapStore(state => [state.pendingFilters]);
 
   const { mutateAsync: completeOpenSwapOffer } = useCompleteOpenSwapOffer();
   const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
@@ -330,6 +332,20 @@ const PendingSwapsTabContent = () => {
 
   }, [isError, error, data, isSuccess]);
 
+  useEffect(() => {
+    if (
+      pendingFilters.offersFromCurrentChain === true ||
+      pendingFilters.requestedDate !== '' ||
+      pendingFilters.swapMode !== 'all' ||
+      pendingFilters.swapRequestStatus !== 'all'
+    ) {
+      setFiltersApplied(true);
+    } else {
+      setFiltersApplied(false);
+    }
+
+  }, [pendingFilters.offersFromCurrentChain, pendingFilters.requestedDate, pendingFilters.swapMode, pendingFilters.swapRequestStatus]);
+
   const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
     return (
       nfts.map((nft, index) => {
@@ -358,6 +374,7 @@ const PendingSwapsTabContent = () => {
   return (
     <div className="space-y-4">
 
+
       <ScrollArea className='min-w-full' >
         <Table className="min-w-full">
           <TableHeader>
@@ -370,18 +387,10 @@ const PendingSwapsTabContent = () => {
               <TableHead className="align-top font-semibold px-4 min-w-[150px]" >Trading chain</TableHead>
               <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Request date</TableHead>
               <TableHead className="align-top font-semibold px-4 min-w-[150px]" >Type</TableHead>
-              <TableHead className="align-top w-[130px] pr-2" >
-                <PendingSwapsFilterDrawer>
-                  <FilterButton
-                    showTitleOnMobile
-                    filterApplied={
-                      pendingFilters.offersFromCurrentChain === true ||
-                      pendingFilters.requestedDate !== '' ||
-                      pendingFilters.swapMode !== 'all' ||
-                      pendingFilters.swapRequestStatus !== 'all'
-                    }
-                  />
-                </PendingSwapsFilterDrawer>
+              <TableHead className="min-w-[130px] pr-2 relative" >
+                <div className="absolute top-2 left-4">
+                  <PendingSwapsFilterDrawer> <FilterButton showTitleOnMobile filterApplied={filtersApplied} /> </PendingSwapsFilterDrawer>
+                </div>
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -614,6 +623,16 @@ const PendingSwapsTabContent = () => {
             }
           </TableBody>
         </Table>
+
+        {
+          (((filteredPendingSwaps || []).length === 0) && filtersApplied) &&
+          <EmptyDataset
+            title="No Results Found"
+            description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
+            showBackgroundPicture={false}
+          />
+        }
+
         <ScrollBar orientation='horizontal' className='h-2' />
       </ScrollArea>
 
@@ -625,7 +644,7 @@ const PendingSwapsTabContent = () => {
       />
 
       {
-        (isSuccess && ((filteredPendingSwaps || []).length === 0)) &&
+        (isSuccess && ((filteredPendingSwaps || []).length === 0) && !filtersApplied) &&
         <EmptyDataset
           title="No Pending Swaps Offers Yet"
           description="Your pending swap inbox is empty create your own swap!"

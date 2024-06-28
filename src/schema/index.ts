@@ -135,4 +135,80 @@ export const Schema_HistoryMySwapsFiltersForm = z.object({
   }
 });
 
+/*=== My swaps filters schema ends ===*/
 
+/*=== Swap market - open market filters schema starts ===*/
+export const Schema_OpenMarketFiltersForm = z.object({
+  offersFromCurrentChain: z.boolean({
+    required_error: "Please enable show offers from current chain!",
+  }).optional(),
+  offeredRarityRank: z.string().optional(),
+  preferredAsset: z.enum(["any", "nft", "currency"], {
+    required_error: "Please select a preferred asset.",
+  }),
+  collection: z.string().optional(),
+  rarityRank: z.string().optional(),
+  amountWantToReceive: z.string().optional(),
+  currencies: z
+    .array(
+      z.object({
+        uuid: z.string(),
+        name: z.string(),
+        iconUrl: z.string(),
+      })
+    )
+    .optional(),
+}).superRefine((data, ctx) => {
+  if (data.preferredAsset === "nft") {
+    if (!data.collection) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["collection"],
+        message: "Please select a preferred collection you want to filter.",
+      });
+    }
+
+    if (!data.rarityRank) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["rarityRank"],
+        message: "Please select a preferred rarity rank you want to filter.",
+      });
+    }
+  } else if (data.preferredAsset === "currency") {
+    if (!data.amountWantToReceive) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["amountWantToReceive"],
+        message: "Please enter amount you want to filter.",
+      });
+    }
+
+    if (!data.currencies) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["currencies"],
+        message: "Please select currencies you want to filter.",
+      });
+    }
+
+    if (data.currencies && data.currencies.length < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["currencies"],
+        message:
+          "Please select at least one currency you want to filter.",
+      });
+    }
+
+    if (data.currencies && data.currencies.length > 3) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["currencies"],
+        message:
+          "You can select upto three currencies you want to filter.",
+      });
+    }
+  }
+});
+/*=== Swap market - open market filters schema ends ===*/
