@@ -6,7 +6,7 @@ import RoomFooterSide from "@/components/custom/swap_market/RoomFooterSide";
 import RoomHeader from "@/components/custom/swap_market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
 import { Button } from "@/components/ui/button";
-import { SUE_SWAP_MODE } from "@/constants/enums";
+import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { useCancelSwapOffer, useCompleteOpenSwapOffer, useCompletePrivateSwapOffer, useGetSwapDetails, useRejectSwapOffer } from "@/service/queries/swap-market.query";
@@ -60,6 +60,15 @@ const ViewSwapRoom = () => {
       }
     );
   };
+
+
+  const handleCounterSwap = async () => {
+    const swap = state.swap!
+    console.log(swap.trade_id);
+
+    navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
+  };
+
 
   const handleSwapAccept = async () => {
     try {
@@ -231,44 +240,45 @@ const ViewSwapRoom = () => {
     }
   };
 
-  const handleSwapCancel = async () => {
+  const handleCancelSwap = async () => {
     try {
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
       const swap = state.swap!
       console.log(swapCancel.isLoading);
 
-      // if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-      //   const state = useSwapMarketStore(state => state.openMarket.openRoom);
-      //   let swapobj = state.swap
-      //   const payload: SUP_CancelSwap = {
-      //     swap_mode: swap.swap_mode,
-      //     open_trade_id: swap.open_trade_id
-      //   };
-      //   const offerResult = await cancelSwapOffer(payload);
-      //   console.log(swap.id);
-      //   if (offerResult) {
-      //     toast.custom(
-      //       (id) => (
-      //         <ToastLookCard
-      //           variant="success"
-      //           title="Swap Closed Successfully"
-      //           description={"You have successfully closed the swap"}
-      //           onClose={() => toast.dismiss(id)}
-      //         />
-      //       ),
-      //       {
-      //         duration: 3000,
-      //         className: 'w-full !bg-transparent',
-      //         position: "bottom-left",
-      //       }
-      //     );
-      //     setSwapCancel(prev => ({ ...prev, created: true }));
-      //     setTimeout(() => {
+      if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
+        const swapobj = useSwapMarketStore.getState().openMarket.openRoom.swap;
 
-      //       navigate(-1);
-      //     }, 500);
-      //   }
-      // }
+        console.log(swapobj);
+        const payload: SUP_CancelSwap = {
+          swap_mode: swapobj.swap_mode,
+          open_trade_id: swapobj.open_trade_id
+        };
+        const offerResult = await cancelSwapOffer(payload);
+        console.log(swap.id);
+        if (offerResult) {
+          toast.custom(
+            (id) => (
+              <ToastLookCard
+                variant="success"
+                title="Swap Closed Successfully"
+                description={"You have successfully closed the swap"}
+                onClose={() => toast.dismiss(id)}
+              />
+            ),
+            {
+              duration: 3000,
+              className: 'w-full !bg-transparent',
+              position: "bottom-left",
+            }
+          );
+          setSwapCancel(prev => ({ ...prev, created: true }));
+          setTimeout(() => {
+
+            navigate(-1);
+          }, 500);
+        }
+      }
 
       if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
         const payload: SUP_CancelSwap = {
@@ -454,7 +464,7 @@ const ViewSwapRoom = () => {
           {
             profile.wallet.address === state.sender.profile.wallet.address ?
               <CustomOutlineButton onClick={async () => {
-                await handleSwapCancel();
+                await handleCancelSwap();
               }} className="px-5 py-3">
                 Cancel Swap
               </CustomOutlineButton>
@@ -466,10 +476,15 @@ const ViewSwapRoom = () => {
                   variant={"outline"} type="submit">
                   Reject
                 </Button>
+                {state.swap?.offer_type === SUE_SWAP_OFFER_TYPE.PRIMARY &&
+                  < CustomOutlineButton onClick={async () => {
+                    await handleCounterSwap();
+                  }}
+                    className="px-5 py-3">
+                    Counter offer
+                  </CustomOutlineButton>
+                }
 
-                <CustomOutlineButton className="px-5 py-3">
-                  Counter offer
-                </CustomOutlineButton>
                 <Button onClick={async () => {
                   await handleSwapAccept();
                 }} isLoading={swapAcceptance.isLoading} disabled={swapAcceptance.created} variant={"default"} type="submit">
@@ -516,7 +531,7 @@ const ViewSwapRoom = () => {
             </div>
         }
       </footer >
-    </div>
+    </div >
   );
 };
 
