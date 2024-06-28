@@ -3678,11 +3678,11 @@ export const tempNftsData: SUI_NFTItem[] = [
 
 export const chainsDataset: SUI_ChainItem[] = [
   {
-    "uuid": "84532",
-    "symbol": "ETH",
-    "name": "Base-Sepolia",
+    "uuid": "Qwsogvtv82FCd",
+    "symbol": "BTC",
+    "name": "Bitcoin",
     "color": "#f7931A",
-    "iconUrl": "/assets/svgs/base-sepolia.svg",
+    "iconUrl": "https://cdn.coinranking.com/bOabBYkcX/bitcoin_btc.svg",
     "marketCap": "1362094847982",
     "price": "69116.38159744212",
     "listedAt": 1330214400,
@@ -3722,11 +3722,11 @@ export const chainsDataset: SUI_ChainItem[] = [
     "contractAddresses": []
   },
   {
-    "uuid": "Qwsogvtv82FCd",
-    "symbol": "BTC",
-    "name": "Bitcoin",
+    "uuid": "84532",
+    "symbol": "ETH",
+    "name": "Base-Sepolia",
     "color": "#f7931A",
-    "iconUrl": "https://cdn.coinranking.com/bOabBYkcX/bitcoin_btc.svg",
+    "iconUrl": "/assets/svgs/base-sepolia.svg",
     "marketCap": "1362094847982",
     "price": "69116.38159744212",
     "listedAt": 1330214400,
