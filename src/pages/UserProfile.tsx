@@ -43,77 +43,68 @@ const UserProfile = () => {
         {/* leaderboard */}
 
 
-        <div className="overflow-x-scroll lg:overflow-hidden" >
-          <Tabs defaultValue="assets" className="w-full">
-            <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
-              <TabsTrigger value="wallet-overview" onClick={() => handleSwitchTab("wallet-overview")} >
-                Wallet Overview
+        <Tabs defaultValue="assets" className="w-full">
+          <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
+            <TabsTrigger value="wallet-overview" onClick={() => handleSwitchTab("wallet-overview")} >
+              Wallet Overview
 
-              </TabsTrigger>
-              <TabsTrigger value="assets" onClick={() => handleSwitchTab("assets")}>
-                Assets
+            </TabsTrigger>
+            <TabsTrigger value="assets" onClick={() => handleSwitchTab("assets")}>
+              Assets
 
-              </TabsTrigger>
-              <TabsTrigger value="points" onClick={() => handleSwitchTab("points")}>
-                Points & Swappot
+            </TabsTrigger>
+            <TabsTrigger value="points" onClick={() => handleSwitchTab("points")}>
+              Points & Swappot
 
-              </TabsTrigger>
-            </TabsList>
+            </TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="wallet-overview" className="w-full flex">
-              {/* Wallet Overview Tiles */}
-              <div className="flex flex-col lg:flex-row items-start gap-3" >
+          <TabsContent value="wallet-overview" className="w-full flex">
+            {/* Wallet Overview Tiles */}
+            <div className="flex flex-col lg:flex-row items-start gap-3" >
 
-                <WalletOverviewCard cardType="totalwalletvalue" Value="1685.69" TitleDesc="Total Wallet Value" />
-                <WalletOverviewCard cardType="cryptostored" Value="235.12" TitleDesc="Crypto stored in the smart contract" />
-                <WalletOverviewCard cardType="NFTs" Value="7" TitleDesc="NFTs located in the smart contract" />
+              <WalletOverviewCard cardType="totalwalletvalue" Value="1685.69" TitleDesc="Total Wallet Value" />
+              <WalletOverviewCard cardType="cryptostored" Value="235.12" TitleDesc="Crypto stored in the smart contract" />
+              <WalletOverviewCard cardType="NFTs" Value="7" TitleDesc="NFTs located in the smart contract" />
 
-              </div>
+            </div>
 
-            </TabsContent>
+          </TabsContent>
 
-            <TabsContent value="assets" className="w-full flex flex-col gap-4">
+          <TabsContent value="assets" className="w-full flex flex-col gap-4">
+            <ProfileAssetsLayout layoutType={"sender"} walletAddress={wallet.address} />
+          </TabsContent>
 
-              {/* Assets Loader */}
-              <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-                <ProfileAssetsLayout layoutType={"sender"} walletAddress={wallet.address} />
+          <TabsContent value="points" className="w-full flex flex-col gap-4">
 
-                {/* <ProfileAssetsLayout layoutType={"sender"}  walletAddress={testWalletAddress}/>               */}
-              </div>
+            {/* Points & Swappot  */}
 
+            <div className="flex flex-col lg:flex-row items-center gap-3 " >
 
-            </TabsContent>
+              <ProfilePointsCard cardType="tradescreated" Title="Trades Created" TitleDesc="Active trade Proposals you have created" Points="50" />
+              <ProfilePointsCard cardType="tradescreated" Title="Trades Completed" TitleDesc="Successfully finalized trade transactions" Points="50" />
+              <ProfilePointsCard cardType="tradescreated" Title="Trades Shared" TitleDesc="Trades you've shared publicly" Points="50" />
 
-            <TabsContent value="points" className="w-full flex flex-col gap-4">
+            </div>
+            <div className="flex gap-4 items-center">
+              <h2 className="font-semibold text-1.5xl" >Swappot</h2>
 
-              {/* Points & Swappot  */}
+              <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'points' ? 'bg-muted text-muted-foreground' : 'bg-muted'}`}>
 
-              <div className="flex flex-col lg:flex-row items-center gap-3 " >
+              </span>
+            </div>
 
-                <ProfilePointsCard cardType="tradescreated" Title="Trades Created" TitleDesc="Active trade Proposals you have created" Points="50" />
-                <ProfilePointsCard cardType="tradescreated" Title="Trades Completed" TitleDesc="Successfully finalized trade transactions" Points="50" />
-                <ProfilePointsCard cardType="tradescreated" Title="Trades Shared" TitleDesc="Trades you've shared publicly" Points="50" />
+            <EmptyDataset
+              title="Swappot Functionality Coming Soon 🚀"
+              description="Unlocks at 300 members. Stay tuned for exciting features!"
+            >
+            </EmptyDataset>
 
-              </div>
-              <div className="flex gap-4 items-center">
-                <h2 className="font-semibold text-1.5xl" >Swappot</h2>
-
-                <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'points' ? 'bg-muted text-muted-foreground' : 'bg-muted'}`}>
-
-                </span>
-              </div>
-
-              <EmptyDataset
-                title="Swappot Functionality Coming Soon 🚀"
-                description="Unlocks at 300 members. Stay tuned for exciting features!"
-              >
-              </EmptyDataset>
-
-            </TabsContent>
+          </TabsContent>
 
 
-          </Tabs>
-        </div>
+        </Tabs>
+
       </section >
     </>
   );
