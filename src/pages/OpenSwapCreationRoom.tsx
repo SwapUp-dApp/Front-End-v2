@@ -7,19 +7,19 @@ import CopyTile from "@/components/custom/tiles/CopyTile";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
-import StaySafeDialog from "@/components/custom/swap_market/StaySafeDialog";
-import AvoidingFeeDialog from "@/components/custom/swap_market/AvoidingFeeDialog";
+import StaySafeDialog from "@/components/custom/swap-market/StaySafeDialog";
+import AvoidingFeeDialog from "@/components/custom/swap-market/AvoidingFeeDialog";
 
 import { useSwapMarketStore } from "@/store/swap-market";
-import OpenMarketRoomFooter from "@/components/custom/swap_market/open-market/OpenMarketRoomFooter";
-import RoomHeader from "@/components/custom/swap_market/RoomHeader";
-import RoomLayoutCard from "@/components/custom/swap_market/RoomLayoutCard";
-import SwapParametersCard from "@/components/custom/swap_market/open-market/SwapParametersCard";
+import OpenMarketRoomFooter from "@/components/custom/swap-market/open-market/OpenMarketRoomFooter";
+import RoomHeader from "@/components/custom/swap-market/RoomHeader";
+import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
+import SwapParametersCard from "@/components/custom/swap-market/open-market/SwapParametersCard";
 import { useNavigate, useParams } from "react-router-dom";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { toast } from "sonner";
 import { getLastCharacters, isValidTradeId } from "@/lib/utils";
-import SwapDialogSideCard from "@/components/custom/swap_market/SwapDialogSideCard";
+import SwapDialogSideCard from "@/components/custom/swap-market/SwapDialogSideCard";
 import SwapParameterTile from "@/components/custom/tiles/SwapParameterTile";
 import moment from "moment";
 import { availableCollections } from "@/constants/data";
@@ -251,7 +251,7 @@ const OpenSwapCreationRoom = () => {
 
                       <SwapParameterTile
                         title="Expiration date:"
-                        value={`${moment.utc(expiration_date).local().format('MMM DD, YYYY hh:mm a')}`}
+                        value={`${moment.utc(expiration_date).local().format('MMM DD, YYYY HH:mm:ss')}`}
                       />
 
                       {preferred_asset.type === 'nft' &&

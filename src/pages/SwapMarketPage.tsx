@@ -1,49 +1,24 @@
-import LeaderboardCard from "@/components/custom/swap_market/LeaderboardCard";
-import NewMembersCard from "@/components/custom/swap_market/NewMembersCard";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useState } from "react";
-import { toast } from "sonner";
-import CreatePrivateSwapDialog from "@/components/custom/swap_market/private-party/CreatePrivateSwapDialog";
-import { generateRandomTradeId } from "@/lib/utils";
-import { useNavigate } from "react-router-dom";
+// import LeaderboardCard from "@/components/custom/swap-market/LeaderboardCard";
+import NewMembersCard from "@/components/custom/swap-market/NewMembersCard";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
+import CreatePrivateSwapDialog from "@/components/custom/swap-market/private-party/CreatePrivateSwapDialog";
+import { generateRandomTradeId, getActiveTabFromPathname } from "@/lib/utils";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useSwapMarketStore } from "@/store/swap-market";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-import OpenMarketTabContent from "@/components/custom/swap_market/open-market/OpenMarketTabContent";
-import PrivateMarketTabContent from "@/components/custom/swap_market/private-party/PrivateMarketTabContent";
 import { useProfileStore } from "@/store/profile";
 import { membersData, tradersData } from "@/constants/data";
+import { showWalletConnectionToast } from "@/lib/helpers";
+import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
+import { defaults } from "@/constants/defaults";
 
 const SwapMarketPage = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const wallet = useProfileStore(state => state.profile.wallet);
-  
-  const [activeTab, setActiveTab] = useState<"open-market" | "private-party">("private-party");
 
   const openMarketSwapLength = useSwapMarketStore(state => (state.openMarket.filteredAvailableSwaps || []).length + (state.openMarket.createdSwaps || []).length);
   const privateSwapLength = useSwapMarketStore(state => (state.privateMarket.filteredAvailablePrivateSwaps || []).length);
 
-  const handleSwitchTab = (value: "open-market" | "private-party") => {
-    setActiveTab(value);
-  };
-
-  const handleShowWalletConnectionToast = () => {
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="error"
-          title="Connect to wallet!"
-          description={"Please connect to wallet for this feature!"}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
-    );
-  };
 
   return (
     <>
@@ -66,7 +41,7 @@ const SwapMarketPage = () => {
               <div
                 className="relative text-sm flex items-center gap-4 cursor-pointer hover:bg-su_enable_bg py-2 px-4 rounded-md"
                 onClick={() => {
-                  wallet.isConnected ? navigate(`/swap-up/swap-market/open-swap/create/${generateRandomTradeId()}`) : handleShowWalletConnectionToast();
+                  wallet.isConnected ? navigate(`/swap-up/swap-market/open-swap/create/${generateRandomTradeId()}`) : showWalletConnectionToast();
                 }}
               >
                 <svg className="w-5" viewBox="0 0 16 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -87,7 +62,7 @@ const SwapMarketPage = () => {
 
                 {/* <span
                   className={`${wallet.isConnected ? "hidden" : "absolute"} cursor-pointer top-0 left-0 w-full h-full bg-transparent rounded-full`}
-                  onClick={handleShowWalletConnectionToast}
+                  onClick={()=>showWalletConnectionToast()}
                 ></span> */}
 
               </div>
@@ -100,35 +75,37 @@ const SwapMarketPage = () => {
         <div className="flex flex-col lg:flex-row items-center gap-3" >
           <NewMembersCard users={membersData} />
           <NewMembersCard cardType="trader" users={tradersData} />
-          <LeaderboardCard users={membersData} />
+          {/* <LeaderboardCard users={membersData} /> */}
         </div>
 
-        <div className="overflow-x-scroll lg:overflow-hidden" >
-          <Tabs defaultValue="open-market" >
-            <TabsList className="border-b-2 border-su_enable_bg w-full justify-start rounded-none bg-transparent">
-              <TabsTrigger value="open-market" onClick={() => handleSwitchTab("open-market")} >
-                Open market
-                <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'open-market' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {openMarketSwapLength}
-                </span>
-              </TabsTrigger>
-              <TabsTrigger value="private-party" onClick={() => handleSwitchTab("private-party")}>
-                Private party
-                <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === 'private-party' ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
-                  {privateSwapLength}
-                </span>
-              </TabsTrigger>
-            </TabsList>
+        <CustomTabContainer >
+          {
+            defaults.swapMarket.tabs.map(tab => {
+              const activeTab = getActiveTabFromPathname(pathname);
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => navigate(tab.path)}
+                  className={`relative flex bg-transparent ${activeTab === tab.key ? "text-su_primary" : "text-muted-foreground"} items-center gap-3 text-sm font-bold px-3 `}
+                >
+                  {tab.title}
 
-            <TabsContent value="open-market">
-              <OpenMarketTabContent activeTab={activeTab} handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
-            </TabsContent>
+                  <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${activeTab === tab.key ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground'}`}>
+                    {tab.key === 'open' && openMarketSwapLength}
+                    {tab.key === 'private' && privateSwapLength}
+                  </span>
 
-            <TabsContent value="private-party" className="w-full flex flex-col gap-4">
-              <PrivateMarketTabContent activeTab={activeTab} handleShowWalletConnectionToast={handleShowWalletConnectionToast} />
-            </TabsContent>
-          </Tabs>
+                  <span className={`${activeTab === tab.key ? "absolute -bottom-3.5 left-0 border-b-2 border-su_primary w-full" : ""}`} ></span>
+                </button>
+              );
+            })
+          }
+        </CustomTabContainer>
+
+        <div className="w-full" >
+          <Outlet />
         </div>
+
       </section >
     </>
   );

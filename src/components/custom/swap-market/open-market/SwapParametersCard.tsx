@@ -14,7 +14,7 @@ import ToastLookCard from "../../shared/ToastLookCard";
 import { Input } from "@/components/ui/input";
 import CurrencySelectCombobox from "../../shared/CurrencySelectCombobox";
 import { availableCollections, chainsDataset } from "@/constants/data";
-import { SUFS_OpenSwapParameters } from "@/schema";
+import { Schema_OpenSwapParametersForm } from "@/schema";
 import { availableRarityRanking } from "@/constants";
 import { SUI_SwapCurrencyItem, SUI_SwapPreferences, SUT_PreferredAssetType } from "@/types/swap-market.types";
 import { SUI_CurrencyItem } from "@/types/global.types";
@@ -34,8 +34,8 @@ const SwapParametersCard = ({ setIsValidParametersForm }: IProp) => {
 
   const setSwapPreferences = useSwapMarketStore(state => state.openMarket.openRoom.setSwapPreferences);
 
-  const form = useForm<z.infer<typeof SUFS_OpenSwapParameters>>({
-    resolver: zodResolver(SUFS_OpenSwapParameters),
+  const form = useForm<z.infer<typeof Schema_OpenSwapParametersForm>>({
+    resolver: zodResolver(Schema_OpenSwapParametersForm),
     defaultValues: {
       collection: '',
       rarityRank: '',
@@ -118,12 +118,12 @@ const SwapParametersCard = ({ setIsValidParametersForm }: IProp) => {
         Swap parameters
       </h2>
 
-      <ToastLookCard
+      {/* <ToastLookCard
         variant="info"
         title="Escrow swap ahead"
         description="The initial proposer escrows assets in the smart contract, signaling a serious offer with limited negotiations. Changing assets later incurs extra gas fees."
         hideCloseButton
-      />
+      /> */}
 
       <Form {...form}>
         <form className="space-y-3">
@@ -145,7 +145,7 @@ const SwapParametersCard = ({ setIsValidParametersForm }: IProp) => {
                       )}
                     >
                       {field.value ?
-                        <span className="text-su_primary" >{moment(field.value).format('MMM DD, YYYY hh:mm a')}</span>
+                        <span className="text-su_primary" >{moment(field.value).format('MMM DD, YYYY HH:mm A')}</span>
                         :
                         (
                           <span>Set expiration date</span>

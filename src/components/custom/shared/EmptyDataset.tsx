@@ -36,7 +36,12 @@ const EmptyDataset = ({ title, description, children, navigateTo, showBackground
 
         <div className="text-center" >
           <h3 className="font-semibold leading-8">{title ? title : "Page not found!"}</h3>
-          <p className="text-sm text-su_secondary">{description ? description : "Navigate to previous page!"}</p>
+          <p
+            className="text-sm text-su_secondary"
+            dangerouslySetInnerHTML={{
+              __html: description ? description : "Navigate to previous page!"
+            }}
+          ></p>
         </div>
         {
           !(title && description) && <Button className="gradient-button" onClick={() => { navigate(navigateTo ? navigateTo : ''); }} >Go back</Button>

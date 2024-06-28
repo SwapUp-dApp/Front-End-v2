@@ -12,15 +12,21 @@ import OpenSwapProposeRoom from "@/pages/OpenSwapProposeRoom";
 import ViewSwapRoom from "@/pages/ViewSwapRoom";
 import CounterOfferSwapRoom from "@/pages/CouterOfferSwapRoom";
 import SwapUpWebsite from "@/pages/SwapUpWebsite";
+import { Navigate } from "react-router-dom";
+import OpenMarketTabContent from "@/components/custom/swap-market/open-market/OpenMarketTabContent";
+import PrivateMarketTabContent from "@/components/custom/swap-market/private-party/PrivateMarketTabContent";
+import { defaults } from "@/constants/defaults";
+import PendingSwapsTabContent from "@/components/custom/swap-market/my-swaps/PendingSwapsTabContent";
+import SwapHistoryTabContent from "@/components/custom/swap-market/my-swaps/SwapHistoryTabContent";
 
 
-interface IRoutesType {
+export interface SUI_RoutesType {
   id: string;
   title: string;
   path: string;
-  element: ReactNode;
+  element?: ReactNode;
   layout?: ReactNode;
-  child_routes?: IRoutesType[];
+  child_routes?: SUI_RoutesType[];
 }
 
 const NotFoundPage = () => (
@@ -29,27 +35,77 @@ const NotFoundPage = () => (
   </div >
 );
 
-export const defaultFallbackRoute = "/swap-up/swap-market";
-
-export const clientSideRoutes: IRoutesType[] = [
+export const clientSideRoutes: SUI_RoutesType[] = [
+  {
+    id: 'swapup-website',
+    title: "Swapup landing page",
+    path: "/",
+    element: <SwapUpWebsite />,
+  },
   {
     id: 'swapup-main-layout',
     title: "SwapUp Main layout",
     path: "/swap-up",
-    element: <SwapMarketPage />,
     layout: <MainLayout />,
     child_routes: [
+      {
+        id: 'swapup-layout-home-page',
+        title: "swapup layout home page",
+        path: "",
+        //Navigating to swap market page if user enter hits /swap-up route manually
+        element: <Navigate to={defaults.fallback.route} />,
+      },
       {
         id: 'swap-market-page',
         title: "Swap Market Page",
         path: "swap-market",
-        element: <SwapMarketPage />,
+        layout: <SwapMarketPage />,
+        child_routes: [
+          {
+            id: 'swap-market-redirect',
+            title: "Swap Market Redirect",
+            path: "",
+            element: <Navigate to={`${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`} />,
+          },
+          {
+            id: 'swap-market-open-teb',
+            title: "Swap Market Open Tab",
+            path: "open",
+            element: <OpenMarketTabContent />,
+          },
+          {
+            id: 'swap-market-private-tab',
+            title: "Swap Market Private Tab",
+            path: "private",
+            element: <PrivateMarketTabContent />,
+          },
+        ]
       },
       {
-        id: 'my-swaps',
+        id: 'my-swaps-page',
         title: "My Swaps Page",
         path: "my-swaps",
-        element: <MySwapsPage />,
+        layout: <MySwapsPage />,
+        child_routes: [
+          {
+            id: 'my-swaps-redirect',
+            title: "My Swaps Redirect",
+            path: "",
+            element: <Navigate to={`${defaults.mySwaps.baseRoute}/${defaults.mySwaps.defaultActiveTab}`} />,
+          },
+          {
+            id: 'my-swaps-pending-teb',
+            title: "My Swaps Pending Tab",
+            path: "pending",
+            element: <PendingSwapsTabContent />,
+          },
+          {
+            id: 'my-swaps-history-tab',
+            title: "My Swaps History Tab",
+            path: "history",
+            element: <SwapHistoryTabContent />,
+          },
+        ]
       },
       {
         id: 'create-private-swap',
@@ -105,6 +161,6 @@ export const clientSideRoutes: IRoutesType[] = [
     id: 'not-found-page',
     title: "Not found Page",
     path: "*",
-    element: <SwapUpWebsite />,
+    element: <NotFoundPage />,
   }
 ];

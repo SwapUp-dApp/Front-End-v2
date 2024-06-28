@@ -8,8 +8,12 @@ import { communityCardDetails } from "@/constants/data";
 import CarousalCard from "@/components/custom/landing-page/carousal-card";
 import Testimonial from "@/components/custom/landing-page/testimonial";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useNavigate } from "react-router-dom";
+
 
 const SwapUpPage = () => {
+	const navigate = useNavigate()
+
 	return (
         
 		<div> 
@@ -38,7 +42,7 @@ const SwapUpPage = () => {
 								agreements with others locally and worldwide.
 							</p>
 							<div className="mt-8">
-								<Button>Go to dApp</Button>
+								<Button onClick={() => navigate("/swap-up/swap-market")} >Go to dApp</Button>
 							</div>
 						</div>
 						<div className="w-full max-w-[450px] mt-8 md:mt-0">
@@ -161,6 +165,18 @@ const SwapUpPage = () => {
 									<div className="h-px w-40 mt-4 mb-4 block lg:hidden">
 										<HorizontalDivider />
 									</div>
+									<div className="text-center max-w-[194px]">
+										<p className="font-Poppins text-5xl font-semibold">$</p>
+										<p className="font-Urbanist text-xs mt-4">
+											SwapUp DAO Rewards
+										</p>
+									</div>
+									<div className="hidden md:block">
+										<VerticalDivider />
+									</div>
+									<div className="h-px w-40 mt-4 mb-4 block lg:hidden">
+										<HorizontalDivider />
+									</div>
 
 									<div className="text-center max-w-[194px]">
 										<p className="font-Poppins text-5xl font-semibold">550</p>
@@ -174,6 +190,14 @@ const SwapUpPage = () => {
 					</div>
 				</div>
 			</div>
+
+			<div className="text-center max-w-[194px]">
+				<p className="font-Poppins text-5xl font-semibold">550</p>
+				<p className="font-Urbanist text-xs mt-4">
+					Number of active users
+				</p>
+			</div>				
+
 			<div
 				className="h-[auto] bg-cover bg-center w-full"
 				style={{
