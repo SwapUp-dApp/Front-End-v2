@@ -115,15 +115,13 @@ const OpenSwapProposeRoom = () => {
   };
 
   useEffect(() => {
-    if ((state.sender.nftsSelectedForSwap.length) &&
-      (state.sender.addedAmount && state.receiver.addedAmount)
-    ) {
+    if (state.sender.nftsSelectedForSwap.length) {
       setEnableApproveButtonCriteria(true);
     } else {
       setEnableApproveButtonCriteria(false);
     }
 
-  }, [state.sender.nftsSelectedForSwap, state.sender.addedAmount, state.receiver.addedAmount]);
+  }, [state.sender.nftsSelectedForSwap]);
 
   useEffect(() => {
     const setValues = async () => {

@@ -20,7 +20,7 @@ const UserProfile = () => {
     setActiveTab(value);
   };
 
-  const testWalletAddress: string = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
+  //const testWalletAddress: string = "0xe6a28D675f38856ad383557C76dfdA2238961A49";
 
   const handleResetData = () => {
     // resetRoom('privateMarket', 'privateRoom');
@@ -30,7 +30,7 @@ const UserProfile = () => {
     <>
       <section className="flex flex-col gap-4" >
         <ProfileHeader
-          walletAddress={testWalletAddress}
+          walletAddress={wallet.address}
           resetData={handleResetData}
           existDescription="By leaving profile, your changes will not be saved"
           existTitle="Are you sure you want to exit your Profile page?"

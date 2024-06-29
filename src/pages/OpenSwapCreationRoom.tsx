@@ -138,12 +138,12 @@ const OpenSwapCreationRoom = () => {
   };
 
   useEffect(() => {
-    if ((state.sender.nftsSelectedForSwap.length) && (state.sender.addedAmount) && isValidParametersForm) {
+    if ((state.sender.nftsSelectedForSwap.length) && isValidParametersForm) {
       setEnableApproveButtonCriteria(true);
     } else {
       setEnableApproveButtonCriteria(false);
     }
-  }, [state.sender.nftsSelectedForSwap, state.sender.addedAmount, isValidParametersForm]);
+  }, [state.sender.nftsSelectedForSwap, isValidParametersForm]);
 
   useEffect(() => {
     if (openTradeId && isValidTradeId(openTradeId)) {
