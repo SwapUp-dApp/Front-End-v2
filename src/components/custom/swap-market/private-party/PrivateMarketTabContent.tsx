@@ -47,6 +47,8 @@ const PrivateMarketTabContent = () => {
     setPrivateMarketAvailableSwapsBySearch(value);
   };
 
+  const handleResetFilters = () => { };
+
   const handleSwapAccept = async (swap: SUI_Swap) => {
     try {
 
@@ -71,7 +73,7 @@ const PrivateMarketTabContent = () => {
         throw new Error("User approval not granted.");
       }
 
-      const triggerTranfer = await getWalletProxy().triggerTransfer(swap);
+      const triggerTranfer = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
       console.log(swapAcceptance.isLoading);
 
       // if (!triggerTranfer) {

@@ -8,18 +8,19 @@ import { communityCardDetails } from "@/constants/data";
 import CarousalCard from "@/components/custom/landing-page/carousal-card";
 import Testimonial from "@/components/custom/landing-page/testimonial";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 
 
 const SwapUpPage = () => {
 	const navigate = useNavigate()
 
 	return (
-        
-		<div> 
-            
+
+		<div>
+
 			<div
-                
+
 				className="h-auto  bg-cover bg-center w-full"
 				style={{
 					backgroundImage: "url('/assets/landing-page/background1.png')",
@@ -191,12 +192,12 @@ const SwapUpPage = () => {
 				</div>
 			</div>
 
-			<div className="text-center max-w-[194px]">
+			{/* <div className="text-center max-w-[194px]">
 				<p className="font-Poppins text-5xl font-semibold">550</p>
 				<p className="font-Urbanist text-xs mt-4">
 					Number of active users
 				</p>
-			</div>				
+			</div>				 */}
 
 			<div
 				className="h-[auto] bg-cover bg-center w-full"
@@ -354,7 +355,7 @@ const SwapUpPage = () => {
 							<Testimonial
 								rating={5}
 								text="Using this platform has been a revelation for me. I've relied on it for months now, and it continues to exceed my expectations. From its smooth functionality to the exceptional customer support, it truly sets the standard in its industry."
-								author="Emily J."
+								author="Donald M."
 								containerClasses="w-[340px]"
 							/>
 
@@ -365,7 +366,7 @@ const SwapUpPage = () => {
 							<Testimonial
 								rating={5}
 								text="For the past several months, I've been utilizing this platform, and it has truly transformed the way I handle transactions. Its intuitive design and impeccable customer service have made it an indispensable tool in my daily routine."
-								author="Emily J."
+								author="Max S."
 								containerClasses="w-[340px]"
 							/>
 
@@ -376,7 +377,7 @@ const SwapUpPage = () => {
 							<Testimonial
 								rating={5}
 								text="I can't speak highly enough of this platform. It has revolutionized the way I conduct transactions, and I've been a loyal user for months. The seamless experience and unparalleled customer service have set it apart from its competitors."
-								author="Emily J."
+								author="Rudy K."
 								containerClasses="w-[340px]"
 							/>
 						</div>
@@ -391,33 +392,140 @@ const SwapUpPage = () => {
 					</p>
 				</div>
 
-				{/* <div
-					className="h-[auto] bg-cover bg-center w-full mt-20"
-					style={{
-						backgroundImage: "url('/assets/landing-page/background6.png')",
-					}}
-				>
-					<div className="container px-0 md:px-10 mx-auto mt-12 flex justify-center">
-						<div className="w-full rounded-none md:rounded-3xl bg-su_primary px-2 py-10 md:px-28 md:py-16">
-							<div className="flex justify-center max-w[850px]">
-								<div className="max-w-[850px]  mt-0 md:mt-12">
-									<p className="text-4xl text-start  font-Poppins md:text-5xl text-su_primary_bg font-semibold md:text-center mt-12 ">
-										Key Development{" "}
-										<span className="px-3 py-1 rounded-full bg-su_light_purple text-su_primary_bg inline-block">
-											Roadmap
-										</span>
-									</p>
-									<p className="text-su_primary_black mt-8 max-w-[700px]  font-Urbanist text-start md:text-center md:text-lg font-medium leading-relaxed ">
-										Discover the exciting journey ahead with our comprehensive
-										roadmap, tailored to elevate your experience.
-									</p>
-								</div>
-							</div>
+
+
+			</div >
+
+			{/* Section 6 */}
+			<div className="container px-0 md:px-10 mx-auto mt-12 flex justify-center">
+				<div className="w-full rounded-none md:rounded-3xl bg-su_primary px-2 py-6 md:px-28 md:py-16 mb-10">
+					<div className="flex justify-center max-w[850px]">
+						<div className="max-w-[850px]  mt-0 md:mt-2">
+							<p className="text-4xl text-start  font-Poppins md:text-5xl text-su_primary_bg font-semibold md:text-center mt-12 ">
+								Key Development{" "}
+								<span className="px-3 py-1 rounded-full bg-su_light_purple text-su_primary_bg inline-block">
+									Roadmap
+								</span>
+							</p>
+							<p className="text-su_primary_black mt-8 max-w-[700px]  font-Urbanist text-start md:text-center md:text-lg font-medium leading-relaxed ">
+								Discover the exciting journey ahead with our comprehensive
+								roadmap, tailored to elevate your experience.
+							</p>
 						</div>
 					</div>
-				</div> */}
+					<ScrollArea>
+						<div className="mt-2 mb-2 w-full flex justify-center p-10 overflow-x-auto">
+
+							<div className="w-full relative" >
+								<img src={"/assets/svgs/Map.svg"} alt="horse" className="p-4 w-full h-30 object-cover rounded-sm" />
+							</div>
+						</div>
+						<div className="w-full relative" >
+							<img src={"/assets/svgs/Banner.svg"} alt="horse" className="p-10 w-full h-30 object-cover rounded-sm" />
+						</div>
+						<ScrollBar orientation="horizontal" className="h-2" />
+					</ScrollArea>
+				</div>
 			</div>
-		</div>
+			<div
+				className="h-full bg-cover  w-full "
+				style={{
+					backgroundImage: "url('/assets/svgs/Background7.svg')",
+				}}
+			>
+
+				{/* Section 7 */}
+				<div className="container mx-auto px-2 md:px-10 space-y-20">
+					<div className="flex flex-col md:flex-row items-center md:justify-center">
+						<div className="max-w-[auto] mt-12">
+							<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-center mt-12 ">
+								Knowledge {" "}
+								<span className="px-3 py-1 rounded-full bg-su_light_pink text-black inline-block ml-2">
+									Hub
+								</span>
+
+							</p>
+							<p className="text-su_primary_light mt-8 max-w-[650px] font-Urbanist text-start md:text-center  md:text-lg font-medium leading-relaxed ">
+								Don't forget to explore our Educational Repository for insightful
+								articles and resources
+							</p>
+						</div>
+
+
+					</div>
+					<ScrollArea>
+						<div className="mt-4 mb-4 w-full flex justify-center overflow-x-auto">
+							<div className="flex space-x-2 md:space-x-16">
+
+
+								<div className={`w-auto md:w-[461px]`}>
+									<div className="relative">
+										<img
+											className={`w-[300px] h-[300px] object-contain rounded-3xl md:object-cover md:w-full`}
+											src="/assets/svgs/Knowlegehub.svg"
+											alt="Card Image"
+										/>
+
+									</div>
+									<p className={`w-[300px] text_bg-su_primary font-semibold font-Urbanist text-lg md:w-[401px] md:text-2xl mt-4`}>
+										How to trade NFTs on Swapup
+									</p>
+									<p className={`w-[300px] mb-2 text_bg-su_primary font-Urbanist font-normal text-xs md:text-sm mt-1 md:w-[401px]`}>
+										Trading NFTs is a nerve racking experience. You don't know if you are on the right site.
+										You wonder if your trade will execute properly and even more important "is it safe.."
+									</p>
+									<p className={`w-[300px] mb-2 text_bg-su_primary font-Urbanist font-normal text-xs md:text-sm mt-1 md:w-[401px]`}>
+										Read More
+									</p>
+
+								</div>
+
+								<div className={`w-auto md:w-[461px]`}>
+									<div className="relative">
+										<img
+											className={`w-[300px] h-[300px] object-contain rounded-3xl md:object-cover md:w-full`}
+											src="/assets/svgs/Knowlegehub.svg"
+											alt="Card Image"
+										/>
+
+									</div>
+									<p className={`w-[300px] text_bg-su_primary font-semibold font-Urbanist text-lg md:w-[401px] md:text-2xl mt-4`}>
+										How to trade NFTs on Swapup
+									</p>
+									<p className={`w-[300px] mb-2 text_bg-su_primary font-Urbanist font-normal text-xs md:text-sm mt-1 md:w-[401px]`}>
+										Trading NFTs is a nerve racking experience. You don't know if you are on the right site.
+										You wonder if your trade will execute properly and even more important "is it safe.."
+									</p>
+									<p className={`w-[300px] mb-2 text_bg-su_primary font-Urbanist font-normal text-xs md:text-sm mt-1 md:w-[401px]`}>
+										Read More
+									</p>
+								</div>
+
+
+
+							</div>
+						</div>
+						<ScrollBar orientation="horizontal" className="h-2" />
+					</ScrollArea>
+
+
+
+				</div>
+
+			</div>
+			{/* Footer Section */}
+			<footer className="m-4 text-3xs lg:text-sm flex items-center justify-between" >
+				<div className="flex items-center gap-3 lg:gap-6" >
+					<Link to={'/'} className="font-semibold">Legal Terms</Link>
+					<Link to={'/'} className="font-semibold">Privacy Policy</Link>
+				</div>
+				<div className="flex items-center gap-3 lg:gap-6" >
+					<p className="text-su_secondary">Copyright © 2024 SwapUp, All Rights Reserved.</p>
+				</div>
+			</footer>
+
+
+		</div >
 	);
 };
 

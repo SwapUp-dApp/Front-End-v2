@@ -53,10 +53,11 @@ const PrivateRoom = () => {
       }
       const updatedSwap = await useSwapMarketStore.getState().privateMarket.privateRoom.swap;
 
+      // Create a record in the blockchain for this.
+      await getWalletProxy().createAndUpdateSwap(updatedSwap!, "CREATE");
+
       // console.info("Updated swap: =======> \n", updatedSwap);
-
       const offerResult = await createSwapOffer(updatedSwap!);
-
       if (offerResult) {
         toast.custom(
           (id) => (

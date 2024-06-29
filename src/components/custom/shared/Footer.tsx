@@ -8,7 +8,7 @@ const Footer = () => {
         <Link to={'/'} className="font-semibold">Privacy Policy</Link>
       </div>
 
-      <p className="text-su_secondary">Copyright © 2022 SwapUp, All Rights Reserved.</p>
+      <p className="text-su_secondary">Copyright © 2024 SwapUp, All Rights Reserved.</p>
     </footer>
   );
 };
