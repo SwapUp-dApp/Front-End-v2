@@ -456,7 +456,7 @@ const PendingSwapsTabContent = () => {
                           <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.init_address)}</div>
                       }
                     </TableCell>
-                    <TableCell className="text-xs font-medium px-4 flex justify-start">
+                    <TableCell className="text-xs font-medium px-4">
                       <BadgeTile>
                         <img
                           className='w-3 h-3'

@@ -50,11 +50,13 @@ const MainLayout = () => {
   }, [pathname, wallet.isConnected]);
 
   return (
-    <div>
-      <Navbar />
-      <section className="px-6 lg:px-10 py-4" >
-        <Outlet />
-      </section>
+    <div className="flex flex-col justify-between min-h-screen " >
+      <div>
+        <Navbar />
+        <section className="px-6 lg:px-10 py-4" >
+          <Outlet />
+        </section>
+      </div>
       <Footer />
     </div>
   );

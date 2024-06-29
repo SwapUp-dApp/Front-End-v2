@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/types/swap-market-store.types";
 import { SUT_SwapRoomViewType } from "@/types/swap-market.types";
+import { Environment } from "@/config";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
@@ -106,8 +107,8 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
   const form = useForm<z.infer<typeof amountConvertFormSchema>>({
     resolver: zodResolver(amountConvertFormSchema),
     defaultValues: {
-      amount: String(addedAmount?.usdAmount) || '',
-      chain: 'razxDUgYGNAdQ'
+      amount: (addedAmount && addedAmount.usdAmount) ? String(addedAmount.usdAmount) : '',
+      chain: String(Environment.CHAIN_ID)
     },
   });
 
@@ -150,7 +151,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
   return (
     <aside className="space-y-2.5 lg:space-y-2 w-1/2 p-4 border border-su_disabled"  >
       <div className="flex justify-between items-center text-su_secondary " >
-        <h2 className="dark:text-white text-xs">Offer:</h2>
+        <h2 className="dark:text-white text-xs">You {layoutType === 'sender' ? "offer" : "receive"}:</h2>
 
         {
           ((nftsToDisplay.length > 0 || nftsSelectedForSwap.length > 0) && showRemoveNftButton) &&

@@ -195,7 +195,7 @@ const CounterOfferSwapRoom = () => {
       setEnableApproveButtonCriteria(false);
     }
 
-  }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap]);
+  }, [state.sender.nftsSelectedForSwap.length, state.receiver.nftsSelectedForSwap.length]);
 
 
   return (
@@ -327,7 +327,6 @@ const CounterOfferSwapRoom = () => {
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="receiver"
               swapRoomViewType="counter"
-              showRemoveNftButton={false}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
