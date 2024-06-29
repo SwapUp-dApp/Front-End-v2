@@ -1,5 +1,5 @@
-import {DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer,} from "@/components/ui/drawer";
-import {getIsActiveNav,} from "@/lib/utils";
+import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer, } from "@/components/ui/drawer";
+import { getIsActiveNav, } from "@/lib/utils";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
@@ -26,9 +26,8 @@ const LpNavbar = () => {
 					{landingPageNavData.map((navItem) => (
 						<Link to={navItem.path} key={navItem.key}>
 							<li
-								className={`nav-link font-semibold text-sm ${
-									getIsActiveNav(navItem.path, pathname) ? "" : ""
-								}`}
+								className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path, pathname) ? "" : ""
+									}`}
 							>
 								{navItem.title}
 							</li>
@@ -37,7 +36,7 @@ const LpNavbar = () => {
 				</ol>
 
 				<div className="flex items-center gap-4">
-					<CustomOutlineButton className="px-4 py-4 h-10">
+					{/* <CustomOutlineButton className="px-4 py-4 h-10">
 						<div className="flex justify-between items-center">
 							<svg
 								className="mr-1"
@@ -54,7 +53,7 @@ const LpNavbar = () => {
 							</svg>
 							Connect Wallet
 						</div>
-					</CustomOutlineButton>
+					</CustomOutlineButton> */}
 					<Button onClick={() => navigate("/swap-up/swap-market")} >Go to dApp</Button>
 				</div>
 			</div>
@@ -120,9 +119,8 @@ const LpNavbar = () => {
 								{landingPageNavData.map((navItem) => (
 									<Link to={navItem.path} key={navItem.key}>
 										<li
-											className={`nav-link font-semibold text-sm ${
-												getIsActiveNav(navItem.path, pathname) ? "" : ""
-											}`}
+											className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path, pathname) ? "" : ""
+												}`}
 										>
 											{navItem.title}
 										</li>

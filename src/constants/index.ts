@@ -1,16 +1,17 @@
 import { SUI_NavItem, SUI_RarityRankItem } from "@/types/global.types";
+import { defaults } from "./defaults";
 
 export const navItemsData: SUI_NavItem[] = [
   {
     key: "swap-market",
     title: "Swap Market",
-    path: "/swap-up/swap-market",
+    path: `${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`,
     protected: false,
   },
   {
     key: "my-swaps",
     title: "My Swaps",
-    path: "/swap-up/my-swaps",
+    path: `${defaults.mySwaps.baseRoute}/${defaults.mySwaps.defaultActiveTab}`,
     protected: true,
   },
   {
