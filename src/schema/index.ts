@@ -88,7 +88,6 @@ export const Schema_OpenSwapParametersForm = z.object({
 /*=== Open swap parameters schema ends ===*/
 
 /*=== My swaps filters schema starts ===*/
-
 export const Schema_PendingMySwapsFiltersForm = z.object({
   offersFromCurrentChain: z.boolean({
     required_error: "Please enable show offers from current chain!",
@@ -134,7 +133,6 @@ export const Schema_HistoryMySwapsFiltersForm = z.object({
     });
   }
 });
-
 /*=== My swaps filters schema ends ===*/
 
 /*=== Swap market - open market filters schema starts ===*/
@@ -148,7 +146,8 @@ export const Schema_OpenMarketFiltersForm = z.object({
   }),
   collection: z.string().optional(),
   rarityRank: z.string().optional(),
-  amountWantToReceive: z.string().optional(),
+  amountRangeFrom: z.string().optional(),
+  amountRangeTo: z.string().optional(),
   currencies: z
     .array(
       z.object({
@@ -176,11 +175,20 @@ export const Schema_OpenMarketFiltersForm = z.object({
       });
     }
   } else if (data.preferredAsset === "currency") {
-    if (!data.amountWantToReceive) {
+
+    if (!data.amountRangeFrom) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["amountWantToReceive"],
-        message: "Please enter amount you want to filter.",
+        path: ["amountRangeFrom"],
+        message: "Amount range from.",
+      });
+    }
+
+    if (!data.amountRangeTo) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["amountRangeTo"],
+        message: "Amount range to.",
       });
     }
 
@@ -212,3 +220,35 @@ export const Schema_OpenMarketFiltersForm = z.object({
   }
 });
 /*=== Swap market - open market filters schema ends ===*/
+
+
+/*=== Swap market - private market filters schema starts ===*/
+export const Schema_PrivateMarketFiltersForm = z.object({
+  offersFromCurrentChain: z.boolean({
+    required_error: "Please enable show offers from current chain!",
+  }).optional(),
+  swapRequestStatus: z.enum(["all", "sent", "received"], {
+    required_error: "Please select a swap offer status.",
+  }),
+  dateRangeFrom: z.date().optional(),
+  dateRangeTo: z.date().optional(),
+}).superRefine((data, ctx) => {
+
+  if (data.dateRangeFrom && !data.dateRangeTo) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["dateRangeTo"],
+      message: "Select a ending date.",
+    });
+  }
+
+  if (!data.dateRangeFrom && data.dateRangeTo) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["dateRangeFrom"],
+      message: "Select starting date.",
+    });
+  }
+
+});
+/*=== Swap market - private market filters schema ends ===*/

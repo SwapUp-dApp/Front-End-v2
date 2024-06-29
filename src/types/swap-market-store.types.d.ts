@@ -1,6 +1,7 @@
 import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUT_SwapOfferType } from "@/types/swap-market.types";
 import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
 import { IProfile, IWallet } from "./profile.types";
+import { SUT_RequestStatusType } from "./my-swaps-store.types";
 
 export type SUT_GridViewType = 'detailed' | 'overview';
 export type SUT_PrivateRoomLayoutType = "sender" | "receiver";
@@ -10,7 +11,7 @@ export type SUT_RoomKeyType = "privateRoom" | "openRoom";
 
 
 //====OpenMarket Specific Types=====
-export interface IOpenMarketFilterItem {
+export interface IOpenRoomFilterItem {
   collection: string;
   rarityRank: SUI_RarityRankItem;
 }
@@ -50,7 +51,7 @@ export interface IOpenMarketLayoutSide {
   collections: string[] | [];
   addedAmount?: IOpenMarketAddedAmount;
   availableChains: SUI_ChainItem[];
-  filters?: IOpenMarketFilterItem;
+  filters?: IOpenRoomFilterItem;
   nfts?: SUI_NFTItem[];
   filteredNfts?: SUI_NFTItem[];
   nftsSelectedForSwap: SUI_NFTItem[] | [];
@@ -62,10 +63,18 @@ export interface IOpenMarketLayoutSide {
   setFilteredNftsBySwapTokens: (selectedNfts: SUI_NFTItem[]) => void;
   removeAllFilters: () => void;
 }
-
 //====================================
 
-
+export interface IOpenMarketSwapFilters {
+  offersFromCurrentChain: boolean;
+  preferredAsset: SUT_PreferredAssetType;
+  amountRangeFrom?: number;
+  amountRangeTo?: number;
+  currencies?: SUI_SwapCurrencyItem[];
+  offeredRarityRank?: SUI_RarityRankItem;
+  collection?: string;
+  rarityRank?: SUI_RarityRankItem;
+}
 
 export interface IPrivateRoomFilterItem {
   collection: string;
@@ -77,9 +86,15 @@ export interface IAddedAmount {
   coin: SUI_ChainItem;
 }
 
+export interface IPrivateMarketSwapFilters {
+  offersFromCurrentChain: boolean;
+  swapRequestStatus: SUT_RequestStatusType;
+  dateRangeFrom?: string;
+  dateRangeTo?: string;
+}
+
 export interface IPrivateRoomsLayoutSide {
   activeGridView: SUT_GridViewType;
-
   toggleGridView: (value: SUT_GridViewType) => void;
   profile: IProfile;
   collections: string[] | [];
@@ -122,15 +137,21 @@ export interface ISwapMarketStore {
     filteredAvailableSwaps?: SUI_OpenSwap[];
     createdSwaps?: SUI_OpenSwap[];
     openRoom: IOpenRoom;
+    openMarketSwapsFilters: IOpenMarketSwapFilters;
     setOpenSwapsData: (swapsData: SUI_OpenSwap[], wallet: IWallet) => void;
     setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => void;
-    setFilteredAvailableSwapsBySearch: (searchValue: string) => void;
+    setOpenMarketAvailableSwapsBySearch: (searchValue: string) => void;
+    setOpenMarketAvailableSwapsByFilters: (filters: IOpenMarketSwapFilters) => void;
+    resetAllOpenMarketFilters: () => void;
   },
   privateMarket: {
     availablePrivateSwaps?: SUI_Swap[];
     filteredAvailablePrivateSwaps?: SUI_Swap[];
     privateRoom: IPrivateRoom;
+    privateMarketSwapsFilters: IPrivateMarketSwapFilters;
     setPrivateSwapsData: (swapsData: SUI_Swap[]) => void;
-    setFilteredAvailablePrivateSwapsBySearch: (searchValue: string) => void;
+    setPrivateMarketAvailableSwapsBySearch: (searchValue: string) => void;
+    setPrivateMarketAvailableSwapsByFilters: (filters: IPrivateMarketSwapFilters, loginWalletAddress: string) => void;
+    resetAllPrivateMarketFilters: () => void;
   };
 }

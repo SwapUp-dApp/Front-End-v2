@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Schema_PendingMySwapsFiltersForm } from "@/schema";
 
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { SUT_PendingFiltersStatusType, SUT_FiltersSwapModeType, IPendingFilters } from "@/types/my-swaps-store.types";
+import { SUT_RequestStatusType, SUT_FiltersSwapModeType, IPendingFilters } from "@/types/my-swaps-store.types";
 import { Switch } from "@/components/ui/switch";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
 import { useMySwapStore } from "@/store/my-swaps";
@@ -33,7 +33,7 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
   const [pendingFilters, resetAllFilters, setFilteredPendingSwapByFilters] = useMySwapStore(state => [state.pendingFilters, state.resetAllFilters, state.setFilteredPendingSwapByFilters]);
 
   const swapModeFilterFormData: SUT_FiltersSwapModeType[] = ["all", 'open-market', 'private-party'];
-  const swapStatusFilterFormData: SUT_PendingFiltersStatusType[] = ["all", 'sent', 'received'];
+  const swapStatusFilterFormData: SUT_RequestStatusType[] = ["all", 'sent', 'received'];
 
   const form = useForm<z.infer<typeof Schema_PendingMySwapsFiltersForm>>({
     resolver: zodResolver(Schema_PendingMySwapsFiltersForm),

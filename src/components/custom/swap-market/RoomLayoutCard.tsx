@@ -129,15 +129,12 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
             swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
           );
           // console.log("Inside receiver filter function NFTs: ", filteredNfts);
-          setNftsDataset(filteredNfts);
+          setNftsDataset(resNfts);
           setSelectedNftsForSwap([...filteredNfts]);
           setTimeout(() => {
             setDataSavedInStore(prev => ({ ...prev, receiver: true }));
           }, 200);
         }
-
-
-
 
       }
 
@@ -263,7 +260,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
                 setSelectedNftsForSwap={setSelectedNftsForSwap}
                 nftsSelectedForSwap={nftsSelectedForSwap}
                 disableNftSelection={
-                  (((swapRoomViewType === 'propose' || swapRoomViewType === 'counter') && layoutType === 'receiver') || swapRoomViewType === 'view') ? true : false
+                  ((swapRoomViewType === 'propose' && layoutType === 'receiver') || swapRoomViewType === 'view') ? true : false
                 }
               />
             ))

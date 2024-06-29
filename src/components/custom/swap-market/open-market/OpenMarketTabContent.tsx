@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
@@ -17,19 +17,19 @@ import LoadingDataset from '../../shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
 import { useProfileStore } from '@/store/profile';
 import { showWalletConnectionToast } from '@/lib/helpers';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import OpenMarketSwapFilterDrawer from './OpenMarketSwapFilterDrawer';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const OpenMarketTabContent = () => {
-
-  const { setOpenSwapsData, createdSwaps, filteredAvailableSwaps, setFilteredAvailableSwapsBySearch } = useSwapMarketStore(state => state.openMarket);
+  const [filtersApplied, setFiltersApplied] = useState(false);
+  const { setOpenSwapsData, createdSwaps, filteredAvailableSwaps, setOpenMarketAvailableSwapsBySearch, openMarketSwapsFilters } = useSwapMarketStore(state => state.openMarket);
   const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
 
 
   const handleOpenSwapFilterData = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
-    setFilteredAvailableSwapsBySearch(value);
+    setOpenMarketAvailableSwapsBySearch(value);
   };
 
   const { isLoading, isError, error, data, isSuccess } = useOpenSwapsPendingList();
@@ -63,6 +63,29 @@ const OpenMarketTabContent = () => {
 
   }, [isError, error, data, isSuccess]);
 
+  useEffect(() => {
+    if (
+      openMarketSwapsFilters.offersFromCurrentChain === true ||
+      openMarketSwapsFilters.offeredRarityRank ||
+      (openMarketSwapsFilters.collection && openMarketSwapsFilters.rarityRank) ||
+      (openMarketSwapsFilters.amountRangeFrom && openMarketSwapsFilters.amountRangeTo && openMarketSwapsFilters.currencies)
+    ) {
+      setFiltersApplied(true);
+    } else {
+      setFiltersApplied(false);
+    }
+
+  }, [
+    openMarketSwapsFilters.offersFromCurrentChain,
+    openMarketSwapsFilters.collection,
+    openMarketSwapsFilters.rarityRank,
+    openMarketSwapsFilters.offeredRarityRank,
+    openMarketSwapsFilters.amountRangeFrom,
+    openMarketSwapsFilters.amountRangeTo,
+    openMarketSwapsFilters.currencies,
+
+  ]);
+
   const nftsImageMapper = (nfts: SUI_SwapToken[]) => {
     return (
       nfts.map((nft, index) => {
@@ -90,7 +113,7 @@ const OpenMarketTabContent = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full">
 
       <div className="flex items-center justify-between" >
         <div className="flex items-center justify-between gap-4" >
@@ -146,108 +169,115 @@ const OpenMarketTabContent = () => {
         />
       </div>
 
-      {
-        (filteredAvailableSwaps || []).length > 0 &&
-        <ScrollArea className='min-w-full' >
-          <Table className="min-w-full">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="align-top font-semibold">Assets</TableHead>
-                <TableHead className="align-top font-semibold min-w-[150px] pl-8" >Unique trade ID</TableHead>
-                <TableHead className="align-top font-semibold px-4" >Owner's wallet</TableHead>
-                <TableHead className="align-top font-semibold px-4" >Trading chain</TableHead>
-                <TableHead className="align-top font-semibold px-4 min-w-[130px] line-clamp-1 h-1" >Open swap date</TableHead>
-                <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Expiry date</TableHead>
-                <TableHead className="align-top font-semibold px-4" >Swap Preferences</TableHead>
-                <TableHead className="pr-2 relative" >
-                  <div className='absolute top-2' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile /></OpenMarketSwapFilterDrawer></div>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
+      <ScrollArea className='w-full' >
+        <Table className="min-w-full">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="align-top font-semibold">Assets</TableHead>
+              <TableHead className="align-top font-semibold min-w-[120px] pl-4" >Unique trade ID</TableHead>
+              <TableHead className="align-top font-semibold px-4" >Owner's wallet</TableHead>
+              <TableHead className="align-top font-semibold px-4 min-w-[150px]" >Trading chain</TableHead>
+              <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Open swap date</TableHead>
+              <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Expiry date</TableHead>
+              <TableHead className="align-top font-semibold px-4 " >Swap Preferences</TableHead>
+              <TableHead className="pr-2 relative" >
+                <div className='absolute top-2' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile filterApplied={filtersApplied} /></OpenMarketSwapFilterDrawer></div>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
 
-            <TableBody className="divide-y">
-              {
-                filteredAvailableSwaps?.map((swap) => {
-                  const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
+          <TableBody className="divide-y">
+            {
+              filteredAvailableSwaps?.map((swap) => {
+                const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
+                return (
+                  <TableRow key={swap.open_trade_id}>
+                    <TableCell className="text-xs font-medium flex items-center gap-2">
+                      <div className="flex items-center gap-1" >
+                        {nftsImageMapper(swap.metadata.init.tokens)}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-xs font-medium pl-4">#{getLastCharacters(swap.open_trade_id, 7)}</TableCell>
+                    <TableCell className="text-xs font-medium px-4">{getShortenWalletAddress(swap.init_address)}</TableCell>
+                    <TableCell className="text-xs font-medium px-4 flex justify-start">
+                      <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                        <img
+                          className='w-4 h-4'
+                          src={currentChain.iconUrl}
+                          alt=""
+                        />
 
-                  return (
-                    <TableRow key={swap.open_trade_id}>
-                      <TableCell className="text-xs font-medium flex items-center gap-2">
-                        <div className="flex items-center gap-1" >
-                          {nftsImageMapper(swap.metadata.init.tokens)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-xs font-medium pl-8">#{getLastCharacters(swap.open_trade_id, 7)}</TableCell>
-                      <TableCell className="text-xs font-medium px-4">{getShortenWalletAddress(swap.init_address)}</TableCell>
-                      <TableCell className="text-xs font-medium px-4 flex justify-start">
+                        {currentChain.name}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-xs font-medium px-4">{moment.utc(swap.created_at).format('MMM DD, YYYY')}</TableCell>
+                    <TableCell className="text-xs font-medium px-4">{moment.utc(swap.swap_preferences.expiration_date).local().format('MMM DD, YYYY')}</TableCell>
+                    <TableCell className="text-xs font-medium px-4 capitalize">
+
+                      {
+                        swap.swap_preferences.preferred_asset.type === "any" &&
                         <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                          <img
-                            className='w-4 h-4'
-                            src={currentChain.iconUrl}
-                            alt=""
-                          />
-
-                          {currentChain.name}
+                          Any
                         </span>
-                      </TableCell>
-                      <TableCell className="text-xs font-medium px-4">{moment.utc(swap.created_at).format('MMM DD, YYYY')}</TableCell>
-                      <TableCell className="text-xs font-medium px-4">{moment.utc(swap.swap_preferences.expiration_date).local().format('MMM DD, YYYY')}</TableCell>
-                      <TableCell className="text-xs font-medium px-4 capitalize">
+                      }
 
-                        {
-                          swap.swap_preferences.preferred_asset.type === "any" &&
+                      {
+                        swap.swap_preferences.preferred_asset.type === "nft" &&
+                        <div className="flex items-center gap-1 flex-wrap">
                           <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                            Any
+                            {swap.swap_preferences.preferred_asset.parameters.collection}
                           </span>
-                        }
+                          /
+                          <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                            {swap.swap_preferences.preferred_asset.parameters.rank?.from} - {swap.swap_preferences.preferred_asset.parameters.rank?.to}
+                          </span>
+                        </div>
+                      }
 
-                        {
-                          swap.swap_preferences.preferred_asset.type === "nft" &&
-                          <div className="flex items-center gap-1 flex-wrap">
-                            <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                              {swap.swap_preferences.preferred_asset.parameters.collection}
-                            </span>
-                            /
-                            <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                              {swap.swap_preferences.preferred_asset.parameters.rank?.from} - {swap.swap_preferences.preferred_asset.parameters.rank?.to}
-                            </span>
-                          </div>
-                        }
+                      {swap.swap_preferences.preferred_asset.type === "currency" &&
+                        <div className="flex items-center gap-1">
+                          <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                            {swap.swap_preferences.preferred_asset.parameters.added_amount} USD
+                          </span>
 
-                        {swap.swap_preferences.preferred_asset.type === "currency" &&
-                          <div className="flex items-center gap-1">
-                            <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
-                              {swap.swap_preferences.preferred_asset.parameters.added_amount} USD
-                            </span>
+                        </div>
+                      }
+                    </TableCell>
+                    <TableCell className="text-xs font-medium flex pr-8 justify-end">
+                      <svg
+                        onClick={() => { navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`); }}
 
-                          </div>
-                        }
-                      </TableCell>
-                      <TableCell className="text-xs font-medium flex pr-8 justify-end">
-                        <svg
-                          onClick={() => { navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`); }}
+                        className="w-12 h-6 cursor-pointer"
+                        viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="1" y="1" width="30" height="30" rx="15" stroke="url(#paint0_linear_2344_40905)" strokeWidth="2" />
+                        <path d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z" fill="white" />
+                        <defs>
+                          <linearGradient id="paint0_linear_2344_40905" x1="32" y1="6.08" x2="-1.86631" y2="14.9716" gradientUnits="userSpaceOnUse">
+                            <stop stopColor="#51C0FF" />
+                            <stop offset="1" stopColor="#9452FF" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            }
+          </TableBody>
+        </Table>
 
-                          className="w-12 h-6 cursor-pointer"
-                          viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <rect x="1" y="1" width="30" height="30" rx="15" stroke="url(#paint0_linear_2344_40905)" strokeWidth="2" />
-                          <path d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z" fill="white" />
-                          <defs>
-                            <linearGradient id="paint0_linear_2344_40905" x1="32" y1="6.08" x2="-1.86631" y2="14.9716" gradientUnits="userSpaceOnUse">
-                              <stop stopColor="#51C0FF" />
-                              <stop offset="1" stopColor="#9452FF" />
-                            </linearGradient>
-                          </defs>
-                        </svg>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              }
-            </TableBody>
-          </Table>
-          <ScrollBar orientation='horizontal' className='h-2' />
-        </ScrollArea>
-      }
+        {
+          (((filteredAvailableSwaps || []).length === 0) && filtersApplied) &&
+          <EmptyDataset
+            title="No Results Found"
+            description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
+            showBackgroundPicture={false}
+          />
+        }
+
+        <ScrollBar orientation='horizontal' className='h-2' />
+      </ScrollArea>
+
 
       <LoadingDataset
         isLoading={isLoading}
@@ -256,7 +286,7 @@ const OpenMarketTabContent = () => {
       />
 
       {
-        (isSuccess && ((filteredAvailableSwaps || []).length === 0)) &&
+        (isSuccess && ((filteredAvailableSwaps || []).length === 0) && !filtersApplied) &&
         <EmptyDataset
           title="No Open Swaps Available"
           description="Check back later or create your own swap!"

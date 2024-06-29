@@ -6,6 +6,8 @@ import { chainsDataset } from "@/constants/data";
 import { validate as uuidValidate } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 import { defaults } from "@/constants/defaults";
+import { SUI_RarityRankItem } from "@/types/global.types";
+import moment from "moment";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -135,4 +137,26 @@ export const getNetworkImageById = (id: string) => {
   }
 
   return "/assets/svgs/ethereum.svg";
+};
+
+
+export const compareRarityRankItems = (item1: SUI_RarityRankItem, item2: SUI_RarityRankItem) => {
+  return item1.from === item2.from && item1.to === item2.to;
+};
+
+export const getNormalizeAndCompareTwoStrings = (str1: string, str2: string) => {
+  const normalize = (str: string) => str.replace(/[\s\-_.]/g, '').toLowerCase();
+  const normalizedStr1 = normalize(str1);
+  const normalizedStr2 = normalize(str2);
+
+  return normalizedStr1 === normalizedStr2;
+};
+
+
+export const checkIsDateInRange = (dateToCheck: string, dateRangeFrom: string, dateRangeTo: string) => {
+  const dateToCheckUTC = moment.utc(dateToCheck);
+  const dateRangeFromUTC = moment.utc(dateRangeFrom);
+  const dateRangeToUTC = moment.utc(dateRangeTo);
+
+  return dateToCheckUTC.isSameOrAfter(dateRangeFromUTC) && dateToCheckUTC.isSameOrBefore(dateRangeToUTC);
 };

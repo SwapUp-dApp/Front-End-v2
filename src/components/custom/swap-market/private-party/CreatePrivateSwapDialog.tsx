@@ -10,8 +10,8 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-// import { useSwapMarketStore } from "@/store/swap-market";
-// import { useProfileStore } from "@/store/profile";
+import { useProfileStore } from "@/store/profile";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   walletAddress: z.string().min(1, {
@@ -29,8 +29,7 @@ interface IProp {
 
 const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
   const navigate = useNavigate();
-  // const wallet = useProfileStore(state => state.profile.wallet);
-  // const setValuesOnCreatingRoom = useSwapMarketStore(state => state.privateMarket.privateRoom.setValuesOnCreatingRoom);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,11 +40,17 @@ const CreatePrivateSwapDialog = ({ children, className }: IProp) => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const { walletAddress } = values;
-    const uniqueTradeId = generateRandomTradeId();
+    if (walletAddress.toLowerCase() === wallet.address.toLowerCase()) {
+      form.setError('walletAddress', {
+        message: "Counter party and connected wallet can't be same!"
+      });
+      return;
+    }
 
-    // setValuesOnCreatingRoom(uniqueTradeId, walletAddress, wallet);
+    const uniqueTradeId = generateRandomTradeId();
     navigate(`/swap-up/swap-market/private-swap/create/${walletAddress}/${uniqueTradeId}`);
   }
+
 
   return (
     <Dialog>

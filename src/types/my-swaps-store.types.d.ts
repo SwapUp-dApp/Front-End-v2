@@ -1,6 +1,6 @@
 import { SUI_OpenSwap } from "./swap-market.types";
 
-export type SUT_PendingFiltersStatusType = "all" | "sent" | "received";
+export type SUT_RequestStatusType = "all" | "sent" | "received";
 export type SUT_HistoryFiltersStatusType = "all" | "completed" | "declined" | "canceled";
 export type SUT_FiltersSwapModeType = "all" | "open-market" | "private-party";
 export type SUT_MySwapsTabType = "pending" | "history";
@@ -8,7 +8,7 @@ export type SUT_MySwapsTabType = "pending" | "history";
 export interface IPendingFilters {
   offersFromCurrentChain: boolean;
   requestedDate: string;
-  swapRequestStatus: SUT_PendingFiltersStatusType;
+  swapRequestStatus: SUT_RequestStatusType;
   swapMode: SUT_FiltersSwapModeType;
 }
 

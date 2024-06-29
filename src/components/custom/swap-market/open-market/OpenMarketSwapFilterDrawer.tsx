@@ -11,7 +11,6 @@ import { Schema_OpenMarketFiltersForm, } from "@/schema";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { useProfileStore } from "@/store/profile";
 import { SUI_CurrencyItem } from "@/types/global.types";
 import { SUT_PreferredAssetType } from "@/types/swap-market.types";
 import Combobox from "../../shared/Combobox";
@@ -22,6 +21,8 @@ import { Input } from "@/components/ui/input";
 import CurrencySelectCombobox from "../../shared/CurrencySelectCombobox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useSwapMarketStore } from "@/store/swap-market";
+import { IOpenMarketSwapFilters } from "@/types/swap-market-store.types";
 
 interface IProp {
   children: any;
@@ -34,39 +35,82 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
   const [formKey, setFormKey] = useState(generateRandomKey(6));
 
-  const walletAddress = useProfileStore(state => state.profile.wallet.address);
-
+  const [openMarketSwapsFilters, setOpenMarketAvailableSwapsByFilters, resetAllOpenMarketFilters] = useSwapMarketStore(state => [
+    state.openMarket.openMarketSwapsFilters,
+    state.openMarket.setOpenMarketAvailableSwapsByFilters,
+    state.openMarket.resetAllOpenMarketFilters
+  ]);
 
   const form = useForm<z.infer<typeof Schema_OpenMarketFiltersForm>>({
     resolver: zodResolver(Schema_OpenMarketFiltersForm),
     defaultValues: {
-
       offersFromCurrentChain: false,
+      preferredAsset: 'any',
+      amountRangeFrom: '',
+      amountRangeTo: '',
+      currencies: undefined,
+      offeredRarityRank: '',
+      collection: '',
+      rarityRank: ''
     }
   });
 
+  const { errors } = form.formState;
+
+  const getFiltersObject = () => {
+    const { offersFromCurrentChain, preferredAsset, amountRangeFrom, amountRangeTo, collection, currencies, offeredRarityRank, rarityRank } = form.getValues();
+
+    const newFilters: IOpenMarketSwapFilters = {
+      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
+      offeredRarityRank: offeredRarityRank ? JSON.parse(offeredRarityRank) : undefined,
+      preferredAsset,
+      amountRangeFrom: amountRangeFrom ? Number(amountRangeFrom) : openMarketSwapsFilters.amountRangeFrom,
+      amountRangeTo: amountRangeTo ? Number(amountRangeTo) : openMarketSwapsFilters.amountRangeTo,
+      collection,
+      currencies,
+      rarityRank: rarityRank ? JSON.parse(rarityRank) : undefined
+    };
+
+    return (newFilters);
+  };
+
   const onSubmit = async (data: z.infer<typeof Schema_OpenMarketFiltersForm>) => {
+    const { offersFromCurrentChain, preferredAsset, amountRangeFrom, amountRangeTo, collection, currencies, offeredRarityRank, rarityRank } = data;
 
-    const { offersFromCurrentChain } = data;
-    console.log("Data: ", data);
+    const newFilters: IOpenMarketSwapFilters = {
+      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
+      offeredRarityRank: offeredRarityRank ? JSON.parse(offeredRarityRank) : undefined,
+      preferredAsset,
+      amountRangeFrom: amountRangeFrom ? Number(amountRangeFrom) : openMarketSwapsFilters.amountRangeFrom,
+      amountRangeTo: amountRangeTo ? Number(amountRangeTo) : openMarketSwapsFilters.amountRangeTo,
+      collection,
+      currencies,
+      rarityRank: rarityRank ? JSON.parse(rarityRank) : undefined
+    };
 
+    setOpenMarketAvailableSwapsByFilters(newFilters);
+    setFormKey(generateRandomKey(6));
     setIsOpen(false);
   };
 
   const handleResetOfferedRarityRank = () => {
     form.setValue("offeredRarityRank", '');
+    setOpenMarketAvailableSwapsByFilters(getFiltersObject());
+
     setFormKey(generateRandomKey(6));
   };
 
   const handleResetPreferredAssets = () => {
     form.setValue('preferredAsset', 'any');
+    setOpenMarketAvailableSwapsByFilters(getFiltersObject());
     setFormKey(generateRandomKey(6));
   };
 
   const handleResetAll = () => {
+    resetAllOpenMarketFilters();
+    form.reset();
     setFormKey(generateRandomKey(6));
   };
-
 
   return (
 
@@ -126,7 +170,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                       control={form.control}
                       name="offeredRarityRank"
                       render={({ field }) => (
-                        <FormItem className="space-y-3">
+                        <FormItem>
                           <FormLabel className="text-su_secondary text-sm font-normal flex items-center justify-between">
                             Offered asset rarity rank:
 
@@ -152,13 +196,13 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                                 {availableRarityRanking.map(rarityRank => {
                                   const currentValue = JSON.stringify(rarityRank);
                                   return (
-                                    <FormItem key={rarityRank.from} className="">
+                                    <FormItem key={rarityRank.from} className="p-0">
                                       <FormControl><RadioGroupItem id={currentValue} value={currentValue} className="hidden" /></FormControl>
 
                                       <FormLabel
                                         htmlFor={currentValue}
                                         className={cn(
-                                          "flex items-center gap-2 cursor-pointer text-xs text-su_primary bg-su_enable_bg py-2 px-2.5 rounded-xs",
+                                          "!-mt-[1px] flex items-center gap-2 cursor-pointer text-xs text-su_primary bg-su_enable_bg py-2 px-2.5 rounded-xs",
                                           field.value === currentValue && "border-2 border-su_active_bg bg-su_enable_bg"
                                         )}
                                       >
@@ -236,6 +280,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                                 onChange={field.onChange}
                                 value={field.value}
                                 title="collection"
+                                className="!bg-su_enable_bg"
                               />
                               <FormMessage />
                             </FormItem>
@@ -283,29 +328,68 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
 
                     {
                       form.watch("preferredAsset") === "currency" &&
+
                       <div className="space-y-3" >
-                        <FormField
-                          control={form.control}
-                          name="amountWantToReceive"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-su_secondary text-sm font-normal">Amount you want to receive:</FormLabel>
-                              <Input
-                                className="!bg-su_enable_bg py-3.5 px-4"
-                                icon={
-                                  <svg className="w-2.5" viewBox="0 0 10 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M8.33236 6.08366H9.99902C9.99902 3.71949 7.70319 2.64116 5.83236 2.39283V0.666992H4.16569V2.39283C2.29486 2.64116 -0.000976562 3.71949 -0.000976562 6.08366C-0.000976562 8.33866 2.22069 9.51116 4.16569 9.77533V13.917C2.95902 13.7078 1.66569 13.0637 1.66569 11.917H-0.000976562C-0.000976562 14.0745 2.01986 15.3495 4.16569 15.6137V17.3337H5.83236V15.6087C7.70319 15.3603 9.99902 14.2812 9.99902 11.917C9.99902 9.55282 7.70319 8.47449 5.83236 8.22616V4.08366C6.94069 4.28283 8.33236 4.86783 8.33236 6.08366ZM1.66569 6.08366C1.66569 4.86783 3.05736 4.28283 4.16569 4.08366V8.08283C3.02319 7.87199 1.66569 7.24783 1.66569 6.08366ZM8.33236 11.917C8.33236 13.1328 6.94069 13.7178 5.83236 13.917V9.91699C6.94069 10.1162 8.33236 10.7012 8.33236 11.917Z" fill="#868691" />
-                                  </svg>
-                                }
-                                type="number"
-                                onChange={field.onChange}
-                                value={field.value}
-                                placeholder="0.00"
-                              />
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+
+
+                        <div className="flex flex-col gap-1" >
+                          <FormLabel className="text-su_secondary text-sm font-normal">Amount:</FormLabel>
+                          <div className="flex items-center justify-between gap-2" >
+                            <FormField
+                              control={form.control}
+                              name="amountRangeFrom"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <Input
+                                    className="!bg-su_enable_bg py-3.5 px-4"
+                                    icon={
+                                      <svg className="w-2.5" viewBox="0 0 10 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8.33236 6.08366H9.99902C9.99902 3.71949 7.70319 2.64116 5.83236 2.39283V0.666992H4.16569V2.39283C2.29486 2.64116 -0.000976562 3.71949 -0.000976562 6.08366C-0.000976562 8.33866 2.22069 9.51116 4.16569 9.77533V13.917C2.95902 13.7078 1.66569 13.0637 1.66569 11.917H-0.000976562C-0.000976562 14.0745 2.01986 15.3495 4.16569 15.6137V17.3337H5.83236V15.6087C7.70319 15.3603 9.99902 14.2812 9.99902 11.917C9.99902 9.55282 7.70319 8.47449 5.83236 8.22616V4.08366C6.94069 4.28283 8.33236 4.86783 8.33236 6.08366ZM1.66569 6.08366C1.66569 4.86783 3.05736 4.28283 4.16569 4.08366V8.08283C3.02319 7.87199 1.66569 7.24783 1.66569 6.08366ZM8.33236 11.917C8.33236 13.1328 6.94069 13.7178 5.83236 13.917V9.91699C6.94069 10.1162 8.33236 10.7012 8.33236 11.917Z" fill="#868691" />
+                                      </svg>
+                                    }
+                                    type="number"
+                                    onChange={field.onChange}
+                                    value={field.value}
+                                    placeholder="0.00"
+                                  />
+                                </FormItem>
+                              )}
+                            />
+
+                            <span className={cn(
+                              "h-[2px] w-3 bg-su_ternary rounded-full",
+                            )} ></span>
+
+                            <FormField
+                              control={form.control}
+                              name="amountRangeTo"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <Input
+                                    className="!bg-su_enable_bg py-3.5 px-4"
+                                    icon={
+                                      <svg className="w-2.5" viewBox="0 0 10 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M8.33236 6.08366H9.99902C9.99902 3.71949 7.70319 2.64116 5.83236 2.39283V0.666992H4.16569V2.39283C2.29486 2.64116 -0.000976562 3.71949 -0.000976562 6.08366C-0.000976562 8.33866 2.22069 9.51116 4.16569 9.77533V13.917C2.95902 13.7078 1.66569 13.0637 1.66569 11.917H-0.000976562C-0.000976562 14.0745 2.01986 15.3495 4.16569 15.6137V17.3337H5.83236V15.6087C7.70319 15.3603 9.99902 14.2812 9.99902 11.917C9.99902 9.55282 7.70319 8.47449 5.83236 8.22616V4.08366C6.94069 4.28283 8.33236 4.86783 8.33236 6.08366ZM1.66569 6.08366C1.66569 4.86783 3.05736 4.28283 4.16569 4.08366V8.08283C3.02319 7.87199 1.66569 7.24783 1.66569 6.08366ZM8.33236 11.917C8.33236 13.1328 6.94069 13.7178 5.83236 13.917V9.91699C6.94069 10.1162 8.33236 10.7012 8.33236 11.917Z" fill="#868691" />
+                                      </svg>
+                                    }
+                                    type="number"
+                                    onChange={field.onChange}
+                                    value={field.value}
+                                    placeholder="0.00"
+                                  />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          {(errors.amountRangeFrom?.message || errors.amountRangeTo?.message) &&
+                            <div className="flex justify-between items-center w-full" >
+                              <FormMessage className={errors.amountRangeFrom?.message ? '' : 'opacity-0'} >{errors.amountRangeFrom?.message || 'valid'}</FormMessage>
+                              <FormMessage className={errors.amountRangeTo?.message ? 'lg:pr-4 xl:pr-6' : 'opacity-0'} >{errors.amountRangeTo?.message || 'valid'}</FormMessage>
+                            </div>
+                          }
+
+                        </div>
 
                         <FormField
                           control={form.control}
