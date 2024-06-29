@@ -87,9 +87,9 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
   };
 
   const handleResetAll = () => {
-    setFormKey(generateRandomKey(6));
     form.reset();
     resetAllFilters('pending');
+    setFormKey(generateRandomKey(6));
   };
 
 

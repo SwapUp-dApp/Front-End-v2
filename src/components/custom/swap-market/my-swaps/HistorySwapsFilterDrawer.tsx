@@ -70,21 +70,21 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
 
 
   const handleResetMode = () => {
-    setFilteredHistorySwapByFilters(getHistoryFiltersObject());
     form.setValue('swapMode', 'all');
+    setFilteredHistorySwapByFilters(getHistoryFiltersObject());
     setFormKey(generateRandomKey(6));
   };
 
   const handleResetStatus = () => {
+    form.setValue('swapStatus', 'all');
     setFilteredHistorySwapByFilters(getHistoryFiltersObject());
     setFormKey(generateRandomKey(6));
-    form.setValue('swapStatus', 'all');
   };
 
   const handleResetAll = () => {
-    setFormKey(generateRandomKey(6));
     form.reset();
     resetAllFilters('history');
+    setFormKey(generateRandomKey(6));
   };
 
 
