@@ -9,7 +9,7 @@ const BadgeTile = ({ className, children, ...props }: IProp) => {
   return (
     <span
       className={cn(
-        "mx-auto flex justify-center items-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize font-medium text-xs",
+        "flex justify-center items-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize font-medium text-xs",
         className
       )}
       {...props}

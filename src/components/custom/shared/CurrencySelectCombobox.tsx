@@ -42,11 +42,11 @@ const CurrencySelectCombobox: React.FC<IProps> = ({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "group w-full h-auto flex justify-between items-center text-left font-normal bg-su_enable_bg rounded-md text-su_primary text-sm",
+            "group active:ring-1 active:ring-su_active_bg  w-full h-auto flex justify-between items-center text-left font-normal bg-su_enable_bg rounded-md text-su_primary text-sm",
             className
           )}
         >

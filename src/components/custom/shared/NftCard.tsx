@@ -4,6 +4,7 @@ import { SUI_NFTItem } from "@/types/global.types";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { defaults } from "@/constants/defaults";
+import { useProfileStore } from "@/store/profile";
 
 interface IProp {
   className?: string;
@@ -16,7 +17,7 @@ interface IProp {
 
 const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nftsSelectedForSwap, disableNftSelection = false, ...props }: IProp) => {
   const [isChecked, setIsChecked] = useState(false);
-
+  const network = useProfileStore(state => state.profile.wallet.network);
   const handleCardClick = () => {
     if (!disableNftSelection)
       setIsChecked((prev) => !prev);
@@ -98,7 +99,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
             <div className="flex items-center justify-between" >
               <div className="flex items-center gap-2" >
                 <Link to={getOpenSeaNftUrl(data.contract.address, data.tokenId)} target="_blank" >
-                  <img src={"/assets/svgs/ethereum.svg"} alt="" className="w-4 h-4 rounded-full" />
+                  <img src={network.iconUrl} alt="" className="w-4 h-4 rounded-full" />
                 </Link>
 
                 {/* <p className="text-xs text-su_secondary uppercase">{data.amount} {data.network.title.slice(0, 3)}</p> */}

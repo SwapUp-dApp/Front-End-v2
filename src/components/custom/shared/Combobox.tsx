@@ -26,7 +26,7 @@ const Combobox = ({ items, className, value, onChange, title = "item" }: ICombob
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant="ghost"
           role="combobox"
           aria-expanded={open}
           className={cn(

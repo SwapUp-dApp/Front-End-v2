@@ -6192,52 +6192,52 @@ export interface IMember {
 export const membersData: IMember[] = [
   {
     id: '1',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member1.jpg',
     title: 'John D'
   },
   {
     id: '2',
-    image: 'assets/images/avatar.png',
-    title: 'John D'
+    image: 'assets/images/member2.jpg',
+    title: 'Max P'
   },
   {
     id: '3',
-    image: 'assets/images/avatar.png',
-    title: 'John D'
+    image: 'assets/images/member3.jpg',
+    title: 'Rudy T'
   },
   {
     id: '4',
-    image: '',
+    image: 'assets/images/member4.jpg',
     title: 'John D'
   },
   {
     id: '5',
-    image: '',
+    image: 'assets/images/member5.jpg',
     title: 'John D'
   },
   {
     id: '6',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member6.jpg',
     title: 'John D'
   },
   {
     id: '7',
-    image: '',
+    image: 'assets/images/member7.jpg',
     title: 'John D'
   },
   {
     id: '8',
-    image: '',
+    image: 'assets/images/member8.jpg',
     title: 'John D'
   },
   {
     id: '9',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member9.jpg',
     title: 'John D'
   },
   {
     id: '10',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member10.jpg',
     title: 'John D'
   },
   {
@@ -6260,50 +6260,50 @@ export const membersData: IMember[] = [
 export const tradersData: IMember[] = [
   {
     id: '1',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member11.jpg',
     title: 'John D',
     topRated: true
   },
   {
     id: '2',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member12.jpg',
     title: 'John D',
     topRated: true
   },
   {
     id: '3',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member9.jpg',
     title: 'John D',
     topRated: true
   },
   {
     id: '4',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member10.jpg',
     title: 'John D'
   },
   {
     id: '5',
-    image: 'assets/images/avatar.png',
-    title: 'John D'
+    image: '',
+    title: 'Max T'
   },
   {
     id: '6',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member8.jpg',
     title: 'John D'
   },
   {
     id: '7',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member7.jpg',
     title: 'John D'
   },
   {
     id: '8',
-    image: 'assets/images/avatar.png',
-    title: 'John D'
+    image: ' ',
+    title: 'Pan S'
   },
   {
     id: '9',
-    image: 'assets/images/avatar.png',
+    image: 'assets/images/member6.jpg',
     title: 'John D'
   },
   {
