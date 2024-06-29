@@ -10,6 +10,7 @@ import { membersData, tradersData } from "@/constants/data";
 import { showWalletConnectionToast } from "@/lib/helpers";
 import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
 import { defaults } from "@/constants/defaults";
+import LeaderboardCard from "@/components/custom/swap-market/LeaderboardCard";
 
 const SwapMarketPage = () => {
   const navigate = useNavigate();

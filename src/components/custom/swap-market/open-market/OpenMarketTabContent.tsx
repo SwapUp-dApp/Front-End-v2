@@ -173,15 +173,15 @@ const OpenMarketTabContent = () => {
         <Table className="min-w-full">
           <TableHeader>
             <TableRow>
-              <TableHead className="align-top font-semibold">Assets</TableHead>
-              <TableHead className="align-top font-semibold min-w-[120px] pl-4" >Unique trade ID</TableHead>
-              <TableHead className="align-top font-semibold px-4" >Owner's wallet</TableHead>
-              <TableHead className="align-top font-semibold px-4 min-w-[150px]" >Trading chain</TableHead>
-              <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Open swap date</TableHead>
-              <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Expiry date</TableHead>
-              <TableHead className="align-top font-semibold px-4 " >Swap Preferences</TableHead>
-              <TableHead className="pr-2 relative" >
-                <div className='absolute top-2' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile filterApplied={filtersApplied} /></OpenMarketSwapFilterDrawer></div>
+              <TableHead className="align-top font-semibold min-w-[150px]">Assets</TableHead>
+              <TableHead className="align-top font-semibold" >Unique trade ID</TableHead>
+              <TableHead className="align-top font-semibold" >Owner's wallet</TableHead>
+              <TableHead className="align-top font-semibold" >Trading chain</TableHead>
+              <TableHead className="align-top font-semibold" >Open swap date</TableHead>
+              <TableHead className="align-top font-semibold" >Expiry date</TableHead>
+              <TableHead className="align-top font-semibold " >Swap Preferences</TableHead>
+              <TableHead className="pr-2" >
+                <div className='top-2 left-0' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile filterApplied={filtersApplied} /></OpenMarketSwapFilterDrawer></div>
               </TableHead>
             </TableRow>
           </TableHeader>
