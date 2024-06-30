@@ -107,6 +107,10 @@
   .tile-design{
     @apply bg-background dark:bg-su_enable_bg text-su_ternary text-xs flex items-center gap-2 font-semibold p-2 rounded-xs
   }
+
+  .trade-summary{
+    @apply p-2 bg-su_primary_bg  absolute left-0 -top-10 rounded-tr-sm font-semibold w-full
+  }
   /* Debug Classes End for dev */
 }
 
