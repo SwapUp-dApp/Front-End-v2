@@ -82,7 +82,7 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
                 <p className="text-text dark:text-su_primary" >$ 10</p>
               </div>
               <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
-                <p>Platform fee in ETH:</p>
+                <p>Platform fee:</p>
                 <p className="text-text dark:text-su_primary" >0.0029 ETH</p>
               </div>
               <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >

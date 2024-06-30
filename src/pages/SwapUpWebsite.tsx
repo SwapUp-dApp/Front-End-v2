@@ -429,7 +429,7 @@ const SwapUpPage = () => {
 				</div>
 			</div>
 			<div
-				className="h-full bg-cover  w-full "
+				className="h-[auto] bg-cover  w-full "
 				style={{
 					backgroundImage: "url('/assets/svgs/Background7.svg')",
 				}}
@@ -517,7 +517,7 @@ const SwapUpPage = () => {
 
 			{/* Section 8 */}
 			<div
-				className="h-full bg-cover  w-full "
+				className="h-[auto] bg-cover  w-full "
 				style={{
 					backgroundImage: "url('/assets/svgs/Background8.svg')",
 				}}
@@ -525,20 +525,38 @@ const SwapUpPage = () => {
 
 
 				<div className="w-full  flex flex-col lg:flex-row justify-between">
-					<div className="mt-20 px-10">
-						<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-center mt-12 ">
+					<div className="mt-8 px-10">
+						<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-left mt-12 ">
 							Join Our {" "}
 							<span className="px-3 py-1 rounded-full bg-su_tea_green text-black inline-block ml-2">
 								Community
 							</span>
 
 						</p>
-						<p className="text-su_primary_light mt-8 max-w-[650px] font-Urbanist text-start md:text-center  md:text-lg font-medium leading-relaxed ">
-							For our community members we look to have places they can rely on for help. hang out with other swappers,
+						<p className="text-su_primary_light mt-8 max-w-[650px] font-Urbanist text-start md:text-left  md:text-lg font-medium leading-relaxed ">
+							For our community members, we look to have places they can rely on for help. hang out with other swappers,
 							and get value out of our exclusive memberships.
 						</p>
+						<div className="flex justify-normal w-full mt-8 pb-8 overflow-x-auto md:justify-left">
+							<div className="flex space-x-0 md:space-x-0">
+
+								<Link to={"https://x.com/Swapupdapp"} target="_blank" ><span >
+									<img src={'/assets/svgs/twiter.svg'} className="ml-0 md:ml-0  md:w-auto md:h-auto mb-0 md:mb-2" alt="icon" />
+								</span></Link>
+								<Link to={"https://warpcast.com/swapupdapp"} target="_blank" ><span >
+									<img src={'/assets/svgs/Warpcast.svg'} className="ml-0 md:ml-0 w-4 h-5 md:w-auto md:h-auto mb-0 md:mb-2" alt="icon" />
+								</span></Link>
+								<Link to={"https://discord.gg/RCvDRY9dW3"} target="_blank" ><span >
+									<img src={'/assets/svgs/Discord.svg'} className="ml-0 md:ml-0 w-4 h-5 md:w-auto md:h-auto mb-0 md:mb-2" alt="icon" />
+								</span></Link>
+								<Link to={"https://medium.com/@swapup"} target="_blank" ><span >
+									<img src={'/assets/svgs/Medium.svg'} className="ml-0 md:ml-0 w-4 h-5 md:w-auto md:h-auto mb-0 md:mb-2" alt="icon" />
+								</span></Link>
+
+							</div>
+						</div>
 					</div>
-					<div className="flex justify-center ml-10 items-center mt-16">
+					<div className="flex justify-center ml-10 items-center mt-24">
 						<div className="flex flex-col mt-10 h-auto justify-between space-x-4 lg:flex-row md:mt-0">
 							<div className="text-center  ">
 								<div className="w-full    ">
@@ -554,44 +572,105 @@ const SwapUpPage = () => {
 					</div>
 				</div>
 
+			</div>
 
-				<div className="container mx-auto px-2 md:px-10 space-y-20">
-					<div className="flex flex-col md:flex-row items-center md:justify-center">
-						<div className="max-w-[auto] mt-12">
+			{/* Section 9 */}
+			<div
+				className="h-[auto] bg-cover  w-full "
+				style={{
+					backgroundImage: "url('/assets/svgs/Background9.svg')",
+				}}
+			>
 
-						</div>
 
+				<div className="w-full  flex flex-col lg:flex-row justify-between">
+					<div className="mt-8 px-10">
+						<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-left mt-12 ">
+							<span className="px-3 py-1 rounded-full bg-su_buttermilk text-black inline-block ml-2">
+								Need
+							</span>
+							{" "} a Hand
+
+
+						</p>
+						<p className="text-su_primary_light mt-8 max-w-[650px] font-Urbanist text-start md:text-left  md:text-lg font-medium leading-relaxed ">
+							For our community members, we look to have places they can rely on for help. Get anwers to your most frequently asked questions
+							here
+						</p>
 
 					</div>
-					<ScrollArea>
-						<div className="mt-4 mb-4 w-full flex justify-center overflow-x-auto">
-							<div className="flex space-x-2 md:space-x-16">
+					<div className="flex justify-center ml-10 items-center mt-24">
+						<div className="flex flex-col mt-10 h-auto justify-between space-x-4 lg:flex-row md:mt-0">
+							<div className="text-center  ">
+								<div className="w-full    ">
+									{/* add q&a here */}
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			{/* Section 10 */}
+			<div
+				className="h-[auto] bg-cover w-full "
+				style={{
+					backgroundImage: "url('/assets/svgs/Background10.svg')",
+				}}
+			>
 
 
+				<div className="flex flex-col md:flex-row items-center md:justify-center">
+					<div className="max-w-[auto] mt-12">
+						<p className="text-su_primary w-90 text-4xl font-Poppins md:text-5xl font-semibold text-center md:text-center mt-12 ">
+							Join the 	{" "}
+							<span className="px-3 py-1 rounded-full bg-su_light_purple text-black inline-block ml-2">
+								Future
+							</span>
+							{" "} of Trading!
 
 
+						</p>
+						<p className="text-su_primary_light mt-8 max-w-[650px] font-Urbanist items-center md:text-center md:text-lg font-medium leading-relaxed  md:justify-center ">
+							Experience seamless transactions, unlock exclusive benefits, and dive into the world of Web3
+						</p>
+						<div className="mt-8 mb-32 items-center md:justify-center   md:text-center md:text-lg ">
+							<Button onClick={() => navigate(`${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`)} >Go to dApp</Button>
+						</div>
 
+						<div className="flex justify-normal w-full mt-8 pb-8 overflow-x-auto  md:justify-center">
+							<div className="flex space-x-0 md:space-x-0">
 
+								<Link to={"https://x.com/Swapupdapp"} target="_blank" ><span >
+									<img src={'/assets/svgs/twiter.svg'} className="ml-0 md:ml-0  md:w-auto md:h-auto mb-0 md:mb-2" alt="icon" />
+								</span></Link>
+								<Link to={"https://warpcast.com/swapupdapp"} target="_blank" ><span >
+									<img src={'/assets/svgs/Warpcast.svg'} className="ml-0 md:ml-0 w-4 h-5 md:w-auto md:h-auto mb-0 md:mb-2" alt="icon" />
+								</span></Link>
+								<Link to={"https://discord.gg/RCvDRY9dW3"} target="_blank" ><span >
+									<img src={'/assets/svgs/Discord.svg'} className="ml-0 md:ml-0 w-4 h-5 md:w-auto md:h-auto mb-0 md:mb-2" alt="icon" />
+								</span></Link>
+								<Link to={"https://medium.com/@swapup"} target="_blank" ><span >
+									<img src={'/assets/svgs/Medium.svg'} className="ml-0 md:ml-0 w-4 h-5 md:w-auto md:h-auto mb-0 md:mb-2" alt="icon" />
+								</span></Link>
 
 							</div>
 						</div>
-						<ScrollBar orientation="horizontal" className="h-2" />
-					</ScrollArea>
+						<div className="flex items-center gap-3 lg:gap-6 mb-10  md:justify-center" >
+							<Link to={'/'} className="font-semibold">Legal Terms</Link>
+							<Link to={'/'} className="font-semibold">Privacy Policy</Link>
+						</div>
+						<div className="flex items-center gap-3 lg:gap-6 mb-10  md:justify-center" >
+							<p className="text-su_secondary">Copyright © 2024 SwapUp, All Rights Reserved.</p>
+						</div>
 
-
+					</div>
 
 				</div>
+
 			</div>
-			{/* Footer Section */}
-			<footer className="m-4 text-3xs lg:text-sm flex items-center justify-between" >
-				<div className="flex items-center gap-3 lg:gap-6" >
-					<Link to={'/'} className="font-semibold">Legal Terms</Link>
-					<Link to={'/'} className="font-semibold">Privacy Policy</Link>
-				</div>
-				<div className="flex items-center gap-3 lg:gap-6" >
-					<p className="text-su_secondary">Copyright © 2024 SwapUp, All Rights Reserved.</p>
-				</div>
-			</footer>
 
 
 		</div >
