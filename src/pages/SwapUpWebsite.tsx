@@ -11,6 +11,12 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link, useNavigate } from "react-router-dom";
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 import { defaults } from "@/constants/defaults";
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from "@/components/ui/accordion"
 
 
 const SwapUpPage = () => {
@@ -428,15 +434,15 @@ const SwapUpPage = () => {
 					</ScrollArea>
 				</div>
 			</div>
-			<div
+			{/* <div
 				className="h-[auto] bg-cover  w-full "
 				style={{
 					backgroundImage: "url('/assets/svgs/Background7.svg')",
 				}}
-			>
+			> */}
 
-				{/* Section 7 */}
-				<div className="container mx-auto px-2 md:px-10 space-y-20">
+			{/* Section 7 */}
+			{/* <div className="container mx-auto px-2 md:px-10 space-y-20">
 					<div className="flex flex-col md:flex-row items-center md:justify-center">
 						<div className="max-w-[auto] mt-12">
 							<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-center mt-12 ">
@@ -511,8 +517,8 @@ const SwapUpPage = () => {
 
 
 
-				</div>
-			</div>
+				</div> */}
+			{/* </div> */}
 
 
 			{/* Section 8 */}
@@ -556,10 +562,10 @@ const SwapUpPage = () => {
 							</div>
 						</div>
 					</div>
-					<div className="flex justify-center ml-10 items-center mt-24">
+					<div className="flex justify-center ml-10 items-center mt-24 mr-4">
 						<div className="flex flex-col mt-10 h-auto justify-between space-x-4 lg:flex-row md:mt-0">
 							<div className="text-center  ">
-								<div className="w-full    ">
+								<div className="w-[auto]">
 									<img
 										src="/assets/svgs/website-keywordicons.svg"
 										alt="photoroom"
@@ -583,27 +589,125 @@ const SwapUpPage = () => {
 			>
 
 
-				<div className="w-full  flex flex-col lg:flex-row justify-between">
-					<div className="mt-8 px-10">
-						<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-left mt-12 ">
-							<span className="px-3 py-1 rounded-full bg-su_buttermilk text-black inline-block ml-2">
-								Need
+				<div className=" flex flex-col lg:flex-row justify-between p-10 gap-10">
+					<div className="mt-8 w-1/2  ">
+						<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-left md:text-left mt-12 ">
+							<span className="px-3 py-1 rounded-full bg-su_buttermilk text-black inline-block ml-2 ">
+								FAQ
 							</span>
-							{" "} a Hand
-
 
 						</p>
-						<p className="text-su_primary_light mt-8 max-w-[650px] font-Urbanist text-start md:text-left  md:text-lg font-medium leading-relaxed ">
-							For our community members, we look to have places they can rely on for help. Get anwers to your most frequently asked questions
-							here
+						<p className="text-su_primary_light mt-8 max-w-[550px] font-Urbanist text-start md:text-left  md:text-lg font-medium leading-relaxed ">
+							You all have questions, we have answers. Here are a few we hear our community ask often, but are by
+							no means all the questions you have. Join our community and ask any questions left unanswered.
 						</p>
 
 					</div>
-					<div className="flex justify-center ml-10 items-center mt-24">
-						<div className="flex flex-col mt-10 h-auto justify-between space-x-4 lg:flex-row md:mt-0">
-							<div className="text-center  ">
-								<div className="w-full    ">
-									{/* add q&a here */}
+					<div className="flex text-start md:text-start w-1/2  mt-10">
+						<div className="flex w-full flex-col font-Poppins h-auto text-start md:text-start space-x-0 lg:flex-row  ">
+							<div className="text-start md:text-start w-full  ">
+								<div className="w-full">
+									<Accordion type="single" collapsible>
+										<AccordionItem value="item-1">
+											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2">
+												01
+											</p>
+											<AccordionTrigger className="text-start md:text-start ">What is SwapUp?</AccordionTrigger>
+											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
+												SwapUp is a decentralized application that facilitates peer to peer transactions on multiple blockchains.
+												We want to make transacting with anyone, anywhere, more accessible to the masses.
+												Whether it be digital or physical, we want to be the go to application for these interactions.
+											</AccordionContent>
+										</AccordionItem>
+									</Accordion>
+									<Accordion type="single" collapsible>
+										<AccordionItem value="item-1">
+											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2">
+												02
+											</p>
+											<AccordionTrigger className="text-start md:text-start ">Why build SwapUp?</AccordionTrigger>
+											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
+												Blockchain technology is fundamentally built to be a self serving,
+												worldwide engaging solution anyone can use. With this more direct and open framework,
+												there is a layer of anonymity users appreciate, but leads to more risks than needed.
+												We strive to build an ecosystem using blockchain technology that propels indirect user interoperability forward,
+												allowing any diverse set of people to interact safely and securely.
+											</AccordionContent>
+										</AccordionItem>
+									</Accordion>
+									<Accordion type="single" collapsible>
+										<AccordionItem value="item-1">
+											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2 ">
+												03
+											</p>
+											<AccordionTrigger className="text-start md:text-start ">Who is the team building the application?</AccordionTrigger>
+											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
+												SwapUp is owned by solopreneur Terin Guerra who has been fortunate enough to connect with a
+												few great developers over the past few years who contribute to the development of this project.
+												The team is currently a mix of individuals from many parts of the world: USA, Dubai, Brazil, Ukraine.
+												The team has a combined 40+years of experience launching large scale IT projects for large companies.
+
+											</AccordionContent>
+										</AccordionItem>
+									</Accordion>
+									<Accordion type="single" collapsible>
+										<AccordionItem value="item-1">
+											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2 ">
+												04
+											</p>
+											<AccordionTrigger className="text-start md:text-start ">What use cases does SwapUp fulfill?</AccordionTrigger>
+											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
+												When you think SwapUp, you will think personal escrow.1
+												<p className="h-2">{"   "}</p>
+												<p className="text-su_primary_lighter font-Urbanist text-sm pb-0 md:pb-0  ml-4  md:mt-2 mb-2" >
+													• {"   "}  Trade any combination of Cryptocurrencies or NFTs
+												</p>
+												<p className="text-su_primary_lighter font-Urbanist text-sm pb-0 md:pb-0  ml-4  md:mt-2 mb-2" >
+													• {"   "}  Escrow earnest money to show interest for something you want
+												</p>
+												<p className="text-su_primary_lighter font-Urbanist text-sm pb-0 md:pb-0  ml-4  md:mt-2 mb-2" >
+													• {"   "}  Escrow payment for in-game assets.
+												</p>
+												<p className="text-su_primary_lighter font-Urbanist text-sm pb-0 md:pb-0  ml-4  md:mt-2 mb-2" >
+													•  {"   "} Want to bet your friend a pizza he couldn’t eat a whole ghost pepper? Put it on the blockchain so he can’t skip the tab.
+												</p>
+												<p className="text-su_primary_lighter font-Urbanist text-sm pb-0 md:pb-0  ml-4  md:mt-2 mb-2" >
+													•{"   "}   Did someone agree to sell you 3 tires get 1 free, but pick up the free one next week. You like the deal, but don’t know how to keep them accountable. You can send them a swapup trade and make payment due on delivery of the tire.
+												</p>
+
+												<p className="h-6">{"   "}</p>
+												And on, and on, and on. There are so many use cases, we are just getting started
+											</AccordionContent>
+										</AccordionItem>
+									</Accordion>
+									<Accordion type="single" collapsible>
+										<AccordionItem value="item-1">
+											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2">
+												05
+											</p>
+											<AccordionTrigger className="text-start md:text-start ">Does SwapUp have a token?</AccordionTrigger>
+											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
+												Yes, we own the Rune SWAPUP•DAPP•TOKEN. Those who own this token are considered owners of the company. Each owner has the right to sell their tokens at any time, and rewards tied to ownership will transfer to the new owner.
+												<p className="h-6">{"   "}</p>
+												As our platform grows, we will look to expand our services and utility to our members. Whether that be a token or some other form of utility, that will be determined at another time, and communicated appropriately.
+												<p className="h-6">{"   "}</p>
+												Please be wary of any fake token launches claiming to be ours.
+											</AccordionContent>
+										</AccordionItem>
+									</Accordion>
+									<Accordion type="single" collapsible>
+										<AccordionItem value="item-1">
+											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2">
+												06
+											</p>
+											<AccordionTrigger className="text-start md:text-start ">Where can I reach out with questions?</AccordionTrigger>
+											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
+												Our main point of contact is our email, info@swapup.trade. You can also reach us on any of our connected social media accounts.e.
+
+											</AccordionContent>
+										</AccordionItem>
+									</Accordion>
+
 								</div>
 							</div>
 
@@ -658,9 +762,10 @@ const SwapUpPage = () => {
 
 							</div>
 						</div>
+
 						<div className="flex items-center gap-3 lg:gap-6 mb-10  md:justify-center" >
 							<Link to={'/'} className="font-semibold">Legal Terms</Link>
-							<Link to={'/'} className="font-semibold">Privacy Policy</Link>
+							<span className="font-semibold" onClick={() => navigate("/privacy-policy")} >Privacy Policy</span>
 						</div>
 						<div className="flex items-center gap-3 lg:gap-6 mb-10  md:justify-center" >
 							<p className="text-su_secondary">Copyright © 2024 SwapUp, All Rights Reserved.</p>

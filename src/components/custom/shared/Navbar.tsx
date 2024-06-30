@@ -13,7 +13,14 @@ const Navbar = () => {
 
   return (
     <div className="w-full p-4 flex justify-between lg:justify-start lg:gap-16" >
-      <img onClick={() => navigate('/')} src="/swapup.png" alt="SwapUp" className="w-24 cursor-pointer" />
+      <img
+        onClick={() => navigate("/")}
+        src="/swapup.png"
+        alt="SwapUp"
+        className="w-24 h-10 ml-2 mt-4 cursor-pointer"
+      />
+
+
 
       {/* Desktop navbar */}
       <div className="w-full hidden lg:flex items-center justify-between">
@@ -66,7 +73,7 @@ const Navbar = () => {
 
             <DrawerHeader>
               <DrawerTitle className="flex justify-between" >
-                <img src="/swapup.png" alt="SwapUp" className="w-24" />
+                <img src="/swapup.png" alt="SwapUp" className="w-24  debug " />
 
                 <DrawerClose onClick={() => setIsOpen(false)}>
                   <svg className="w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">

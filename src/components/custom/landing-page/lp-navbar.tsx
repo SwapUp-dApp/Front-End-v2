@@ -12,7 +12,7 @@ const LpNavbar = () => {
 	const navigate = useNavigate();
 
 	return (
-		<div className="w-full p-4 flex justify-between lg:justify-start lg:gap-16">
+		<div className="w-full p-4 flex justify-between lg:justify-start lg:gap-16 ">
 			<img
 				onClick={() => navigate("/swap-up/swap-market")}
 				src="/swapup.png"

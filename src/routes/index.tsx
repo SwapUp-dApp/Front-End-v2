@@ -21,6 +21,7 @@ import SwapHistoryTabContent from "@/components/custom/swap-market/my-swaps/Swap
 import ProfileWalletOverviewTabContent from "@/components/custom/profile/ProfileWalletOverviewTabContent";
 import ProfilePointsAndSwappotTabContent from "@/components/custom/profile/ProfilePointsAndSwappotTabContent";
 import ProfileAssetsTabContent from "@/components/custom/profile/ProfileAssetsTabContent";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
 
 
 export interface SUI_RoutesType {
@@ -44,6 +45,12 @@ export const clientSideRoutes: SUI_RoutesType[] = [
     title: "Swapup landing page",
     path: "/",
     element: <SwapUpWebsite />,
+  },
+  {
+    id: 'swapup-privacy-policy',
+    title: "Swapup Privacy Policy",
+    path: "/privacy-policy",
+    element: <PrivacyPolicy />,
   },
   {
     id: 'swapup-main-layout',
