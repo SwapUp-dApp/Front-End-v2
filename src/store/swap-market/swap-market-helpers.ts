@@ -1,5 +1,5 @@
 import { SUI_Swap, SUI_OpenSwap, SUI_SwapPreferences, SUT_SwapOfferType, SUI_SwapToken } from "@/types/swap-market.types";
-import { IOpenMarketSwapFilters, IOpenRoom, IPrivateMarketSwapFilters, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "../../types/swap-market-store.types";
+import { IOpenCreatedSwapFilters, IOpenMarketSwapFilters, IOpenRoom, IPrivateMarketSwapFilters, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "../../types/swap-market-store.types";
 import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { Environment } from "@/config";
@@ -242,10 +242,7 @@ export const setValuesOnViewSwapRoomHelper = async (
         swap,
         sender: {
           ...room.sender,
-          addedAmount: {
-            usdAmount: 2,
-            coin: chainsDataset[1] //static values may need to change in future
-          },
+          addedAmount: undefined,
           profile: {
             ...room.sender.profile,
             wallet: {
@@ -256,10 +253,7 @@ export const setValuesOnViewSwapRoomHelper = async (
         },
         receiver: {
           ...room.receiver,
-          addedAmount: {
-            usdAmount: 2,
-            coin: chainsDataset[1] //static values may need to change in future
-          },
+          addedAmount: undefined,
           profile: {
             ...room.receiver.profile,
             wallet: {
@@ -700,7 +694,7 @@ export const setOpenSwapsDataHelper = (
   };
 };
 
-export const setMyOpenSwapsDataHelper = (
+export const setOpenCreatedSwapsDataHelper = (
   state: ISwapMarketStore,
   swapsData: SUI_OpenSwap[],
   wallet: IWallet
@@ -715,8 +709,31 @@ export const setMyOpenSwapsDataHelper = (
     ...state,
     openMarket: {
       ...state.openMarket,
-      createdSwaps
+      createdSwaps,
+      filteredCreatedSwaps: createdSwaps
     },
+  };
+};
+
+export const setOpenCreatedSwapsBySearchHelper = (
+  state: ISwapMarketStore,
+  searchValue: string
+): ISwapMarketStore => {
+  const lowerCaseSearchValue = searchValue.toLowerCase();
+
+  const filteredCreatedSwaps = state.openMarket.createdSwaps?.filter(swap =>
+    swap.init_address.includes(lowerCaseSearchValue) ||
+    swap.open_trade_id.includes(lowerCaseSearchValue) ||
+    swap.swap_preferences.expiration_date.includes(lowerCaseSearchValue) ||
+    swap.swap_preferences.preferred_asset.type.includes(lowerCaseSearchValue) ||
+    swap.swap_preferences.preferred_asset.parameters.collection?.includes(lowerCaseSearchValue)
+  );
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      filteredCreatedSwaps: filteredCreatedSwaps ? filteredCreatedSwaps : state.openMarket.createdSwaps
+    }
   };
 };
 
@@ -759,6 +776,55 @@ export const setOpenMarketAvailableSwapsByFiltersHelper = (
   };
 };
 
+export const setOpenCreatedSwapsByFiltersHelper = (
+  state: ISwapMarketStore,
+  filters: IOpenCreatedSwapFilters
+): ISwapMarketStore => {
+
+  const filteredItems = getFilteredOpenCreatedSwapsByFilter(state, filters);
+
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      createdSwapsFilters: filters,
+      filteredCreatedSwaps: filteredItems
+    }
+  };
+};
+
+const getFilteredOpenCreatedSwapsByFilter = (state: ISwapMarketStore, filters: IOpenCreatedSwapFilters) => {
+  const filteredItems = state.openMarket.createdSwaps?.reduce((filteredSwaps, swap) => {
+
+    const { parameters, type } = swap.swap_preferences.preferred_asset;
+
+    if (
+      (!filters.offersFromCurrentChain || swap.trading_chain === String(Environment.CHAIN_ID)) &&
+      (!filters.offeredRarityRank || (parameters.rank && compareRarityRankItems(parameters.rank, filters.offeredRarityRank))) &&
+      // (!filters.preferredAsset ||
+      //   ((filters.preferredAsset === "any") && (type.toLowerCase() === filters.preferredAsset.toLowerCase()))
+      // ) &&
+      (
+        (!filters.rarityRank && !filters.collection) ||
+        ((parameters.rank && parameters.collection && filters.rarityRank && filters.collection) &&
+          (compareRarityRankItems(parameters.rank, filters.rarityRank) && (getNormalizeAndCompareTwoStrings(parameters.collection, filters.collection)))
+        )
+      ) &&
+      (
+        (!filters.amountRangeFrom && !filters.amountRangeTo && !filters.currencies) ||
+        ((parameters.added_amount && parameters.preferred_currency) &&
+          (Number(parameters.added_amount) >= Number(filters.amountRangeFrom) &&
+            Number(parameters.added_amount) <= Number(filters.amountRangeTo)) &&
+          parameters.preferred_currency.filter(preferredCurrency => (filters.currencies || []).some(currency => (currency.uuid === preferredCurrency.uuid)))
+        )
+      )
+    ) {
+      filteredSwaps.push(swap);
+    }
+    return filteredSwaps;
+  }, [] as SUI_OpenSwap[]);
+  return filteredItems;
+};
 const getAvailableFilteredOpenSwapsByFilter = (state: ISwapMarketStore, filters: IOpenMarketSwapFilters) => {
   const filteredItems = state.openMarket.availableSwaps?.reduce((filteredSwaps, swap) => {
 
@@ -799,6 +865,23 @@ export const resetAllOpenMarketFiltersHelper = (state: ISwapMarketStore): ISwapM
       ...state.openMarket,
       filteredAvailableSwaps: state.openMarket.availableSwaps,
       openMarketSwapsFilters: {
+        offersFromCurrentChain: false,
+        preferredAsset: {
+          from: 1,
+          to: 100
+        }
+      }
+    }
+  };
+};
+
+export const resetAllCreatedSwapsHelper = (state: ISwapMarketStore): ISwapMarketStore => {
+  return {
+    ...state,
+    openMarket: {
+      ...state.openMarket,
+      filteredCreatedSwaps: state.openMarket.createdSwaps,
+      createdSwapsFilters: {
         offersFromCurrentChain: false,
         preferredAsset: {
           from: 1,
@@ -862,10 +945,7 @@ export const setValuesOnProposeOpenSwapRoomHelper = async (
         },
         receiver: {
           ...room.receiver,
-          addedAmount: {
-            usdAmount: 2,
-            coin: chainsDataset[1] //static values may need to change in future
-          },
+          addedAmount: undefined,
           profile: {
             ...room.receiver.profile,
             wallet: {

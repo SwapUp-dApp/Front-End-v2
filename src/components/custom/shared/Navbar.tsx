@@ -21,7 +21,7 @@ const Navbar = () => {
           {
             navItemsData.map(navItem => (
               <Link to={navItem.path} key={navItem.key}>
-                <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path, pathname) ? "active" : ""}`} >{navItem.title}</li>
+                <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`} >{navItem.title}</li>
               </Link>
             ))
           }
@@ -81,7 +81,7 @@ const Navbar = () => {
                 {
                   navItemsData.map(navItem => (
                     <Link to={navItem.path} key={navItem.key}>
-                      <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path, pathname) ? "active" : ""}`} >{navItem.title}</li>
+                      <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`} >{navItem.title}</li>
                     </Link>
                   ))
                 }

@@ -28,7 +28,7 @@ const SwapHistoryTabContent = () => {
   const navigate = useNavigate();
   const [filtersApplied, setFiltersApplied] = useState(false);
 
-  const [setMySwapsData, filteredHistorySwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredHistorySwaps]);
+  const [setMySwapsData, filteredHistorySwaps, historySwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredHistorySwaps, state.historySwaps]);
   const wallet = useProfileStore(state => state.profile.wallet);
   const [historyFilters] = useMySwapStore(state => [state.historyFilters]);
   const { isLoading, isError, error, data, isSuccess } = useSwapHistoryList(wallet.address);
@@ -217,7 +217,7 @@ const SwapHistoryTabContent = () => {
         </Table>
 
         {
-          (((filteredHistorySwaps || []).length === 0) && filtersApplied) &&
+          ((filteredHistorySwaps || []).length === 0) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -235,7 +235,7 @@ const SwapHistoryTabContent = () => {
       />
 
       {
-        (isSuccess && ((filteredHistorySwaps || []).length === 0) && !filtersApplied) &&
+        (isSuccess && ((historySwaps || []).length === 0)) &&
         <EmptyDataset
           title="No Pending Swaps Offers Yet"
           description="Your pending swap inbox is empty create your own swap!"

@@ -61,7 +61,7 @@ const CounterOfferSwapRoom = () => {
 
       //Update the swap offer in BC as a counter offer.
       await getWalletProxy().createAndUpdateSwap(createdSwap, "COUNTER");
-      
+
       const payload: SUP_CounterSwap = {
         ...createdSwap,
         init_sign: sign
@@ -285,7 +285,7 @@ const CounterOfferSwapRoom = () => {
 
 
       <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
-
+        <h2 className="trade-summary" >Trade Offer Summary:</h2>
         <div className="absolute -top-14 flex justify-center w-full items-center gap-2" >
           <SwapDetailsDialog
             state={state}

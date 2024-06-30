@@ -10,10 +10,11 @@ import Testimonial from "@/components/custom/landing-page/testimonial";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link, useNavigate } from "react-router-dom";
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
+import { defaults } from "@/constants/defaults";
 
 
 const SwapUpPage = () => {
-	const navigate = useNavigate()
+	const navigate = useNavigate();
 
 	return (
 
@@ -43,7 +44,7 @@ const SwapUpPage = () => {
 								agreements with others locally and worldwide.
 							</p>
 							<div className="mt-8">
-								<Button onClick={() => navigate("/swap-up/swap-market")} >Go to dApp</Button>
+								<Button onClick={() => navigate(`${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`)} >Go to dApp</Button>
 							</div>
 						</div>
 						<div className="w-full max-w-[450px] mt-8 md:mt-0">

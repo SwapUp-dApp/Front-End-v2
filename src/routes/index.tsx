@@ -18,6 +18,9 @@ import PrivateMarketTabContent from "@/components/custom/swap-market/private-par
 import { defaults } from "@/constants/defaults";
 import PendingSwapsTabContent from "@/components/custom/swap-market/my-swaps/PendingSwapsTabContent";
 import SwapHistoryTabContent from "@/components/custom/swap-market/my-swaps/SwapHistoryTabContent";
+import ProfileWalletOverviewTabContent from "@/components/custom/profile/ProfileWalletOverviewTabContent";
+import ProfilePointsAndSwappotTabContent from "@/components/custom/profile/ProfilePointsAndSwappotTabContent";
+import ProfileAssetsTabContent from "@/components/custom/profile/ProfileAssetsTabContent";
 
 
 export interface SUI_RoutesType {
@@ -108,6 +111,38 @@ export const clientSideRoutes: SUI_RoutesType[] = [
         ]
       },
       {
+        id: 'user-profile',
+        title: "Profile",
+        path: "profile",
+        layout: <UserProfile />,
+        child_routes: [
+          {
+            id: 'profile-redirect',
+            title: "Profile Redirect",
+            path: "",
+            element: <Navigate to={`${defaults.profile.baseRoute}/${defaults.profile.defaultActiveTab}`} />,
+          },
+          {
+            id: 'wallet-overview-tb',
+            title: "Wallet Overview Tab",
+            path: "wallet-overview",
+            element: <ProfileWalletOverviewTabContent />,
+          },
+          {
+            id: 'assets-tab',
+            title: "Assets Tab",
+            path: "assets",
+            element: <ProfileAssetsTabContent />,
+          },
+          {
+            id: 'points-swappot-tab',
+            title: "Points & Swap",
+            path: "points-swappot",
+            element: <ProfilePointsAndSwappotTabContent />,
+          },
+        ]
+      },
+      {
         id: 'create-private-swap',
         title: "Create private swap",
         path: "swap-market/private-swap/create/:counterPartyWallet/:privateTradeId",
@@ -144,16 +179,10 @@ export const clientSideRoutes: SUI_RoutesType[] = [
         element: <CounterOfferSwapRoom />,
       },
       {
-        id: 'user-profile',
-        title: "Profile",
-        path: "profile",
-        element: <UserProfile />,
-      },
-      {
         id: 'not-found-page',
         title: "Not found Page",
         path: "*",
-        element: <SwapUpWebsite />,
+        element: <NotFoundPage />,
       }
     ]
   },
