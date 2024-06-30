@@ -20,6 +20,7 @@ interface IProp {
 }
 
 const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation, handleSwapCreation, state, isSwapProposeDialog = false }: IProp) => {
+
   return (
     <Dialog>
       <div className="relative" >
@@ -37,7 +38,7 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
             <div className="space-y-3">
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-4 pt-2 w-full" >
-                  <h2 className="font-semibold text-xl" >Swap Details</h2>
+                  <h2 className="font-semibold text-xl">Swap Details</h2>
 
                   <CopyTile textToCopy={state.uniqueTradeId} >
                     <span className="hidden lg:hidden" >Unique trade ID:</span> <span className="dark:text-su_primary font-semibold">#{getLastCharacters(state.uniqueTradeId, 7)}</span>
@@ -77,20 +78,16 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
               <h2 className="text-xs lg:sm text-primary font-semibold" >Estimate fees:</h2>
 
               <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
-                <p>Project royalties:</p>
-                <p className="text-text dark:text-su_primary" >5%</p>
+                <p>Platform fee in USD:</p>
+                <p className="text-text dark:text-su_primary" >$ 10</p>
               </div>
               <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
-                <p>Cryptocurrency trading fee:</p>
-                <p className="text-text dark:text-su_primary" >0.01 SOL</p>
-              </div>
-              <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
-                <p>SwapUp platform fees:</p>
-                <p className="text-text dark:text-su_primary" >2%</p>
+                <p>Platform fee in ETH:</p>
+                <p className="text-text dark:text-su_primary" >0.0029 ETH</p>
               </div>
               <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
                 <p>Current Gas:</p>
-                <p className="text-text dark:text-su_primary" >50 GWEI / $100</p>
+                <p className="text-text dark:text-su_primary" >$ 0.00045</p>
               </div>
 
               <div className="p-2 dark:bg-su_least_bg rounded-xs space-y-1" >
@@ -99,12 +96,9 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
                   <p className="text-text dark:text-su_primary" >Total fees:</p>
 
                   <div className="flex gap-2" >
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M8.98798 8.73952C10.9377 8.65264 12.3941 8.31104 12.3941 7.90528C12.3941 7.49953 10.9387 7.15889 8.9883 7.07201V8.40081C8.9323 8.40593 8.62717 8.43121 8.02029 8.43121C7.51501 8.43121 7.14893 8.40961 7.02094 8.40081V7.07201C5.06686 7.15873 3.60798 7.49857 3.60798 7.90577C3.60798 8.31297 5.0667 8.65329 7.02094 8.73985V8.73825C7.14685 8.74481 7.50414 8.75921 8.01198 8.75921C8.64717 8.75921 8.93246 8.74304 8.98798 8.73952Z" fill="#53AE94" />
-                      <path fillRule="evenodd" clipRule="evenodd" d="M16 8C16 3.58192 12.4181 0 8 0C3.58144 0 0 3.58096 0 8C0 12.419 3.58208 16 8 16C12.4179 16 16 12.4181 16 8ZM8.98734 5.74401V6.93409C11.1953 7.03601 12.8558 7.47409 12.8558 7.99841C12.8558 8.52273 11.196 8.96049 8.98798 9.06241V12.8747H7.01998V9.06273C4.80878 8.96049 3.14478 8.52241 3.14478 7.99761C3.14478 7.47281 4.80798 7.03473 7.01998 6.93313V5.74401H4.29822V3.93073H11.7088V5.74401H8.98734Z" fill="#53AE94" />
-                    </svg>
+                    {/* icon will come here in future */}
 
-                    <p className="text-su_primary" >0.005 UDST / $ 0.0</p>
+                    <p className="text-su_primary" >$ 10.00045</p>
                   </div>
                 </div>
 

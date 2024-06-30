@@ -76,6 +76,8 @@ export interface IOpenMarketSwapFilters {
   rarityRank?: SUI_RarityRankItem;
 }
 
+export interface IOpenCreatedSwapFilters extends IOpenMarketSwapFilters { }
+
 export interface IPrivateRoomFilterItem {
   collection: string;
   rarityRank: SUI_RarityRankItem;
@@ -136,13 +138,18 @@ export interface ISwapMarketStore {
     availableSwaps?: SUI_OpenSwap[];
     filteredAvailableSwaps?: SUI_OpenSwap[];
     createdSwaps?: SUI_OpenSwap[];
+    createdSwapsFilters: IOpenCreatedSwapFilters,
+    filteredCreatedSwaps?: SUI_OpenSwap[];
     openRoom: IOpenRoom;
     openMarketSwapsFilters: IOpenMarketSwapFilters;
     setOpenSwapsData: (swapsData: SUI_OpenSwap[], wallet: IWallet) => void;
-    setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => void;
+    setOpenCreatedSwapsData: (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => void;
+    setOpenCreatedSwapsBySearch: (searchValue: string) => void;
+    setOpenCreatedSwapsByFilters: (filters: IOpenCreatedSwapFilters) => void;
     setOpenMarketAvailableSwapsBySearch: (searchValue: string) => void;
     setOpenMarketAvailableSwapsByFilters: (filters: IOpenMarketSwapFilters) => void;
     resetAllOpenMarketFilters: () => void;
+    resetAllCreatedSwaps: () => void;
   },
   privateMarket: {
     availablePrivateSwaps?: SUI_Swap[];

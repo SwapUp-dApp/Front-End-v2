@@ -1,16 +1,9 @@
-import { SUI_TabItem } from "@/types/global.types";
+import { SUI_NavigationObject, SUI_TabItem } from "@/types/global.types";
 
 interface IDefaultVariables {
-  swapMarket: {
-    baseRoute: string,
-    defaultActiveTab: string;
-    tabs: SUI_TabItem[];
-  };
-  mySwaps: {
-    baseRoute: string;
-    defaultActiveTab: string;
-    tabs: SUI_TabItem[];
-  };
+  swapMarket: SUI_NavigationObject;
+  mySwaps: SUI_NavigationObject;
+  profile: SUI_NavigationObject;
   fallback: {
     nftImageUrl: string;
     route: string;
@@ -19,11 +12,13 @@ interface IDefaultVariables {
 
 const swapMarketBaseRoute = "/swap-up/swap-market";
 const mySwapsBaseRoute = "/swap-up/my-swaps";
+const profileBaseRoute = "/swap-up/profile";
 
 
 export const defaults: IDefaultVariables = {
 
   swapMarket: {
+    title: 'Swap Market',
     baseRoute: swapMarketBaseRoute,
     defaultActiveTab: 'open',
     tabs: [
@@ -40,6 +35,7 @@ export const defaults: IDefaultVariables = {
     ]
   },
   mySwaps: {
+    title: 'My Swaps',
     baseRoute: mySwapsBaseRoute,
     defaultActiveTab: 'pending',
     tabs: [
@@ -52,6 +48,28 @@ export const defaults: IDefaultVariables = {
         key: 'history',
         title: 'History',
         path: `${mySwapsBaseRoute}/history`
+      },
+    ]
+  },
+  profile: {
+    title: "Profile",
+    baseRoute: profileBaseRoute,
+    defaultActiveTab: 'assets',
+    tabs: [
+      {
+        key: 'wallet-overview',
+        title: 'Wallet Overview',
+        path: `${profileBaseRoute}/wallet-overview`
+      },
+      {
+        key: 'assets',
+        title: 'Assets',
+        path: `${profileBaseRoute}/assets`
+      },
+      {
+        key: 'points-swappot',
+        title: 'Points & Swappot',
+        path: `${profileBaseRoute}/points-swappot`
       },
     ]
   },

@@ -1,6 +1,7 @@
 export interface SUI_NavItem {
   key: string;
   title: string;
+  basePath: string;
   path: string;
   protected: boolean;
 }
@@ -9,6 +10,13 @@ export interface SUI_TabItem {
   key: string;
   title: string;
   path: string;
+}
+
+export interface SUI_NavigationObject {
+  title: string;
+  baseRoute: string;
+  defaultActiveTab: string;
+  tabs: SUI_TabItem[];
 }
 
 export interface INFTItem {

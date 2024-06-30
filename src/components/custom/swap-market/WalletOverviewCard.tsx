@@ -13,7 +13,7 @@ const WalletOverviewCard = ({ cardType, Value, description }: IProp) => {
   return (
 
 
-    <Card className="h-[90px] w-[400px] border-none bg-card  dark:bg-su_secondary_bg p-3 " >
+    <Card className="h-[90px] w-full border-none bg-card  dark:bg-su_secondary_bg p-3 " >
       <CardContent className={`p-2 flex flex-col gap-2`}>
         <div className="flex items-start justify-between">
           {
