@@ -174,7 +174,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
             <div>
               {
                 (nfts && nfts.length === 0) &&
-                <p className="text-xs text-su_secondary">Awaiting asset selection. You can choose up to 20 assets.</p>
+                <p className="text-xs text-su_secondary">No NFTs selected. You can choose up to 20 assets.</p>
               }
 
               {

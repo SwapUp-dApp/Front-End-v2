@@ -137,7 +137,7 @@ const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
       <div className="flex items-center justify-between" >
         {
           !(nftsSelectedForSwap.length > 0) &&
-          <p className="text-xs text-su_secondary">Awaiting asset selection. You can choose up to 20 assets.</p>
+          <p className="text-xs text-su_secondary">No NFTs selected. Up to 20 assets can be selected.</p>
         }
 
         {

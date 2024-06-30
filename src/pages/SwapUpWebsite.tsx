@@ -60,8 +60,8 @@ const SwapUpPage = () => {
 							<LogoButton imgSrc="/assets/landing-page/ethereum.png" />
 							<LogoButton imgSrc="/assets/landing-page/base.png" />
 							<LogoButton imgSrc="/assets/landing-page/alchemy.png" />
-							<LogoButton imgSrc="/assets/landing-page/solana.png" />
-							<LogoButton imgSrc="/assets/landing-page/polygon.png" />
+							{/* <LogoButton imgSrc="/assets/landing-page/solana.png" />
+							<LogoButton imgSrc="/assets/landing-page/polygon.png" /> */}
 						</div>
 					</div>
 				</div>
@@ -511,7 +511,75 @@ const SwapUpPage = () => {
 
 
 				</div>
+			</div>
 
+
+			{/* Section 8 */}
+			<div
+				className="h-full bg-cover  w-full "
+				style={{
+					backgroundImage: "url('/assets/svgs/Background8.svg')",
+				}}
+			>
+
+
+				<div className="w-full  flex flex-col lg:flex-row justify-between">
+					<div className="mt-20 px-10">
+						<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-center mt-12 ">
+							Join Our {" "}
+							<span className="px-3 py-1 rounded-full bg-su_tea_green text-black inline-block ml-2">
+								Community
+							</span>
+
+						</p>
+						<p className="text-su_primary_light mt-8 max-w-[650px] font-Urbanist text-start md:text-center  md:text-lg font-medium leading-relaxed ">
+							For our community members we look to have places they can rely on for help. hang out with other swappers,
+							and get value out of our exclusive memberships.
+						</p>
+					</div>
+					<div className="flex justify-center ml-10 items-center mt-16">
+						<div className="flex flex-col mt-10 h-auto justify-between space-x-4 lg:flex-row md:mt-0">
+							<div className="text-center  ">
+								<div className="w-full    ">
+									<img
+										src="/assets/svgs/website-keywordicons.svg"
+										alt="photoroom"
+										className="object-contain mx-auto"
+									/>
+								</div>
+							</div>
+
+						</div>
+					</div>
+				</div>
+
+
+				<div className="container mx-auto px-2 md:px-10 space-y-20">
+					<div className="flex flex-col md:flex-row items-center md:justify-center">
+						<div className="max-w-[auto] mt-12">
+
+						</div>
+
+
+					</div>
+					<ScrollArea>
+						<div className="mt-4 mb-4 w-full flex justify-center overflow-x-auto">
+							<div className="flex space-x-2 md:space-x-16">
+
+
+
+
+
+
+
+							</div>
+						</div>
+						<ScrollBar orientation="horizontal" className="h-2" />
+					</ScrollArea>
+
+
+
+				</div>
 			</div>
 			{/* Footer Section */}
 			<footer className="m-4 text-3xs lg:text-sm flex items-center justify-between" >
