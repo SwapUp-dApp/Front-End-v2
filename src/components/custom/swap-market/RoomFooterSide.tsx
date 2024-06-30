@@ -156,7 +156,7 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
         <div className="lg:w-[245px] lg:grid lg:grid-cols-2" >
           {(swapRoomViewType === "default" || swapRoomViewType === "counter" || (swapRoomViewType === "propose" && layoutType === "sender")) &&
 
-            <p className="hidden lg:inline-block text-xs font-semibold" >Select chain:</p>
+            <p className="hidden lg:inline-block text-xs font-semibold" > Add Cryptocurrency:</p>
           }
 
           {
