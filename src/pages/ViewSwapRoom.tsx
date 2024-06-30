@@ -62,7 +62,7 @@ const ViewSwapRoom = () => {
   };
 
   const handleCounterSwap = async () => {
-    const swap = state.swap!
+    const swap = state.swap!;
     console.log(swap.trade_id);
 
     navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
@@ -72,7 +72,7 @@ const ViewSwapRoom = () => {
     try {
 
       setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
-      const swap = state.swap!
+      const swap = state.swap!;
       const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
       if (!sign) {
@@ -184,7 +184,7 @@ const ViewSwapRoom = () => {
     try {
 
       setSwapRejection(prev => ({ ...prev, isLoading: true }));
-      const swap = state.swap!
+      const swap = state.swap!;
       console.log(swapRejection.isLoading);
 
       if (swap.id) {
@@ -242,7 +242,7 @@ const ViewSwapRoom = () => {
   const handleCancelSwap = async () => {
     try {
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
-      const swap = state.swap!
+      const swap = state.swap!;
       console.log(swapCancel.isLoading);
 
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
@@ -457,7 +457,7 @@ const ViewSwapRoom = () => {
 
 
       <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
-
+        <h2 className="trade-summary" >Trade summary:</h2>
         <div className="absolute -top-14 flex justify-center w-full items-center gap-2" >
 
           {

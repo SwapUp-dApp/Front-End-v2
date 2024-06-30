@@ -153,19 +153,28 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
       <div className="flex justify-between items-center text-su_secondary " >
         <h2 className="dark:text-white text-xs">You {layoutType === 'sender' ? "offer" : "receive"}:</h2>
 
-        {
-          ((nftsToDisplay.length > 0 || nftsSelectedForSwap.length > 0) && showRemoveNftButton) &&
-          <span
-            className="flex items-center gap-1 lg:gap-2 text-2xs lg:text-xs font-semibold cursor-pointer"
-            onClick={() => removeAllSelectedNft()}
-          >
-            <svg className="w-2 lg:w-3" viewBox="0 0 13 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6.5 12C4.96667 12 3.63067 11.4918 2.492 10.4753C1.35333 9.45889 0.700444 8.18933 0.533333 6.66667H1.9C2.05556 7.82222 2.56956 8.77778 3.442 9.53333C4.31444 10.2889 5.33378 10.6667 6.5 10.6667C7.8 10.6667 8.90289 10.214 9.80867 9.30867C10.7144 8.40333 11.1671 7.30045 11.1667 6C11.1662 4.69956 10.7136 3.59689 9.80867 2.692C8.90378 1.78711 7.80089 1.33422 6.5 1.33333C5.73333 1.33333 5.01667 1.51111 4.35 1.86667C3.68333 2.22222 3.12222 2.71111 2.66667 3.33333H4.5V4.66667H0.5V0.666667H1.83333V2.23333C2.4 1.52222 3.09178 0.972222 3.90867 0.583333C4.72556 0.194444 5.58933 0 6.5 0C7.33333 0 8.114 0.158445 8.842 0.475333C9.57 0.792222 10.2033 1.21978 10.742 1.758C11.2807 2.29622 11.7084 2.92956 12.0253 3.658C12.3422 4.38645 12.5004 5.16711 12.5 6C12.4996 6.83289 12.3413 7.61356 12.0253 8.342C11.7093 9.07045 11.2816 9.70378 10.742 10.242C10.2024 10.7802 9.56911 11.208 8.842 11.5253C8.11489 11.8427 7.33422 12.0009 6.5 12Z" fill="#B6B6BD" />
-            </svg>
+        <div className="lg:w-[245px] lg:grid lg:grid-cols-2" >
+          {(swapRoomViewType === "default" || swapRoomViewType === "counter" || (swapRoomViewType === "propose" && layoutType === "sender")) &&
 
-            Clear assets
-          </span>
-        }
+            <p className="hidden lg:inline-block text-xs font-semibold" >Select chain:</p>
+          }
+
+          {
+            ((nftsToDisplay.length > 0 || nftsSelectedForSwap.length > 0) && showRemoveNftButton) ?
+              <span
+                className="flex items-center justify-end gap-1 lg:gap-2 text-2xs lg:text-xs font-semibold cursor-pointer"
+                onClick={() => removeAllSelectedNft()}
+              >
+                <svg className="w-2 lg:w-2.5" viewBox="0 0 13 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.5 12C4.96667 12 3.63067 11.4918 2.492 10.4753C1.35333 9.45889 0.700444 8.18933 0.533333 6.66667H1.9C2.05556 7.82222 2.56956 8.77778 3.442 9.53333C4.31444 10.2889 5.33378 10.6667 6.5 10.6667C7.8 10.6667 8.90289 10.214 9.80867 9.30867C10.7144 8.40333 11.1671 7.30045 11.1667 6C11.1662 4.69956 10.7136 3.59689 9.80867 2.692C8.90378 1.78711 7.80089 1.33422 6.5 1.33333C5.73333 1.33333 5.01667 1.51111 4.35 1.86667C3.68333 2.22222 3.12222 2.71111 2.66667 3.33333H4.5V4.66667H0.5V0.666667H1.83333V2.23333C2.4 1.52222 3.09178 0.972222 3.90867 0.583333C4.72556 0.194444 5.58933 0 6.5 0C7.33333 0 8.114 0.158445 8.842 0.475333C9.57 0.792222 10.2033 1.21978 10.742 1.758C11.2807 2.29622 11.7084 2.92956 12.0253 3.658C12.3422 4.38645 12.5004 5.16711 12.5 6C12.4996 6.83289 12.3413 7.61356 12.0253 8.342C11.7093 9.07045 11.2816 9.70378 10.742 10.242C10.2024 10.7802 9.56911 11.208 8.842 11.5253C8.11489 11.8427 7.33422 12.0009 6.5 12Z" fill="#B6B6BD" />
+                </svg>
+
+                Clear assets
+              </span>
+              :
+              <span className="opacity-0 text-2xs" >hidden</span>
+          }
+        </div>
       </div>
 
       <div className="flex items-center justify-between" >
