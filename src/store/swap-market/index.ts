@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { IPrivateRoom, IOpenRoom, ISwapMarketStore, SUT_GridViewType, IOpenMarketSwapFilters, IPrivateMarketSwapFilters, } from '../../types/swap-market-store.types';
+import { IPrivateRoom, IOpenRoom, ISwapMarketStore, SUT_GridViewType, IOpenMarketSwapFilters, IPrivateMarketSwapFilters, IOpenCreatedSwapFilters, } from '../../types/swap-market-store.types';
 import { SUI_NFTItem, SUI_RarityRankItem } from '@/types/global.types';
 import { Environment } from '@/config';
 
@@ -30,12 +30,15 @@ import {
   setSwapEncodedMsgAndSignOpenHelper,
   setValuesOnViewSwapRoomHelper,
   resetViewSwapRoomHelper,
-  setMyOpenSwapsDataHelper,
+  setOpenCreatedSwapsDataHelper,
   createCounterSwapOfferHelper,
   setOpenMarketAvailableSwapsByFiltersHelper,
   resetAllOpenMarketFiltersHelper,
   resetAllPrivateMarketFiltersHelper,
   setPrivateMarketAvailableSwapsByFiltersHelper,
+  setOpenCreatedSwapsBySearchHelper,
+  resetAllCreatedSwapsHelper,
+  setOpenCreatedSwapsByFiltersHelper,
 } from './swap-market-helpers';
 
 import { chainsDataset } from '@/constants/data';
@@ -183,12 +186,22 @@ const initialState: ISwapMarketStore = {
         to: 100
       }
     },
+    createdSwapsFilters: {
+      offersFromCurrentChain: false,
+      preferredAsset: {
+        from: 1,
+        to: 100
+      }
+    },
     openRoom: openMarketRoomInitialState,
     setOpenSwapsData: () => { },
-    setMyOpenSwapsData: () => { },
+    setOpenCreatedSwapsData: () => { },
     setOpenMarketAvailableSwapsBySearch: () => { },
     resetAllOpenMarketFilters: () => { },
-    setOpenMarketAvailableSwapsByFilters: () => { }
+    setOpenMarketAvailableSwapsByFilters: () => { },
+    setOpenCreatedSwapsBySearch: () => { },
+    setOpenCreatedSwapsByFilters: () => { },
+    resetAllCreatedSwaps: () => { }
   },
   privateMarket: {
     privateMarketSwapsFilters: {
@@ -268,10 +281,13 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       setSwapPreferences: (preferences: SUI_SwapPreferences) => set((state) => setSwapPreferencesHelper(state, preferences))
     },
     setOpenSwapsData: (swapsData: SUI_OpenSwap[], wallet: IWallet) => set(state => setOpenSwapsDataHelper(state, swapsData, wallet)),
-    setMyOpenSwapsData: (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => set(state => setMyOpenSwapsDataHelper(state, createdSwaps, wallet)),
+    setOpenCreatedSwapsData: (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => set(state => setOpenCreatedSwapsDataHelper(state, createdSwaps, wallet)),
     setOpenMarketAvailableSwapsBySearch: (searchValue: string) => set(state => setOpenMarketAvailableSwapsBySearchHelper(state, searchValue)),
     setOpenMarketAvailableSwapsByFilters: (filters: IOpenMarketSwapFilters) => set(state => setOpenMarketAvailableSwapsByFiltersHelper(state, filters)),
-    resetAllOpenMarketFilters: () => set(state => resetAllOpenMarketFiltersHelper(state))
+    setOpenCreatedSwapsBySearch: (searchValue: string) => set(state => setOpenCreatedSwapsBySearchHelper(state, searchValue)),
+    setOpenCreatedSwapsByFilters: (filters: IOpenCreatedSwapFilters) => set(state => setOpenCreatedSwapsByFiltersHelper(state, filters)),
+    resetAllOpenMarketFilters: () => set(state => resetAllOpenMarketFiltersHelper(state)),
+    resetAllCreatedSwaps: () => set(state => resetAllCreatedSwapsHelper(state)),
   },
   privateMarket: {
     ...initialState.privateMarket,

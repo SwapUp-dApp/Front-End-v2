@@ -34,7 +34,7 @@ const PendingSwapsTabContent = () => {
   const wallet = useProfileStore(state => state.profile.wallet);
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [pendingFilters] = useMySwapStore(state => [state.pendingFilters]);
-  const [setMySwapsData, filteredPendingSwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredPendingSwaps]);
+  const [setMySwapsData, filteredPendingSwaps, pendingSwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredPendingSwaps, state.pendingSwaps]);
 
   const [filtersApplied, setFiltersApplied] = useState(false);
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -625,7 +625,7 @@ const PendingSwapsTabContent = () => {
         </Table>
 
         {
-          (((filteredPendingSwaps || []).length === 0) && filtersApplied) &&
+          ((filteredPendingSwaps || []).length === 0) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -644,7 +644,7 @@ const PendingSwapsTabContent = () => {
       />
 
       {
-        (isSuccess && ((filteredPendingSwaps || []).length === 0) && !filtersApplied) &&
+        (isSuccess && ((pendingSwaps || []).length === 0)) &&
         <EmptyDataset
           title="No Pending Swaps Offers Yet"
           description="Your pending swap inbox is empty create your own swap!"

@@ -28,7 +28,7 @@ import PrivateMarketSwapFilterDrawer from './PrivateMarketSwapFilterDrawer';
 
 const PrivateMarketTabContent = () => {
   const navigate = useNavigate();
-  const { setPrivateSwapsData, filteredAvailablePrivateSwaps, setPrivateMarketAvailableSwapsBySearch, privateMarketSwapsFilters } = useSwapMarketStore(state => state.privateMarket);
+  const { setPrivateSwapsData, availablePrivateSwaps, filteredAvailablePrivateSwaps, setPrivateMarketAvailableSwapsBySearch, privateMarketSwapsFilters } = useSwapMarketStore(state => state.privateMarket);
   const wallet = useProfileStore(state => state.profile.wallet);
 
   const [filtersApplied, setFiltersApplied] = useState(false);
@@ -46,8 +46,6 @@ const PrivateMarketTabContent = () => {
     const value = event.target.value.toLowerCase();
     setPrivateMarketAvailableSwapsBySearch(value);
   };
-
-  const handleResetFilters = () => { };
 
   const handleSwapAccept = async (swap: SUI_Swap) => {
     try {
@@ -551,7 +549,7 @@ const PrivateMarketTabContent = () => {
         </Table>
 
         {
-          (((filteredAvailablePrivateSwaps || []).length === 0) && filtersApplied) &&
+          ((filteredAvailablePrivateSwaps || []).length === 0) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -569,7 +567,7 @@ const PrivateMarketTabContent = () => {
       />
 
       {
-        (isSuccess && ((filteredAvailablePrivateSwaps || []).length === 0) && !filtersApplied) &&
+        (isSuccess && ((availablePrivateSwaps || []).length === 0)) &&
         <EmptyDataset
           title="No Private Party Swaps Available"
           description="Check back later or create your own swap!"
