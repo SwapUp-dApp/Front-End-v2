@@ -728,7 +728,7 @@ const SwapUpPage = () => {
 
 				<div className="flex flex-col md:flex-row items-center md:justify-center">
 					<div className="max-w-[auto] mt-12">
-						<p className="text-su_primary w-90 text-4xl font-Poppins md:text-5xl font-semibold text-center md:text-center mt-12 ">
+						<p className="text-su_primary  max-w-[650px] text-4xl font-Poppins md:text-5xl font-semibold text-center md:text-center mt-12 ">
 							Join the 	{" "}
 							<span className="px-3 py-1 rounded-full bg-su_light_purple text-black inline-block ml-2">
 								Future
