@@ -36,7 +36,7 @@ const SwapUpPage = () => {
 				<LpNavbar />
 				<div className="container mx-auto mt-16 px-2 md:px-10">
 					<div className="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-between mt-4">
-						<div className="max-w-[797px] md:mr-8">
+						<div className="max-w-[797px] md:mr-8 ">
 							<p className="text-4xl font-Poppins md:text-7xl font-semibold text-left mt-12 text-su_primary">
 								Secure Way To Trade{" "}
 								<span className="px-3 py-1 rounded-full bg-su_tea_green text-black inline-block ml-2">
@@ -424,7 +424,7 @@ const SwapUpPage = () => {
 						<div className="mt-2 mb-2 w-full flex justify-center p-10 overflow-x-auto">
 
 							<div className="w-full relative" >
-								<img src={"/assets/svgs/Map.svg"} alt="horse" className="p-4 w-full h-30 object-cover rounded-sm" />
+								<img src={"/assets/svgs/Map-Updated.svg"} alt="horse" className="p-4 w-full h-30 object-cover rounded-sm" />
 							</div>
 						</div>
 						<div className="w-full relative" >
@@ -530,9 +530,9 @@ const SwapUpPage = () => {
 			>
 
 
-				<div className="w-full  flex flex-col lg:flex-row justify-between">
-					<div className="mt-8 px-10">
-						<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-left mt-12 ">
+				<div className=" container mx-auto px-2 space-y-20 flex items-center justify-between">
+					<div className="mt-8 px-10  ">
+						<p className="text-su_primary  text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-left mt-12 ">
 							Join Our {" "}
 							<span className="px-3 py-1 rounded-full bg-su_tea_green text-black inline-block ml-2">
 								Community
@@ -562,20 +562,14 @@ const SwapUpPage = () => {
 							</div>
 						</div>
 					</div>
-					<div className="flex justify-center ml-10 items-center mt-24 mr-4">
-						<div className="flex flex-col mt-10 h-auto justify-between space-x-4 lg:flex-row md:mt-0">
-							<div className="text-center  ">
-								<div className="w-[auto]">
-									<img
-										src="/assets/svgs/website-keywordicons.svg"
-										alt="photoroom"
-										className="object-contain mx-auto"
-									/>
-								</div>
-							</div>
-
-						</div>
+					<div className="flex text-start  md:text-start w-1/2  mt-10">
+						<img
+							src="/assets/svgs/website-keywordicons.svg"
+							alt="photoroom"
+							className="object-contain mx-auto"
+						/>
 					</div>
+
 				</div>
 
 			</div>
@@ -589,21 +583,22 @@ const SwapUpPage = () => {
 			>
 
 
-				<div className=" flex flex-col lg:flex-row justify-between p-10 gap-10">
-					<div className="mt-8 w-1/2  ">
-						<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-left md:text-left mt-12 ">
-							<span className="px-3 py-1 rounded-full bg-su_buttermilk text-black inline-block ml-2 ">
-								FAQ
-							</span>
+				<div className=" container mx-auto px-2  flex items-start justify-between  ">
+					<div className="w-1/2 flex text-start md:text-start mt-10 align-text-top  ">
+						<div className="w-full">
+							<p className="text-su_primary  align-top text-4xl font-Poppins md:text-5xl font-semibold text-left md:text-left mt-12 ">
+								<span className="px-3 py-1 rounded-full bg-su_buttermilk text-black inline-block ml-2 ">
+									FAQ
+								</span>
 
-						</p>
-						<p className="text-su_primary_light mt-8 max-w-[550px] font-Urbanist text-start md:text-left  md:text-lg font-medium leading-relaxed ">
-							You all have questions, we have answers. Here are a few we hear our community ask often, but are by
-							no means all the questions you have. Join our community and ask any questions left unanswered.
-						</p>
-
+							</p>
+							<p className="text-su_primary_light mt-8 max-w-[550px] font-Urbanist text-start md:text-left  md:text-lg font-medium leading-relaxed ">
+								You all have questions, we have answers. Here are a few we hear our community ask often, but are by
+								no means all the questions you have. Join our community and ask any questions left unanswered.
+							</p>
+						</div>
 					</div>
-					<div className="flex text-start md:text-start w-1/2  mt-10">
+					<div className="flex text-start  md:text-start w-1/2  mt-10">
 						<div className="flex w-full flex-col font-Poppins h-auto text-start md:text-start space-x-0 lg:flex-row  ">
 							<div className="text-start md:text-start w-full  ">
 								<div className="w-full">
@@ -726,20 +721,26 @@ const SwapUpPage = () => {
 			>
 
 
-				<div className="flex flex-col md:flex-row items-center md:justify-center">
-					<div className="max-w-[auto] mt-12">
-						<p className="text-su_primary  max-w-[650px] text-4xl font-Poppins md:text-5xl font-semibold text-center md:text-center mt-12 ">
-							Join the 	{" "}
-							<span className="px-3 py-1 rounded-full bg-su_light_purple text-black inline-block ml-2">
-								Future
-							</span>
-							{" "} of Trading!
+				<div className="container mx-auto   px-2 space-y-20 flex items-center justify-between">
+					<div className="w-full mt-12 ">
 
 
-						</p>
-						<p className="text-su_primary_light mt-8 max-w-[650px] font-Urbanist items-center md:text-center md:text-lg font-medium leading-relaxed  md:justify-center ">
-							Experience seamless transactions, unlock exclusive benefits, and dive into the world of Web3
-						</p>
+						<div className="flex justify-normal w-full items-start mt-8 pb-8 overflow-x-auto  md:justify-center">
+							<div className="flex space-x-0 md:space-x-0">
+								<div className="w-full mt-12 ">
+									<p className="w-full text-su_primary max-w-[550px] text-4xl font-Poppins md:text-5xl font-semibold text-center md:text-center md:justify-center mt-12 ">
+										Join the 	{" "}
+										<span className="px-3 py-1 rounded-full bg-su_light_purple text-black inline-block ml-2">
+											Future
+										</span>
+										{" "} of Trading!
+									</p>
+									<p className=" w-full text-su_primary_light  mt-8 max-w-[650px] font-Urbanist items-center md:text-center md:text-lg font-medium leading-relaxed  md:justify-center ">
+										Experience seamless transactions, unlock exclusive benefits, and dive into the world of Web3
+									</p>
+								</div>
+							</div>
+						</div>
 						<div className="mt-8 mb-32 items-center md:justify-center   md:text-center md:text-lg ">
 							<Button onClick={() => navigate(`${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`)} >Go to dApp</Button>
 						</div>
@@ -763,7 +764,7 @@ const SwapUpPage = () => {
 							</div>
 						</div>
 
-						<div className="flex items-center gap-3 lg:gap-6 mb-10  md:justify-center" >
+						<div className="w-full flex items-center gap-3 lg:gap-6 mb-10  md:justify-center" >
 							<Link to={'/'} className="font-semibold">Legal Terms</Link>
 							<span className="font-semibold" onClick={() => navigate("/privacy-policy")} >Privacy Policy</span>
 						</div>
