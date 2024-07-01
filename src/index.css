@@ -109,7 +109,7 @@
   }
 
   .trade-summary{
-    @apply p-2 bg-su_primary_bg  absolute left-0 -top-10 rounded-tr-sm font-semibold w-full
+    @apply p-2 bg-su_primary_bg absolute left-0 -top-9 rounded-tr-sm font-semibold w-full text-sm
   }
   /* Debug Classes End for dev */
 }

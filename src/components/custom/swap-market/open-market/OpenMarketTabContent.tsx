@@ -254,7 +254,6 @@ const OpenMarketTabContent = () => {
         <ScrollBar orientation='horizontal' className='h-2' />
       </ScrollArea>
 
-
       <LoadingDataset
         isLoading={isLoading}
         title="Loading open swaps"

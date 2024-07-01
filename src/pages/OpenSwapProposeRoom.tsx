@@ -172,7 +172,7 @@ const OpenSwapProposeRoom = () => {
         swapPreferences={state.swap.swap_preferences}
       />
 
-      <div className="grid lg:grid-cols-2 gap-4 pb-16" >
+      <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
         {
           isSuccess && wallet.address ?
             <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={wallet.address} />

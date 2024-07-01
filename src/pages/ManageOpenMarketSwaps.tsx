@@ -240,6 +240,7 @@ const ManageOpenMarketSwaps = () => {
         <div className=" w-full flex items-center justify-between">
           <h2 className="font-semibold text-1.5xl " >Manage Open Market Swaps</h2>
           <div className="flex items-center gap-2">
+
             <Input
               className="min-w-full-[10px] bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
               placeholder="Search by NFT, trade ID, trading chain, etc..."

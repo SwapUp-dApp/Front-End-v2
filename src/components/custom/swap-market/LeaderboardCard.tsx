@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { getNameInitials, resolveAssetPath } from "@/lib/utils";
-import { IMember } from '@/constants/data' ;
+import { getNameInitials, getShortenWalletAddress, resolveAssetPath } from "@/lib/utils";
+import { IMember } from '@/constants/data';
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
 interface IProp {
@@ -60,7 +60,7 @@ const LeaderboardCard = ({ users }: IProp) => {
                           </Avatar>
                         </div>
 
-                        <span className="w-[72%] line-clamp-1 text-2xs dark:text-su_secondary" >0xaE30Cb8B6348e0aB7995F1E2d3E85718B75eF074</span>
+                        <p className="w-[72%] text-2xs dark:text-su_secondary line-clamp-1 " >{getShortenWalletAddress("0xaE30Cb8B6348e0aB7995F1E2d3E85718B75eF074")}</p>
                       </div>
                     );
 

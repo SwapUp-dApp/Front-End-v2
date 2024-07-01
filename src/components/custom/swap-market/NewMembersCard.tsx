@@ -42,8 +42,8 @@ const NewMembersCard = ({ cardType = 'member', users }: IProp) => {
               if (index < 9)
                 return (
 
-                  <Avatar className="overflow-hidden rounded-full relative lg:w-[30px] lg:h-[30px] 2xl:w-8 2xl:h-8" key={user.id}>
-                    <AvatarImage src={user.image ? resolveAssetPath(user.image) : ''} alt="@shadcn" />
+                  <Avatar className="rounded-full relative lg:w-[30px] lg:h-[30px] 2xl:w-8 2xl:h-8" key={user.id}>
+                    <AvatarImage className="rounded-full" src={user.image} alt="@shadcn" />
                     <AvatarFallback className="text-sm font-semibold rounded-full dark:bg-su_enable_bg lg:w-[30px] lg:h-[30px] 2xl:w-8 2xl:h-8 flex justify-center items-center">
                       {getNameInitials(user.title)}
                     </AvatarFallback>
