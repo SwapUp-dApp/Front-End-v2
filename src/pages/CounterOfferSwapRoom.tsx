@@ -12,7 +12,7 @@ import { getWalletProxy } from "@/lib/walletProxy";
 import { useCounterSwapOffer, useGetSwapDetails } from "@/service/queries/swap-market.query";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_SwapCreation } from "@/types/global.types";
-import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CounterSwap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_SwapPreferences, SUP_CounterSwap } from "@/types/swap-market.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -211,7 +211,7 @@ const CounterOfferSwapRoom = () => {
         swapPreferences={swapPreferences}
       />
 
-      <div className="grid lg:grid-cols-2 gap-4 pb-16" >
+      <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
         {
           isSuccess && state.sender.profile.wallet.address ?
             <RoomLayoutCard

@@ -383,7 +383,7 @@ const ViewSwapRoom = () => {
         swapPreferences={swapPreferences}
       />
 
-      <div className="grid lg:grid-cols-2 gap-4 pb-16" >
+      <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
         {
           isSuccess && state.sender.profile.wallet.address ?
             <RoomLayoutCard
@@ -454,7 +454,6 @@ const ViewSwapRoom = () => {
         }
 
       </div>
-
 
       <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
         <h2 className="trade-summary" >Trade Offer Summary:</h2>

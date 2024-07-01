@@ -28,6 +28,7 @@ import { SUP_CreateOpenSwap } from "@/types/swap-market.types";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { useCreateOpenSwapOffer } from "@/service/queries/swap-market.query";
 import { useProfileStore } from "@/store/profile";
+import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 
 interface ISwapCreation {
   isLoading: boolean;
@@ -183,8 +184,21 @@ const OpenSwapCreationRoom = () => {
         existDescription="By closing the open market swap, your changes would not be saved."
       />
 
-      <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={wallet.address} />
+      <div className="grid lg:grid-cols-2 gap-4 mb-32" >
+        {
+          wallet.address ?
+            <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={wallet.address} />
+            :
+            <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
+              {
+                (!wallet.address) &&
+                <LoadingDataset
+                  isLoading={!wallet.address}
+                  title="Loading wallet connected wallet information"
+                />
+              }
+            </div>
+        }
         <SwapParametersCard setIsValidParametersForm={setIsValidParametersForm} />
       </div>
 

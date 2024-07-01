@@ -10,7 +10,7 @@ import ManageOpenMarketSwaps from "@/pages/ManageOpenMarketSwaps";
 import OpenSwapCreationRoom from "@/pages/OpenSwapCreationRoom";
 import OpenSwapProposeRoom from "@/pages/OpenSwapProposeRoom";
 import ViewSwapRoom from "@/pages/ViewSwapRoom";
-import CounterOfferSwapRoom from "@/pages/CouterOfferSwapRoom";
+import CounterOfferSwapRoom from "@/pages/CounterOfferSwapRoom";
 import SwapUpWebsite from "@/pages/SwapUpWebsite";
 import { Navigate } from "react-router-dom";
 import OpenMarketTabContent from "@/components/custom/swap-market/open-market/OpenMarketTabContent";

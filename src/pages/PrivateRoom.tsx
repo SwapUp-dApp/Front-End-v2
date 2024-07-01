@@ -14,6 +14,7 @@ import { SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
 import { SUI_SwapCreation } from "@/types/global.types";
 import { useProfileStore } from "@/store/profile";
+import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 
 const PrivateRoom = () => {
 
@@ -152,10 +153,37 @@ const PrivateRoom = () => {
         existTitle="Are you sure you want to exit the trade?"
       />
 
-      <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" senderWallet={wallet.address} />
-        {counterPartyWallet &&
-          <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} roomKey="privateRoom" />}
+      <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
+        {
+          wallet.isConnected && wallet.address ?
+            <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" senderWallet={wallet.address} />
+            :
+            <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
+              {
+                !wallet.isConnected &&
+                <LoadingDataset
+                  isLoading={!wallet.isConnected}
+                  title="Loading wallet connected wallet information"
+                />
+              }
+            </div>
+        }
+
+        {counterPartyWallet ?
+          <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} roomKey="privateRoom" />
+          :
+          <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
+            {
+              !counterPartyWallet &&
+              <LoadingDataset
+                isLoading={!counterPartyWallet}
+                title="Loading wallet counter party wallet information"
+              />
+            }
+          </div>
+        }
+
+
       </div>
 
 
@@ -188,6 +216,7 @@ const PrivateRoom = () => {
       </footer >
     </div >
   );
+
 };
 
 export default PrivateRoom;
