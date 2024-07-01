@@ -26,11 +26,10 @@ import { useMySwapStore } from '@/store/my-swaps';
 
 const SwapHistoryTabContent = () => {
   const navigate = useNavigate();
-  const [filtersApplied, setFiltersApplied] = useState(false);
 
   const [setMySwapsData, filteredHistorySwaps, historySwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredHistorySwaps, state.historySwaps]);
   const wallet = useProfileStore(state => state.profile.wallet);
-  const [historyFilters] = useMySwapStore(state => [state.historyFilters]);
+  const [historySwapsSearchApplied, historySwapsFiltersApplied] = useMySwapStore(state => [state.historySwapsFiltersApplied, state.historySwapsSearchApplied]);
   const { isLoading, isError, error, data, isSuccess } = useSwapHistoryList(wallet.address);
 
   useEffect(() => {
@@ -61,19 +60,6 @@ const SwapHistoryTabContent = () => {
 
   }, [isError, error, data, isSuccess]);
 
-  useEffect(() => {
-    if (
-      historyFilters.offersFromCurrentChain === true ||
-      historyFilters.requestedDate !== '' ||
-      historyFilters.swapMode !== 'all' ||
-      historyFilters.swapStatus !== 'all'
-    ) {
-      setFiltersApplied(true);
-    } else {
-      setFiltersApplied(false);
-    }
-
-  }, [historyFilters.offersFromCurrentChain, historyFilters.requestedDate, historyFilters.swapMode, historyFilters.swapStatus]);
 
   const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
     return (
@@ -119,7 +105,7 @@ const SwapHistoryTabContent = () => {
                   <HistorySwapsFilterDrawer>
                     <FilterButton
                       showTitleOnMobile
-                      filterApplied={filtersApplied}
+                      filterApplied={historySwapsFiltersApplied}
                     />
                   </HistorySwapsFilterDrawer>
                 </div>
@@ -217,7 +203,7 @@ const SwapHistoryTabContent = () => {
         </Table>
 
         {
-          ((filteredHistorySwaps || []).length === 0) &&
+          (((filteredHistorySwaps || []).length === 0) && (historySwapsSearchApplied || historySwapsFiltersApplied)) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -235,7 +221,7 @@ const SwapHistoryTabContent = () => {
       />
 
       {
-        (isSuccess && ((historySwaps || []).length === 0)) &&
+        (isSuccess && ((historySwaps || []).length === 0) && (!historySwapsFiltersApplied && !historySwapsSearchApplied)) &&
         <EmptyDataset
           title="No Pending Swaps Offers Yet"
           description="Your pending swap inbox is empty create your own swap!"

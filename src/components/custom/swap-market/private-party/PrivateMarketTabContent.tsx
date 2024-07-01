@@ -28,10 +28,17 @@ import PrivateMarketSwapFilterDrawer from './PrivateMarketSwapFilterDrawer';
 
 const PrivateMarketTabContent = () => {
   const navigate = useNavigate();
-  const { setPrivateSwapsData, availablePrivateSwaps, filteredAvailablePrivateSwaps, setPrivateMarketAvailableSwapsBySearch, privateMarketSwapsFilters } = useSwapMarketStore(state => state.privateMarket);
+  const {
+    setPrivateSwapsData,
+    availablePrivateSwaps,
+    filteredAvailablePrivateSwaps,
+    setPrivateMarketAvailableSwapsBySearch,
+    availablePrivateSwapsFiltersApplied,
+    availablePrivateSwapsSearchApplied
+  } = useSwapMarketStore(state => state.privateMarket);
+
   const wallet = useProfileStore(state => state.profile.wallet);
 
-  const [filtersApplied, setFiltersApplied] = useState(false);
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -40,6 +47,7 @@ const PrivateMarketTabContent = () => {
   const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
   const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
 
+  // private room store state
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
 
   const handlePrivateSwapFilterData = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -284,25 +292,6 @@ const PrivateMarketTabContent = () => {
 
   }, [isError, error, data, isSuccess]);
 
-  useEffect(() => {
-    if (
-      privateMarketSwapsFilters.offersFromCurrentChain === true ||
-      privateMarketSwapsFilters.swapRequestStatus !== "all" ||
-      (privateMarketSwapsFilters.dateRangeFrom && privateMarketSwapsFilters.dateRangeTo)
-    ) {
-      setFiltersApplied(true);
-    } else {
-      setFiltersApplied(false);
-    }
-
-  }, [
-    privateMarketSwapsFilters.offersFromCurrentChain,
-    privateMarketSwapsFilters.swapRequestStatus,
-    privateMarketSwapsFilters.dateRangeFrom,
-    privateMarketSwapsFilters.dateRangeTo,
-
-  ]);
-
   const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
     return (
       nfts.map((nft, index) => {
@@ -365,7 +354,7 @@ const PrivateMarketTabContent = () => {
               <TableHead className="min-w-[100px] pr-2 relative" >
                 <PrivateMarketSwapFilterDrawer>
                   <div className="absolute top-2 left-2">
-                    <FilterButton showTitleOnMobile filterApplied={filtersApplied} />
+                    <FilterButton showTitleOnMobile filterApplied={availablePrivateSwapsFiltersApplied} />
                   </div>
                 </PrivateMarketSwapFilterDrawer>
               </TableHead>
@@ -549,7 +538,7 @@ const PrivateMarketTabContent = () => {
         </Table>
 
         {
-          ((filteredAvailablePrivateSwaps || []).length === 0) &&
+          (((filteredAvailablePrivateSwaps || []).length === 0) && (availablePrivateSwapsSearchApplied || availablePrivateSwapsFiltersApplied)) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -567,7 +556,7 @@ const PrivateMarketTabContent = () => {
       />
 
       {
-        (isSuccess && ((availablePrivateSwaps || []).length === 0)) &&
+        (isSuccess && ((availablePrivateSwaps || []).length === 0) && (!availablePrivateSwapsFiltersApplied && !availablePrivateSwapsSearchApplied)) &&
         <EmptyDataset
           title="No Private Party Swaps Available"
           description="Check back later or create your own swap!"

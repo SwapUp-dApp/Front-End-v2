@@ -17,7 +17,7 @@ const SwapMarketPage = () => {
   const { pathname } = useLocation();
   const wallet = useProfileStore(state => state.profile.wallet);
 
-  const openMarketSwapLength = useSwapMarketStore(state => (state.openMarket.filteredAvailableSwaps || []).length + (state.openMarket.createdSwaps || []).length);
+  const openMarketSwapLength = useSwapMarketStore(state => (state.openMarket.filteredAvailableOpenSwaps || []).length + (state.openMarket.createdSwaps || []).length);
   const privateSwapLength = useSwapMarketStore(state => (state.privateMarket.filteredAvailablePrivateSwaps || []).length);
 
 

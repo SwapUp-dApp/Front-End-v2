@@ -11,11 +11,7 @@ import { Input } from "@/components/ui/input";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import FilterButton from "@/components/custom/shared/FilterButton";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 import { useCancelSwapOffer, useMyOpenSwapsList } from "@/service/queries/swap-market.query";
 import { chainsDataset } from "@/constants/data";
@@ -29,9 +25,8 @@ import OpenMarketCreatedFiltersDrawer from "@/components/custom/swap-market/open
 
 const ManageOpenMarketSwaps = () => {
   const navigate = useNavigate();
-  const [filtersApplied, setFiltersApplied] = useState(false);
 
-  const { setOpenCreatedSwapsData, filteredCreatedSwaps, createdSwaps, createdSwapsFilters, setOpenCreatedSwapsBySearch } = useSwapMarketStore(state => state.openMarket);
+  const { setOpenCreatedSwapsData, filteredCreatedSwaps, createdSwaps, createdSwapsFilters, setOpenCreatedSwapsBySearch, createdSwapsFiltersApplied, createdSwapsSearchApplied } = useSwapMarketStore(state => state.openMarket);
   const wallet = useProfileStore(state => state.profile.wallet);
 
   const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -222,29 +217,6 @@ const ManageOpenMarketSwaps = () => {
 
   }, [isError, error, data, isSuccess]);
 
-  useEffect(() => {
-    if (
-      createdSwapsFilters.offersFromCurrentChain === true ||
-      createdSwapsFilters.offeredRarityRank ||
-      (createdSwapsFilters.collection && createdSwapsFilters.rarityRank) ||
-      (createdSwapsFilters.amountRangeFrom && createdSwapsFilters.amountRangeTo && createdSwapsFilters.currencies)
-    ) {
-      setFiltersApplied(true);
-    } else {
-      setFiltersApplied(false);
-    }
-
-  }, [
-    createdSwapsFilters.offersFromCurrentChain,
-    createdSwapsFilters.collection,
-    createdSwapsFilters.rarityRank,
-    createdSwapsFilters.offeredRarityRank,
-    createdSwapsFilters.amountRangeFrom,
-    createdSwapsFilters.amountRangeTo,
-    createdSwapsFilters.currencies,
-
-  ]);
-
   return (
     <div className="flex flex-col gap-4" >
 
@@ -303,7 +275,7 @@ const ManageOpenMarketSwaps = () => {
               <TableHead className="pr-2" >
                 <div className='-mt-3' >
                   <OpenMarketCreatedFiltersDrawer>
-                    <FilterButton showTitleOnMobile filterApplied={filtersApplied} />
+                    <FilterButton showTitleOnMobile filterApplied={createdSwapsFiltersApplied} />
                   </OpenMarketCreatedFiltersDrawer></div>
               </TableHead>
             </TableRow>
@@ -432,7 +404,7 @@ const ManageOpenMarketSwaps = () => {
         </Table>
 
         {
-          (((filteredCreatedSwaps || []).length === 0)) &&
+          (((filteredCreatedSwaps || []).length === 0) && (createdSwapsFiltersApplied || createdSwapsSearchApplied)) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -450,7 +422,7 @@ const ManageOpenMarketSwaps = () => {
       />
 
       {
-        (!isLoading && ((createdSwaps || []).length === 0)) &&
+        (!isLoading && ((createdSwaps || []).length === 0) && (!createdSwapsFiltersApplied && !createdSwapsSearchApplied)) &&
         <EmptyDataset
           title="No Open Swaps Available"
           description="Check back later or create your own swap!"
