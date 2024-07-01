@@ -135,9 +135,13 @@ export interface IPrivateRoom {
 
 export interface ISwapMarketStore {
   openMarket: {
-    availableSwaps?: SUI_OpenSwap[];
-    filteredAvailableSwaps?: SUI_OpenSwap[];
+    availableOpenSwaps?: SUI_OpenSwap[];
+    availableOpenSwapsFiltersApplied: boolean;
+    availableOpenSwapsSearchApplied: boolean;
+    filteredAvailableOpenSwaps?: SUI_OpenSwap[];
     createdSwaps?: SUI_OpenSwap[];
+    createdSwapsFiltersApplied: boolean;
+    createdSwapsSearchApplied: boolean;
     createdSwapsFilters: IOpenCreatedSwapFilters,
     filteredCreatedSwaps?: SUI_OpenSwap[];
     openRoom: IOpenRoom;
@@ -153,6 +157,8 @@ export interface ISwapMarketStore {
   },
   privateMarket: {
     availablePrivateSwaps?: SUI_Swap[];
+    availablePrivateSwapsFiltersApplied: boolean;
+    availablePrivateSwapsSearchApplied: boolean;
     filteredAvailablePrivateSwaps?: SUI_Swap[];
     privateRoom: IPrivateRoom;
     privateMarketSwapsFilters: IPrivateMarketSwapFilters;

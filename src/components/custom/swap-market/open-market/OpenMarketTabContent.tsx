@@ -21,8 +21,7 @@ import OpenMarketSwapFilterDrawer from './OpenMarketSwapFilterDrawer';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const OpenMarketTabContent = () => {
-  const [filtersApplied, setFiltersApplied] = useState(false);
-  const { setOpenSwapsData, createdSwaps, availableSwaps, filteredAvailableSwaps, setOpenMarketAvailableSwapsBySearch, openMarketSwapsFilters } = useSwapMarketStore(state => state.openMarket);
+  const { setOpenSwapsData, createdSwaps, availableOpenSwaps, filteredAvailableOpenSwaps, setOpenMarketAvailableSwapsBySearch, openMarketSwapsFilters, availableOpenSwapsFiltersApplied, availableOpenSwapsSearchApplied } = useSwapMarketStore(state => state.openMarket);
   const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
 
@@ -62,29 +61,6 @@ const OpenMarketTabContent = () => {
     }
 
   }, [isError, error, data, isSuccess]);
-
-  useEffect(() => {
-    if (
-      openMarketSwapsFilters.offersFromCurrentChain === true ||
-      openMarketSwapsFilters.offeredRarityRank ||
-      (openMarketSwapsFilters.collection && openMarketSwapsFilters.rarityRank) ||
-      (openMarketSwapsFilters.amountRangeFrom && openMarketSwapsFilters.amountRangeTo && openMarketSwapsFilters.currencies)
-    ) {
-      setFiltersApplied(true);
-    } else {
-      setFiltersApplied(false);
-    }
-
-  }, [
-    openMarketSwapsFilters.offersFromCurrentChain,
-    openMarketSwapsFilters.collection,
-    openMarketSwapsFilters.rarityRank,
-    openMarketSwapsFilters.offeredRarityRank,
-    openMarketSwapsFilters.amountRangeFrom,
-    openMarketSwapsFilters.amountRangeTo,
-    openMarketSwapsFilters.currencies,
-
-  ]);
 
   const nftsImageMapper = (nfts: SUI_SwapToken[]) => {
     return (
@@ -152,8 +128,8 @@ const OpenMarketTabContent = () => {
       <div className="flex items-center justify-between" >
         <div className="flex items-center justify-between gap-4" >
           <h2 className="text-1.5xl font-medium" >Available</h2>
-          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(filteredAvailableSwaps || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
-            {filteredAvailableSwaps?.length || 0}
+          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(filteredAvailableOpenSwaps || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
+            {filteredAvailableOpenSwaps?.length || 0}
           </span>
         </div>
 
@@ -181,14 +157,14 @@ const OpenMarketTabContent = () => {
               <TableHead className="align-top font-semibold" >Expiry date</TableHead>
               <TableHead className="align-top font-semibold " >Swap Preferences</TableHead>
               <TableHead className="pr-2" >
-                <div className='-mt-3' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile filterApplied={filtersApplied} /></OpenMarketSwapFilterDrawer></div>
+                <div className='-mt-3' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile filterApplied={availableOpenSwapsFiltersApplied} /></OpenMarketSwapFilterDrawer></div>
               </TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody className="divide-y">
             {
-              filteredAvailableSwaps?.map((swap) => {
+              filteredAvailableOpenSwaps?.map((swap) => {
                 const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
                 return (
                   <TableRow key={swap.open_trade_id}>
@@ -267,7 +243,7 @@ const OpenMarketTabContent = () => {
         </Table>
 
         {
-          ((filteredAvailableSwaps || []).length === 0) &&
+          (((filteredAvailableOpenSwaps || []).length === 0) && (availableOpenSwapsFiltersApplied || availableOpenSwapsSearchApplied)) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -286,7 +262,7 @@ const OpenMarketTabContent = () => {
       />
 
       {
-        (isSuccess && ((availableSwaps || []).length === 0)) &&
+        (isSuccess && ((availableOpenSwaps || []).length === 0) && !availableOpenSwapsFiltersApplied && !availableOpenSwapsSearchApplied) &&
         <EmptyDataset
           title="No Open Swaps Available"
           description="Check back later or create your own swap!"

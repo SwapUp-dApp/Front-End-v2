@@ -4,6 +4,10 @@ import { resetAllFiltersHelper, setFilteredHistorySwapByFiltersHelper, setFilter
 import { SUI_OpenSwap } from '@/types/swap-market.types';
 
 const initialState: IMySwapsStore = {
+  pendingSwapsFiltersApplied: false,
+  pendingSwapsSearchApplied: false,
+  historySwapsFiltersApplied: false,
+  historySwapsSearchApplied: false,
   pendingFilters: {
     offersFromCurrentChain: false,
     requestedDate: '',

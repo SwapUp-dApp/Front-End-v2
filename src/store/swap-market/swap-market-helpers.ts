@@ -566,17 +566,26 @@ export const setPrivateMarketAvailableSwapsBySearchHelper = (
   state: ISwapMarketStore,
   searchValue: string
 ): ISwapMarketStore => {
+  let searchFilterApplied = false;
   const lowerCaseSearchValue = searchValue.toLowerCase();
 
   const filteredAvailablePrivateSwaps = state.privateMarket.availablePrivateSwaps?.filter(swap =>
     swap.init_address.includes(lowerCaseSearchValue) ||
     swap.trade_id.includes(lowerCaseSearchValue)
   );
+
+  if (lowerCaseSearchValue.length > 0) {
+    searchFilterApplied = true;
+  } else {
+    searchFilterApplied = false;
+  }
+
   return {
     ...state,
     privateMarket: {
       ...state.privateMarket,
-      filteredAvailablePrivateSwaps: filteredAvailablePrivateSwaps ? filteredAvailablePrivateSwaps : state.privateMarket.availablePrivateSwaps
+      filteredAvailablePrivateSwaps: filteredAvailablePrivateSwaps ? filteredAvailablePrivateSwaps : state.privateMarket.availablePrivateSwaps,
+      availablePrivateSwapsSearchApplied: searchFilterApplied
     }
   };
 };
@@ -586,15 +595,24 @@ export const setPrivateMarketAvailableSwapsByFiltersHelper = (
   filters: IPrivateMarketSwapFilters,
   loginWalletAddress: string
 ): ISwapMarketStore => {
-
+  let filtersApplied = false;
   const filteredItems = getAvailableFilteredPrivateSwapsByFilter(state, filters, loginWalletAddress);
+
+  if (
+    filters.offersFromCurrentChain === true ||
+    filters.swapRequestStatus !== "all" ||
+    (filters.dateRangeFrom && filters.dateRangeTo)
+  ) {
+    filtersApplied = true;
+  }
 
   return {
     ...state,
     privateMarket: {
       ...state.privateMarket,
       privateMarketSwapsFilters: filters,
-      filteredAvailablePrivateSwaps: filteredItems
+      filteredAvailablePrivateSwaps: filteredItems,
+      availablePrivateSwapsFiltersApplied: filtersApplied
     }
   };
 };
@@ -622,6 +640,7 @@ export const resetAllPrivateMarketFiltersHelper = (state: ISwapMarketStore): ISw
     ...state,
     privateMarket: {
       ...state.privateMarket,
+      availablePrivateSwapsFiltersApplied: false,
       filteredAvailablePrivateSwaps: state.privateMarket.availablePrivateSwaps,
       privateMarketSwapsFilters: {
         offersFromCurrentChain: false,
@@ -676,20 +695,20 @@ export const setOpenSwapsDataHelper = (
   wallet: IWallet
 ): ISwapMarketStore => {
 
-  let availableSwaps: SUI_OpenSwap[] = [];
+  let availableOpenSwaps: SUI_OpenSwap[] = [];
   let createdSwaps: SUI_OpenSwap[] = [];
 
   if (wallet.address && wallet.isConnected) {
-    availableSwaps = swapsData.filter(swap => swap.init_address !== wallet.address);
+    availableOpenSwaps = swapsData.filter(swap => swap.init_address !== wallet.address);
     createdSwaps = swapsData.filter(swap => swap.init_address === wallet.address);
   }
   return {
     ...state,
     openMarket: {
       ...state.openMarket,
-      availableSwaps,
+      availableOpenSwaps,
       createdSwaps,
-      filteredAvailableSwaps: availableSwaps
+      filteredAvailableOpenSwaps: availableOpenSwaps
     },
   };
 };
@@ -719,6 +738,8 @@ export const setOpenCreatedSwapsBySearchHelper = (
   state: ISwapMarketStore,
   searchValue: string
 ): ISwapMarketStore => {
+
+  let searchFilterApplied = false;
   const lowerCaseSearchValue = searchValue.toLowerCase();
 
   const filteredCreatedSwaps = state.openMarket.createdSwaps?.filter(swap =>
@@ -728,11 +749,18 @@ export const setOpenCreatedSwapsBySearchHelper = (
     swap.swap_preferences.preferred_asset.type.includes(lowerCaseSearchValue) ||
     swap.swap_preferences.preferred_asset.parameters.collection?.includes(lowerCaseSearchValue)
   );
+
+  if (lowerCaseSearchValue.length > 0) {
+    searchFilterApplied = true;
+  } else {
+    searchFilterApplied = false;
+  }
   return {
     ...state,
     openMarket: {
       ...state.openMarket,
-      filteredCreatedSwaps: filteredCreatedSwaps ? filteredCreatedSwaps : state.openMarket.createdSwaps
+      filteredCreatedSwaps: filteredCreatedSwaps ? filteredCreatedSwaps : state.openMarket.createdSwaps,
+      createdSwapsSearchApplied: searchFilterApplied
     }
   };
 };
@@ -741,20 +769,31 @@ export const setOpenMarketAvailableSwapsBySearchHelper = (
   state: ISwapMarketStore,
   searchValue: string
 ): ISwapMarketStore => {
+
+  let searchFilterApplied = false;
   const lowerCaseSearchValue = searchValue.toLowerCase();
 
-  const filteredAvailableSwaps = state.openMarket.availableSwaps?.filter(swap =>
+  const filteredAvailableOpenSwaps = state.openMarket.availableOpenSwaps?.filter(swap =>
     swap.init_address.includes(lowerCaseSearchValue) ||
     swap.open_trade_id.includes(lowerCaseSearchValue) ||
     swap.swap_preferences.expiration_date.includes(lowerCaseSearchValue) ||
     swap.swap_preferences.preferred_asset.type.includes(lowerCaseSearchValue) ||
     swap.swap_preferences.preferred_asset.parameters.collection?.includes(lowerCaseSearchValue)
   );
+
+  if (lowerCaseSearchValue.length > 0) {
+    searchFilterApplied = true;
+  } else {
+    searchFilterApplied = false;
+  }
+
   return {
     ...state,
     openMarket: {
       ...state.openMarket,
-      filteredAvailableSwaps: filteredAvailableSwaps ? filteredAvailableSwaps : state.openMarket.availableSwaps
+      filteredAvailableOpenSwaps: filteredAvailableOpenSwaps ? filteredAvailableOpenSwaps : state.openMarket.availableOpenSwaps,
+      availableOpenSwapsSearchApplied: searchFilterApplied
+
     }
   };
 };
@@ -764,14 +803,25 @@ export const setOpenMarketAvailableSwapsByFiltersHelper = (
   filters: IOpenMarketSwapFilters
 ): ISwapMarketStore => {
 
+  let filtersApplied = false;
   const filteredItems = getAvailableFilteredOpenSwapsByFilter(state, filters);
+
+  if (
+    filters.offersFromCurrentChain === true ||
+    filters.offeredRarityRank ||
+    (filters.collection && filters.rarityRank) ||
+    (filters.amountRangeFrom && filters.amountRangeTo && filters.currencies)
+  ) {
+    filtersApplied = true;
+  }
 
   return {
     ...state,
     openMarket: {
       ...state.openMarket,
       openMarketSwapsFilters: filters,
-      filteredAvailableSwaps: filteredItems
+      filteredAvailableOpenSwaps: filteredItems,
+      availableOpenSwapsFiltersApplied: filtersApplied
     }
   };
 };
@@ -780,15 +830,25 @@ export const setOpenCreatedSwapsByFiltersHelper = (
   state: ISwapMarketStore,
   filters: IOpenCreatedSwapFilters
 ): ISwapMarketStore => {
-
+  let filtersApplied = false;
   const filteredItems = getFilteredOpenCreatedSwapsByFilter(state, filters);
+
+  if (
+    filters.offersFromCurrentChain === true ||
+    filters.offeredRarityRank ||
+    (filters.collection && filters.rarityRank) ||
+    (filters.amountRangeFrom && filters.amountRangeTo && filters.currencies)
+  ) {
+    filtersApplied = true;
+  }
 
   return {
     ...state,
     openMarket: {
       ...state.openMarket,
       createdSwapsFilters: filters,
-      filteredCreatedSwaps: filteredItems
+      filteredCreatedSwaps: filteredItems,
+      createdSwapsFiltersApplied: filtersApplied
     }
   };
 };
@@ -826,7 +886,7 @@ const getFilteredOpenCreatedSwapsByFilter = (state: ISwapMarketStore, filters: I
   return filteredItems;
 };
 const getAvailableFilteredOpenSwapsByFilter = (state: ISwapMarketStore, filters: IOpenMarketSwapFilters) => {
-  const filteredItems = state.openMarket.availableSwaps?.reduce((filteredSwaps, swap) => {
+  const filteredItems = state.openMarket.availableOpenSwaps?.reduce((filteredSwaps, swap) => {
 
     const { parameters, type } = swap.swap_preferences.preferred_asset;
 
@@ -863,7 +923,8 @@ export const resetAllOpenMarketFiltersHelper = (state: ISwapMarketStore): ISwapM
     ...state,
     openMarket: {
       ...state.openMarket,
-      filteredAvailableSwaps: state.openMarket.availableSwaps,
+      filteredAvailableOpenSwaps: state.openMarket.availableOpenSwaps,
+      availableOpenSwapsFiltersApplied: false,
       openMarketSwapsFilters: {
         offersFromCurrentChain: false,
         preferredAsset: {
@@ -881,6 +942,7 @@ export const resetAllCreatedSwapsHelper = (state: ISwapMarketStore): ISwapMarket
     openMarket: {
       ...state.openMarket,
       filteredCreatedSwaps: state.openMarket.createdSwaps,
+      createdSwapsFiltersApplied: false,
       createdSwapsFilters: {
         offersFromCurrentChain: false,
         preferredAsset: {

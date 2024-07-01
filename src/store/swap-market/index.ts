@@ -179,6 +179,10 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
 
 const initialState: ISwapMarketStore = {
   openMarket: {
+    availableOpenSwapsSearchApplied: false,
+    availableOpenSwapsFiltersApplied: false,
+    createdSwapsFiltersApplied: false,
+    createdSwapsSearchApplied: false,
     openMarketSwapsFilters: {
       offersFromCurrentChain: false,
       preferredAsset: {
@@ -197,13 +201,15 @@ const initialState: ISwapMarketStore = {
     setOpenSwapsData: () => { },
     setOpenCreatedSwapsData: () => { },
     setOpenMarketAvailableSwapsBySearch: () => { },
-    resetAllOpenMarketFilters: () => { },
     setOpenMarketAvailableSwapsByFilters: () => { },
     setOpenCreatedSwapsBySearch: () => { },
     setOpenCreatedSwapsByFilters: () => { },
+    resetAllOpenMarketFilters: () => { },
     resetAllCreatedSwaps: () => { }
   },
   privateMarket: {
+    availablePrivateSwapsFiltersApplied: false,
+    availablePrivateSwapsSearchApplied: false,
     privateMarketSwapsFilters: {
       offersFromCurrentChain: false,
       swapRequestStatus: 'all'
