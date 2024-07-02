@@ -23,6 +23,7 @@ const ViewSwapRoom = () => {
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+
   const { mutateAsync: completeOpenSwapOffer } = useCompleteOpenSwapOffer();
   const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
   const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
@@ -61,10 +62,8 @@ const ViewSwapRoom = () => {
     );
   };
 
-  const handleCounterSwap = async () => {
+  const handleCounterSwap = () => {
     const swap = state.swap!;
-    console.log(swap.trade_id);
-
     navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
   };
 
@@ -88,7 +87,6 @@ const ViewSwapRoom = () => {
       }
 
       const txRcpt = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
-      console.log(swapAcceptance.isLoading);
 
       if (!txRcpt) {
         throw new Error("Swap Failed");
@@ -124,7 +122,6 @@ const ViewSwapRoom = () => {
           );
           setSwapAcceptance(prev => ({ ...prev, created: true }));
           setTimeout(() => {
-
             navigate(-1);
           }, 500);
         }
@@ -173,8 +170,6 @@ const ViewSwapRoom = () => {
           position: "bottom-left",
         }
       );
-
-      // console.log(error);
     } finally {
       setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
     }
@@ -185,12 +180,10 @@ const ViewSwapRoom = () => {
 
       setSwapRejection(prev => ({ ...prev, isLoading: true }));
       const swap = state.swap!;
-      console.log(swapRejection.isLoading);
 
       if (swap.id) {
         await getWalletProxy().createAndUpdateSwap(swap, "REJECT");
         const offerResult = await rejectSwapOffer(Number(swap.id));
-        console.log(swap.id);
         if (offerResult) {
           toast.custom(
             (id) => (
@@ -233,7 +226,6 @@ const ViewSwapRoom = () => {
         }
       );
 
-      // console.log(error);
     } finally {
       setSwapRejection(prev => ({ ...prev, isLoading: false }));
     }
@@ -243,18 +235,15 @@ const ViewSwapRoom = () => {
     try {
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
       const swap = state.swap!;
-      console.log(swapCancel.isLoading);
 
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const swapobj = useSwapMarketStore.getState().openMarket.openRoom.swap;
+        const latestSwapObject = useSwapMarketStore.getState().openMarket.openRoom.swap;
 
-        console.log(swapobj);
         const payload: SUP_CancelSwap = {
-          swap_mode: swapobj.swap_mode,
-          open_trade_id: swapobj.open_trade_id
+          swap_mode: latestSwapObject.swap_mode,
+          open_trade_id: latestSwapObject.open_trade_id
         };
         const offerResult = await cancelSwapOffer(payload);
-        console.log(swap.id);
         if (offerResult) {
           toast.custom(
             (id) => (
@@ -285,7 +274,6 @@ const ViewSwapRoom = () => {
           trade_id: swap.trade_id
         };
         const offerResult = await cancelSwapOffer(payload);
-        console.log(swap.id);
         if (offerResult) {
           toast.custom(
             (id) => (
@@ -328,7 +316,6 @@ const ViewSwapRoom = () => {
         }
       );
 
-      // console.log(error);
     } finally {
       setSwapCancel(prev => ({ ...prev, isLoading: false }));
     }
@@ -461,31 +448,43 @@ const ViewSwapRoom = () => {
 
           {
             profile.wallet.address === state.sender.profile.wallet.address ?
-              <CustomOutlineButton onClick={async () => {
-                await handleCancelSwap();
-              }} className="px-5 py-3">
+              <CustomOutlineButton
+                onClick={async () => { await handleCancelSwap(); }}
+                className="px-5 py-3"
+                isLoading={swapCancel.isLoading}
+                disabled={swapCancel.created}
+              >
                 Cancel Swap
               </CustomOutlineButton>
               :
               <div className="flex items-center gap-2" >
-                <Button onClick={async () => {
-                  await handleSwapReject();
-                }}
-                  variant={"outline"} type="submit">
+                <Button
+                  onClick={async () => { await handleSwapReject(); }}
+                  variant={"outline"}
+                  type="submit"
+                  isLoading={swapRejection.isLoading}
+                  disabled={swapRejection.created}
+                >
                   Reject
                 </Button>
-                {state.swap?.offer_type === SUE_SWAP_OFFER_TYPE.PRIMARY &&
-                  < CustomOutlineButton onClick={async () => {
-                    await handleCounterSwap();
-                  }}
-                    className="px-5 py-3">
+
+                {
+                  state.swap?.offer_type === SUE_SWAP_OFFER_TYPE.PRIMARY &&
+
+                  <CustomOutlineButton
+                    onClick={handleCounterSwap}
+                    className="px-5 py-3"
+                  >
                     Counter offer
                   </CustomOutlineButton>
                 }
 
-                <Button onClick={async () => {
-                  await handleSwapAccept();
-                }} isLoading={swapAcceptance.isLoading} disabled={swapAcceptance.created} variant={"default"} type="submit">
+                <Button
+                  onClick={async () => { await handleSwapAccept(); }}
+                  isLoading={swapAcceptance.isLoading}
+                  disabled={swapAcceptance.created}
+                  variant={"default"} type="submit"
+                >
                   Accept
                 </Button>
               </div>

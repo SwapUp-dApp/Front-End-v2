@@ -5,7 +5,7 @@ import { SUI_OpenSwap } from "@/types/swap-market.types";
 import moment from "moment";
 
 
-export const setMySwapsDataHelper = (state: IMySwapsStore, data: SUI_OpenSwap[], tabType: SUT_MySwapsTabType): IMySwapsStore => {
+export const setMySwapsDataHelper = async (state: IMySwapsStore, data: SUI_OpenSwap[], tabType: SUT_MySwapsTabType): Promise<IMySwapsStore> => {
   const pendingSwaps = data.length > 0 ? data : state.pendingSwaps;
   const historySwaps = data.length > 0 ? data : state.pendingSwaps;
 

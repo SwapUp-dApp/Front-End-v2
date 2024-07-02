@@ -9,7 +9,6 @@ import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, ge
 import { useNavigate } from 'react-router-dom';
 import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
 import CreatedSwapsCards from './CreatedSwapsCards';
-import { useOpenSwapsPendingList } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -19,48 +18,52 @@ import { useProfileStore } from '@/store/profile';
 import { showWalletConnectionToast } from '@/lib/helpers';
 import OpenMarketSwapFilterDrawer from './OpenMarketSwapFilterDrawer';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { useQuery } from '@tanstack/react-query';
+import { getOpenSwapPendingListApi } from '@/service/api';
 
 const OpenMarketTabContent = () => {
-  const { setOpenSwapsData, createdSwaps, availableOpenSwaps, filteredAvailableOpenSwaps, setOpenMarketAvailableSwapsBySearch, openMarketSwapsFilters, availableOpenSwapsFiltersApplied, availableOpenSwapsSearchApplied } = useSwapMarketStore(state => state.openMarket);
   const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
-
+  const { setOpenSwapsData, setOpenMarketAvailableSwapsBySearch, createdSwaps, availableOpenSwaps, filteredAvailableOpenSwaps, availableOpenSwapsFiltersApplied, availableOpenSwapsSearchApplied } = useSwapMarketStore(state => state.openMarket);
 
   const handleFilterAvailableSwapsBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
     setOpenMarketAvailableSwapsBySearch(value);
   };
 
-  const { isLoading, isError, error, data, isSuccess } = useOpenSwapsPendingList();
 
-  useEffect(() => {
-    if (data?.data && isSuccess) {
+  const { isLoading, isSuccess, isError } = useQuery({
+    queryKey: [`getOpenSwapPendingList`],
+    queryFn: async () => {
+      try {
+        const response = await getOpenSwapPendingListApi();
+        await setOpenSwapsData(response.data.data as SUI_OpenSwap[], wallet);
+        // console.log(useSwapMarketStore.getState().openMarket.availableOpenSwaps);
 
-      if (data.data.data.length > 0) {
-        setOpenSwapsData(data.data.data as SUI_OpenSwap[], wallet);
+        return response.data.data;
+      } catch (error: any) {
+        await setOpenSwapsData([], wallet);
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Request failed!"
+              description={error.message}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        throw error;
       }
-    }
-
-    if (error && isError) {
-      setOpenSwapsData([], wallet);
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
-      );
-    }
-
-  }, [isError, error, data, isSuccess]);
+    },
+    retry: false
+  });
 
   const nftsImageMapper = (nfts: SUI_SwapToken[]) => {
     return (
@@ -86,6 +89,14 @@ const OpenMarketTabContent = () => {
           );
       })
     );
+  };
+
+  const handleNavigateToProposeRoom = (swap: SUI_OpenSwap) => {
+    if (wallet.isConnected && wallet.address) {
+      navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`);
+    }
+
+    showWalletConnectionToast('', "Connect to your wallet to propose swap.");
   };
 
   return (
@@ -221,7 +232,7 @@ const OpenMarketTabContent = () => {
                     </TableCell>
                     <TableCell className="text-xs font-medium flex pr-8 justify-end">
                       <svg
-                        onClick={() => { navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`); }}
+                        onClick={() => { handleNavigateToProposeRoom(swap); }}
 
                         className="w-12 h-6 cursor-pointer"
                         viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -261,7 +272,7 @@ const OpenMarketTabContent = () => {
       />
 
       {
-        (isSuccess && ((availableOpenSwaps || []).length === 0) && !availableOpenSwapsFiltersApplied && !availableOpenSwapsSearchApplied) &&
+        ((isError || isSuccess) && ((availableOpenSwaps || []).length === 0) && !availableOpenSwapsFiltersApplied && !availableOpenSwapsSearchApplied) &&
         <EmptyDataset
           title="No Open Swaps Available"
           description="Check back later or create your own swap!"
