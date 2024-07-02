@@ -3,7 +3,6 @@ import { IOpenCreatedSwapFilters, IOpenMarketSwapFilters, IOpenRoom, IPrivateMar
 import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { Environment } from "@/config";
-import { chainsDataset } from "@/constants/data";
 import { getInitialProfile } from "../profile/profile-helpers";
 import { IWallet } from "@/types/profile.types";
 import { checkIsDateInRange, compareRarityRankItems, getNormalizeAndCompareTwoStrings } from "@/lib/utils";
@@ -541,16 +540,13 @@ export const resetPrivateRoomDataHelper = (
 };
 
 
-export const setPrivateSwapsDataHelper = (
+export const setPrivateSwapsDataHelper = async (
   state: ISwapMarketStore,
   swapsData: SUI_Swap[],
-): ISwapMarketStore => {
+): Promise<ISwapMarketStore> => {
 
   let availablePrivateSwaps: SUI_Swap[] = [];
 
-
-  // if (state.wallet.address && state.wallet.isConnected) {
-  // }
   availablePrivateSwaps = swapsData.filter(swap => swap.swap_mode === 1);
   return {
     ...state,
@@ -689,11 +685,11 @@ export const setFilteredNftsBySwapTokensHelper = (
     }
   };
 };
-export const setOpenSwapsDataHelper = (
+export const setOpenSwapsDataHelper = async (
   state: ISwapMarketStore,
   swapsData: SUI_OpenSwap[],
   wallet: IWallet
-): ISwapMarketStore => {
+): Promise<ISwapMarketStore> => {
 
   let availableOpenSwaps: SUI_OpenSwap[] = [];
   let createdSwaps: SUI_OpenSwap[] = [];
@@ -701,6 +697,8 @@ export const setOpenSwapsDataHelper = (
   if (wallet.address && wallet.isConnected) {
     availableOpenSwaps = swapsData.filter(swap => swap.init_address !== wallet.address);
     createdSwaps = swapsData.filter(swap => swap.init_address === wallet.address);
+  } else {
+    availableOpenSwaps = swapsData;
   }
   return {
     ...state,
@@ -713,11 +711,11 @@ export const setOpenSwapsDataHelper = (
   };
 };
 
-export const setOpenCreatedSwapsDataHelper = (
+export const setOpenCreatedSwapsDataHelper = async (
   state: ISwapMarketStore,
   swapsData: SUI_OpenSwap[],
   wallet: IWallet
-): ISwapMarketStore => {
+): Promise<ISwapMarketStore> => {
 
   let createdSwaps: SUI_OpenSwap[] = [];
 

@@ -1,3 +1,6 @@
+import { IProfileStore } from "@/types/profile-store.types";
+import { IWallet } from "@/types/profile.types";
+
 export const getInitialProfile = (userType: "sender" | "receiver") => {
     return {
         ensAddress: userType === "sender" ? 'sender.swapup.eth' : 'receiver.swapup.eth',
@@ -14,5 +17,16 @@ export const getInitialProfile = (userType: "sender" | "receiver") => {
                 symbol: 'ETH'
             }
         }
-    }
-}
+    };
+};
+
+
+export const setProfileWalletHelper = (state: IProfileStore, connectedWallet: IWallet): IProfileStore => {
+    return {
+        ...state,
+        profile: {
+            ...state.profile,
+            wallet: connectedWallet
+        }
+    };
+};

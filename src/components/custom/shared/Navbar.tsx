@@ -4,12 +4,33 @@ import { getIsActiveNav, } from "@/lib/utils";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ConnectWalletButton from "./ConnectWalletButton";
+import ToastLookCard from "./ToastLookCard";
+import { toast } from "sonner";
+import { useProfileStore } from "@/store/profile";
 
 const Navbar = () => {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-
+  const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
+
+  const handleShowWalletConnectionToast = () => {
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="warning"
+          title="Connect to wallet!"
+          description={"Please connect to wallet for this feature!"}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 3000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
+  };
 
   return (
     <div className="w-full p-4 flex justify-between lg:justify-start lg:gap-16" >
@@ -27,9 +48,21 @@ const Navbar = () => {
         <ol className="flex gap-4 items-center" >
           {
             navItemsData.map(navItem => (
-              <Link to={navItem.path} key={navItem.key}>
-                <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`} >{navItem.title}</li>
-              </Link>
+
+              <li
+                key={navItem.key}
+                className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`}
+                onClick={() => {
+                  if (navItem.protected && !wallet.isConnected) {
+                    handleShowWalletConnectionToast();
+                  } else {
+                    navigate(`${navItem.path}`);
+                  }
+                }}
+              >
+                {navItem.title}
+              </li>
+
             ))
           }
         </ol>
@@ -87,9 +120,21 @@ const Navbar = () => {
               <ol className="flex flex-col gap-8" >
                 {
                   navItemsData.map(navItem => (
-                    <Link to={navItem.path} key={navItem.key}>
-                      <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`} >{navItem.title}</li>
-                    </Link>
+
+                    <li
+                      key={navItem.key}
+                      className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`}
+                      onClick={() => {
+                        if (navItem.protected && !wallet.isConnected) {
+                          handleShowWalletConnectionToast();
+                        } else {
+                          navigate(`${navItem.path}`);
+                        }
+                      }}
+                    >
+                      {navItem.title}
+                    </li>
+
                   ))
                 }
               </ol>

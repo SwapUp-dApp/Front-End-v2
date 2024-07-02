@@ -80,6 +80,17 @@
     @apply bg-background dark:bg-su_primary_bg text-foreground;
   }
 
+  .nav-link {
+    @apply cursor-pointer relative after:absolute  after:content-[''] after:h-0.5 after:w-0 after:bg-gradient-primary after:-bottom-0.5 after:left-0 after:opacity-0 after:transition-all after:duration-200 after:delay-200
+  }
+  .nav-link:hover::after{
+    @apply opacity-100 w-full
+  }
+
+  .nav-link.active:hover::after{
+    @apply opacity-0 w-0
+  }
+
   .nav-link.active {
     @apply px-4 py-2 dark:bg-su_active_bg rounded-xs;
   }
@@ -110,6 +121,10 @@
 
   .trade-summary{
     @apply p-2 bg-su_primary_bg absolute left-0 -top-9 rounded-tr-sm font-semibold w-full text-sm
+  }
+
+  .action-hover-card-item{
+    @apply w-full flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg
   }
   /* Debug Classes End for dev */
 }

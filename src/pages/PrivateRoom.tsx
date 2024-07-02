@@ -78,7 +78,7 @@ const PrivateRoom = () => {
         setSwapCreation(prev => ({ ...prev, created: true }));
         state.resetPrivateRoom();
         setTimeout(() => {
-          navigate('/swap-up/swap-market');
+          navigate(-1);
         }, 3000);
       }
 

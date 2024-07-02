@@ -1,20 +1,14 @@
 import { create } from 'zustand';
 import { IProfileStore } from "@/types/profile-store.types";
-import { getInitialProfile } from './profile-helpers';
+import { getInitialProfile, setProfileWalletHelper } from './profile-helpers';
+import { IWallet } from '@/types/profile.types';
 
 const initialState: IProfileStore = {
-    profile: getInitialProfile("sender"),
-    updateWalletInProfileState: () => {}
-  };
+  profile: getInitialProfile("sender"),
+  setProfileWallet: () => { }
+};
 
 export const useProfileStore = create<IProfileStore>((set, get) => ({
-
-    ...initialState,
-    updateWalletInProfileState: async (wallet: any) => {
-      const state = get();
-      state.profile.wallet = wallet;
-      set(state);
-    }
-  
-  }));
-  
+  ...initialState,
+  setProfileWallet: (connectedWallet: IWallet) => set(state => setProfileWalletHelper(state, connectedWallet))
+}));

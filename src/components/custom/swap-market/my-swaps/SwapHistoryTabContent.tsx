@@ -5,7 +5,6 @@ import FilterButton from '../../shared/FilterButton';
 import { cn, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '../../shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
-import { useSwapHistoryList } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -22,6 +21,8 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { showWalletConnectionToast } from '@/lib/helpers';
 import HistorySwapsFilterDrawer from './HistorySwapsFilterDrawer';
 import { useMySwapStore } from '@/store/my-swaps';
+import { useQuery } from '@tanstack/react-query';
+import { getSwapHistoryListApi } from '@/service/api';
 
 
 const SwapHistoryTabContent = () => {
@@ -30,36 +31,42 @@ const SwapHistoryTabContent = () => {
   const [setMySwapsData, filteredHistorySwaps, historySwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredHistorySwaps, state.historySwaps]);
   const wallet = useProfileStore(state => state.profile.wallet);
   const [historySwapsSearchApplied, historySwapsFiltersApplied] = useMySwapStore(state => [state.historySwapsFiltersApplied, state.historySwapsSearchApplied]);
-  const { isLoading, isError, error, data, isSuccess } = useSwapHistoryList(wallet.address);
 
-  useEffect(() => {
-    if (data?.data && isSuccess) {
+  const { isLoading, isSuccess, isError } = useQuery({
+    queryKey: [`getSwapHistoryListApi`],
+    queryFn: async () => {
+      try {
+        if (wallet.address) {
+          const response = await getSwapHistoryListApi(wallet.address);
+          await setMySwapsData(response.data.data as SUI_OpenSwap[], 'history');
 
-      if (data.data.data.length > 0) {
-        setMySwapsData(data.data.data as SUI_OpenSwap[], 'history');
-      }
-    }
-
-    if (error && isError) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
+          return response.data.data;
         }
-      );
-    }
 
-  }, [isError, error, data, isSuccess]);
+        return null;
+      } catch (error: any) {
+        await setMySwapsData([], 'history');
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Request failed!"
+              description={error.message}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
 
+        throw error;
+      }
+    },
+    retry: false
+  });
 
   const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
     return (
@@ -221,7 +228,7 @@ const SwapHistoryTabContent = () => {
       />
 
       {
-        (isSuccess && ((historySwaps || []).length === 0) && (!historySwapsFiltersApplied && !historySwapsSearchApplied)) &&
+        ((isSuccess || isError) && ((historySwaps || []).length === 0) && (!historySwapsFiltersApplied && !historySwapsSearchApplied)) &&
         <EmptyDataset
           title="No Pending Swaps Offers Yet"
           description="Your pending swap inbox is empty create your own swap!"
