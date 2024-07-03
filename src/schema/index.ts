@@ -2,8 +2,11 @@ import { z } from "zod";
 import moment from "moment";
 
 
-/*=== Open swap parameters schema starts ===*/
+/*====================================*/
+/*=== Swap market page schema's ===*/
+/*====================================*/
 
+/*=== create open swap - parameters schema starts ===*/
 export const Schema_OpenSwapParametersForm = z.object({
   expirationDate: z
     .date({
@@ -85,55 +88,7 @@ export const Schema_OpenSwapParametersForm = z.object({
   }
 });
 
-/*=== Open swap parameters schema ends ===*/
-
-/*=== My swaps filters schema starts ===*/
-export const Schema_PendingMySwapsFiltersForm = z.object({
-  offersFromCurrentChain: z.boolean({
-    required_error: "Please enable show offers from current chain!",
-  }).optional(),
-  requestedDate: z.date({
-    required_error: "requested date is required!",
-  }).optional(),
-  swapRequestStatus: z.enum(["all", "sent", "received"], {
-    required_error: "Please select a swap offer status.",
-  }),
-  swapMode: z.enum(["all", "open-market", "private-party"], {
-    required_error: "Please select a swap mode.",
-  }),
-}).superRefine((data, ctx) => {
-  if (data.offersFromCurrentChain === false && data.requestedDate === undefined && data.swapMode === 'all' && data.swapRequestStatus === "all") {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["requestedDate"],
-      message: "Please select at least one filter item to apply filters.",
-    });
-  }
-});
-
-export const Schema_HistoryMySwapsFiltersForm = z.object({
-  offersFromCurrentChain: z.boolean({
-    required_error: "Please enable show offers from current chain!",
-  }).optional(),
-  requestedDate: z.date({
-    required_error: "requested date is required!",
-  }).optional(),
-  swapStatus: z.enum(["all", "completed", "declined", "canceled"], {
-    required_error: "Please select a swap status.",
-  }),
-  swapMode: z.enum(["all", "open-market", "private-party"], {
-    required_error: "Please select a swap mode.",
-  }),
-}).superRefine((data, ctx) => {
-  if (data.offersFromCurrentChain === false && data.requestedDate === undefined && data.swapMode === 'all' && data.swapStatus === "all") {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["requestedDate"],
-      message: "Please select at least one filter item to apply filters.",
-    });
-  }
-});
-/*=== My swaps filters schema ends ===*/
+/*=== create open swap - parameters schema ends ===*/
 
 /*=== Swap market - open market filters schema starts ===*/
 export const Schema_OpenMarketFiltersForm = z.object({
@@ -252,3 +207,75 @@ export const Schema_PrivateMarketFiltersForm = z.object({
 
 });
 /*=== Swap market - private market filters schema ends ===*/
+
+
+/*====================================*/
+/*=== My Swap page schema's ===*/
+/*====================================*/
+
+
+/*=== My swaps filters schema starts ===*/
+export const Schema_PendingMySwapsFiltersForm = z.object({
+  offersFromCurrentChain: z.boolean({
+    required_error: "Please enable show offers from current chain!",
+  }).optional(),
+  requestedDate: z.date({
+    required_error: "requested date is required!",
+  }).optional(),
+  swapRequestStatus: z.enum(["all", "sent", "received"], {
+    required_error: "Please select a swap offer status.",
+  }),
+  swapMode: z.enum(["all", "open-market", "private-party"], {
+    required_error: "Please select a swap mode.",
+  }),
+}).superRefine((data, ctx) => {
+  if (data.offersFromCurrentChain === false && data.requestedDate === undefined && data.swapMode === 'all' && data.swapRequestStatus === "all") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["requestedDate"],
+      message: "Please select at least one filter item to apply filters.",
+    });
+  }
+});
+
+export const Schema_HistoryMySwapsFiltersForm = z.object({
+  offersFromCurrentChain: z.boolean({
+    required_error: "Please enable show offers from current chain!",
+  }).optional(),
+  requestedDate: z.date({
+    required_error: "requested date is required!",
+  }).optional(),
+  swapStatus: z.enum(["all", "completed", "declined", "canceled"], {
+    required_error: "Please select a swap status.",
+  }),
+  swapMode: z.enum(["all", "open-market", "private-party"], {
+    required_error: "Please select a swap mode.",
+  }),
+}).superRefine((data, ctx) => {
+  if (data.offersFromCurrentChain === false && data.requestedDate === undefined && data.swapMode === 'all' && data.swapStatus === "all") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["requestedDate"],
+      message: "Please select at least one filter item to apply filters.",
+    });
+  }
+});
+/*=== My swaps filters schema ends ===*/
+
+
+/*====================================*/
+/*=== User Profile schema's ===*/
+/*====================================*/
+
+export const Schema_ProfileAssetFiltersForm = z.object({
+  collection: z.string().optional(),
+  rarityRank: z.string().optional()
+}).superRefine((data, ctx) => {
+  if (!data.collection && !data.rarityRank) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["collection"],
+      message: "Please select at least one filter item to apply filters.",
+    });
+  }
+});

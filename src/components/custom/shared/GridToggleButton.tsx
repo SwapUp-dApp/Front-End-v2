@@ -7,10 +7,10 @@ interface IProp {
 
 const GridToggleButton = ({ activeGridView = "detailed", toggleView }: IProp) => {
   return (
-    <div className="p-2 rounded-md dark:bg-su_enable_bg flex items-center lg:gap-2" >
+    <div className="p-1 rounded-md dark:bg-su_enable_bg flex items-center lg:gap-1" >
 
       <button
-        className={`p-3 lg:p-4 rounded-md ${activeGridView === "detailed" ? "bg-su_active_bg" : ""}`}
+        className={`p-2.5 rounded-sm ${activeGridView === "detailed" ? "bg-su_active_bg" : ""}`}
         onClick={() => toggleView("detailed")}
       >
         <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -19,7 +19,7 @@ const GridToggleButton = ({ activeGridView = "detailed", toggleView }: IProp) =>
       </button>
 
       <button
-        className={`p-3 lg:p-4 rounded-md ${activeGridView === "overview" ? "bg-su_active_bg" : ""}`}
+        className={`p-2.5 rounded-sm ${activeGridView === "overview" ? "bg-su_active_bg" : ""}`}
         onClick={() => toggleView("overview")}
       >
         <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

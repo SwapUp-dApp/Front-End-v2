@@ -1,5 +1,5 @@
 import React from 'react';
-import WalletOverviewCard from '../swap-market/WalletOverviewCard';
+import WalletOverviewCard from '../../swap-market/WalletOverviewCard';
 
 const ProfileWalletOverviewTabContent = () => {
   return (
