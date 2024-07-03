@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { getNameInitials, getShortenWalletAddress, resolveAssetPath } from "@/lib/utils";
+import { getNameInitials, getShortenWalletAddress } from "@/lib/utils";
 import { IMember } from '@/constants/data';
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
@@ -53,8 +53,8 @@ const LeaderboardCard = ({ users }: IProp) => {
                       <div className="flex items-center justify-between" key={user.id}>
                         <div className="w-[25%] border">
                           <Avatar className="relative w-4 h-4 mx-auto">
-                            <AvatarImage className="w-4 h-4" src={user.image ? resolveAssetPath(user.image) : ''} alt="@shadcn" />
-                            <AvatarFallback className="text-[8px] font-semibold rounded-full dark:bg-su_enable_bg w-4 h-4 flex justify-center items-center">
+                            <AvatarImage className="w-4 h-4 rounded-full" src={user.image} alt="@shadcn" />
+                            <AvatarFallback className="text-[8px] rounded-full font-semibold dark:bg-su_enable_bg w-4 h-4 flex justify-center items-center">
                               {getNameInitials(user.title)}
                             </AvatarFallback>
                           </Avatar>

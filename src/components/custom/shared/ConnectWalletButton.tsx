@@ -9,7 +9,7 @@ const ConnectWalletButton = () => {
 
   return (
     <>
-      {wallet.network.name &&
+      {(wallet.network.name && wallet.isConnected) &&
         <label>{wallet.network.name}</label>
       }
       <ThirdWebWalletConnect />

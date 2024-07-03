@@ -89,6 +89,7 @@ export const getOpenSeaNftUrl = (token: string, nftId: string) => {
   return `${baseUrl}/assets/${network}/${token}/${nftId}`;
 };
 
+// This the api that we used to get chains dataset
 // const options = {
 //   method: 'GET',
 //   url: 'https://coinranking1.p.rapidapi.com/coins',
@@ -123,10 +124,6 @@ export const isValidWalletAddress = (address: string) => {
 
 export const getDefaultNftImageOnError = (e: any) => {
   e.currentTarget.src = defaults.fallback.nftImageUrl;
-};
-
-export const resolveAssetPath = (path: string) => {
-  return `/${path}`; // Assuming assets are under /public directory
 };
 
 export const getNetworkImageById = (id: string) => {
