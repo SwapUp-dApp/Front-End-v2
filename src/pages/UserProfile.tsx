@@ -1,11 +1,5 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useState } from "react";
-import WalletOverviewCard from "@/components/custom/swap-market/WalletOverviewCard";
-import EmptyDataset from "@/components/custom/shared/EmptyDataset";
-import ProfileAssetsLayout from "@/components/custom/profile/ProfileAssetsLayout";
 import { useSwapMarketStore } from "@/store/swap-market";
 import ProfileHeader from "@/components/custom/profile/ProfileHeader";
-import ProfilePointsCard from "@/components/custom/profile/ProfilePointsCard";
 import { useProfileStore } from "@/store/profile";
 import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
 import { defaults } from "@/constants/defaults";

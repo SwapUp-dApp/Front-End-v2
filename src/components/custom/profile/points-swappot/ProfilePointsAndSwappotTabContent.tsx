@@ -1,6 +1,6 @@
 import React from 'react';
 import ProfilePointsCard from './ProfilePointsCard';
-import EmptyDataset from '../shared/EmptyDataset';
+import EmptyDataset from '../../shared/EmptyDataset';
 
 const ProfilePointsAndSwappotTabContent = () => {
   return (
