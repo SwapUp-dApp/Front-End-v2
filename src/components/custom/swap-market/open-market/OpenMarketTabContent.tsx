@@ -161,12 +161,12 @@ const OpenMarketTabContent = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="align-top font-semibold min-w-[150px]">Assets</TableHead>
-              <TableHead className="align-top font-semibold" >Unique trade ID</TableHead>
-              <TableHead className="align-top font-semibold" >Owner's wallet</TableHead>
-              <TableHead className="align-top font-semibold" >Trading chain</TableHead>
-              <TableHead className="align-top font-semibold" >Open swap date</TableHead>
-              <TableHead className="align-top font-semibold" >Expiry date</TableHead>
-              <TableHead className="align-top font-semibold " >Swap Preferences</TableHead>
+              <TableHead className="align-top font-semibold line-clamp-1 h-1 min-w-[100px] pl-4" >Unique trade ID</TableHead>
+              <TableHead className="align-top font-semibold px-4" >Owner's wallet</TableHead>
+              <TableHead className="align-top font-semibold min-w-[130px] px-4" >Trading chain</TableHead>
+              <TableHead className="align-top font-semibold min-w-[120px] px-4" >Open swap date</TableHead>
+              <TableHead className="align-top font-semibold min-w-[100px] px-4" >Expiry date</TableHead>
+              <TableHead className="align-top font-semibold min-w-[130px] px-4" >Swap Preferences</TableHead>
               <TableHead className="pr-2" >
                 <div className='-mt-3' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile filterApplied={availableOpenSwapsFiltersApplied} /></OpenMarketSwapFilterDrawer></div>
               </TableHead>
