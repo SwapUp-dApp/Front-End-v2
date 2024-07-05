@@ -157,3 +157,13 @@ export const checkIsDateInRange = (dateToCheck: string, dateRangeFrom: string, d
 
   return dateToCheckUTC.isSameOrAfter(dateRangeFromUTC) && dateToCheckUTC.isSameOrBefore(dateRangeToUTC);
 };
+
+
+export const isValidURL = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};

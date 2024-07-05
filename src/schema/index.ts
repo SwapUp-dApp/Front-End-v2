@@ -1,5 +1,6 @@
 import { z } from "zod";
 import moment from "moment";
+import { isValidURL } from "@/lib/utils";
 
 
 /*====================================*/
@@ -266,6 +267,46 @@ export const Schema_HistoryMySwapsFiltersForm = z.object({
 /*====================================*/
 /*=== User Profile schema's ===*/
 /*====================================*/
+
+export const Schema_ProfileInfoForm = z.object({
+  description: z.string(),
+  twitterLink: z.string().optional(),
+  warpcastLink: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (!data.description) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["description"],
+      message: "Description cannot be empty.",
+    });
+  }
+
+  if (data.description && (data.description.length < 50)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["description"],
+      message: "Description must be at least 50 character.",
+    });
+  }
+
+  if (data.twitterLink && !isValidURL(data.twitterLink)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["twitterLink"],
+      message: "Twitter link must be a valid url.",
+    });
+  }
+
+  if (data.warpcastLink && !isValidURL(data.warpcastLink)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["warpcastLink"],
+      message: "Warpcast link must be a valid url.",
+    });
+  }
+
+});
+
 
 export const Schema_ProfileAssetFiltersForm = z.object({
   collection: z.string().optional(),
