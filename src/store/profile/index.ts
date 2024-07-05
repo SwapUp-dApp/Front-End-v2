@@ -1,13 +1,15 @@
 import { create } from 'zustand';
 import { IProfileAssetsFilters, IProfileStore, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, setFilteredNftsByFiltersHelper, setNftsDatasetHelper, setProfileWalletHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
-import { IWallet } from '@/types/profile.types';
+import { getInitialProfile, resetAllFiltersHelper, setFilteredNftsByFiltersHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileDetailsHelper, setProfileWalletHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { IProfileDetails, IWallet } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
 
 const initialState: IProfileStore = {
   profile: getInitialProfile("sender"),
   setProfileWallet: () => { },
+  setProfileAvatar: () => { },
+  setProfileDetails: () => { },
   assetTab: {
     activeGridView: 'detailed',
     visibility: "all",
@@ -20,13 +22,15 @@ const initialState: IProfileStore = {
     setNftsDataset: () => { },
     setNftsBySearch: () => { },
     setNftsByFilters: () => { },
-    resetAllFilters: () => { }
+    resetAllFilters: () => { },
   }
 };
 
 export const useProfileStore = create<IProfileStore>((set, get) => ({
   ...initialState,
   setProfileWallet: (connectedWallet: IWallet) => set(state => setProfileWalletHelper(state, connectedWallet)),
+  setProfileAvatar: (avatar: string) => set(state => setProfileAvatarHelper(state, avatar)),
+  setProfileDetails: (details: IProfileDetails) => set((state) => setProfileDetailsHelper(state, details)),
   assetTab: {
     ...initialState.assetTab,
     toggleVisibility: (value: SUT_VisibilityToggleType) => set(state => toggleVisibilityHelper(state, value)),
@@ -37,6 +41,6 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
       set(newState);
     },
     resetAllFilters: () => set(state => resetAllFiltersHelper(state)),
-    setNftsByFilters: (filters: IProfileAssetsFilters) => set(state => setFilteredNftsByFiltersHelper(state, filters))
+    setNftsByFilters: (filters: IProfileAssetsFilters) => set(state => setFilteredNftsByFiltersHelper(state, filters)),
   }
 }));

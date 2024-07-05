@@ -11,7 +11,6 @@ interface IProp extends ButtonHTMLAttributes<HTMLButtonElement> {
 const CustomOutlineButton = ({ className, children, containerClasses, isLoading = false, ...props }: IProp) => {
   return (
     <button
-      type="reset"
       className={cn(
         `group bg-gradient-primary p-[2px] rounded-full disabled:text-su_disabled disabled:disabled-gradient cursor-pointer`,
         containerClasses

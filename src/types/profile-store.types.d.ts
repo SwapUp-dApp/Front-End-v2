@@ -1,5 +1,5 @@
 import { SUI_NFTItem } from "./global.types";
-import { IWallet, IProfile } from "./profile.types";
+import { IWallet, IProfile, IProfileDetails } from "./profile.types";
 import { SUT_GridViewType } from "./swap-market-store.types";
 
 export type SUT_VisibilityToggleType = "all" | "hidden";
@@ -26,8 +26,10 @@ export interface IProfileAssetTab {
 
 export interface IProfileStore {
   profile: IProfile;
-  setProfileWallet: (connectedWallet: IWallet) => void;
   assetTab: IProfileAssetTab;
+  setProfileWallet: (connectedWallet: IWallet) => void;
+  setProfileAvatar: (avatar: string) => void;
+  setProfileDetails: (details: IProfileDetails) => void;
 }
 
 

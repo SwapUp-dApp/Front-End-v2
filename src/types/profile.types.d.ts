@@ -11,10 +11,17 @@ export interface IWallet {
     network: INetwork;
 }
 
+export interface IProfileDetails {
+    description: string;
+    twitter?: string;
+    warpcast?: string;
+};
+
 export interface IProfile {
     wallet: IWallet;
     ensAddress: string;
     avatar: string,
     isPremium: boolean,
     title: string,
+    details?: IProfileDetails;
 }
