@@ -99,11 +99,11 @@ const SwapHistoryDetailsDialog = ({ children, swap }: IProp) => {
 
               <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
                 <p>Platform fee in USD:</p>
-                <p className="text-text dark:text-su_primary" >$ 10</p>
+                <p className="text-text dark:text-su_primary" >$ 0</p>
               </div>
               <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
                 <p>Platform fee:</p>
-                <p className="text-text dark:text-su_primary" >0.0029 ETH</p>
+                <p className="text-text dark:text-su_primary" >0.00 ETH</p>
               </div>
               <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
                 <p>Current Gas:</p>
@@ -117,7 +117,7 @@ const SwapHistoryDetailsDialog = ({ children, swap }: IProp) => {
 
                   <div className="flex gap-2" >
                     {/* icon will come here in future */}
-                    <p className="text-su_primary" >$ 10.00045</p>
+                    <p className="text-su_primary" >$ 0.00045</p>
                   </div>
                 </div>
 
