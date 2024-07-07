@@ -1,15 +1,18 @@
 import { compareRarityRankItems } from "@/lib/utils";
 import { SUI_NFTItem } from "@/types/global.types";
 import { IProfileAssetsFilters, IProfileStore, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { IWallet } from "@/types/profile.types";
+import { IProfile, IProfileDetails, IWallet } from "@/types/profile.types";
 import { SUT_GridViewType } from "@/types/swap-market-store.types";
 
 export const getInitialProfile = (userType: "sender" | "receiver") => {
-    return {
+    const initialState: IProfile = {
         ensAddress: userType === "sender" ? 'sender.swapup.eth' : 'receiver.swapup.eth',
-        avatar: 'assets/images/member11.jpg',
+        avatar: '/assets/images/member11.jpg',
         isPremium: false,
         title: userType,
+        details: {
+            description: "Passionate about blockchain technology and decentralized finance. Enthusiastic trader with a keen interest in exploring the vast world of digital assets. Constantly seeking new opportunities and insights in the ever-evolving crypto space. Let's swap ideas and assets!"
+        },
         wallet: {
             address: '',
             isConnected: false,
@@ -19,10 +22,21 @@ export const getInitialProfile = (userType: "sender" | "receiver") => {
                 iconUrl: '/assets/svgs/base-sepolia.svg',
                 symbol: 'ETH'
             }
+        },
+    };
+
+    return initialState;
+};
+
+export const setProfileDetailsHelper = (state: IProfileStore, details: IProfileDetails): IProfileStore => {
+    return {
+        ...state,
+        profile: {
+            ...state.profile,
+            details
         }
     };
 };
-
 
 export const setProfileWalletHelper = (state: IProfileStore, connectedWallet: IWallet): IProfileStore => {
     return {
@@ -30,6 +44,18 @@ export const setProfileWalletHelper = (state: IProfileStore, connectedWallet: IW
         profile: {
             ...state.profile,
             wallet: connectedWallet
+        }
+    };
+};
+
+export const setProfileAvatarHelper = (state: IProfileStore, avatar: string): IProfileStore => {
+
+    // console.log("Avatar inside store: ", avatar);
+    return {
+        ...state,
+        profile: {
+            ...state.profile,
+            avatar
         }
     };
 };

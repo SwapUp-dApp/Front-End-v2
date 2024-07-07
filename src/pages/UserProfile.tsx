@@ -1,4 +1,3 @@
-import { useSwapMarketStore } from "@/store/swap-market";
 import ProfileHeader from "@/components/custom/profile/ProfileHeader";
 import { useProfileStore } from "@/store/profile";
 import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
@@ -11,7 +10,7 @@ const UserProfile = () => {
   const { pathname } = useLocation();
 
   const wallet = useProfileStore(state => state.profile.wallet);
-  const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
+  const profile = useProfileStore(state => state.profile);
 
   const handleResetData = () => {
     // resetRoom('privateMarket', 'privateRoom');
@@ -29,6 +28,7 @@ const UserProfile = () => {
           joinData="Joined Sept 2023"
           profileImage={profile.avatar}
           avatarFallbackI="No Image"
+          details={profile.details}
         />
 
         <CustomTabContainer >
