@@ -8,7 +8,9 @@ export const getInitialProfile = (userType: "sender" | "receiver") => {
     const initialState: IProfile = {
         ensAddress: userType === "sender" ? 'sender.swapup.eth' : 'receiver.swapup.eth',
         avatar: '/assets/images/member11.jpg',
+        coverImage: '/assets/images/cover.png',
         isPremium: false,
+        joinDate: "2023-09-15T00:00:00Z",
         title: userType,
         details: {
             description: "Passionate about blockchain technology and decentralized finance. Enthusiastic trader with a keen interest in exploring the vast world of digital assets. Constantly seeking new opportunities and insights in the ever-evolving crypto space. Let's swap ideas and assets!"
@@ -56,6 +58,16 @@ export const setProfileAvatarHelper = (state: IProfileStore, avatar: string): IP
         profile: {
             ...state.profile,
             avatar
+        }
+    };
+};
+
+export const setProfileCoverImageHelper = (state: IProfileStore, coverImage: string): IProfileStore => {
+    return {
+        ...state,
+        profile: {
+            ...state.profile,
+            coverImage
         }
     };
 };

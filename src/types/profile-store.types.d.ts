@@ -29,6 +29,7 @@ export interface IProfileStore {
   assetTab: IProfileAssetTab;
   setProfileWallet: (connectedWallet: IWallet) => void;
   setProfileAvatar: (avatar: string) => void;
+  setProfileCoverImage: (coverImage: string) => void;
   setProfileDetails: (details: IProfileDetails) => void;
 }
 

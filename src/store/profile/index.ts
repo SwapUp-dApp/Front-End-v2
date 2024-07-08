@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { IProfileAssetsFilters, IProfileStore, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, setFilteredNftsByFiltersHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileDetailsHelper, setProfileWalletHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { getInitialProfile, resetAllFiltersHelper, setFilteredNftsByFiltersHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
 import { IProfileDetails, IWallet } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
@@ -10,6 +10,7 @@ const initialState: IProfileStore = {
   setProfileWallet: () => { },
   setProfileAvatar: () => { },
   setProfileDetails: () => { },
+  setProfileCoverImage: () => { },
   assetTab: {
     activeGridView: 'detailed',
     visibility: "all",
@@ -31,6 +32,8 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
   setProfileWallet: (connectedWallet: IWallet) => set(state => setProfileWalletHelper(state, connectedWallet)),
   setProfileAvatar: (avatar: string) => set(state => setProfileAvatarHelper(state, avatar)),
   setProfileDetails: (details: IProfileDetails) => set((state) => setProfileDetailsHelper(state, details)),
+  setProfileCoverImage: (coverImage: string) => set((state) => setProfileCoverImageHelper(state, coverImage)),
+
   assetTab: {
     ...initialState.assetTab,
     toggleVisibility: (value: SUT_VisibilityToggleType) => set(state => toggleVisibilityHelper(state, value)),

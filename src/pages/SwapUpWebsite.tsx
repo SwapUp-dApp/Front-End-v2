@@ -16,7 +16,7 @@ import {
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 
 
 const SwapUpPage = () => {
@@ -136,7 +136,7 @@ const SwapUpPage = () => {
 							<div>
 								<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-center mt-12 lg:text-left">
 									We are{" "}
-									<span className="px-3 py-1 rounded-full bg-su_light_purple text-su_primary_bg inline-block">
+									<span className="px-3 py-1 rounded-full bg-su_brand_week text-su_primary_bg inline-block">
 										Growing!
 									</span>
 								</p>
@@ -410,7 +410,7 @@ const SwapUpPage = () => {
 						<div className="max-w-[850px]  mt-0 md:mt-2">
 							<p className="text-4xl text-start  font-Poppins md:text-5xl text-su_primary_bg font-semibold md:text-center mt-12 ">
 								Key Development{" "}
-								<span className="px-3 py-1 rounded-full bg-su_light_purple text-su_primary_bg inline-block">
+								<span className="px-3 py-1 rounded-full bg-su_brand_week text-su_primary_bg inline-block">
 									Roadmap
 								</span>
 							</p>
@@ -730,7 +730,7 @@ const SwapUpPage = () => {
 								<div className="w-full mt-12 ">
 									<p className="w-full text-su_primary max-w-[550px] text-4xl font-Poppins md:text-5xl font-semibold text-center md:text-center md:justify-center mt-12 ">
 										Join the 	{" "}
-										<span className="px-3 py-1 rounded-full bg-su_light_purple text-black inline-block ml-2">
+										<span className="px-3 py-1 rounded-full bg-su_brand_week text-black inline-block ml-2">
 											Future
 										</span>
 										{" "} of Trading!

@@ -6,6 +6,7 @@ interface IDefaultVariables {
   profile: SUI_NavigationObject;
   fallback: {
     nftImageUrl: string;
+    profileCover: string;
     route: string;
   };
 }
@@ -75,6 +76,7 @@ export const defaults: IDefaultVariables = {
   },
   fallback: {
     nftImageUrl: '/assets/nfts/default.svg',
+    profileCover: '/assets/images/cover-fallback.png',
     route: `${swapMarketBaseRoute}`
   }
 };
