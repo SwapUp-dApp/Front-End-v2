@@ -354,8 +354,29 @@ const ViewSwapRoom = () => {
         navigate(-1);
       }, 1000);
     }
-  }, [tradeId, swapMode]);
 
+    if (state.swap && profile.wallet.address) {
+      if ((state.swap.init_address !== profile.wallet.address) && (state.swap.accept_address !== profile.wallet.address)) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Redirecting back!"
+              description={"Current login user do not have access to view this swap."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        navigate(-1);
+      }
+    }
+  }, [tradeId, swapMode, state.swap, profile.wallet.address]);
 
   return (
     <div className="space-y-4" >
