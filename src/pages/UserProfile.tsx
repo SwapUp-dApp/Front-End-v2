@@ -1,5 +1,4 @@
 import ProfileHeader from "@/components/custom/profile/ProfileHeader";
-import { useProfileStore } from "@/store/profile";
 import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
 import { defaults } from "@/constants/defaults";
 import { getActiveTabFromPathname } from "@/lib/utils";
@@ -9,9 +8,6 @@ const UserProfile = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const wallet = useProfileStore(state => state.profile.wallet);
-  const profile = useProfileStore(state => state.profile);
-
   const handleResetData = () => {
     // resetRoom('privateMarket', 'privateRoom');
   };
@@ -20,15 +16,9 @@ const UserProfile = () => {
     <>
       <section className="flex flex-col gap-4" >
         <ProfileHeader
-          walletAddress={wallet.address}
           resetData={handleResetData}
           existDescription="By leaving profile, your changes will not be saved"
           existTitle="Are you sure you want to exit your Profile page?"
-          ensAddress={profile.ensAddress}
-          joinData="Joined Sept 2023"
-          profileImage={profile.avatar}
-          avatarFallbackI="No Image"
-          details={profile.details}
         />
 
         <CustomTabContainer >

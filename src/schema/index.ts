@@ -320,3 +320,37 @@ export const Schema_ProfileAssetFiltersForm = z.object({
     });
   }
 });
+
+/*=== Profile edit avatar form schema ===*/
+export const Schema_ProfileEditAvatarForm = z.object({
+  profileImage: z
+    .instanceof(File).optional(),
+}).superRefine((data, ctx) => {
+  if (data.profileImage && data.profileImage.type) {
+    const allowedExtensions = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+    if (!allowedExtensions.includes(data.profileImage.type)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["profileImage"],
+        message: "Only .jpeg, jpg, .png, or .gif allowed",
+      });
+    }
+  }
+});
+
+/*=== Profile edit cover image form schema ===*/
+export const Schema_ProfileEditCoverImageForm = z.object({
+  coverImage: z
+    .instanceof(File).optional(),
+}).superRefine((data, ctx) => {
+  if (data.coverImage && data.coverImage.type) {
+    const allowedExtensions = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+    if (!allowedExtensions.includes(data.coverImage.type)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["coverImage"],
+        message: "Only .jpeg, jpg, .png, or .gif allowed",
+      });
+    }
+  }
+});

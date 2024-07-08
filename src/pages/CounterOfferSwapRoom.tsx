@@ -6,10 +6,12 @@ import RoomHeader from "@/components/custom/swap-market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
 import { Button } from "@/components/ui/button";
+import { defaults } from "@/constants/defaults";
 import { SUE_SWAP_MODE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { useCounterSwapOffer, useGetSwapDetails } from "@/service/queries/swap-market.query";
+import { useProfileStore } from "@/store/profile";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_SwapCreation } from "@/types/global.types";
 import { SUI_OpenSwap, SUI_SwapPreferences, SUP_CounterSwap } from "@/types/swap-market.types";
@@ -31,6 +33,7 @@ const CounterOfferSwapRoom = () => {
   const { isLoading, data, isSuccess, isError, error } = useGetSwapDetails(tradeId!);
 
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
+  const wallet = useProfileStore(state => state.profile.wallet);
   const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom.swap.swap_preferences : null);
 
   const { mutateAsync: createCounterSwapOffer } = useCounterSwapOffer();
@@ -115,7 +118,6 @@ const CounterOfferSwapRoom = () => {
     }
   };
 
-
   const handleResetData = async () => {
     state.resetViewSwapRoom();
 
@@ -184,7 +186,29 @@ const CounterOfferSwapRoom = () => {
         navigate(-1);
       }, 1000);
     }
-  }, [tradeId, swapMode]);
+
+    if (state.swap && wallet.address) {
+      if ((state.swap.init_address !== wallet.address) && (state.swap.accept_address !== wallet.address)) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Redirecting back!"
+              description={"Current login user do not have access to view this swap."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        navigate(defaults.fallback.route);
+      }
+    }
+  }, [tradeId, swapMode, state.swap, wallet.address]);
 
 
   useEffect(() => {

@@ -1,52 +1,53 @@
 import { cn, generateRandomKey } from "@/lib/utils";
-import { useForm } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
 
 
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useProfileStore } from "@/store/profile";
-import { useState } from "react";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
-import CustomAvatar from "../shared/CustomAvatar";
 import { Input } from "@/components/ui/input";
-import { Schema_ProfileEditAvatarForm } from "@/schema";
+import { Schema_ProfileEditCoverImageForm } from "@/schema";
+import { defaults } from "@/constants/defaults";
 
 interface IProp {
   children?: any;
   className?: string;
+  handleRemoveProfileCoverImage: () => void;
+  form: UseFormReturn<{
+    coverImage?: File | undefined;
+  }, any, undefined>;
+  editCoverFormKey: string;
+  currentEditCover: string;
+  setEditCoverFormKey: React.Dispatch<React.SetStateAction<string>>;
+  setCurrentEditCover: React.Dispatch<React.SetStateAction<string>>;
 }
 
 
-const EditProfileImageDialog = ({ children, className }: IProp) => {
-  const [profile, setProfileAvatar] = useProfileStore(state => [state.profile, state.setProfileAvatar]);
-  const [currentAvatar, setCurrentAvatar] = useState(profile.avatar);
-  const [formKey, setFormKey] = useState(generateRandomKey(6));
-
-  const form = useForm<z.infer<typeof Schema_ProfileEditAvatarForm>>({
-    resolver: zodResolver(Schema_ProfileEditAvatarForm),
-    defaultValues: {
-      profileImage: undefined,
-    },
-  });
+const EditProfileCoverImageDialog = ({ children, className, currentEditCover, editCoverFormKey, form, handleRemoveProfileCoverImage, setCurrentEditCover, setEditCoverFormKey }: IProp) => {
+  const setProfileCoverImage = useProfileStore(state => state.setProfileCoverImage);
 
   const { errors } = form.formState;
 
-  const onSubmit = (values: z.infer<typeof Schema_ProfileEditAvatarForm>) => {
-    const { profileImage } = values;
+  const onSubmit = (values: z.infer<typeof Schema_ProfileEditCoverImageForm>) => {
+    const { coverImage } = values;
 
-    if (profileImage) {
+    if (coverImage) {
       const reader = new FileReader();
       reader.onload = () => {
         const dataURL = reader.result as string;
-        setProfileAvatar(dataURL);
+        setProfileCoverImage(dataURL);
       };
-      reader.readAsDataURL(profileImage);
+      reader.readAsDataURL(coverImage);
     }
 
-    setFormKey(generateRandomKey(6));
+    setEditCoverFormKey(generateRandomKey(6));
+  };
+
+  const getAspectRatio = (width: number, height: number) => {
+    return width / height;
   };
 
   const handleSelectedImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -54,27 +55,36 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
 
     if (event.target && event.target.files && event.target.files.length > 0) {
       file = event.target.files[0];
+      console.log("File: ", file);
     } else { return; }
 
-    form.setValue("profileImage", file);
-    const isValid = await form.trigger();
-    if (!isValid) return;
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
 
-    if (file) {
+    img.onload = async () => {
+      const aspectRatio = getAspectRatio(img.width, img.height);
+      const desiredAspectRatio = getAspectRatio(1226, 156);
+
+      if (Math.abs(aspectRatio - desiredAspectRatio) > 0.01) {
+        form.setError("coverImage", {
+          type: "manual",
+          message: "The image aspect ratio must be approximately 7.86:1",
+        });
+        return;
+      }
+
+      form.setValue("coverImage", file);
+      const isValid = await form.trigger();
+      if (!isValid) return;
+
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = () => {
-        setCurrentAvatar(reader.result as string);
+        setCurrentEditCover(reader.result as string);
       };
     };
   };
 
-  const handleRemoveProfileImage = () => {
-    setProfileAvatar('');
-    setCurrentAvatar('');
-    form.reset();
-    setFormKey(generateRandomKey(6));
-  };
 
   return (
     <Dialog>
@@ -92,7 +102,7 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
           {/* header */}
           <div className="space-y-2">
             <div className="flex justify-between items-start">
-              <h2 className="font-bold text-xl pt-3" >Change your profile picture </h2>
+              <h2 className="font-bold text-xl pt-3" >Change your profile cover image </h2>
 
               <DialogClose className="p-1 rounded-xs hover:bg-su_active_bg" >
                 <svg className="w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -101,15 +111,15 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
               </DialogClose>
             </div>
 
-            <p className="text-base font-medium text-secondary dark:text-su_secondary">Upload an image to represent your identity.</p>
+            <p className="text-base font-medium text-secondary dark:text-su_secondary">Upload an image for profile cover.</p>
           </div>
 
-          <Form {...form} key={formKey}>
+          <Form {...form} key={editCoverFormKey}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 items-center">
 
               <FormField
                 control={form.control}
-                name="profileImage"
+                name="coverImage"
                 render={({ field }) => (
                   <FormItem className="flex flex-col items-center" >
                     <div className="relative" >
@@ -122,12 +132,10 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
                         onChange={(event) => { handleSelectedImage(event); }}
                       />
 
-                      <CustomAvatar
-                        className="cursor-pointer"
-                        imageSrc={currentAvatar}
-                        fallbackName={profile.title}
-                        sizeClasses="w-16 h-16 lg:w-24 lg:h-24"
-                        textSizeClasses="text-1.5xl lg:text-2.5xl"
+                      <img
+                        src={currentEditCover ? currentEditCover : defaults.fallback.profileCover}
+                        alt=""
+                        className="w-96 h-32 object-cover rounded-sm"
                       />
                     </div>
 
@@ -139,8 +147,8 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
               <div className="w-full flex justify-center items-center gap-3" >
                 <CustomOutlineButton
                   className="px-[20px] py-2"
-                  disabled={!currentAvatar}
-                  onClick={handleRemoveProfileImage}
+                  disabled={!currentEditCover}
+                  onClick={handleRemoveProfileCoverImage}
                 >
                   Remove
                 </CustomOutlineButton>
@@ -150,7 +158,7 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
                     Replace
                   </CustomOutlineButton>
 
-                  <FormLabel htmlFor="profileImage" className="absolute top-0 left-0 w-full h-full cursor-pointer" />
+                  <FormLabel htmlFor="coverImage" className="absolute top-0 left-0 w-full h-full cursor-pointer" />
                 </div>
               </div>
 
@@ -164,7 +172,7 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!form.watch('profileImage') && !errors.profileImage?.message}
+                disabled={!form.watch('coverImage') && !errors.coverImage?.message}
               >
                 Apply Changes
               </Button>
@@ -177,4 +185,4 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
   );
 };
 
-export default EditProfileImageDialog;
+export default EditProfileCoverImageDialog;
