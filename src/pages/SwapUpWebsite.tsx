@@ -233,21 +233,21 @@ const SwapUpPage = () => {
 							<div className="mt-16 mb-16 w-full flex justify-start overflow-x-auto">
 								<div className="flex space-x-2 md:space-x-10">
 									<CarousalCard
-										imageSrc="/assets/landing-page/carousal1.png"
+										imageSrc="/assets/landing-page/exchange-nfts.png"
 										title="Exchange NFT's and Crypto On Multiple Networks"
 										description="Create the perfect trade between you and your peers using a customizable swap agreement to pick the right amount of NFT's and crypto to make a fair trade."
 										buttonText="Find out more"
 									/>
 									<CarousalCard
-										imageSrc="/assets/landing-page/carousal2.png"
+										imageSrc="/assets/landing-page/project-hub.png"
 										title="Project Hub"
 										description="A place for projects to enhance community engagement and reach a wider audience using our core smart contracts and application functionality."
 										buttonText="Find out more"
 										comingSoon
 									/>
 									<CarousalCard
-										imageSrc="/assets/landing-page/carousal3.png"
-										title="Communty Rewards"
+										imageSrc="/assets/landing-page/community-rewards.png"
+										title="Community Rewards"
 										description="Establish a DAO to reward users and Projects who help grow the community and promote a safe platform for users to trade assets."
 										buttonText="Find out more"
 										comingSoon
