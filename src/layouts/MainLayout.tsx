@@ -3,8 +3,6 @@ import Navbar from "@/components/custom/shared/Navbar";
 import { navItemsData } from "@/constants";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-import { toast } from "sonner";
 import { useProfileStore } from "@/store/profile";
 import { defaults } from "@/constants/defaults";
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
@@ -66,8 +64,6 @@ const MainLayout = () => {
         navigate(defaults.fallback.route);
       }
     }
-
-
   }, [wallet, pathname, walletConnectedInLocalStorage]);
 
   return (
