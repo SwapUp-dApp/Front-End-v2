@@ -80,13 +80,16 @@ module.exports = {
         su_warning_week: "rgba(255, 193, 117, 0.3)",
         su_warning_bg: "rgb(49, 39, 47)",
         su_brand: "rgba(117, 134, 255, 1)",
-        su_light_purple: "rgba(208, 204, 244, 1)",
+        su_brand_week: "rgba(208, 204, 244, 1)",
         su_light_pink: "rgba(249, 207, 242, 1)",
         su_tea_green: "rgba(207, 240, 206, 1)",
-        su_buttermilk: "rgba(247, 242, 187, 1)",
         su_greyed_bg: "rgba(243, 243, 244, 1)",
         su_greyed: "rgba(204, 204, 208, 1)",
-
+        su_buttermilk: "rgba(247, 242, 187, 1)",
+        su_tag_buttermilk: "rgba(61, 57, 13, 1)",
+        su_tag_periwinkle: "rgba(45, 42, 66, 1)",
+        su_tag_pale_mauve: "rgba(79, 54, 75, 1)",
+        su_tag_tea_green: "rgba(29, 64, 29, 1)"
       },
       backgroundImage: (theme) => ({
         "gradient-primary": `linear-gradient(to right, ${theme(

@@ -8,26 +8,11 @@ import { Form, FormField, FormItem, FormLabel, FormMessage, } from "@/components
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useProfileStore } from "@/store/profile";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
 import CustomAvatar from "../shared/CustomAvatar";
 import { Input } from "@/components/ui/input";
-
-const formSchema = z.object({
-  profileImage: z
-    .instanceof(File).optional(),
-}).superRefine((data, ctx) => {
-  if (data.profileImage && data.profileImage.type) {
-    const allowedExtensions = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
-    if (!allowedExtensions.includes(data.profileImage.type)) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["profileImage"],
-        message: "Only .jpeg, jpg, .png, or .gif allowed",
-      });
-    }
-  }
-});
+import { Schema_ProfileEditAvatarForm } from "@/schema";
 
 interface IProp {
   children?: any;
@@ -40,8 +25,8 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
   const [currentAvatar, setCurrentAvatar] = useState(profile.avatar);
   const [formKey, setFormKey] = useState(generateRandomKey(6));
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof Schema_ProfileEditAvatarForm>>({
+    resolver: zodResolver(Schema_ProfileEditAvatarForm),
     defaultValues: {
       profileImage: undefined,
     },
@@ -49,7 +34,7 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
 
   const { errors } = form.formState;
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (values: z.infer<typeof Schema_ProfileEditAvatarForm>) => {
     const { profileImage } = values;
 
     if (profileImage) {

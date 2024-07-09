@@ -6,8 +6,8 @@ import moment from "moment";
 
 
 export const setMySwapsDataHelper = async (state: IMySwapsStore, data: SUI_OpenSwap[], tabType: SUT_MySwapsTabType): Promise<IMySwapsStore> => {
-  const pendingSwaps = data.length > 0 ? data : state.pendingSwaps;
-  const historySwaps = data.length > 0 ? data : state.pendingSwaps;
+  const pendingSwaps = data.length > 0 ? data : [];
+  const historySwaps = data.length > 0 ? data : [];
 
   if (tabType === 'pending') {
     return ({

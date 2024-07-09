@@ -1,36 +1,18 @@
 import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer } from "@/components/ui/drawer";
 import { navItemsData } from "@/constants";
 import { getIsActiveNav, } from "@/lib/utils";
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ConnectWalletButton from "./ConnectWalletButton";
-import ToastLookCard from "./ToastLookCard";
-import { toast } from "sonner";
 import { useProfileStore } from "@/store/profile";
+import { showWalletConnectionToast } from "@/lib/helpers";
+import { defaults } from "@/constants/defaults";
 
 const Navbar = () => {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
-
-  const handleShowWalletConnectionToast = () => {
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="warning"
-          title="Connect to wallet!"
-          description={"Please connect to wallet for this feature!"}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
-    );
-  };
 
   return (
     <div className="w-full p-4 flex justify-between lg:justify-start lg:gap-16" >
@@ -54,7 +36,7 @@ const Navbar = () => {
                 className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`}
                 onClick={() => {
                   if (navItem.protected && !wallet.isConnected) {
-                    handleShowWalletConnectionToast();
+                    showWalletConnectionToast("warning");
                   } else {
                     navigate(`${navItem.path}`);
                   }
@@ -126,7 +108,7 @@ const Navbar = () => {
                       className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`}
                       onClick={() => {
                         if (navItem.protected && !wallet.isConnected) {
-                          handleShowWalletConnectionToast();
+                          showWalletConnectionToast("warning");
                         } else {
                           navigate(`${navItem.path}`);
                         }

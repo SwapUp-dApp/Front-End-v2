@@ -21,7 +21,9 @@ export interface IProfile {
     wallet: IWallet;
     ensAddress: string;
     avatar: string,
+    coverImage: string;
     isPremium: boolean,
     title: string,
+    joinDate: string;
     details?: IProfileDetails;
 }
