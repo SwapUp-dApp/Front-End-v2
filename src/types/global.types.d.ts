@@ -1,3 +1,4 @@
+export type SUT_ToastVariantType = "default" | "success" | "error" | "info" | "warning";
 export interface SUI_NavItem {
   key: string;
   title: string;

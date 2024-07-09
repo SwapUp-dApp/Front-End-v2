@@ -1,4 +1,4 @@
-import { cn, generateRandomKey } from "@/lib/utils";
+import { cn, generateRandomKey, getAspectRatio } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from "@/components/ui/dialog";
@@ -46,16 +46,11 @@ const EditProfileCoverImageDialog = ({ children, className, currentEditCover, ed
     setEditCoverFormKey(generateRandomKey(6));
   };
 
-  const getAspectRatio = (width: number, height: number) => {
-    return width / height;
-  };
-
   const handleSelectedImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     let file: File;
 
     if (event.target && event.target.files && event.target.files.length > 0) {
       file = event.target.files[0];
-      console.log("File: ", file);
     } else { return; }
 
     const img = new Image();
@@ -84,7 +79,6 @@ const EditProfileCoverImageDialog = ({ children, className, currentEditCover, ed
       };
     };
   };
-
 
   return (
     <Dialog>
@@ -135,7 +129,7 @@ const EditProfileCoverImageDialog = ({ children, className, currentEditCover, ed
                       <img
                         src={currentEditCover ? currentEditCover : defaults.fallback.profileCover}
                         alt=""
-                        className="w-96 h-32 object-cover rounded-sm"
+                        className="w-96 h-32 object-cover rounded-xs"
                       />
                     </div>
 

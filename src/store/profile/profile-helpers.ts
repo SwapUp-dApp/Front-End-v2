@@ -40,7 +40,7 @@ export const setProfileDetailsHelper = (state: IProfileStore, details: IProfileD
     };
 };
 
-export const setProfileWalletHelper = (state: IProfileStore, connectedWallet: IWallet): IProfileStore => {
+export const setProfileWalletHelper = async (state: IProfileStore, connectedWallet: IWallet): Promise<IProfileStore> => {
     return {
         ...state,
         profile: {

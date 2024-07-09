@@ -29,7 +29,11 @@ const initialState: IProfileStore = {
 
 export const useProfileStore = create<IProfileStore>((set, get) => ({
   ...initialState,
-  setProfileWallet: (connectedWallet: IWallet) => set(state => setProfileWalletHelper(state, connectedWallet)),
+  setProfileWallet: async (connectedWallet: IWallet) => {
+    const state = get();
+    const newState = await setProfileWalletHelper(state, connectedWallet);
+    set(newState);
+  },
   setProfileAvatar: (avatar: string) => set(state => setProfileAvatarHelper(state, avatar)),
   setProfileDetails: (details: IProfileDetails) => set((state) => setProfileDetailsHelper(state, details)),
   setProfileCoverImage: (coverImage: string) => set((state) => setProfileCoverImageHelper(state, coverImage)),

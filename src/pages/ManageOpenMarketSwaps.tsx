@@ -192,7 +192,7 @@ const ManageOpenMarketSwaps = () => {
     queryKey: [`getPrivateSwapPendingListApi`],
     queryFn: async () => {
       try {
-        if (wallet.address) {
+        if (wallet.address && wallet.isConnected) {
           const response = await getMyOpenSwapListApi(wallet.address);
           await setOpenCreatedSwapsData(response.data.data as SUI_OpenSwap[], wallet);
           return response.data.data;

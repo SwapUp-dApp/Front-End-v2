@@ -326,13 +326,23 @@ export const Schema_ProfileEditAvatarForm = z.object({
   profileImage: z
     .instanceof(File).optional(),
 }).superRefine((data, ctx) => {
-  if (data.profileImage && data.profileImage.type) {
+  if (data.profileImage && data.profileImage.type && data.profileImage.size) {
     const allowedExtensions = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+    const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB in bytes
+
     if (!allowedExtensions.includes(data.profileImage.type)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["profileImage"],
         message: "Only .jpeg, jpg, .png, or .gif allowed",
+      });
+    }
+
+    if (data.profileImage.size > maxSizeInBytes) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["profileImage"],
+        message: "File size must be less than 5 MB",
       });
     }
   }
@@ -343,8 +353,10 @@ export const Schema_ProfileEditCoverImageForm = z.object({
   coverImage: z
     .instanceof(File).optional(),
 }).superRefine((data, ctx) => {
-  if (data.coverImage && data.coverImage.type) {
+  if (data.coverImage && data.coverImage.type && data.coverImage.size) {
     const allowedExtensions = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+    const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB in bytes
+
     if (!allowedExtensions.includes(data.coverImage.type)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -352,5 +364,14 @@ export const Schema_ProfileEditCoverImageForm = z.object({
         message: "Only .jpeg, jpg, .png, or .gif allowed",
       });
     }
+
+    if (data.coverImage.size > maxSizeInBytes) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["coverImage"],
+        message: "File size must be less than 5 MB",
+      });
+    }
+
   }
 });

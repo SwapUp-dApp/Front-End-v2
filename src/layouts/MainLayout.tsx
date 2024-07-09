@@ -12,9 +12,11 @@ import { IWallet } from "@/types/profile.types";
 import { getInitialProfile } from "@/store/profile/profile-helpers";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { generateRandomKey } from "@/lib/utils";
+import { showWalletConnectionToast } from "@/lib/helpers";
 
 const MainLayout = () => {
   const [key, setKey] = useState(generateRandomKey(6));
+
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -23,43 +25,7 @@ const MainLayout = () => {
 
   const [setProfileWallet, wallet] = useProfileStore(state => [state.setProfileWallet, state.profile.wallet]);
 
-  const handleShowWalletConnectionToast = () => {
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="warning"
-          title="Connect to wallet!"
-          description={"Please connect to wallet for this feature!"}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
-    );
-  };
-
-  useEffect(() => {
-
-    if (pathname && wallet.isConnected) {
-      const currentRoute = navItemsData.find(item => item.path === pathname);
-      if (currentRoute?.protected) {
-        // console.log("Inside the layout,", wallet);
-        wallet.isConnected ?
-          navigate(pathname)
-          :
-          (
-            handleShowWalletConnectionToast(),
-            navigate(defaults.fallback.route)
-          );
-
-      }
-    }
-
-  }, [pathname, wallet.isConnected]);
-
+  const walletConnectedInLocalStorage = localStorage.getItem("walletConnected");
 
   useEffect(() => {
     let connectedWallet: IWallet = {
@@ -79,19 +45,33 @@ const MainLayout = () => {
       };
     }
 
-    setProfileWallet(connectedWallet);
+    const handleSetWalletInStore = async () => {
+      await setProfileWallet(connectedWallet);
+      localStorage.setItem("walletConnected", "true");
+    };
+
+    handleSetWalletInStore();
   }, [activeAccount, activeChain]);
 
 
   useEffect(() => {
     if (wallet) {
-      // console.log("Connected Wallet: ", wallet);
       setKey(generateRandomKey(6));
     }
-  }, [wallet]);
+
+    if (pathname && wallet && !wallet.isConnected && !walletConnectedInLocalStorage && walletConnectedInLocalStorage !== "true") {
+      const currentRoute = navItemsData.find(item => item.path === pathname);
+      if (currentRoute?.protected) {
+        showWalletConnectionToast("warning");
+        navigate(defaults.fallback.route);
+      }
+    }
+
+
+  }, [wallet, pathname, walletConnectedInLocalStorage]);
 
   return (
-    <div className="flex flex-col justify-between min-h-screen " >
+    <div className="flex flex-col justify-between min-h-screen ">
       <div>
         <Navbar />
         <section className="px-6 lg:px-10 py-4" >
