@@ -167,3 +167,7 @@ export const isValidURL = (url: string) => {
     return false;
   }
 };
+
+export const getAspectRatio = (width: number, height: number) => {
+  return width / height;
+};

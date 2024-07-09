@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
+import { SUT_ToastVariantType } from "@/types/global.types";
 
 interface IProp {
-  variant?: "default" | "success" | "error" | "info" | "warning";
+  variant?: SUT_ToastVariantType;
   icon?: React.ReactNode;
   title?: string;
   subtitle?: string;

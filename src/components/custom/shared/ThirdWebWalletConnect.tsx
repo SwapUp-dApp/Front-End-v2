@@ -1,7 +1,7 @@
 // components/ConnectButtonAuth.tsx
 import { ConnectButton } from "thirdweb/react";
 import { thirdWebClient } from "../../../lib/thirdWebClient";
-import { createWallet } from "thirdweb/wallets"
+import { createWallet } from "thirdweb/wallets";
 // import {
 //   LoginPayload,
 //   VerifyLoginPayloadParams,
@@ -28,6 +28,7 @@ export default function ThirdWebWalletConnect() {
       client={thirdWebClient}
       wallets={wallets}
       chain={baseSepolia}
+      onDisconnect={() => { localStorage.removeItem('walletConnected'); }}
     //auth={{
 
     //  * 	`getLoginPayload` should @return {VerifyLoginPayloadParams} object.

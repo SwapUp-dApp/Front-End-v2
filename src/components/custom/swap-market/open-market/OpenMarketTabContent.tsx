@@ -96,7 +96,7 @@ const OpenMarketTabContent = () => {
       navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`);
     }
 
-    showWalletConnectionToast('', "Connect to your wallet to propose swap.");
+    showWalletConnectionToast('default', "Connect to your wallet to propose swap.");
   };
 
   return (

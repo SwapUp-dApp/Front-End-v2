@@ -306,7 +306,7 @@ const PendingSwapsTabContent = () => {
     queryKey: [`getPendingSwapListApi`],
     queryFn: async () => {
       try {
-        if (wallet.address) {
+        if (wallet.address && wallet.isConnected) {
           const response = await getPendingSwapListApi(wallet.address);
           await setMySwapsData(response.data.data as SUI_OpenSwap[], 'pending');
           return response.data.data;
@@ -334,7 +334,7 @@ const PendingSwapsTabContent = () => {
         throw error;
       }
     },
-    retry: false
+    retry: false,
   });
 
 
