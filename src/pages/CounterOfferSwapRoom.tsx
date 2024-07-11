@@ -187,28 +187,29 @@ const CounterOfferSwapRoom = () => {
       }, 1000);
     }
 
-    if (state.swap && wallet.address) {
-      if ((state.swap.init_address !== wallet.address) && (state.swap.accept_address !== wallet.address)) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Redirecting back!"
-              description={"Current login user do not have access to view this swap."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
-        );
+    // Needs to review this check later on
+    // if (state.swap && wallet.address) {
+    //   if ((state.swap.init_address !== wallet.address) && (state.swap.accept_address !== wallet.address)) {
+    //     toast.custom(
+    //       (id) => (
+    //         <ToastLookCard
+    //           variant="error"
+    //           title="Redirecting back!"
+    //           description={"Current login user do not have access to view this swap."}
+    //           onClose={() => toast.dismiss(id)}
+    //         />
+    //       ),
+    //       {
+    //         duration: 3000,
+    //         className: 'w-full !bg-transparent',
+    //         position: "bottom-left",
+    //       }
+    //     );
 
-        navigate(defaults.fallback.route);
-      }
-    }
-  }, [tradeId, swapMode, state.swap, wallet.address]);
+    //     navigate(defaults.fallback.route);
+    //   }
+    // }
+  }, [tradeId, swapMode]);
 
 
   useEffect(() => {
@@ -247,13 +248,11 @@ const CounterOfferSwapRoom = () => {
             />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
-              {
-                isLoading &&
-                <LoadingDataset
-                  isLoading={isLoading}
-                  title="Loading wallet address"
-                />
-              }
+              <LoadingDataset
+                isLoading={isLoading || !state.sender.profile.wallet.address}
+                title="Loading wallet address"
+              />
+
               {
                 isError &&
                 <EmptyDataset
@@ -281,13 +280,12 @@ const CounterOfferSwapRoom = () => {
           />
           :
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
-            {
-              isLoading &&
-              <LoadingDataset
-                isLoading={isLoading}
-                title="Loading counter-party address"
-              />
-            }
+
+            <LoadingDataset
+              isLoading={isLoading || !state.receiver.profile.wallet.address}
+              title="Loading counter-party address"
+            />
+
             {
               isError &&
               <EmptyDataset

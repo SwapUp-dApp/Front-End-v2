@@ -1,13 +1,12 @@
 // components/ConnectButtonAuth.tsx
 import { ConnectButton } from "thirdweb/react";
-import { thirdWebClient } from "../../../lib/thirdWebClient";
+import { thirdWebClient, currentChain } from "../../../lib/thirdWebClient";
 import { createWallet } from "thirdweb/wallets";
 // import {
 //   LoginPayload,
 //   VerifyLoginPayloadParams,
 // } from "thirdweb/auth";
 //import { get, post } from "../lib/api";
-import { baseSepolia } from "thirdweb/chains";
 const wallets = [
   createWallet("io.metamask"),
   createWallet("com.coinbase.wallet", {
@@ -18,8 +17,6 @@ const wallets = [
   })
 ];
 
-let chain = baseSepolia;
-
 export default function ThirdWebWalletConnect() {
 
 
@@ -27,8 +24,7 @@ export default function ThirdWebWalletConnect() {
     <ConnectButton
       client={thirdWebClient}
       wallets={wallets}
-      chain={baseSepolia}
-      onDisconnect={() => { localStorage.removeItem('walletConnected'); }}
+      chain={currentChain}
     //auth={{
 
     //  * 	`getLoginPayload` should @return {VerifyLoginPayloadParams} object.

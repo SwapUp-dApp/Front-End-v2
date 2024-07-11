@@ -1,4 +1,5 @@
 import { compareRarityRankItems } from "@/lib/utils";
+import { getWalletProxy } from "@/lib/walletProxy";
 import { SUI_NFTItem } from "@/types/global.types";
 import { IProfileAssetsFilters, IProfileStore, SUT_VisibilityToggleType } from "@/types/profile-store.types";
 import { IProfile, IProfileDetails, IWallet } from "@/types/profile.types";
@@ -41,18 +42,36 @@ export const setProfileDetailsHelper = (state: IProfileStore, details: IProfileD
 };
 
 export const setProfileWalletHelper = async (state: IProfileStore, connectedWallet: IWallet): Promise<IProfileStore> => {
+    let connectedUserAvatar = null;
+    let connectedUserEnsName = null;
+    let connectedUserTitle = null;
+
+    if (connectedWallet.address) {
+        const { avatar, ensName, profileTitle } = await getWalletProxy().getEnsInformationByWalletAddress(connectedWallet.address);
+        connectedUserAvatar = avatar;
+        connectedUserEnsName = ensName;
+        connectedUserTitle = profileTitle;
+        // console.log({
+        //     connectedUserAvatar,
+        //     connectedUserEnsName,
+        //     connectedUserTitle
+        // });
+    }
+
+
     return {
         ...state,
         profile: {
             ...state.profile,
-            wallet: connectedWallet
+            wallet: connectedWallet,
+            ensAddress: connectedUserEnsName ? connectedUserEnsName : '',
+            avatar: connectedUserAvatar ? connectedUserAvatar : state.profile.avatar,
+            title: connectedUserTitle ? connectedUserTitle : state.profile.title
         }
     };
 };
 
 export const setProfileAvatarHelper = (state: IProfileStore, avatar: string): IProfileStore => {
-
-    // console.log("Avatar inside store: ", avatar);
     return {
         ...state,
         profile: {
@@ -71,7 +90,6 @@ export const setProfileCoverImageHelper = (state: IProfileStore, coverImage: str
         }
     };
 };
-
 export const toggleGridViewHelper = (state: IProfileStore, value: SUT_GridViewType): IProfileStore => {
     return {
         ...state,
