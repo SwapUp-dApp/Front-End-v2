@@ -12,6 +12,7 @@ export interface IWallet {
 }
 
 export interface IProfileDetails {
+    title: string,
     description: string;
     twitter?: string;
     warpcast?: string;
@@ -23,7 +24,6 @@ export interface IProfile {
     avatar: string,
     coverImage: string;
     isPremium: boolean,
-    title: string,
     joinDate: string;
     details?: IProfileDetails;
 }

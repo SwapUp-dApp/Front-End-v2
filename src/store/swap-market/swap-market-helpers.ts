@@ -234,23 +234,19 @@ export const setValuesOnViewSwapRoomHelper = async (
 
   let receiverEns = null;
   let receiverAvatar = null;
-  let receiverTitle = null;
   let senderEns = null;
   let senderAvatar = null;
-  let senderTitle = null;
 
   if (swap.init_address) {
-    const { avatar, ensName, profileTitle } = await getWalletProxy().getEnsInformationByWalletAddress(swap.init_address);
+    const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.init_address);
     senderAvatar = avatar;
     senderEns = ensName;
-    senderTitle = profileTitle;
   }
 
   if (swap.accept_address) {
-    const { avatar, ensName, profileTitle } = await getWalletProxy().getEnsInformationByWalletAddress(swap.accept_address);
+    const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.accept_address);
     receiverAvatar = avatar;
     receiverEns = ensName;
-    receiverTitle = profileTitle;
   }
 
 
@@ -269,7 +265,6 @@ export const setValuesOnViewSwapRoomHelper = async (
             ...room.sender.profile,
             ensAddress: senderEns ? senderEns : '',
             avatar: senderAvatar ? senderAvatar : room.sender.profile.avatar,
-            title: senderTitle ? senderTitle : room.sender.profile.title,
             wallet: {
               ...room.sender.profile.wallet,
               address: swap.init_address
@@ -283,7 +278,6 @@ export const setValuesOnViewSwapRoomHelper = async (
             ...room.receiver.profile,
             ensAddress: receiverEns ? receiverEns : '',
             avatar: receiverAvatar ? receiverAvatar : room.receiver.profile.avatar,
-            title: receiverTitle ? receiverTitle : room.receiver.profile.title,
             wallet: {
               ...room.sender.profile.wallet,
               address: swap.accept_address
@@ -425,13 +419,11 @@ export const setValuesOnCreatingPrivateRoomHelper = async (
 
   let receiverEns = null;
   let receiverAvatar = null;
-  let receiverTitle = null;
 
   if (counterPartyWalletAddress) {
-    const { avatar, ensName, profileTitle } = await getWalletProxy().getEnsInformationByWalletAddress(counterPartyWalletAddress);
+    const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(counterPartyWalletAddress);
     receiverAvatar = avatar;
     receiverEns = ensName;
-    receiverTitle = profileTitle;
   }
 
 
@@ -452,7 +444,6 @@ export const setValuesOnCreatingPrivateRoomHelper = async (
             ...room.receiver.profile,
             ensAddress: receiverEns ? receiverEns : '',
             avatar: receiverAvatar ? receiverAvatar : room.receiver.profile.avatar,
-            title: receiverTitle ? receiverTitle : room.receiver.profile.title,
             wallet: {
               ...room.receiver.profile.wallet,
               address: counterPartyWalletAddress ? counterPartyWalletAddress : room.receiver.profile.wallet.address,

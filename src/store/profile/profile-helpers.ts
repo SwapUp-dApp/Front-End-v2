@@ -12,8 +12,8 @@ export const getInitialProfile = (userType: "sender" | "receiver") => {
         coverImage: '/assets/images/cover.png',
         isPremium: false,
         joinDate: "2023-09-15T00:00:00Z",
-        title: userType,
         details: {
+            title: userType,
             description: "Passionate about blockchain technology and decentralized finance. Enthusiastic trader with a keen interest in exploring the vast world of digital assets. Constantly seeking new opportunities and insights in the ever-evolving crypto space. Let's swap ideas and assets!"
         },
         wallet: {
@@ -44,18 +44,11 @@ export const setProfileDetailsHelper = (state: IProfileStore, details: IProfileD
 export const setProfileWalletHelper = async (state: IProfileStore, connectedWallet: IWallet): Promise<IProfileStore> => {
     let connectedUserAvatar = null;
     let connectedUserEnsName = null;
-    let connectedUserTitle = null;
 
     if (connectedWallet.address) {
         const { avatar, ensName, profileTitle } = await getWalletProxy().getEnsInformationByWalletAddress(connectedWallet.address);
         connectedUserAvatar = avatar;
         connectedUserEnsName = ensName;
-        connectedUserTitle = profileTitle;
-        // console.log({
-        //     connectedUserAvatar,
-        //     connectedUserEnsName,
-        //     connectedUserTitle
-        // });
     }
 
 
@@ -66,7 +59,6 @@ export const setProfileWalletHelper = async (state: IProfileStore, connectedWall
             wallet: connectedWallet,
             ensAddress: connectedUserEnsName ? connectedUserEnsName : '',
             avatar: connectedUserAvatar ? connectedUserAvatar : state.profile.avatar,
-            title: connectedUserTitle ? connectedUserTitle : state.profile.title
         }
     };
 };

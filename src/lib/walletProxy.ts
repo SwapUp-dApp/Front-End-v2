@@ -48,7 +48,6 @@ export const walletProxy = () => {
 
   const getEnsInformationByWalletAddress = async (walletAddress: string) => {
     let avatar = null;
-    let profileTitle = null;
 
     const { provider } = await getEthersProviderAndSigner();
     const ensName = await provider.lookupAddress(walletAddress);
@@ -57,11 +56,10 @@ export const walletProxy = () => {
       const resolver = await provider.getResolver(ensName);
       if (resolver) {
         avatar = await resolver.getAvatar();
-        profileTitle = await resolver.getText('title');
       }
     }
 
-    return { ensName, avatar, profileTitle };
+    return { ensName, avatar };
   };
 
   const getSwapupContractInstance = async () => {

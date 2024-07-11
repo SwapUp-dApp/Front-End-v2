@@ -170,7 +170,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
       <CardHeader className="flex flex-col p-0 gap-3" >
         <div className={`flex justify-between items-center`} >
           <div className="flex items-center gap-2 lg:gap-3">
-            <CustomAvatar imageSrc={profile.avatar} fallbackName={profile.title} isPremium={profile?.isPremium} />
+            <CustomAvatar imageSrc={profile.avatar} fallbackName={profile.details?.title || profile.ensAddress || ''} isPremium={profile?.isPremium} />
             <h2 className="font-semibold text-sm lg:text-lg line-clamp-1 w-2/3 lg:w-auto">{profile.ensAddress}</h2>
           </div>
 

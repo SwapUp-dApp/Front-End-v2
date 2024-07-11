@@ -125,7 +125,7 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
                       <CustomAvatar
                         className="cursor-pointer"
                         imageSrc={currentAvatar}
-                        fallbackName={profile.title}
+                        fallbackName={profile.details?.title || profile.ensAddress || ''}
                         sizeClasses="w-16 h-16 lg:w-24 lg:h-24"
                         textSizeClasses="text-1.5xl lg:text-2.5xl"
                       />
