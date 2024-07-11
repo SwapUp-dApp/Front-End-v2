@@ -3,16 +3,16 @@
 import { Environment } from "@/config";
 import { abi } from "@/constants/abi";
 import { SUI_Swap } from "@/types/swap-market.types";
-import { ethers } from 'ethers';
+import { ethers, JsonRpcProvider } from 'ethers';
 import { ethers6Adapter } from "thirdweb/adapters/ethers6";
 import { Account } from "thirdweb/wallets";
-import { ErrorDecoder } from 'ethers-decode-error'
+import { ErrorDecoder } from 'ethers-decode-error';
 import type { DecodedError } from "ethers-decode-error";
 import { thirdWebClient, currentChain } from "./thirdWebClient.ts";
 
 interface IAsset {
   assetAddress: string,
-  value: number
+  value: number;
 }
 
 let walletInstance: ReturnType<typeof walletProxy> | null = null;
@@ -29,22 +29,38 @@ export const walletProxy = () => {
 
   const setConnectedWalletAccount = (connectedAccount: Account) => {
     connectedWalletAccount = connectedAccount;
-  }
+  };
 
   const getConnectedWalletAccount = () => {
     return connectedWalletAccount;
-  }
+  };
 
   const getEthersProviderAndSigner = async () => {
     // convert a thirdweb account to ethers signer
-    let provider = await ethers6Adapter.provider.toEthers({ client: thirdWebClient, chain: currentChain });
+    let provider: JsonRpcProvider = await ethers6Adapter.provider.toEthers({ client: thirdWebClient, chain: currentChain });
     let signer = await ethers6Adapter.signer.toEthers({
       client: thirdWebClient,
       chain: currentChain,
       account: connectedWalletAccount!,
     });
     return { provider, signer };
-  }
+  };
+
+  const getEnsInformationByWalletAddress = async (walletAddress: string) => {
+    let avatar = null;
+
+    const { provider } = await getEthersProviderAndSigner();
+    const ensName = await provider.lookupAddress(walletAddress);
+
+    if (ensName) {
+      const resolver = await provider.getResolver(ensName);
+      if (resolver) {
+        avatar = await resolver.getAvatar();
+      }
+    }
+
+    return { ensName, avatar };
+  };
 
   const getSwapupContractInstance = async () => {
     const { signer } = await getEthersProviderAndSigner();
@@ -54,14 +70,14 @@ export const walletProxy = () => {
       signer
     );
     return contract;
-  }
+  };
 
   const getUserSignature = async (
     swap: SUI_Swap,
     swapEncodedMsg: string,
   ) => {
     return { sign: "sign", swapEncodedBytes: "" };
-  }
+  };
 
   const getUserApproval = async (swap: SUI_Swap, init = true) => {
     //if there are multiple NFT's in different smart contracts then we will have to call approve for all
@@ -113,7 +129,7 @@ export const walletProxy = () => {
     console.log(tx.hash);
 
     return tx;
-  }
+  };
 
   const createAndUpdateSwap = async (swap: SUI_Swap, swapAction: string) => {
     let contract = await getSwapupContractInstance();
@@ -122,15 +138,15 @@ export const walletProxy = () => {
       let initAssets: IAsset[] = [];
       let acceptAssets: IAsset[] = [];
       swap.metadata.init.tokens.forEach(ele => {
-        initAssets.push({ assetAddress: ele.address, value: Number(ele.id) })
+        initAssets.push({ assetAddress: ele.address, value: Number(ele.id) });
       });
       swap.metadata.accept.tokens.forEach(ele => {
-        acceptAssets.push({ assetAddress: ele.address, value: Number(ele.id) })
+        acceptAssets.push({ assetAddress: ele.address, value: Number(ele.id) });
       });
       let feeInETH = await contract.getFeeInETH();
-      console.log(feeInETH)
+      console.log(feeInETH);
 
-      let swapType = swap.swap_mode == 1 ? 'PRIVATE' : 'OPEN'
+      let swapType = swap.swap_mode == 1 ? 'PRIVATE' : 'OPEN';
       if (swapType === 'OPEN') return null; //prevent open market swaps for now.
 
       let gasLimit = 900000;
@@ -186,7 +202,7 @@ export const walletProxy = () => {
       return null; //transaction rejected or other issues
     }
 
-  }
+  };
 
   const getFeeInETH = async () => {
     let contract = await getSwapupContractInstance();
@@ -195,12 +211,12 @@ export const walletProxy = () => {
       const tx = await contract.getFeeInETH();
       console.log(tx);
     } catch (err) {
-      const errorDecoder = ErrorDecoder.create()
-      const decodedError: DecodedError = await errorDecoder.decode(err)
-      console.log(`TX Error: ${decodedError.type}, ${decodedError.reason}`)
+      const errorDecoder = ErrorDecoder.create();
+      const decodedError: DecodedError = await errorDecoder.decode(err);
+      console.log(`TX Error: ${decodedError.type}, ${decodedError.reason}`);
       return null; //transaction rejected or other issues
     }
-  }
+  };
 
   //get the current state of an existing swap from BC
   const getSwap = async (swapId: string) => {
@@ -209,12 +225,12 @@ export const walletProxy = () => {
       const tx = await contract.swaps(swapId);
       console.log(tx);
     } catch (err) {
-      const errorDecoder = ErrorDecoder.create()
-      const decodedError: DecodedError = await errorDecoder.decode(err)
-      console.log(`TX Error: ${decodedError.type}, ${decodedError.reason}`)
+      const errorDecoder = ErrorDecoder.create();
+      const decodedError: DecodedError = await errorDecoder.decode(err);
+      console.log(`TX Error: ${decodedError.type}, ${decodedError.reason}`);
       return null; //transaction rejected or other issues
     }
-  }
+  };
 
   const getTransactionReceipt = async (tx: any) => {
     try {
@@ -223,7 +239,7 @@ export const walletProxy = () => {
       console.log(rcpt);
       return rcpt;
     } catch (error: any) {
-      const errorDecoder = ErrorDecoder.create()
+      const errorDecoder = ErrorDecoder.create();
       const decodedError: DecodedError = await errorDecoder.decode(error);
 
       console.log(`BC Error: ${decodedError.type}, ${decodedError.reason}`);
@@ -241,10 +257,12 @@ export const walletProxy = () => {
   return {
     setConnectedWalletAccount,
     getConnectedWalletAccount,
+    getEthersProviderAndSigner,
+    getEnsInformationByWalletAddress,
     getUserApproval,
     getUserSignature,
     createAndUpdateSwap,
     getFeeInETH,
     getSwap
-  }
-}
+  };
+};

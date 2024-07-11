@@ -19,7 +19,7 @@ import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 const PrivateRoom = () => {
 
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
-  const wallet = useProfileStore(state => state.profile.wallet);
+  const [wallet, profile] = useProfileStore(state => [state.profile.wallet, state.profile]);
 
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [swapCreation, setSwapCreation] = useState<SUI_SwapCreation>({ isLoading: false, created: false });
@@ -138,8 +138,13 @@ const PrivateRoom = () => {
       navigate(-1);
     }
 
-    if (counterPartyWallet && privateTradeId && wallet) {
-      state.setValuesOnCreatingRoom(privateTradeId, counterPartyWallet, wallet);
+
+    const handleSetValuesOnCreatingPrivateRoom = async () => {
+      await state.setValuesOnCreatingPrivateRoom(privateTradeId!, counterPartyWallet!, profile);
+    };
+
+    if (counterPartyWallet && privateTradeId && profile) {
+      handleSetValuesOnCreatingPrivateRoom();
     }
   }, [counterPartyWallet, privateTradeId]);
 
@@ -155,31 +160,25 @@ const PrivateRoom = () => {
 
       <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
         {
-          wallet.isConnected && wallet.address ?
-            <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" senderWallet={wallet.address} />
+          state.sender.profile.wallet.address ?
+            <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" senderWallet={state.sender.profile.wallet.address} />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
-              {
-                !wallet.isConnected &&
-                <LoadingDataset
-                  isLoading={!wallet.isConnected}
-                  title="Loading wallet connected wallet information"
-                />
-              }
+              <LoadingDataset
+                isLoading={!state.sender.profile.wallet.address}
+                title="Loading wallet connected wallet information"
+              />
             </div>
         }
 
-        {counterPartyWallet ?
-          <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} roomKey="privateRoom" />
+        {state.receiver.profile.wallet.address ?
+          <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={state.receiver.profile.wallet.address} roomKey="privateRoom" />
           :
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
-            {
-              !counterPartyWallet &&
-              <LoadingDataset
-                isLoading={!counterPartyWallet}
-                title="Loading wallet counter party wallet information"
-              />
-            }
+            <LoadingDataset
+              isLoading={!state.receiver.profile.wallet.address}
+              title="Loading wallet counter party wallet information"
+            />
           </div>
         }
 

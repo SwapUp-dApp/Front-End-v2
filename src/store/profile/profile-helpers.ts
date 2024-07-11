@@ -1,4 +1,5 @@
 import { compareRarityRankItems } from "@/lib/utils";
+import { getWalletProxy } from "@/lib/walletProxy";
 import { SUI_NFTItem } from "@/types/global.types";
 import { IProfileAssetsFilters, IProfileStore, SUT_VisibilityToggleType } from "@/types/profile-store.types";
 import { IProfile, IProfileDetails, IWallet } from "@/types/profile.types";
@@ -11,8 +12,8 @@ export const getInitialProfile = (userType: "sender" | "receiver") => {
         coverImage: '/assets/images/cover.png',
         isPremium: false,
         joinDate: "2023-09-15T00:00:00Z",
-        title: userType,
         details: {
+            title: userType,
             description: "Passionate about blockchain technology and decentralized finance. Enthusiastic trader with a keen interest in exploring the vast world of digital assets. Constantly seeking new opportunities and insights in the ever-evolving crypto space. Let's swap ideas and assets!"
         },
         wallet: {
@@ -41,18 +42,28 @@ export const setProfileDetailsHelper = (state: IProfileStore, details: IProfileD
 };
 
 export const setProfileWalletHelper = async (state: IProfileStore, connectedWallet: IWallet): Promise<IProfileStore> => {
+    let connectedUserAvatar = null;
+    let connectedUserEnsName = null;
+
+    if (connectedWallet.address) {
+        const { avatar, ensName, profileTitle } = await getWalletProxy().getEnsInformationByWalletAddress(connectedWallet.address);
+        connectedUserAvatar = avatar;
+        connectedUserEnsName = ensName;
+    }
+
+
     return {
         ...state,
         profile: {
             ...state.profile,
-            wallet: connectedWallet
+            wallet: connectedWallet,
+            ensAddress: connectedUserEnsName ? connectedUserEnsName : '',
+            avatar: connectedUserAvatar ? connectedUserAvatar : state.profile.avatar,
         }
     };
 };
 
 export const setProfileAvatarHelper = (state: IProfileStore, avatar: string): IProfileStore => {
-
-    // console.log("Avatar inside store: ", avatar);
     return {
         ...state,
         profile: {
@@ -71,7 +82,6 @@ export const setProfileCoverImageHelper = (state: IProfileStore, coverImage: str
         }
     };
 };
-
 export const toggleGridViewHelper = (state: IProfileStore, value: SUT_GridViewType): IProfileStore => {
     return {
         ...state,

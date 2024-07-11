@@ -32,6 +32,7 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
   const form = useForm<z.infer<typeof Schema_ProfileInfoForm>>({
     resolver: zodResolver(Schema_ProfileInfoForm),
     defaultValues: {
+      title: profileDetails?.title || '',
       description: profileDetails?.description || '',
       twitterLink: profileDetails?.twitter || undefined,
       warpcastLink: profileDetails?.warpcast || undefined
@@ -40,6 +41,7 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
 
   const onSubmit = (data: z.infer<typeof Schema_ProfileInfoForm>) => {
     const details: IProfileDetails = {
+      title: data.title,
       description: data.description,
       twitter: data.twitterLink,
       warpcast: data.warpcastLink
@@ -85,12 +87,28 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
             </DrawerTitle>
 
             <div className="h-full space-y-2">
-
-
               <Form {...form} key={formKey}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="h-full pb-9 flex flex-col justify-between" >
 
                   <div className="space-y-4" >
+                    <FormField
+                      control={form.control}
+                      name="title"
+                      render={({ field }) => (
+                        <FormItem >
+                          <FormLabel htmlFor={field.name} >Profile title:</FormLabel>
+                          <Input
+                            className="bg-su_button_disabled px-4 py-3 "
+                            placeholder="Enter your title"
+                            id={field.name}
+                            onChange={field.onChange}
+                            value={field.value}
+                          />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     <FormField
                       control={form.control}
                       name="description"
@@ -156,9 +174,12 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
                                 <Input
                                   className="bg-su_button_disabled px-4 py-3 "
                                   icon={
-                                    <svg className="w-4" viewBox="0 0 16 16" fill="currentcolor" xmlns="http://www.w3.org/2000/svg">
-                                      <path d="M15.0546 0L9.69196 6.77714L16 16H11.061L7.19664 10.4057L2.76913 16H0.315144L6.04973 8.74857L0 0H5.06296L8.56054 5.11429L12.6006 0H15.0546ZM13.1017 14.3771L4.32418 1.53714H2.86212L11.7378 14.3771H13.0965H13.1017Z" fill="currentcolor" />
+                                    <svg className="w-4" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M2.74557 0H13.0651V16H11.5503V8.67097H11.5354C11.368 6.6454 9.80668 5.05805 7.90532 5.05805C6.00397 5.05805 4.44264 6.6454 4.2752 8.67097H4.26036V16H2.74557V0Z" fill="currentColor" />
+                                      <path d="M0 2.27095L0.615387 4.54193H1.13609V13.729C0.874651 13.729 0.662719 13.9601 0.662719 14.2452V14.8645H0.568054C0.306618 14.8645 0.0946648 15.0956 0.0946648 15.3807V16H5.39644V15.3807C5.39644 15.0956 5.18451 14.8645 4.92308 14.8645H4.82841V14.2452C4.82841 13.9601 4.61646 13.729 4.35502 13.729H3.78699V2.27095H0Z" fill="currentColor" />
+                                      <path d="M11.645 13.729C11.3835 13.729 11.1716 13.9601 11.1716 14.2452V14.8645H11.0769C10.8155 14.8645 10.6036 15.0956 10.6036 15.3807V16H15.9053V15.3807C15.9053 15.0956 15.6934 14.8645 15.4319 14.8645H15.3373V14.2452C15.3373 13.9601 15.1253 13.729 14.8639 13.729V4.54193H15.3846L16 2.27095H12.213V13.729H11.645Z" fill="currentColor" />
                                     </svg>
+
                                   }
                                   placeholder="Enter your warpcast link"
                                   id={field.name}

@@ -4,8 +4,9 @@ import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { Environment } from "@/config";
 import { getInitialProfile } from "../profile/profile-helpers";
-import { IWallet } from "@/types/profile.types";
+import { IProfile, IWallet } from "@/types/profile.types";
 import { checkIsDateInRange, compareRarityRankItems, getNormalizeAndCompareTwoStrings } from "@/lib/utils";
+import { getWalletProxy } from "@/lib/walletProxy";
 
 // Shared Room Helper start
 export const toggleGridViewHelper = (
@@ -231,6 +232,24 @@ export const setValuesOnViewSwapRoomHelper = async (
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;
 
+  let receiverEns = null;
+  let receiverAvatar = null;
+  let senderEns = null;
+  let senderAvatar = null;
+
+  if (swap.init_address) {
+    const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.init_address);
+    senderAvatar = avatar;
+    senderEns = ensName;
+  }
+
+  if (swap.accept_address) {
+    const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.accept_address);
+    receiverAvatar = avatar;
+    receiverEns = ensName;
+  }
+
+
   return {
     ...state,
     [marketKey]: {
@@ -244,6 +263,8 @@ export const setValuesOnViewSwapRoomHelper = async (
           addedAmount: undefined,
           profile: {
             ...room.sender.profile,
+            ensAddress: senderEns ? senderEns : '',
+            avatar: senderAvatar ? senderAvatar : room.sender.profile.avatar,
             wallet: {
               ...room.sender.profile.wallet,
               address: swap.init_address
@@ -255,6 +276,8 @@ export const setValuesOnViewSwapRoomHelper = async (
           addedAmount: undefined,
           profile: {
             ...room.receiver.profile,
+            ensAddress: receiverEns ? receiverEns : '',
+            avatar: receiverAvatar ? receiverAvatar : room.receiver.profile.avatar,
             wallet: {
               ...room.sender.profile.wallet,
               address: swap.accept_address
@@ -383,16 +406,27 @@ export const createCounterSwapOfferHelper = async (
 
 
 // Private Room helpers start
-export const setValuesOnCreatingPrivateRoomHelper = (
+export const setValuesOnCreatingPrivateRoomHelper = async (
   state: ISwapMarketStore,
   marketKey: 'openMarket' | 'privateMarket',
   roomKey: 'openRoom' | 'privateRoom',
   tradeId: string,
   counterPartyWalletAddress: string,
-  senderWalletInfo: IWallet
-): ISwapMarketStore => {
+  senderProfile: IProfile
+): Promise<ISwapMarketStore> => {
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as IPrivateRoom;
+
+  let receiverEns = null;
+  let receiverAvatar = null;
+
+  if (counterPartyWalletAddress) {
+    const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(counterPartyWalletAddress);
+    receiverAvatar = avatar;
+    receiverEns = ensName;
+  }
+
+
   return {
     ...state,
     [marketKey]: {
@@ -402,15 +436,14 @@ export const setValuesOnCreatingPrivateRoomHelper = (
         uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
         sender: {
           ...room.sender,
-          profile: {
-            ...room.sender.profile,
-            wallet: senderWalletInfo
-          }
+          profile: senderProfile
         },
         receiver: {
           ...room.receiver,
           profile: {
             ...room.receiver.profile,
+            ensAddress: receiverEns ? receiverEns : '',
+            avatar: receiverAvatar ? receiverAvatar : room.receiver.profile.avatar,
             wallet: {
               ...room.receiver.profile.wallet,
               address: counterPartyWalletAddress ? counterPartyWalletAddress : room.receiver.profile.wallet.address,
@@ -514,7 +547,8 @@ export const resetPrivateRoomDataHelper = (
           nfts: undefined,
           filteredNfts: undefined,
           filters: undefined,
-          activeGridView: 'detailed'
+          activeGridView: 'detailed',
+          profile: getInitialProfile('sender')
         },
         receiver: {
           ...state.privateMarket.privateRoom.receiver,
@@ -525,14 +559,7 @@ export const resetPrivateRoomDataHelper = (
           filteredNfts: undefined,
           filters: undefined,
           activeGridView: 'detailed',
-          profile: {
-            ...state.privateMarket.privateRoom.receiver.profile,
-            wallet: {
-              ...state.privateMarket.privateRoom.receiver.profile.wallet,
-              address: '',
-            }
-            // we need to remove the profile completely in future
-          }
+          profile: getInitialProfile('receiver')
         }
       }
     },
@@ -955,7 +982,7 @@ export const resetAllCreatedSwapsHelper = (state: ISwapMarketStore): ISwapMarket
 export const setValuesOnCreateOpenSwapRoomHelper = (
   state: ISwapMarketStore,
   tradeId: string,
-  senderWalletInfo: IWallet
+  senderProfile: IProfile
 ): ISwapMarketStore => {
   const market = state['openMarket'] as Record<string, any>;
   const room = market['openRoom'] as IOpenRoom;
@@ -969,10 +996,7 @@ export const setValuesOnCreateOpenSwapRoomHelper = (
         uniqueTradeId: tradeId ? tradeId : room.uniqueTradeId,
         sender: {
           ...room.sender,
-          profile: {
-            ...room.sender.profile,
-            wallet: senderWalletInfo
-          }
+          profile: senderProfile
         }
       },
     },

@@ -37,7 +37,7 @@ const OpenMarketSwapDialogSideCard = ({ className, data, ...props }: IProp) => {
       <div className="flex items-center gap-1 lg:gap-2">
         <CustomAvatar
           imageSrc={data.profile.avatar}
-          fallbackName={data.profile.title}
+          fallbackName={data.profile.details?.title || data.profile.ensAddress || ''}
           sizeClasses="w-4 h-4 lg:w-6 lg:h-6"
           textSizeClasses="text-2xs lg:text-xs"
         />

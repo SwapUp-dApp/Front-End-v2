@@ -10,6 +10,7 @@ const config: SUI_Config = {
     NETWORK: import.meta.env.VITE_LOCAL_NETWORK,
     CHAIN_ID: import.meta.env.VITE_LOCAL_CHAIN_ID,
     SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
+    THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
   },
 
   dev: {
@@ -19,6 +20,7 @@ const config: SUI_Config = {
     NETWORK: import.meta.env.VITE_DEV_NETWORK,
     CHAIN_ID: import.meta.env.VITE_DEV_CHAIN_ID,
     SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
+    THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
   },
 
   qa: {
@@ -28,6 +30,7 @@ const config: SUI_Config = {
     NETWORK: import.meta.env.VITE_QA_NETWORK,
     CHAIN_ID: import.meta.env.VITE_QA_CHAIN_ID,
     SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
+    THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
   },
 
   prod: {
@@ -37,6 +40,7 @@ const config: SUI_Config = {
     NETWORK: import.meta.env.VITE_PROD_NETWORK,
     CHAIN_ID: import.meta.env.VITE_PROD_CHAIN_ID,
     SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
+    THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
   },
 };
 
