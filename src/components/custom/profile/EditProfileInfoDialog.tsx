@@ -1,15 +1,10 @@
 import { useState } from "react";
 import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose, } from "@/components/ui/drawer";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { availableRarityRanking } from "@/constants";
-import { SUI_RarityRankItem } from "@/types/global.types";
-import { dataSlice } from "ethers";
-import CustomOutlineButton from "../shared/CustomOutlineButton";
 import { Input } from "@/components/ui/input";
 import { Schema_ProfileInfoForm } from "@/schema";
 import { Textarea } from "@/components/ui/textarea";

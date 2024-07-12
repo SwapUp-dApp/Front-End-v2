@@ -107,8 +107,8 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
   const form = useForm<z.infer<typeof amountConvertFormSchema>>({
     resolver: zodResolver(amountConvertFormSchema),
     defaultValues: {
-      amount: (addedAmount && addedAmount.usdAmount) ? String(addedAmount.usdAmount) : '',
-      chain: String(Environment.CHAIN_ID)
+      amount: (addedAmount && addedAmount.amount) ? String(addedAmount.amount) : '',
+      chain: '84532'
     },
   });
 
@@ -124,14 +124,14 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
   };
 
   useEffect(() => {
-    const chainId = form.getValues('chain');
-    const amount = form.getValues('amount');
+    const chainId = form.watch('chain');
+    const amount = form.watch('amount');
 
     if (amount && chainId) {
       setAddedAmount(amount, chainId);
     }
 
-  }, [form.getValues('chain'), form.getValues('amount')]);
+  }, [form.watch('chain'), form.watch('amount')]);
 
 
 

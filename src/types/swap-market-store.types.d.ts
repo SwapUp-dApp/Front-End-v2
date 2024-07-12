@@ -16,10 +16,6 @@ export interface IOpenRoomFilterItem {
   rarityRank: SUI_RarityRankItem;
 }
 
-export interface IOpenMarketAddedAmount {
-  usdAmount: number;
-  coin: SUI_ChainItem;
-}
 
 export interface IOpenRoom {
   uniqueTradeId: string;
@@ -49,7 +45,7 @@ export interface IOpenMarketLayoutSide {
   toggleGridView: (value: SUT_GridViewType) => void;
   profile: IProfile;
   collections: string[] | [];
-  addedAmount?: IOpenMarketAddedAmount;
+  addedAmount?: IAddedAmount;
   availableChains: SUI_ChainItem[];
   filters?: IOpenRoomFilterItem;
   nfts?: SUI_NFTItem[];
@@ -84,7 +80,7 @@ export interface IPrivateRoomFilterItem {
 }
 
 export interface IAddedAmount {
-  usdAmount: number;
+  amount: number;
   coin: SUI_ChainItem;
 }
 

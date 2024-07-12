@@ -30,7 +30,7 @@ const SwapHistoryDialogSideCard = ({ className, swap, side, ...props }: IProp) =
   );
 
   const getConvertedAmount = (usdAmount: number | string, chainAmount: number | string) => {
-    return Number(usdAmount) / Number(chainAmount);
+    return (Number(usdAmount) * Number(chainAmount));
   };
 
   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
@@ -70,12 +70,9 @@ const SwapHistoryDialogSideCard = ({ className, swap, side, ...props }: IProp) =
           />
 
           <p className="text-su_primary" >
-            {/* {swap.addedAmount && getConvertedAmount(data.addedAmount.usdAmount, data.addedAmount.coin.price).toFixed(6)}
-            {' '} {data.addedAmount?.coin.symbol} {' '} */}
             0.00 ETH
             <span className="text-su_secondary" >
               /$ 0.00
-              {/* {data.addedAmount?.usdAmount} */}
             </span>
           </p>
         </div>
