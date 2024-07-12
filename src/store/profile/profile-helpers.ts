@@ -46,9 +46,13 @@ export const setProfileWalletHelper = async (state: IProfileStore, connectedWall
     let connectedUserEnsName = null;
 
     if (connectedWallet.address) {
-        const { avatar, ensName, profileTitle } = await getWalletProxy().getEnsInformationByWalletAddress(connectedWallet.address);
-        connectedUserAvatar = avatar;
-        connectedUserEnsName = ensName;
+        try {
+            const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(connectedWallet.address);
+            connectedUserAvatar = avatar;
+            connectedUserEnsName = ensName;
+        } catch (error) {
+            console.log("No ens found");
+        }
     }
 
 

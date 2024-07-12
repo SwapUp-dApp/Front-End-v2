@@ -182,7 +182,7 @@ export const setAddedAmountHelper = (
         [side]: {
           ...room[side],
           addedAmount: {
-            usdAmount: parseFloat(selectedAmount),
+            amount: parseFloat(selectedAmount),
             coin,
           },
         },
@@ -237,16 +237,24 @@ export const setValuesOnViewSwapRoomHelper = async (
   let senderEns = null;
   let senderAvatar = null;
 
-  if (swap.init_address) {
-    const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.init_address);
-    senderAvatar = avatar;
-    senderEns = ensName;
+  try {
+    if (swap.init_address) {
+      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.init_address);
+      senderAvatar = avatar;
+      senderEns = ensName;
+    }
+  } catch (error) {
+    console.log("Unable to fetch sender ens");
   }
 
-  if (swap.accept_address) {
-    const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.accept_address);
-    receiverAvatar = avatar;
-    receiverEns = ensName;
+  try {
+    if (swap.accept_address) {
+      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.accept_address);
+      receiverAvatar = avatar;
+      receiverEns = ensName;
+    }
+  } catch (error) {
+    console.log("unable to fetch receiver ens");
   }
 
 
@@ -420,10 +428,14 @@ export const setValuesOnCreatingPrivateRoomHelper = async (
   let receiverEns = null;
   let receiverAvatar = null;
 
-  if (counterPartyWalletAddress) {
-    const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(counterPartyWalletAddress);
-    receiverAvatar = avatar;
-    receiverEns = ensName;
+  try {
+    if (counterPartyWalletAddress) {
+      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(counterPartyWalletAddress);
+      receiverAvatar = avatar;
+      receiverEns = ensName;
+    }
+  } catch (error) {
+    console.log("Unable to fetch ens");
   }
 
 
