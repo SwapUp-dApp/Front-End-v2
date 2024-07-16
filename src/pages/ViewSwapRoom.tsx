@@ -40,7 +40,7 @@ const ViewSwapRoom = () => {
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
 
   const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom.swap.swap_preferences : null);
-  const profile = useProfileStore(state => state.profile);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const handleResetData = async () => {
     state.resetViewSwapRoom();
@@ -327,6 +327,7 @@ const ViewSwapRoom = () => {
         await state.setValuesOnViewSwapRoom(tradeId, data.data.data as SUI_OpenSwap);
       }
     };
+
     setValues();
 
     if (isError && error) {
@@ -354,29 +355,7 @@ const ViewSwapRoom = () => {
         navigate(-1);
       }, 1000);
     }
-
-    if (state.swap && profile.wallet.address) {
-      if ((state.swap.init_address !== profile.wallet.address) && (state.swap.accept_address !== profile.wallet.address)) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Redirecting back!"
-              description={"Current login user do not have access to view this swap."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
-        );
-
-        navigate(-1);
-      }
-    }
-  }, [tradeId, swapMode, state.swap, profile.wallet.address]);
+  }, [tradeId, swapMode]);
 
   return (
     <div className="space-y-4" >
@@ -403,13 +382,11 @@ const ViewSwapRoom = () => {
             />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
-              {
-                isLoading &&
-                <LoadingDataset
-                  isLoading={isLoading}
-                  title="Loading wallet address"
-                />
-              }
+              <LoadingDataset
+                isLoading={isLoading || !state.sender.profile.wallet.address}
+                title="Loading wallet address"
+              />
+
               {
                 isError &&
                 <EmptyDataset
@@ -437,13 +414,11 @@ const ViewSwapRoom = () => {
           />
           :
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
-            {
-              isLoading &&
-              <LoadingDataset
-                isLoading={isLoading}
-                title="Loading counter-party address"
-              />
-            }
+            <LoadingDataset
+              isLoading={isLoading || !state.receiver.profile.wallet.address}
+              title="Loading counter-party address"
+            />
+
             {
               isError &&
               <EmptyDataset
@@ -468,7 +443,7 @@ const ViewSwapRoom = () => {
         <div className="absolute -top-14 flex justify-center w-full items-center gap-2" >
 
           {
-            profile.wallet.address === state.sender.profile.wallet.address ?
+            wallet.address === state.sender.profile.wallet.address ?
               <CustomOutlineButton
                 onClick={async () => { await handleCancelSwap(); }}
                 className="px-5 py-3"

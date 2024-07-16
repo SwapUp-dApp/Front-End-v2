@@ -114,7 +114,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
               <CustomAvatar
                 className=""
                 imageSrc={profile.avatar}
-                fallbackName={profile.title}
+                fallbackName={profile.details?.title || ''}
                 sizeClasses="w-16 h-16 lg:w-20 lg:h-20"
                 textSizeClasses="text-1.5xl lg:text-2.5xl"
               />

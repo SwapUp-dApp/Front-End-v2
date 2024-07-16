@@ -3,8 +3,6 @@ import Navbar from "@/components/custom/shared/Navbar";
 import { navItemsData } from "@/constants";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-import { toast } from "sonner";
 import { useProfileStore } from "@/store/profile";
 import { defaults } from "@/constants/defaults";
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
@@ -25,7 +23,7 @@ const MainLayout = () => {
 
   const [setProfileWallet, wallet] = useProfileStore(state => [state.setProfileWallet, state.profile.wallet]);
 
-  const walletConnectedInLocalStorage = localStorage.getItem("walletConnected");
+  const walletConnectionExistsInLocalStorage = localStorage.getItem("thirdweb:active-wallet-id");
 
   useEffect(() => {
     let connectedWallet: IWallet = {
@@ -34,7 +32,6 @@ const MainLayout = () => {
 
     if (activeAccount && activeChain) {
       getWalletProxy().setConnectedWalletAccount(activeAccount);
-
       connectedWallet.address = activeAccount.address;
       connectedWallet.isConnected = true;
       connectedWallet.network = {
@@ -47,7 +44,6 @@ const MainLayout = () => {
 
     const handleSetWalletInStore = async () => {
       await setProfileWallet(connectedWallet);
-      localStorage.setItem("walletConnected", "true");
     };
 
     handleSetWalletInStore();
@@ -59,16 +55,14 @@ const MainLayout = () => {
       setKey(generateRandomKey(6));
     }
 
-    if (pathname && wallet && !wallet.isConnected && !walletConnectedInLocalStorage && walletConnectedInLocalStorage !== "true") {
+    if (pathname && wallet && !wallet.isConnected && !walletConnectionExistsInLocalStorage) {
       const currentRoute = navItemsData.find(item => item.path === pathname);
       if (currentRoute?.protected) {
         showWalletConnectionToast("warning");
         navigate(defaults.fallback.route);
       }
     }
-
-
-  }, [wallet, pathname, walletConnectedInLocalStorage]);
+  }, [wallet, pathname, walletConnectionExistsInLocalStorage]);
 
   return (
     <div className="flex flex-col justify-between min-h-screen ">

@@ -269,10 +269,28 @@ export const Schema_HistoryMySwapsFiltersForm = z.object({
 /*====================================*/
 
 export const Schema_ProfileInfoForm = z.object({
+  title: z.string(),
   description: z.string(),
   twitterLink: z.string().optional(),
   warpcastLink: z.string().optional(),
 }).superRefine((data, ctx) => {
+  if (!data.title) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["title"],
+      message: "Title cannot be empty.",
+    });
+  }
+
+  if (data.title && (data.title.length < 5 || data.title.length > 20)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["title"],
+      message: "Title must be between 5 to 20 characters.",
+    });
+  }
+
+
   if (!data.description) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,

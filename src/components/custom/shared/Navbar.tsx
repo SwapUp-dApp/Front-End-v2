@@ -24,7 +24,6 @@ const Navbar = () => {
       />
 
 
-
       {/* Desktop navbar */}
       <div className="w-full hidden lg:flex items-center justify-between">
         <ol className="flex gap-4 items-center" >

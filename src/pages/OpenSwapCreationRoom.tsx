@@ -41,7 +41,7 @@ const OpenSwapCreationRoom = () => {
   const [swapCreation, setSwapCreation] = useState<ISwapCreation>({ isLoading: false, created: false });
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
-  const wallet = useProfileStore(state => state.profile.wallet);
+  const [wallet, profile] = useProfileStore(state => [state.profile.wallet, state.profile]);
 
   const { expiration_date, preferred_asset } = state.swap.swap_preferences;
   const navigate = useNavigate();
@@ -147,10 +147,10 @@ const OpenSwapCreationRoom = () => {
   }, [state.sender.nftsSelectedForSwap, isValidParametersForm]);
 
   useEffect(() => {
-    if (openTradeId && isValidTradeId(openTradeId)) {
-      state.setValuesOnCreateOpenSwapRoom(openTradeId, wallet);
+    if (openTradeId && isValidTradeId(openTradeId) && profile) {
+      state.setValuesOnCreateOpenSwapRoom(openTradeId, profile);
     }
-  }, [openTradeId]);
+  }, [openTradeId, profile]);
 
   if (openTradeId && !isValidTradeId(openTradeId)) {
     toast.custom(

@@ -16,10 +16,6 @@ export interface IOpenRoomFilterItem {
   rarityRank: SUI_RarityRankItem;
 }
 
-export interface IOpenMarketAddedAmount {
-  usdAmount: number;
-  coin: SUI_ChainItem;
-}
 
 export interface IOpenRoom {
   uniqueTradeId: string;
@@ -31,7 +27,7 @@ export interface IOpenRoom {
   sign: string;
   nftsLength: number;
   chainId: number;
-  setValuesOnCreateOpenSwapRoom: (tradeId: string, senderWalletInfo: IWallet) => void;
+  setValuesOnCreateOpenSwapRoom: (tradeId: string, senderProfile: IProfile) => void;
   setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap, senderWalletInfo: IWallet) => void;
   setValuesOnViewSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
   createOpenSwap: (initWalletAddress: string) => void;
@@ -49,7 +45,7 @@ export interface IOpenMarketLayoutSide {
   toggleGridView: (value: SUT_GridViewType) => void;
   profile: IProfile;
   collections: string[] | [];
-  addedAmount?: IOpenMarketAddedAmount;
+  addedAmount?: IAddedAmount;
   availableChains: SUI_ChainItem[];
   filters?: IOpenRoomFilterItem;
   nfts?: SUI_NFTItem[];
@@ -84,7 +80,7 @@ export interface IPrivateRoomFilterItem {
 }
 
 export interface IAddedAmount {
-  usdAmount: number;
+  amount: number;
   coin: SUI_ChainItem;
 }
 
@@ -124,7 +120,7 @@ export interface IPrivateRoom {
   sign: string;
   nftsLength: number;
   chainId: number;
-  setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string, senderWalletInfo: IWallet) => void;
+  setValuesOnCreatingPrivateRoom: (tradeId: string, counterPartyWalletAddress: string, senderProfile: IProfile) => void;
   createPrivateMarketSwap: (offer_type: SUT_SwapOfferType, initWalletAddress: string) => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   resetPrivateRoom: () => void;

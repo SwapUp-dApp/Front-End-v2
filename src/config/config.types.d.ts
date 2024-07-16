@@ -7,6 +7,7 @@ export interface SUI_ConfigEnvironment {
   NETWORK: string;
   CHAIN_ID: number;
   SWAPUP_CONTRACT: string;
+  THIRDWEB_CLIENT_ID: string;
 }
 export interface SUI_Config {
   local: SUI_ConfigEnvironment;
