@@ -8,14 +8,17 @@ import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog
 import { Button } from "@/components/ui/button";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { isValidTradeId } from "@/lib/utils";
-import { useOpenSwapByOpenTradId, useProposeOpenSwapOffer } from "@/service/queries/swap-market.query";
+import { useProposeOpenSwapOffer } from "@/service/queries/swap-market.query";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_OpenSwap } from "@/types/swap-market.types";
-import { SUI_SwapCreation } from "@/types/global.types";
+import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useProfileStore } from "@/store/profile";
+import { useQueries } from "@tanstack/react-query";
+import { getAvailableCurrenciesApi, getOpenSwapByOpenTradeIdApi } from "@/service/api";
+import { useGlobalStore } from "@/store/global-store";
 
 const OpenSwapProposeRoom = () => {
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
@@ -25,17 +28,83 @@ const OpenSwapProposeRoom = () => {
   const { openTradeId, tradeId } = useParams();
   const navigate = useNavigate();
 
-  const { mutateAsync: proposeOpenSwapOffer } = useProposeOpenSwapOffer();
-  const { isLoading, data, isSuccess, isError, error } = useOpenSwapByOpenTradId(openTradeId!);
-
-  const wallet = useProfileStore(state => state.profile.wallet);
+  const profile = useProfileStore(state => state.profile);
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
+  const [availableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies]);
+
+  const { mutateAsync: proposeOpenSwapOffer } = useProposeOpenSwapOffer();
+
+  const queries = useQueries({
+    queries: [
+      {
+        queryKey: [`getAvailableCurrenciesApi`],
+        queryFn: async () => {
+          try {
+            const response = await getAvailableCurrenciesApi();
+            setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
+            return response.data.data.coins;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      },
+      {
+        queryKey: [`getOpenSwapByOpenTradeIdApi`],
+        queryFn: async () => {
+          try {
+            if (tradeId && openTradeId) {
+              const response = await getOpenSwapByOpenTradeIdApi(openTradeId);
+              await state.setValuesOnProposeOpenSwapRoom(tradeId, response.data.data as SUI_OpenSwap, profile);
+              return response.data.data;
+            }
+            return null;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      }
+    ]
+  });
 
   const handlePurposeOpenSwap = async () => {
     try {
       setSwapCreation(prev => ({ ...prev, isLoading: true }));
 
-      await state.createProposeOpenSwap(wallet.address);
+      await state.createProposeOpenSwap(profile.wallet.address);
       const createdSwap = useSwapMarketStore.getState().openMarket.openRoom.proposeSwap;
 
       if (!createdSwap) {
@@ -87,7 +156,6 @@ const OpenSwapProposeRoom = () => {
     } catch (error: any) {
 
       console.log(error);
-
       toast.custom(
         (id) => (
           <ToastLookCard
@@ -124,37 +192,6 @@ const OpenSwapProposeRoom = () => {
   }, [state.sender.nftsSelectedForSwap]);
 
   useEffect(() => {
-    const setValues = async () => {
-      if (data?.data?.data && tradeId) {
-        await state.setValuesOnProposeOpenSwapRoom(tradeId, data.data.data as SUI_OpenSwap, wallet);
-      }
-    };
-
-    setValues();
-  }, [data?.data?.data, tradeId]);
-
-  useEffect(() => {
-    if (isError && error) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
-      );
-    }
-  }, [isError, error]);
-
-
-  useEffect(() => {
     if ((openTradeId && !isValidTradeId(openTradeId)) || (tradeId && !isValidTradeId(tradeId))) {
       navigate(-1);
     }
@@ -174,19 +211,19 @@ const OpenSwapProposeRoom = () => {
 
       <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
         {
-          isSuccess && wallet.address ?
-            <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={wallet.address} />
+          queries[1].isSuccess && (state.sender.profile.wallet.address) ?
+            <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={state.sender.profile.wallet.address} />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
               {
-                isLoading &&
+                queries[1].isLoading &&
                 <LoadingDataset
-                  isLoading={isLoading}
+                  isLoading={queries[1].isLoading}
                   title="Loading wallet address"
                 />
               }
               {
-                isError &&
+                queries[1].isError &&
                 <EmptyDataset
                   showBackgroundPicture={false}
                   className="lg:h-[200px]"
@@ -202,7 +239,7 @@ const OpenSwapProposeRoom = () => {
             </div>
         }
 
-        {isSuccess && (state.receiver.profile.wallet.address) ?
+        {queries[1].isSuccess && (state.receiver.profile.wallet.address) ?
           <RoomLayoutCard
             counterPartyWallet={state.receiver.profile.wallet.address}
             layoutType={"receiver"}
@@ -213,14 +250,14 @@ const OpenSwapProposeRoom = () => {
           :
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
             {
-              isLoading &&
+              queries[1].isLoading &&
               <LoadingDataset
-                isLoading={isLoading}
+                isLoading={queries[1].isLoading}
                 title="Loading counter-party address"
               />
             }
             {
-              isError &&
+              queries[1].isError &&
               <EmptyDataset
                 showBackgroundPicture={false}
                 className="lg:h-[200px]"
@@ -260,17 +297,50 @@ const OpenSwapProposeRoom = () => {
           </SwapDetailsDialog>
         </div >
 
-        <RoomFooterSide roomKey="openRoom" layoutType="sender" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} />
         {
-          dataSavedInStore.receiver ?
-            <RoomFooterSide showRemoveNftButton={false} roomKey="openRoom" layoutType="receiver" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} swapRoomViewType="propose" />
+          queries[0].isSuccess ?
+            <RoomFooterSide
+              roomKey="openRoom"
+              layoutType="sender"
+              setEnableApproveButtonCriteria={setEnableApproveButtonCriteria}
+              availableCurrencies={availableCurrencies}
+            />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
               <LoadingDataset
-                isLoading={!dataSavedInStore.receiver}
+                isLoading={queries[0].isLoading}
+                title="Loading sender NFTs"
+                description=""
+              />
+
+              {queries[0].isError &&
+                <p className="text-xs md:text-sm">Unable to get currencies.</p>
+              }
+            </div>
+        }
+
+
+        {
+          queries[0].isSuccess && dataSavedInStore.receiver ?
+            <RoomFooterSide
+              showRemoveNftButton={false}
+              roomKey="openRoom"
+              layoutType="receiver"
+              setEnableApproveButtonCriteria={setEnableApproveButtonCriteria}
+              swapRoomViewType="propose"
+              availableCurrencies={availableCurrencies}
+            />
+            :
+            <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
+              <LoadingDataset
+                isLoading={!dataSavedInStore.receiver && queries[0].isLoading}
                 title="Loading counter-party nfts"
                 description=""
               />
+
+              {queries[0].isError &&
+                <p className="text-xs md:text-sm">Unable to get currencies.</p>
+              }
             </div>
         }
       </footer >

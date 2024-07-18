@@ -7,6 +7,34 @@ import { isValidURL } from "@/lib/utils";
 /*=== Swap market page schema's ===*/
 /*====================================*/
 
+/*=== swap room - footer added amount schema starts ===*/
+export const Schema_AmountConversionForm = z.object({
+  amount: z.string().optional(),
+  chain: z.string().min(1, {
+    message: "Chain is required.",
+  }),
+}).superRefine((data, ctx) => {
+
+  if (data.amount) {
+    // if (!isNaN(Number(data.amount))) {
+    //   ctx.addIssue({
+    //     code: z.ZodIssueCode.custom,
+    //     path: ["amount"],
+    //     message: "Amount must be a number.",
+    //   });
+    // }
+
+    if (Number(data.amount) < 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["amount"],
+        message: "Amount must be greater than 0",
+      });
+    }
+  }
+});
+/*=== swap room - footer added amount schema starts ===*/
+
 /*=== create open swap - parameters schema starts ===*/
 export const Schema_OpenSwapParametersForm = z.object({
   expirationDate: z
@@ -270,7 +298,7 @@ export const Schema_HistoryMySwapsFiltersForm = z.object({
 
 export const Schema_ProfileInfoForm = z.object({
   title: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   twitterLink: z.string().optional(),
   warpcastLink: z.string().optional(),
 }).superRefine((data, ctx) => {
@@ -287,15 +315,6 @@ export const Schema_ProfileInfoForm = z.object({
       code: z.ZodIssueCode.custom,
       path: ["title"],
       message: "Title must be between 5 to 20 characters.",
-    });
-  }
-
-
-  if (!data.description) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ["description"],
-      message: "Description cannot be empty.",
     });
   }
 

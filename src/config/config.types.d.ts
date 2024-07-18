@@ -8,6 +8,8 @@ export interface SUI_ConfigEnvironment {
   CHAIN_ID: number;
   SWAPUP_CONTRACT: string;
   THIRDWEB_CLIENT_ID: string;
+  COIN_RANKING_API_KEY: string;
+  COIN_RANKING_BASE_URL: string;
 }
 export interface SUI_Config {
   local: SUI_ConfigEnvironment;

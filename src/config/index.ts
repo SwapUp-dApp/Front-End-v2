@@ -11,6 +11,8 @@ const config: SUI_Config = {
     CHAIN_ID: import.meta.env.VITE_LOCAL_CHAIN_ID,
     SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
+    COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
+    COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
   },
 
   dev: {
@@ -21,6 +23,8 @@ const config: SUI_Config = {
     CHAIN_ID: import.meta.env.VITE_DEV_CHAIN_ID,
     SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
+    COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
+    COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
   },
 
   qa: {
@@ -31,6 +35,8 @@ const config: SUI_Config = {
     CHAIN_ID: import.meta.env.VITE_QA_CHAIN_ID,
     SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
+    COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
+    COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
   },
 
   prod: {
@@ -41,6 +47,8 @@ const config: SUI_Config = {
     CHAIN_ID: import.meta.env.VITE_PROD_CHAIN_ID,
     SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
+    COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
+    COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
   },
 };
 

@@ -8,6 +8,13 @@ import { IProfile, IWallet } from "@/types/profile.types";
 import { checkIsDateInRange, compareRarityRankItems, getNormalizeAndCompareTwoStrings } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 
+interface IEnsResponseItem {
+  receiverEns: string | null;
+  receiverAvatar: string | null;
+  senderEns: string | null;
+  senderAvatar: string | null;
+}
+
 // Shared Room Helper start
 export const toggleGridViewHelper = (
   state: ISwapMarketStore,
@@ -232,30 +239,7 @@ export const setValuesOnViewSwapRoomHelper = async (
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;
 
-  let receiverEns = null;
-  let receiverAvatar = null;
-  let senderEns = null;
-  let senderAvatar = null;
-
-  try {
-    if (swap.init_address) {
-      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.init_address);
-      senderAvatar = avatar;
-      senderEns = ensName;
-    }
-  } catch (error) {
-    console.log("Unable to fetch sender ens");
-  }
-
-  try {
-    if (swap.accept_address) {
-      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.accept_address);
-      receiverAvatar = avatar;
-      receiverEns = ensName;
-    }
-  } catch (error) {
-    console.log("unable to fetch receiver ens");
-  }
+  const { receiverAvatar, receiverEns, senderAvatar, senderEns } = await getBothSideEnsAndAvatarByWalletAddress(swap.init_address, swap.accept_address);
 
 
   return {
@@ -408,6 +392,38 @@ export const createCounterSwapOfferHelper = async (
       },
     },
   };
+};
+
+const getBothSideEnsAndAvatarByWalletAddress = async (senderAddress: string, receiverAddress: string) => {
+
+  const ensResponse: IEnsResponseItem = {
+    receiverEns: null,
+    receiverAvatar: null,
+    senderEns: null,
+    senderAvatar: null,
+  };
+
+  if (senderAddress) {
+    try {
+      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(senderAddress);
+      ensResponse.senderAvatar = avatar;
+      ensResponse.senderEns = ensName;
+    } catch (error) {
+      console.log("Unable to fetch sender ens");
+    }
+  }
+
+  if (receiverAddress) {
+    try {
+      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(receiverAddress);
+      ensResponse.receiverAvatar = avatar;
+      ensResponse.receiverEns = ensName;
+    } catch (error) {
+      console.log("unable to fetch receiver ens");
+    }
+  }
+
+  return ensResponse;
 };
 
 // Shared Room Helper end
@@ -1019,10 +1035,23 @@ export const setValuesOnProposeOpenSwapRoomHelper = async (
   state: ISwapMarketStore,
   tradeId: string,
   swap: SUI_OpenSwap,
-  senderWalletInfo: IWallet
+  senderProfile: IProfile
 ): Promise<ISwapMarketStore> => {
   const market = state['openMarket'] as Record<string, any>;
   const room = market['openRoom'] as IOpenRoom;
+
+  let receiverEns = null;
+  let receiverAvatar = null;
+
+  if (swap.init_address) {
+    try {
+      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.init_address);
+      receiverAvatar = avatar;
+      receiverEns = ensName;
+    } catch (error) {
+      console.log("Unable to fetch ens");
+    }
+  }
 
   return {
     ...state,
@@ -1034,16 +1063,15 @@ export const setValuesOnProposeOpenSwapRoomHelper = async (
         swap,
         sender: {
           ...room.sender,
-          profile: {
-            ...room.sender.profile,
-            wallet: senderWalletInfo
-          }
+          profile: senderProfile
         },
         receiver: {
           ...room.receiver,
           addedAmount: undefined,
           profile: {
             ...room.receiver.profile,
+            avatar: receiverAvatar ? receiverAvatar : '',
+            ensAddress: receiverEns ? receiverEns : '',
             wallet: {
               ...room.receiver.profile.wallet,
               address: swap.init_address,

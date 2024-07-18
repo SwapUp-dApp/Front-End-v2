@@ -254,9 +254,9 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       resetOpenSwapProposeRoom: () => set(state => resetOpenSwapProposeRoomHelper(state)),
       resetViewSwapRoom: () => set(state => resetViewSwapRoomHelper(state, 'openMarket', 'openRoom')),
       setValuesOnCreateOpenSwapRoom: (tradeId: string, senderProfile: IProfile) => set((state) => setValuesOnCreateOpenSwapRoomHelper(state, tradeId, senderProfile)),
-      setValuesOnProposeOpenSwapRoom: async (tradeId: string, swap: SUI_OpenSwap, senderWalletInfo) => {
+      setValuesOnProposeOpenSwapRoom: async (tradeId: string, swap: SUI_OpenSwap, senderProfile: IProfile) => {
         const state = get();
-        const newState = await setValuesOnProposeOpenSwapRoomHelper(state, tradeId, swap, senderWalletInfo);
+        const newState = await setValuesOnProposeOpenSwapRoomHelper(state, tradeId, swap, senderProfile);
         set(newState);
       },
       setValuesOnViewSwapRoom: async (tradeId: string, swap: SUI_OpenSwap) => {
