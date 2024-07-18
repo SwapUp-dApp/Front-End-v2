@@ -36,14 +36,14 @@ export interface SUI_RarityRankItem {
   to: number;
 }
 
-export interface SUI_CurrencyItem {
+export interface SUI_SelectedCurrencyItem {
   uuid: string;
   name: string;
   iconUrl: string;
 }
 
 
-export interface SUI_ChainItem {
+export interface SUI_CurrencyChainItem {
   uuid: string;
   symbol: string;
   name: string;

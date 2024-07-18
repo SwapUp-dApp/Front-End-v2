@@ -6,15 +6,16 @@ import RoomHeader from "@/components/custom/swap-market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
 import { Button } from "@/components/ui/button";
-import { defaults } from "@/constants/defaults";
 import { SUE_SWAP_MODE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
-import { useCounterSwapOffer, useGetSwapDetails } from "@/service/queries/swap-market.query";
-import { useProfileStore } from "@/store/profile";
+import { getAvailableCurrenciesApi, getSwapDetailsApi } from "@/service/api";
+import { useCounterSwapOffer } from "@/service/queries/swap-market.query";
+import { useGlobalStore } from "@/store/global-store";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUI_SwapCreation } from "@/types/global.types";
+import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
 import { SUI_OpenSwap, SUI_SwapPreferences, SUP_CounterSwap } from "@/types/swap-market.types";
+import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -30,11 +31,92 @@ const CounterOfferSwapRoom = () => {
   const { tradeId } = useParams();
 
 
-  const { isLoading, data, isSuccess, isError, error } = useGetSwapDetails(tradeId!);
-
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
-  const wallet = useProfileStore(state => state.profile.wallet);
   const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom.swap.swap_preferences : null);
+  const [availableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies]);
+
+  const queries = useQueries({
+    queries: [
+      {
+        queryKey: [`getAvailableCurrenciesApi`],
+        queryFn: async () => {
+          try {
+            const response = await getAvailableCurrenciesApi();
+            setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
+            return response.data.data.coins;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      },
+      {
+        queryKey: [`useGetSwapDetails`],
+        queryFn: async () => {
+          try {
+            if (tradeId) {
+              const response = await getSwapDetailsApi(tradeId!);
+              const initSwapData: SUI_OpenSwap = response.data.data as SUI_OpenSwap;
+
+              const counterSwap: SUI_OpenSwap = {
+                ...initSwapData,
+                init_address: initSwapData.accept_address,
+                accept_address: initSwapData.init_address,
+                init_sign: '',
+                metadata: {
+                  init: {
+                    tokens: initSwapData.metadata.accept.tokens
+                  },
+                  accept: {
+                    tokens: initSwapData.metadata.init.tokens
+                  }
+                }
+              };
+
+              await state.setValuesOnViewSwapRoom(tradeId, counterSwap);
+              return response.data.data;
+            }
+            return null;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      }
+    ]
+  });
 
   const { mutateAsync: createCounterSwapOffer } = useCounterSwapOffer();
 
@@ -139,48 +221,6 @@ const CounterOfferSwapRoom = () => {
   };
 
   useEffect(() => {
-    const setValues = async () => {
-      if (data?.data?.data && tradeId) {
-        const response: SUI_OpenSwap = data?.data?.data as SUI_OpenSwap;
-        const counterSwap: SUI_OpenSwap = {
-          ...response,
-          init_address: response.accept_address,
-          accept_address: response.init_address,
-          init_sign: '',
-          metadata: {
-            init: {
-              tokens: response.metadata.accept.tokens
-            },
-            accept: {
-              tokens: response.metadata.init.tokens
-            }
-          }
-        };
-        await state.setValuesOnViewSwapRoom(tradeId, counterSwap);
-      }
-    };
-    setValues();
-
-    if (isError && error) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
-      );
-    }
-  }, [data?.data?.data, tradeId, isError, error]);
-
-  useEffect(() => {
     if ((tradeId && !isValidTradeId(tradeId)) || !(swapMode === 1 || swapMode === 0)) {
       setTimeout(() => {
         navigate(-1);
@@ -213,14 +253,16 @@ const CounterOfferSwapRoom = () => {
 
 
   useEffect(() => {
-    if ((state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length)
+    if (
+      (state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length) ||
+      (state.sender.addedAmount?.amount && state.receiver.addedAmount?.amount)
     ) {
       setEnableApproveButtonCriteria(true);
     } else {
       setEnableApproveButtonCriteria(false);
     }
 
-  }, [state.sender.nftsSelectedForSwap.length, state.receiver.nftsSelectedForSwap.length]);
+  }, [state.sender.nftsSelectedForSwap.length, state.receiver.nftsSelectedForSwap.length, state.sender.addedAmount, state.receiver.addedAmount]);
 
 
   return (
@@ -238,7 +280,7 @@ const CounterOfferSwapRoom = () => {
 
       <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
         {
-          isSuccess && state.sender.profile.wallet.address ?
+          queries[1].isSuccess && state.sender.profile.wallet.address ?
             <RoomLayoutCard
               layoutType={"sender"}
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
@@ -249,12 +291,12 @@ const CounterOfferSwapRoom = () => {
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
               <LoadingDataset
-                isLoading={isLoading || !state.sender.profile.wallet.address}
+                isLoading={queries[1].isLoading || !state.sender.profile.wallet.address}
                 title="Loading wallet address"
               />
 
               {
-                isError &&
+                queries[1].isError &&
                 <EmptyDataset
                   showBackgroundPicture={false}
                   className="lg:h-[200px]"
@@ -270,7 +312,7 @@ const CounterOfferSwapRoom = () => {
             </div>
         }
 
-        {isSuccess && (state.receiver.profile.wallet.address) ?
+        {queries[1].isSuccess && (state.receiver.profile.wallet.address) ?
           <RoomLayoutCard
             counterPartyWallet={state.receiver.profile.wallet.address}
             layoutType={"receiver"}
@@ -282,12 +324,12 @@ const CounterOfferSwapRoom = () => {
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
 
             <LoadingDataset
-              isLoading={isLoading || !state.receiver.profile.wallet.address}
+              isLoading={queries[1].isLoading || !state.receiver.profile.wallet.address}
               title="Loading counter-party address"
             />
 
             {
-              isError &&
+              queries[1].isError &&
               <EmptyDataset
                 showBackgroundPicture={false}
                 className="lg:h-[200px]"
@@ -331,6 +373,7 @@ const CounterOfferSwapRoom = () => {
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="sender"
               swapRoomViewType="counter"
+              availableCurrencies={availableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
@@ -349,6 +392,7 @@ const CounterOfferSwapRoom = () => {
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="receiver"
               swapRoomViewType="counter"
+              availableCurrencies={availableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >

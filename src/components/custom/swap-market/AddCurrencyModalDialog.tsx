@@ -8,16 +8,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { z } from "zod";
 import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
-import { amountConvertFormSchema } from "./RoomFooterSide";
-import { SUI_ChainItem } from "@/types/global.types";
+import { SUI_CurrencyChainItem } from "@/types/global.types";
+import { Schema_AmountConversionForm } from "@/schema";
 
 
 interface IProp {
   children: any;
-  availableChains: SUI_ChainItem[];
-  handleFormSubmit: (values: z.infer<typeof amountConvertFormSchema>) => void,
+  availableChains: SUI_CurrencyChainItem[];
+  handleFormSubmit: (values: z.infer<typeof Schema_AmountConversionForm>) => void,
   form: UseFormReturn<{
-    amount: string;
+    amount?: string;
     chain: string;
   }, any, undefined>;
 }

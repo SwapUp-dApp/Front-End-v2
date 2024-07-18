@@ -1,4 +1,4 @@
-import { SUI_ChainItem, SUI_NFTItem } from "@/types/global.types";
+import { SUI_CurrencyChainItem, SUI_NFTItem } from "@/types/global.types";
 
 export const tempNftsData: SUI_NFTItem[] = [
   {
@@ -3676,7 +3676,7 @@ export const tempNftsData: SUI_NFTItem[] = [
 ];
 
 
-export const chainsDataset: SUI_ChainItem[] = [
+export const chainsDataset: SUI_CurrencyChainItem[] = [
   {
     "uuid": "Qwsogvtv82FCd",
     "symbol": "BTC",

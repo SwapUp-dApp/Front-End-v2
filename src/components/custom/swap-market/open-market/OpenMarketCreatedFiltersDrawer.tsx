@@ -11,7 +11,7 @@ import { Schema_OpenMarketFiltersForm, } from "@/schema";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { SUI_CurrencyItem } from "@/types/global.types";
+import { SUI_SelectedCurrencyItem } from "@/types/global.types";
 import { SUT_PreferredAssetType } from "@/types/swap-market.types";
 import Combobox from "../../shared/Combobox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -28,7 +28,7 @@ interface IProp {
   children: any;
 }
 
-const currenciesDataset: SUI_CurrencyItem[] = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
+const currenciesDataset: SUI_SelectedCurrencyItem[] = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
 const preferredAssetsData: SUT_PreferredAssetType[] = ["any", "nft", "currency"];
 
 const OpenMarketCreatedFiltersDrawer = ({ children, }: IProp) => {

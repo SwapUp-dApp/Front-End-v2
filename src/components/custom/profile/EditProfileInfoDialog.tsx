@@ -37,7 +37,7 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
   const onSubmit = (data: z.infer<typeof Schema_ProfileInfoForm>) => {
     const details: IProfileDetails = {
       title: data.title,
-      description: data.description,
+      description: data.description ? data.description : '',
       twitter: data.twitterLink,
       warpcast: data.warpcastLink
     };
@@ -48,11 +48,8 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
   };
 
   const handleRemoveSocialLink = (linkKey: "warpcastLink" | "twitterLink") => {
-
     form.setValue(linkKey, '');
   };
-
-
 
   return (
     <>
@@ -113,7 +110,7 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
 
                           <Textarea
                             className="bg-su_button_disabled p-4"
-                            placeholder="Set yur profile description here"
+                            placeholder="Set your profile description here"
                             id={field.name}
                             onChange={field.onChange}
                             value={field.value}
