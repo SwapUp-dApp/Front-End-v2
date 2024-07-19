@@ -12,11 +12,10 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CurrencySelectCombobox from "../../shared/CurrencySelectCombobox";
-import { availableCollections } from "@/constants/data";
 import { Schema_OpenSwapParametersForm } from "@/schema";
 import { availableRarityRanking } from "@/constants";
 import { SUI_SwapCurrencyItem, SUI_SwapPreferences, SUT_PreferredAssetType } from "@/types/swap-market.types";
-import { SUI_CurrencyChainItem, SUI_SelectedCurrencyItem } from "@/types/global.types";
+import { SUI_CollectionItem, SUI_CurrencyChainItem, SUI_SelectedCollectionItem, SUI_SelectedCurrencyItem } from "@/types/global.types";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useEffect } from "react";
 import Combobox from "../../shared/Combobox";
@@ -27,11 +26,13 @@ const preferredAssetsData: SUT_PreferredAssetType[] = ["any", "nft", "currency"]
 interface IProp {
   setIsValidParametersForm: React.Dispatch<React.SetStateAction<boolean>>;
   availableCurrencies: SUI_CurrencyChainItem[];
+  availableCollections: SUI_CollectionItem[];
 }
 
-const SwapParametersCard = ({ setIsValidParametersForm, availableCurrencies }: IProp) => {
+const SwapParametersCard = ({ setIsValidParametersForm, availableCurrencies, availableCollections }: IProp) => {
 
   const currenciesDataset: SUI_SelectedCurrencyItem[] = availableCurrencies.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
+  const collectionsDataset: SUI_SelectedCollectionItem[] = availableCollections.map(collection => ({ label: collection.name, value: collection.collection }));
   const setSwapPreferences = useSwapMarketStore(state => state.openMarket.openRoom.setSwapPreferences);
 
   const form = useForm<z.infer<typeof Schema_OpenSwapParametersForm>>({
@@ -42,7 +43,7 @@ const SwapParametersCard = ({ setIsValidParametersForm, availableCurrencies }: I
       preferredAsset: 'any',
       expirationDate: undefined,
       amountWantToReceive: '',
-      currencies: []
+      currencies: [],
     }
   });
 
@@ -207,7 +208,7 @@ const SwapParametersCard = ({ setIsValidParametersForm, availableCurrencies }: I
                   <FormItem>
                     <FormLabel className="text-su_secondary text-sm font-normal">Preferred collection:</FormLabel>
                     <Combobox
-                      items={availableCollections}
+                      items={collectionsDataset}
                       onChange={field.onChange}
                       value={field.value}
                       title="collection"

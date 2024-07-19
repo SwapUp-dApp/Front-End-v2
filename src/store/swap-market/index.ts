@@ -41,7 +41,6 @@ import {
   setOpenCreatedSwapsByFiltersHelper,
 } from './swap-market-helpers';
 
-import { chainsDataset } from '@/constants/data';
 import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUT_SwapOfferType } from '@/types/swap-market.types';
 import { SUE_SWAP_MODE } from '@/constants/enums';
 import { getInitialProfile } from '../profile/profile-helpers';
@@ -51,7 +50,6 @@ import { IProfile, IWallet } from '@/types/profile.types';
 export const openMarketRoomInitialState: IOpenRoom = {
   chainId: Environment.CHAIN_ID,
   uniqueTradeId: '',
-  nftsLength: 0,
   sign: '',
   swapEncodedMsg: '',
   sender: {
@@ -60,7 +58,6 @@ export const openMarketRoomInitialState: IOpenRoom = {
     profile: getInitialProfile("sender"),
     collections: [],
     nfts: [],
-    availableChains: chainsDataset,
     filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
@@ -77,7 +74,6 @@ export const openMarketRoomInitialState: IOpenRoom = {
     profile: getInitialProfile("receiver"),
     collections: [],
     nfts: [],
-    availableChains: chainsDataset,
     filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
@@ -130,7 +126,6 @@ export const openMarketRoomInitialState: IOpenRoom = {
 export const privateMarketRoomInitialState: IPrivateRoom = {
   chainId: Environment.CHAIN_ID,
   uniqueTradeId: '',
-  nftsLength: 0,
   sign: '',
   swapEncodedMsg: '',
   sender: {
@@ -140,7 +135,6 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
     profile: getInitialProfile("sender"),
     collections: [],
     nfts: [],
-    availableChains: chainsDataset,
     filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
@@ -157,7 +151,6 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
     profile: getInitialProfile("receiver"),
     collections: [],
     nfts: [],
-    availableChains: chainsDataset,
     filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },

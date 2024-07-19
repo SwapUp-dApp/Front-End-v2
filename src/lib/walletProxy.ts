@@ -2,7 +2,7 @@
 
 import { Environment } from "@/config";
 import { abi } from "@/constants/abi";
-import { SUI_Swap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_Swap } from "@/types/swap-market.types";
 import { ethers, JsonRpcProvider } from 'ethers';
 import { ethers6Adapter } from "thirdweb/adapters/ethers6";
 import { Account } from "thirdweb/wallets";
@@ -14,6 +14,8 @@ interface IAsset {
   assetAddress: string,
   value: number;
 }
+
+type SUT_ContractType = "openSwaps" | "swapup";
 
 let walletInstance: ReturnType<typeof walletProxy> | null = null;
 
@@ -62,11 +64,11 @@ export const walletProxy = () => {
     return { ensName, avatar };
   };
 
-  const getSwapupContractInstance = async () => {
+  const getSwapupContractInstance = async (contractType: SUT_ContractType = "swapup") => {
     const { signer } = await getEthersProviderAndSigner();
     const contract = new ethers.Contract(
-      Environment.SWAPUP_CONTRACT,
-      abi.swapUp,
+      contractType === "swapup" ? Environment.SWAPUP_CONTRACT : Environment.SWAPUP_OPEN_CONTRACT,
+      contractType === "swapup" ? abi.swapUp : abi.openSwap,
       signer
     );
     return contract;
@@ -79,7 +81,7 @@ export const walletProxy = () => {
     return { sign: "sign", swapEncodedBytes: "" };
   };
 
-  const getUserApproval = async (swap: SUI_Swap, init = true) => {
+  const getUserApproval = async (swap: SUI_Swap, init = true, contractType: SUT_ContractType = "swapup") => {
     //if there are multiple NFT's in different smart contracts then we will have to call approve for all
     //get unique contracts from swap.metadata.init.tokens
     let tokens =
@@ -90,9 +92,9 @@ export const walletProxy = () => {
     let transactions = [];
 
     //initiate all the approves at once and then wait
-    for (const elem of uniqueContracts) {
+    for (const contract of uniqueContracts) {
       try {
-        let tx = await setApprovalForAll(elem);
+        let tx = await setApprovalForAll(contract, contractType);
         if (tx) transactions.push(tx);
       } catch (err) {
         //errors like user rejecting the transaction in metamask
@@ -102,14 +104,14 @@ export const walletProxy = () => {
     }
 
     for (const tx of transactions) {
-      if ((await getTransactionReceipt(tx)).status == 0) return false;
+      if ((await getTransactionReceipt(tx)).status === 0) return false;
     }
 
     return true;
   };
 
   //This function checks if our swap contract is given approval to move NFT minted from a contract 
-  const setApprovalForAll = async (contractAddress: string) => {
+  const setApprovalForAll = async (contractAddress: string, contractType: SUT_ContractType) => {
     const { signer } = await getEthersProviderAndSigner();
     const contract = new ethers.Contract(
       contractAddress,
@@ -117,15 +119,17 @@ export const walletProxy = () => {
       signer
     );
 
+    const currentSmartContract = contractType === "swapup" ? Environment.SWAPUP_CONTRACT : Environment.SWAPUP_OPEN_CONTRACT;
+
     const approved4all = await contract.isApprovedForAll(
       signer,
-      Environment.SWAPUP_CONTRACT
+      currentSmartContract
     );
 
     console.log('ApprovedForAll : ' + approved4all);
     if (approved4all) return null;
 
-    const tx = await contract.setApprovalForAll(Environment.SWAPUP_CONTRACT, true);
+    const tx = await contract.setApprovalForAll(currentSmartContract, true);
     console.log(tx.hash);
 
     return tx;
@@ -146,7 +150,7 @@ export const walletProxy = () => {
       let feeInETH = await contract.getFeeInETH();
       console.log(feeInETH);
 
-      let swapType = swap.swap_mode == 1 ? 'PRIVATE' : 'OPEN';
+      let swapType = swap.swap_mode === 1 ? 'PRIVATE' : 'OPEN';
       if (swapType === 'OPEN') return null; //prevent open market swaps for now.
 
       let gasLimit = 900000;
@@ -158,6 +162,81 @@ export const walletProxy = () => {
             swap.accept_address,
             initAssets,
             acceptAssets,
+            swapType,
+            {
+              gasLimit: gasLimit,
+              // value: feeInETH, //add a bit more to 
+            }
+          );
+          console.log(tx);
+          break;
+        case 'COUNTER':
+          tx = await contract["counterSwap(string, tuple(address, uint256)[], tuple(address, uint256)[])"](
+            swap.trade_id,
+            initAssets,
+            acceptAssets,
+            {
+              gasLimit: gasLimit,
+              // value: feeInETH, //add a bit more to 
+            }
+          );
+          console.log(tx);
+          break;
+        case 'ACCEPT':
+        case 'REJECT':
+          tx = await contract["completeSwap(string, tuple(address, uint256)[], tuple(address, uint256)[], string)"](
+            swap.trade_id,
+            initAssets,
+            acceptAssets,
+            swapAction === 'ACCEPT' ? 'COMPLETED' : 'REJECTED',
+            {
+              gasLimit: gasLimit,
+              // value: feeInETH, //add a bit more to 
+            }
+          );
+          console.log(tx);
+          break;
+      }
+
+      let res = await getTransactionReceipt(tx);
+      console.log("rec", res);
+      return res;
+    } catch (err) {
+      console.log("txErr", err);
+      return null; //transaction rejected or other issues
+    }
+
+  };
+
+  const createAndUpdateOpenSwap = async (swap: SUI_OpenSwap, swapAction: string) => {
+    let contract = await getSwapupContractInstance("openSwaps");
+
+    try {
+      let initAssets: IAsset[] = [];
+      let acceptAssets: IAsset[] = [];
+
+      swap.metadata.init.tokens.forEach(ele => {
+        initAssets.push({ assetAddress: ele.address, value: Number(ele.id) });
+      });
+
+      if (swap.metadata.accept.tokens.length > 0) {
+        swap.metadata.accept.tokens.forEach(ele => {
+          acceptAssets.push({ assetAddress: ele.address, value: Number(ele.id) });
+        });
+      }
+
+      let feeInETH = await contract.getFeeInETH();
+      console.log(feeInETH);
+
+      let swapType = swap.swap_mode === 1 ? 'PRIVATE' : 'OPEN';
+
+      let gasLimit = 900000;
+      let tx = null;
+      switch (swapAction) {
+        case 'CREATE':
+          tx = await contract["createOpenMarketSwap(string, tuple(address, uint256)[], tuple(address, uint256)[], string)"](
+            swap.open_trade_id,
+            initAssets,
             swapType,
             {
               gasLimit: gasLimit,
