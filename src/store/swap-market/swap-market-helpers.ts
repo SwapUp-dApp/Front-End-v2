@@ -323,7 +323,6 @@ export const resetViewSwapRoomHelper = (
       ...market,
       [roomKey]: {
         ...room,
-        nftsLength: 0,
         sign: '',
         uniqueTradeId: '',
         swap: roomKey === 'openRoom' ? { ...openRoomInitialSwap } : undefined,
@@ -515,7 +514,6 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, off
       privateRoom: {
         ...room,
         swap,
-        nftsLength: swap.metadata.init.tokens.length + swap.metadata.accept.tokens.length
       },
     },
   };
@@ -562,7 +560,6 @@ export const resetPrivateRoomDataHelper = (
       ...state.privateMarket,
       privateRoom: {
         ...state.privateMarket.privateRoom,
-        nftsLength: 0,
         sign: '',
         uniqueTradeId: '',
         swap: undefined,
@@ -1132,7 +1129,6 @@ export const createOpenSwapHelper = async (
       openRoom: {
         ...room,
         swap,
-        nftsLength: swap.metadata.init.tokens.length
       },
     },
   };
@@ -1171,7 +1167,6 @@ export const createProposeOpenSwapHelper = async (
       openRoom: {
         ...room,
         proposeSwap: swap,
-        nftsLength: swap.metadata.init.tokens.length
       },
     },
   };
@@ -1187,7 +1182,6 @@ export const resetOpenSwapCreationRoomHelper = (
       ...state.openMarket,
       openRoom: {
         ...state.openMarket.openRoom,
-        nftsLength: 0,
         sign: '',
         uniqueTradeId: '',
         swap: {
@@ -1242,7 +1236,6 @@ export const resetOpenSwapProposeRoomHelper = (
       ...state.openMarket,
       openRoom: {
         ...state.openMarket.openRoom,
-        nftsLength: 0,
         sign: '',
         uniqueTradeId: '',
         proposeSwap: undefined,

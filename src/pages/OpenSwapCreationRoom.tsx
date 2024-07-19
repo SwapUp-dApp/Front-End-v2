@@ -22,17 +22,16 @@ import { getLastCharacters, isValidTradeId } from "@/lib/utils";
 import SwapDialogSideCard from "@/components/custom/swap-market/SwapDialogSideCard";
 import SwapParameterTile from "@/components/custom/tiles/SwapParameterTile";
 import moment from "moment";
-import { availableCollections } from "@/constants/data";
 import ChainTile from "@/components/custom/tiles/ChainTile";
 import { SUP_CreateOpenSwap } from "@/types/swap-market.types";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { useCreateOpenSwapOffer } from "@/service/queries/swap-market.query";
 import { useProfileStore } from "@/store/profile";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
-import { useQuery } from "@tanstack/react-query";
-import { getAvailableCurrenciesApi } from "@/service/api";
+import { Query, useQueries, useQuery } from "@tanstack/react-query";
+import { getAvailableCollectionsApi, getAvailableCurrenciesApi } from "@/service/api";
 import { useGlobalStore } from "@/store/global-store";
-import { SUI_CurrencyChainItem } from "@/types/global.types";
+import { SUI_CollectionItem, SUI_CurrencyChainItem } from "@/types/global.types";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 
 interface ISwapCreation {
@@ -47,7 +46,7 @@ const OpenSwapCreationRoom = () => {
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
   const [wallet, profile] = useProfileStore(state => [state.profile.wallet, state.profile]);
-  const [availableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies]);
+  const [availableCurrencies, setAvailableCurrencies, availableCollections, setAvailableCollections] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies, state.availableCollections, state.setAvailableCollections]);
 
   const { expiration_date, preferred_asset } = state.swap.swap_preferences;
   const navigate = useNavigate();
@@ -55,6 +54,73 @@ const OpenSwapCreationRoom = () => {
 
   const { mutateAsync: createOpenSwapOffer } = useCreateOpenSwapOffer();
 
+  const queries = useQueries({
+    queries: [
+      {
+        queryKey: [`getAvailableCurrenciesApi`],
+        queryFn: async () => {
+          try {
+            const response = await getAvailableCurrenciesApi();
+            setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
+            return response.data.data.coins;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      },
+      {
+        queryKey: [`getAvailableCollectionsApi`],
+        queryFn: async () => {
+          try {
+            const response = await getAvailableCollectionsApi();
+            // console.log("Collections dataset: ", response.data.collections);
+            setAvailableCollections(response.data.collections as SUI_CollectionItem[]);
+            return response.data.collections;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      }
+    ]
+  });
+
+  const isLoading = queries.some(query => query.isLoading);
+  const isError = queries.some(query => query.isError);
+  const isSuccess = queries.every(query => query.isSuccess);
 
   const handleResetData = () => {
     state.resetOpenSwapCreationRoom();
@@ -74,7 +140,6 @@ const OpenSwapCreationRoom = () => {
       }
     );
   };
-
   const handleCreateOpenMarketSwap = async () => {
     try {
       setSwapCreation(prev => ({ ...prev, isLoading: true }));
@@ -144,23 +209,6 @@ const OpenSwapCreationRoom = () => {
     }
   };
 
-  useEffect(() => {
-    if (
-      ((state.sender.nftsSelectedForSwap.length) && isValidParametersForm) ||
-      ((state.sender.addedAmount?.amount) && isValidParametersForm)
-    ) {
-      setEnableApproveButtonCriteria(true);
-    } else {
-      setEnableApproveButtonCriteria(false);
-    }
-  }, [state.sender.nftsSelectedForSwap, isValidParametersForm, state.sender.addedAmount]);
-
-  useEffect(() => {
-    if (openTradeId && isValidTradeId(openTradeId) && profile) {
-      state.setValuesOnCreateOpenSwapRoom(openTradeId, profile);
-    }
-  }, [openTradeId, profile]);
-
   if (openTradeId && !isValidTradeId(openTradeId)) {
     toast.custom(
       (id) => (
@@ -183,35 +231,22 @@ const OpenSwapCreationRoom = () => {
     }, 300);
   }
 
-  const { isLoading, isSuccess, isError } = useQuery({
-    queryKey: [`getAvailableCurrenciesApi`],
-    queryFn: async () => {
-      try {
-        const response = await getAvailableCurrenciesApi();
-        setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
-        return response.data.data.coins;
-      } catch (error: any) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
-        );
+  useEffect(() => {
+    if (
+      ((state.sender.nftsSelectedForSwap.length) && isValidParametersForm) ||
+      ((state.sender.addedAmount?.amount) && isValidParametersForm)
+    ) {
+      setEnableApproveButtonCriteria(true);
+    } else {
+      setEnableApproveButtonCriteria(false);
+    }
+  }, [state.sender.nftsSelectedForSwap, isValidParametersForm, state.sender.addedAmount]);
 
-        throw error;
-      }
-    },
-    retry: false
-  });
+  useEffect(() => {
+    if (openTradeId && isValidTradeId(openTradeId) && profile) {
+      state.setValuesOnCreateOpenSwapRoom(openTradeId, profile);
+    }
+  }, [openTradeId, profile]);
 
   return (
     <div className="flex flex-col gap-4" >
@@ -238,7 +273,11 @@ const OpenSwapCreationRoom = () => {
 
         {
           isSuccess && availableCurrencies ?
-            <SwapParametersCard setIsValidParametersForm={setIsValidParametersForm} availableCurrencies={availableCurrencies} />
+            <SwapParametersCard
+              setIsValidParametersForm={setIsValidParametersForm}
+              availableCurrencies={availableCurrencies}
+              availableCollections={availableCollections}
+            />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
               <LoadingDataset
@@ -341,7 +380,7 @@ const OpenSwapCreationRoom = () => {
                       {preferred_asset.type === 'nft' &&
                         <SwapParameterTile
                           title="Preferred collection:"
-                          value={availableCollections.find(collection => collection.value === preferred_asset.parameters.collection)?.label || ''}
+                          value={availableCollections.find(collection => collection.collection === preferred_asset.parameters.collection)?.name || ''}
                         />
                       }
 
