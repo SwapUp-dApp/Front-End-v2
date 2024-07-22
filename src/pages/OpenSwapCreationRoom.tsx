@@ -33,6 +33,7 @@ import { getAvailableCollectionsApi, getAvailableCurrenciesApi } from "@/service
 import { useGlobalStore } from "@/store/global-store";
 import { SUI_CollectionItem, SUI_CurrencyChainItem } from "@/types/global.types";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
+import { getWalletProxy } from "@/lib/walletProxy";
 
 interface ISwapCreation {
   isLoading: boolean;
@@ -140,6 +141,7 @@ const OpenSwapCreationRoom = () => {
       }
     );
   };
+
   const handleCreateOpenMarketSwap = async () => {
     try {
       setSwapCreation(prev => ({ ...prev, isLoading: true }));
@@ -147,6 +149,16 @@ const OpenSwapCreationRoom = () => {
 
       if (!createdSwap) {
         throw new Error("Failed to create swap.");
+      }
+
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true, 'openSwaps');
+      if (!approval) {
+        throw new Error("User approval not granted.");
+      }
+
+      const blockchainRes = await getWalletProxy().createAndUpdateOpenSwap(createdSwap!, "CREATE");
+      if (!blockchainRes) {
+        throw new Error("Blockchain error creating swap.");
       }
 
       const swapPayload: SUP_CreateOpenSwap = {

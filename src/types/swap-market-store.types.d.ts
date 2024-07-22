@@ -1,5 +1,5 @@
 import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUT_SwapOfferType } from "@/types/swap-market.types";
-import { SUI_CurrencyChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
+import { SUI_CurrencyChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem, SUI_SelectedCollectionItem } from "@/types/global.types";
 import { IProfile, IWallet } from "./profile.types";
 import { SUT_RequestStatusType } from "./my-swaps-store.types";
 
@@ -128,10 +128,12 @@ export interface IPrivateRoom {
 export interface ISwapMarketStore {
   openMarket: {
     availableOpenSwaps?: SUI_OpenSwap[];
+    availableOpenSwapCollections: SUI_SelectedCollectionItem[];
     availableOpenSwapsFiltersApplied: boolean;
     availableOpenSwapsSearchApplied: boolean;
     filteredAvailableOpenSwaps?: SUI_OpenSwap[];
     createdSwaps?: SUI_OpenSwap[];
+    createdSwapCollections: SUI_SelectedCollectionItem[];
     createdSwapsFiltersApplied: boolean;
     createdSwapsSearchApplied: boolean;
     createdSwapsFilters: IOpenCreatedSwapFilters,

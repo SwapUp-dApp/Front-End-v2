@@ -172,9 +172,11 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
 
 const initialState: ISwapMarketStore = {
   openMarket: {
+    availableOpenSwapCollections: [],
     availableOpenSwapsSearchApplied: false,
     availableOpenSwapsFiltersApplied: false,
     createdSwapsFiltersApplied: false,
+    createdSwapCollections: [],
     createdSwapsSearchApplied: false,
     openMarketSwapsFilters: {
       offersFromCurrentChain: false,

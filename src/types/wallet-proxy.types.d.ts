@@ -1,0 +1,1 @@
+export type SUT_OpenSwapMethodType = "CREATE" | "PROPOSE" | "COUNTER" | "ACCEPT" | "REJECT";

@@ -9,6 +9,7 @@ import { Account } from "thirdweb/wallets";
 import { ErrorDecoder } from 'ethers-decode-error';
 import type { DecodedError } from "ethers-decode-error";
 import { thirdWebClient, currentChain } from "./thirdWebClient.ts";
+import { SUT_OpenSwapMethodType } from "@/types/wallet-proxy.types.js";
 
 interface IAsset {
   assetAddress: string,
@@ -151,7 +152,7 @@ export const walletProxy = () => {
       console.log(feeInETH);
 
       let swapType = swap.swap_mode === 1 ? 'PRIVATE' : 'OPEN';
-      if (swapType === 'OPEN') return null; //prevent open market swaps for now.
+      if (swapType === 'OPEN' && swapAction !== 'COUNTER') return null; //prevent open market swaps for now.
 
       let gasLimit = 900000;
       let tx = null;
@@ -208,7 +209,7 @@ export const walletProxy = () => {
 
   };
 
-  const createAndUpdateOpenSwap = async (swap: SUI_OpenSwap, swapAction: string) => {
+  const createAndUpdateOpenSwap = async (swap: SUI_OpenSwap, swapAction: SUT_OpenSwapMethodType) => {
     let contract = await getSwapupContractInstance("openSwaps");
 
     try {
@@ -228,19 +229,28 @@ export const walletProxy = () => {
       let feeInETH = await contract.getFeeInETH();
       console.log(feeInETH);
 
-      let swapType = swap.swap_mode === 1 ? 'PRIVATE' : 'OPEN';
-
       let gasLimit = 900000;
       let tx = null;
       switch (swapAction) {
         case 'CREATE':
-          tx = await contract["createOpenMarketSwap(string, tuple(address, uint256)[], tuple(address, uint256)[], string)"](
+          tx = await contract["createOpenMarketSwap(string, tuple(address, uint256)[])"](
             swap.open_trade_id,
             initAssets,
-            swapType,
             {
               gasLimit: gasLimit,
-              // value: feeInETH, //add a bit more to 
+              value: feeInETH, //add a bit more to 
+            }
+          );
+          console.log(tx);
+          break;
+        case 'PROPOSE':
+          tx = await contract["proposeForOpenMarketSwap(string, string, tuple(address, uint256)[])"](
+            swap.open_trade_id,
+            swap.trade_id,
+            initAssets,
+            {
+              gasLimit: gasLimit,
+              value: feeInETH, //add a bit more to 
             }
           );
           console.log(tx);
@@ -252,18 +262,28 @@ export const walletProxy = () => {
             acceptAssets,
             {
               gasLimit: gasLimit,
-              // value: feeInETH, //add a bit more to 
+              value: feeInETH, //add a bit more to 
             }
           );
           console.log(tx);
           break;
         case 'ACCEPT':
+          tx = await contract["acceptOpenMarketProposal(string, string)"](
+            swap.open_trade_id,
+            swap.trade_id,
+            {
+              gasLimit: gasLimit,
+              value: feeInETH, //add a bit more to 
+            }
+          );
+          console.log(tx);
+          break;
         case 'REJECT':
           tx = await contract["completeSwap(string, tuple(address, uint256)[], tuple(address, uint256)[], string)"](
             swap.trade_id,
             initAssets,
             acceptAssets,
-            swapAction === 'ACCEPT' ? 'COMPLETED' : 'REJECTED',
+            'REJECTED',
             {
               gasLimit: gasLimit,
               // value: feeInETH, //add a bit more to 
@@ -341,6 +361,7 @@ export const walletProxy = () => {
     getUserApproval,
     getUserSignature,
     createAndUpdateSwap,
+    createAndUpdateOpenSwap,
     getFeeInETH,
     getSwap
   };

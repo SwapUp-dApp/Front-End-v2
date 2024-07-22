@@ -28,6 +28,7 @@ import PendingSwapsFilterDrawer from './PendingSwapsFilterDrawer';
 import { useMySwapStore } from '@/store/my-swaps';
 import { useQuery } from '@tanstack/react-query';
 import { getPendingSwapListApi } from '@/service/api';
+import { defaults } from '@/constants/defaults';
 
 
 const PendingSwapsTabContent = () => {
@@ -47,7 +48,7 @@ const PendingSwapsTabContent = () => {
   const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
   const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
 
-  const handleSwapAccept = async (swap: SUI_Swap) => {
+  const handleSwapAccept = async (swap: SUI_Swap | SUI_OpenSwap) => {
     try {
 
       setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
@@ -57,34 +58,31 @@ const PendingSwapsTabContent = () => {
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
       }
-
-      // setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));
       //temp fix
       swap.accept_sign = sign;
 
-      const approval = await getWalletProxy().getUserApproval(swap, true);
-
-      if (!approval) {
-        throw new Error("User approval not granted.");
-      }
-
-      const triggerTranfer = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
-      console.log(swapAcceptance.isLoading);
-
-      if (!triggerTranfer) {
-        throw new Error("Swap Failed");
-      }
-
-      const payload: SUP_CompleteSwap = {
-        ...swap,
-        status: triggerTranfer.status,
-        tx: triggerTranfer.hash,
-        notes: triggerTranfer.notes,
-        timestamp: triggerTranfer.timeStamp,
-      };
-
       //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
+        const approval = await getWalletProxy().getUserApproval(swap, true, 'openSwaps');
+
+        if (!approval) {
+          throw new Error("User approval not granted.");
+        }
+
+        const triggerTransfer = await getWalletProxy().createAndUpdateOpenSwap(swap as SUI_OpenSwap, "ACCEPT");
+
+        if (!triggerTransfer) {
+          throw new Error("Swap Failed");
+        }
+
+        const payload: SUP_CompleteSwap = {
+          ...swap,
+          status: triggerTransfer.status,
+          tx: triggerTransfer.hash,
+          notes: triggerTransfer.notes,
+          timestamp: triggerTransfer.timeStamp,
+        };
+
         const offerResult = await completeOpenSwapOffer(payload);
 
         if (offerResult) {
@@ -104,14 +102,33 @@ const PendingSwapsTabContent = () => {
             }
           );
           setSwapAcceptance(prev => ({ ...prev, created: true }));
-
-
+          navigate("/swap-up/my-swaps/history");
         }
 
       }
 
-      //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
+
+        const approval = await getWalletProxy().getUserApproval(swap, true);
+
+        if (!approval) {
+          throw new Error("User approval not granted.");
+        }
+
+        const triggerTransfer = await getWalletProxy().createAndUpdateSwap(swap as SUI_Swap, "ACCEPT");
+
+        if (!triggerTransfer) {
+          throw new Error("Swap Failed");
+        }
+
+        const payload: SUP_CompleteSwap = {
+          ...swap,
+          status: triggerTransfer.status,
+          tx: triggerTransfer.hash,
+          notes: triggerTransfer.notes,
+          timestamp: triggerTransfer.timeStamp,
+        };
+
         const offerResult = await completePrivateSwapOffer(payload);
 
         if (offerResult) {
@@ -131,13 +148,9 @@ const PendingSwapsTabContent = () => {
             }
           );
           setSwapAcceptance(prev => ({ ...prev, created: true }));
-
-
+          navigate("/swap-up/my-swaps/history");
         }
-
       }
-
-
     } catch (error: any) {
       toast.custom(
         (id) => (
@@ -454,6 +467,7 @@ const PendingSwapsTabContent = () => {
                           className='w-3 h-3'
                           src={currentChain.iconUrl}
                           alt=""
+                          onClick={async () => { await handleSwapAccept(swap); }}
                         />
 
                         {currentChain.name}

@@ -120,7 +120,7 @@ const CounterOfferSwapRoom = () => {
 
   const { mutateAsync: createCounterSwapOffer } = useCounterSwapOffer();
 
-  const handleCreatePrivatePartySwap = async () => {
+  const handleCounterSwapOffer = async () => {
     try {
       setSwapCreation(prev => ({ ...prev, isLoading: true }));
 
@@ -139,13 +139,24 @@ const CounterOfferSwapRoom = () => {
 
       await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
 
-      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
+      let approval;
+      let blockchainRes;
+
+      if (swapMode === SUE_SWAP_MODE.OPEN) {
+        approval = await getWalletProxy().getUserApproval(createdSwap, true, "openSwaps");
+        blockchainRes = await getWalletProxy().createAndUpdateOpenSwap(createdSwap, "COUNTER");
+      } else {
+        approval = await getWalletProxy().getUserApproval(createdSwap, true);
+        blockchainRes = await getWalletProxy().createAndUpdateSwap(createdSwap, "COUNTER");
+      }
+
       if (!approval) {
         throw new Error("User approval not granted.");
       }
 
-      //Update the swap offer in BC as a counter offer.
-      await getWalletProxy().createAndUpdateSwap(createdSwap, "COUNTER");
+      if (!blockchainRes) {
+        throw new Error("Blockchain error while creating counter swap.");
+      }
 
       const payload: SUP_CounterSwap = {
         ...createdSwap,
@@ -355,7 +366,7 @@ const CounterOfferSwapRoom = () => {
             state={state}
             enableApproveButtonCriteria={enableApproveButtonCriteria}
             swapCreation={swapCreation}
-            handleSwapCreation={handleCreatePrivatePartySwap}
+            handleSwapCreation={handleCounterSwapOffer}
           >
             <Button
               variant={"default"}
