@@ -119,14 +119,18 @@ const OpenSwapProposeRoom = () => {
 
       await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
 
-      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true, 'openSwaps');
       if (!approval) {
         throw new Error("User approval not granted.");
       }
+
       const updatedSwap = await useSwapMarketStore.getState().openMarket.openRoom.proposeSwap;
 
+      const blockchainRes = await getWalletProxy().createAndUpdateOpenSwap(updatedSwap!, "PROPOSE");
 
-      console.info("Updated swap: =======> \n", updatedSwap);
+      if (!blockchainRes) {
+        throw new Error("Blockchain error while proposing swap.");
+      }
 
       const offerResult = await proposeOpenSwapOffer(updatedSwap!);
 
@@ -154,7 +158,6 @@ const OpenSwapProposeRoom = () => {
       }
 
     } catch (error: any) {
-
       console.log(error);
       toast.custom(
         (id) => (

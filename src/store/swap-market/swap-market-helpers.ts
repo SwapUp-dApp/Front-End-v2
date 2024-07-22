@@ -1,6 +1,6 @@
 import { SUI_Swap, SUI_OpenSwap, SUI_SwapPreferences, SUT_SwapOfferType, SUI_SwapToken } from "@/types/swap-market.types";
 import { IOpenCreatedSwapFilters, IOpenMarketSwapFilters, IOpenRoom, IPrivateMarketSwapFilters, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "../../types/swap-market-store.types";
-import { SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
+import { SUI_RarityRankItem, SUI_NFTItem, SUI_SelectedCollectionItem } from "@/types/global.types";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { Environment } from "@/config";
 import { getInitialProfile } from "../profile/profile-helpers";
@@ -752,10 +752,15 @@ export const setOpenSwapsDataHelper = async (
   } else {
     availableOpenSwaps = swapsData;
   }
+
+  const collectionNames: string[] = [...new Set(availableOpenSwaps.map(swap => swap.swap_preferences.preferred_asset.parameters.collection))].filter(value => value !== undefined);
+  const collections: SUI_SelectedCollectionItem[] = collectionNames.map(name => ({ value: name, label: name }));
+
   return {
     ...state,
     openMarket: {
       ...state.openMarket,
+      availableOpenSwapCollections: collections ? collections : [],
       availableOpenSwaps,
       createdSwaps,
       filteredAvailableOpenSwaps: availableOpenSwaps
@@ -774,11 +779,16 @@ export const setOpenCreatedSwapsDataHelper = async (
   if (wallet.address && wallet.isConnected) {
     createdSwaps = swapsData.filter(swap => swap.init_address === wallet.address);
   }
+
+  const collectionNames: string[] = [...new Set(createdSwaps.map(swap => swap.swap_preferences.preferred_asset.parameters.collection))].filter(value => value !== undefined);
+  const collections: SUI_SelectedCollectionItem[] = collectionNames.map(name => ({ value: name, label: name }));
+
   return {
     ...state,
     openMarket: {
       ...state.openMarket,
       createdSwaps,
+      createdSwapCollections: collections ? collections : [],
       filteredCreatedSwaps: createdSwaps
     },
   };

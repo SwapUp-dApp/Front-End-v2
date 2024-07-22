@@ -16,7 +16,7 @@ import { SUT_PreferredAssetType } from "@/types/swap-market.types";
 import Combobox from "../../shared/Combobox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { availableRarityRanking } from "@/constants";
-import { availableCollections, chainsDataset } from "@/constants/data";
+import { chainsDataset } from "@/constants/data";
 import { Input } from "@/components/ui/input";
 import CurrencySelectCombobox from "../../shared/CurrencySelectCombobox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -35,10 +35,11 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
   const [formKey, setFormKey] = useState(generateRandomKey(6));
 
-  const [openMarketSwapsFilters, setOpenMarketAvailableSwapsByFilters, resetAllOpenMarketFilters] = useSwapMarketStore(state => [
+  const [openMarketSwapsFilters, setOpenMarketAvailableSwapsByFilters, resetAllOpenMarketFilters, availableOpenSwapCollections] = useSwapMarketStore(state => [
     state.openMarket.openMarketSwapsFilters,
     state.openMarket.setOpenMarketAvailableSwapsByFilters,
-    state.openMarket.resetAllOpenMarketFilters
+    state.openMarket.resetAllOpenMarketFilters,
+    state.openMarket.availableOpenSwapCollections
   ]);
 
   const form = useForm<z.infer<typeof Schema_OpenMarketFiltersForm>>({
@@ -276,7 +277,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                             <FormItem>
                               <FormLabel className="text-su_secondary text-sm font-normal">Preferred collection:</FormLabel>
                               <Combobox
-                                items={availableCollections}
+                                items={availableOpenSwapCollections}
                                 onChange={field.onChange}
                                 value={field.value}
                                 title="collection"
