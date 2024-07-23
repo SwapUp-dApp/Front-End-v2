@@ -119,14 +119,14 @@ const OpenSwapProposeRoom = () => {
 
       await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
 
-      const approval = await getWalletProxy().getUserApproval(createdSwap, true, 'openSwaps');
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
       if (!approval) {
         throw new Error("User approval not granted.");
       }
 
       const updatedSwap = await useSwapMarketStore.getState().openMarket.openRoom.proposeSwap;
 
-      const blockchainRes = await getWalletProxy().createAndUpdateOpenSwap(updatedSwap!, "PROPOSE");
+      const blockchainRes = await getWalletProxy().createAndUpdateSwap(updatedSwap!, "PROPOSE");
 
       if (!blockchainRes) {
         throw new Error("Blockchain error while proposing swap.");

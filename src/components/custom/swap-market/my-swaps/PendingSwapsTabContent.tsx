@@ -61,96 +61,57 @@ const PendingSwapsTabContent = () => {
       //temp fix
       swap.accept_sign = sign;
 
+      const approval = await getWalletProxy().getUserApproval(swap, true);
+
+      if (!approval) {
+        throw new Error("User approval not granted.");
+      }
+
+      const triggerTransfer = await getWalletProxy()
+        .createAndUpdateSwap(swap.swap_mode === SUE_SWAP_MODE.OPEN ? (swap as SUI_OpenSwap) : (swap as SUI_Swap), "ACCEPT");
+
+      if (!triggerTransfer) {
+        throw new Error("Swap failed due to blockchain error.");
+      }
+
+      const payload: SUP_CompleteSwap = {
+        ...swap,
+        status: triggerTransfer.status,
+        tx: triggerTransfer.hash,
+        notes: triggerTransfer.notes,
+        timestamp: triggerTransfer.timeStamp,
+      };
+
+      let offerResult;
       //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const approval = await getWalletProxy().getUserApproval(swap, true, 'openSwaps');
-
-        if (!approval) {
-          throw new Error("User approval not granted.");
-        }
-
-        const triggerTransfer = await getWalletProxy().createAndUpdateOpenSwap(swap as SUI_OpenSwap, "ACCEPT");
-
-        if (!triggerTransfer) {
-          throw new Error("Swap Failed");
-        }
-
-        const payload: SUP_CompleteSwap = {
-          ...swap,
-          status: triggerTransfer.status,
-          tx: triggerTransfer.hash,
-          notes: triggerTransfer.notes,
-          timestamp: triggerTransfer.timeStamp,
-        };
-
-        const offerResult = await completeOpenSwapOffer(payload);
-
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Open Swap Completed Successfully"
-                description={"You will receive a notification on metamask about the transaction."}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapAcceptance(prev => ({ ...prev, created: true }));
-          navigate("/swap-up/my-swaps/history");
-        }
-
+        offerResult = await completeOpenSwapOffer(payload);
       }
 
       if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
-
-        const approval = await getWalletProxy().getUserApproval(swap, true);
-
-        if (!approval) {
-          throw new Error("User approval not granted.");
-        }
-
-        const triggerTransfer = await getWalletProxy().createAndUpdateSwap(swap as SUI_Swap, "ACCEPT");
-
-        if (!triggerTransfer) {
-          throw new Error("Swap Failed");
-        }
-
-        const payload: SUP_CompleteSwap = {
-          ...swap,
-          status: triggerTransfer.status,
-          tx: triggerTransfer.hash,
-          notes: triggerTransfer.notes,
-          timestamp: triggerTransfer.timeStamp,
-        };
-
-        const offerResult = await completePrivateSwapOffer(payload);
-
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Private Swap Completed Successfully"
-                description={"You will receive a notification on metamask about the transaction."}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapAcceptance(prev => ({ ...prev, created: true }));
-          navigate("/swap-up/my-swaps/history");
-        }
+        offerResult = await completePrivateSwapOffer(payload);
       }
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title={`${swap.swap_mode === SUE_SWAP_MODE.OPEN ? "Open" : "Private"} Swap Completed Successfully`}
+              description={"You will receive a notification on metamask about the transaction."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapAcceptance(prev => ({ ...prev, created: true }));
+        navigate("/swap-up/my-swaps/history");
+      }
+
     } catch (error: any) {
       toast.custom(
         (id) => (

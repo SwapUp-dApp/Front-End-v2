@@ -174,11 +174,6 @@ export const setAddedAmountHelper = (
 ): ISwapMarketStore => {
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;
-  const coin = room[side].availableChains.find((c: any) => c.uuid === selectedCoin);
-
-  if (!coin) {
-    return state;
-  }
 
   return {
     ...state,
@@ -190,7 +185,7 @@ export const setAddedAmountHelper = (
           ...room[side],
           addedAmount: {
             amount: parseFloat(selectedAmount),
-            coin,
+            coin: JSON.parse(selectedCoin)
           },
         },
       },
@@ -753,7 +748,7 @@ export const setOpenSwapsDataHelper = async (
     availableOpenSwaps = swapsData;
   }
 
-  const collectionNames: string[] = [...new Set(availableOpenSwaps.map(swap => swap.swap_preferences.preferred_asset.parameters.collection))].filter(value => value !== undefined);
+  const collectionNames: string[] = ([...new Set(availableOpenSwaps.map(swap => swap.swap_preferences.preferred_asset.parameters.collection))].filter(value => value !== undefined) as string[]);
   const collections: SUI_SelectedCollectionItem[] = collectionNames.map(name => ({ value: name, label: name }));
 
   return {
@@ -780,7 +775,7 @@ export const setOpenCreatedSwapsDataHelper = async (
     createdSwaps = swapsData.filter(swap => swap.init_address === wallet.address);
   }
 
-  const collectionNames: string[] = [...new Set(createdSwaps.map(swap => swap.swap_preferences.preferred_asset.parameters.collection))].filter(value => value !== undefined);
+  const collectionNames: string[] = ([...new Set(createdSwaps.map(swap => swap.swap_preferences.preferred_asset.parameters.collection))].filter(value => value !== undefined) as string[]);
   const collections: SUI_SelectedCollectionItem[] = collectionNames.map(name => ({ value: name, label: name }));
 
   return {

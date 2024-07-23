@@ -1,1 +1,1 @@
-export type SUT_OpenSwapMethodType = "CREATE" | "PROPOSE" | "COUNTER" | "ACCEPT" | "REJECT";
+export type SUT_SwapMethodType = "CREATE" | "PROPOSE" | "COUNTER" | "ACCEPT" | "REJECT" | "CANCEL";

@@ -143,7 +143,7 @@ const CounterOfferSwapRoom = () => {
       let blockchainRes;
 
       if (swapMode === SUE_SWAP_MODE.OPEN) {
-        approval = await getWalletProxy().getUserApproval(createdSwap, true, "openSwaps");
+        approval = await getWalletProxy().getUserApproval(createdSwap, true);
         blockchainRes = await getWalletProxy().createAndUpdateOpenSwap(createdSwap, "COUNTER");
       } else {
         approval = await getWalletProxy().getUserApproval(createdSwap, true);
