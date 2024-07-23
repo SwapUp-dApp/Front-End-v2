@@ -15,7 +15,7 @@ import { useGlobalStore } from "@/store/global-store";
 import { useProfileStore } from "@/store/profile";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
-import { SUI_OpenSwap, SUI_SwapPreferences, SUP_CancelSwap, SUP_CompleteSwap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CancelSwap, SUP_CompleteSwap } from "@/types/swap-market.types";
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -153,72 +153,49 @@ const ViewSwapRoom = () => {
         throw new Error("User approval not granted.");
       }
 
-      const txRcpt = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
+      const triggerTransfer = await getWalletProxy()
+        .createAndUpdateSwap(swap.swap_mode === SUE_SWAP_MODE.OPEN ? (swap as SUI_OpenSwap) : (swap as SUI_Swap), "ACCEPT");
 
-      if (!txRcpt) {
-        throw new Error("Swap Failed");
+      if (!triggerTransfer) {
+        throw new Error("Swap failed due to blockchain error.");
       }
 
       const payload: SUP_CompleteSwap = {
         ...swap,
-        status: txRcpt.status,
-        tx: txRcpt.hash,
-        notes: txRcpt.notes,
-        timestamp: txRcpt.timeStamp,
+        status: triggerTransfer.status,
+        tx: triggerTransfer.hash,
+        notes: triggerTransfer.notes,
+        timestamp: triggerTransfer.timeStamp,
       };
 
+      let offerResult;
       //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const offerResult = await completeOpenSwapOffer(payload);
-
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Open Swap Completed Successfully"
-                description={"You will receive a notification on metamask about the transaction."}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapAcceptance(prev => ({ ...prev, created: true }));
-          setTimeout(() => {
-            navigate(-1);
-          }, 500);
-        }
+        offerResult = await completeOpenSwapOffer(payload);
       }
 
-      //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
-        const offerResult = await completePrivateSwapOffer(payload);
+        offerResult = await completePrivateSwapOffer(payload);
+      }
 
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Private Swap Completed Successfully"
-                description={"You will receive a notification on metamask about the transaction."}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapAcceptance(prev => ({ ...prev, created: true }));
-          setTimeout(() => {
-            navigate(-1);
-          }, 500);
-        }
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title={`${swap.swap_mode === SUE_SWAP_MODE.OPEN ? "Open" : "Private"} Swap Completed Successfully`}
+              description={"You will receive a notification on metamask about the transaction."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapAcceptance(prev => ({ ...prev, created: true }));
+        navigate("/swap-up/my-swaps/history");
       }
 
     } catch (error: any) {
