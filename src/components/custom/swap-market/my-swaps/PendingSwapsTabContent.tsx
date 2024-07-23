@@ -28,6 +28,7 @@ import PendingSwapsFilterDrawer from './PendingSwapsFilterDrawer';
 import { useMySwapStore } from '@/store/my-swaps';
 import { useQuery } from '@tanstack/react-query';
 import { getPendingSwapListApi } from '@/service/api';
+import { defaults } from '@/constants/defaults';
 
 
 const PendingSwapsTabContent = () => {
@@ -47,7 +48,7 @@ const PendingSwapsTabContent = () => {
   const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
   const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
 
-  const handleSwapAccept = async (swap: SUI_Swap) => {
+  const handleSwapAccept = async (swap: SUI_Swap | SUI_OpenSwap) => {
     try {
 
       setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
@@ -57,8 +58,6 @@ const PendingSwapsTabContent = () => {
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
       }
-
-      // setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));
       //temp fix
       swap.accept_sign = sign;
 
@@ -68,75 +67,50 @@ const PendingSwapsTabContent = () => {
         throw new Error("User approval not granted.");
       }
 
-      const triggerTranfer = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
-      console.log(swapAcceptance.isLoading);
+      const triggerTransfer = await getWalletProxy()
+        .createAndUpdateSwap(swap.swap_mode === SUE_SWAP_MODE.OPEN ? (swap as SUI_OpenSwap) : (swap as SUI_Swap), "ACCEPT");
 
-      if (!triggerTranfer) {
-        throw new Error("Swap Failed");
+      if (!triggerTransfer) {
+        throw new Error("Swap failed due to blockchain error.");
       }
 
       const payload: SUP_CompleteSwap = {
         ...swap,
-        status: triggerTranfer.status,
-        tx: triggerTranfer.hash,
-        notes: triggerTranfer.notes,
-        timestamp: triggerTranfer.timeStamp,
+        status: triggerTransfer.status,
+        tx: triggerTransfer.hash,
+        notes: triggerTransfer.notes,
+        timestamp: triggerTransfer.timeStamp,
       };
 
+      let offerResult;
       //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const offerResult = await completeOpenSwapOffer(payload);
-
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Open Swap Completed Successfully"
-                description={"You will receive a notification on metamask about the transaction."}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapAcceptance(prev => ({ ...prev, created: true }));
-
-
-        }
-
+        offerResult = await completeOpenSwapOffer(payload);
       }
 
-      //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
-        const offerResult = await completePrivateSwapOffer(payload);
-
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Private Swap Completed Successfully"
-                description={"You will receive a notification on metamask about the transaction."}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapAcceptance(prev => ({ ...prev, created: true }));
-
-
-        }
-
+        offerResult = await completePrivateSwapOffer(payload);
       }
 
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title={`${swap.swap_mode === SUE_SWAP_MODE.OPEN ? "Open" : "Private"} Swap Completed Successfully`}
+              description={"You will receive a notification on metamask about the transaction."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapAcceptance(prev => ({ ...prev, created: true }));
+        navigate("/swap-up/my-swaps/history");
+      }
 
     } catch (error: any) {
       toast.custom(
@@ -454,6 +428,7 @@ const PendingSwapsTabContent = () => {
                           className='w-3 h-3'
                           src={currentChain.iconUrl}
                           alt=""
+                          onClick={async () => { await handleSwapAccept(swap); }}
                         />
 
                         {currentChain.name}

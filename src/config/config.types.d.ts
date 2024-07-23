@@ -3,11 +3,16 @@ export type SUT_EnvironmentKey = "local" | "dev" | "qa" | "prod";
 export interface SUI_ConfigEnvironment {
   API_BASE_URL: string;
   OPENSEA_BASE_URL: string;
+  OPENSEA_API_BASE_URL: string;
+  OPENSEA_API_KEY: string;
   ETHERSCAN_BASE_URL: string;
   NETWORK: string;
   CHAIN_ID: number;
   SWAPUP_CONTRACT: string;
+  SWAPUP_OPEN_CONTRACT: string;
   THIRDWEB_CLIENT_ID: string;
+  COIN_RANKING_API_KEY: string;
+  COIN_RANKING_BASE_URL: string;
 }
 export interface SUI_Config {
   local: SUI_ConfigEnvironment;

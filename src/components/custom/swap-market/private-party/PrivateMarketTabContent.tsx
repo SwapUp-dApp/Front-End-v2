@@ -64,16 +64,12 @@ const PrivateMarketTabContent = () => {
 
       setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
 
-      //update swap - 
-      // setAcceptSwap(swap);
-
       const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
       }
 
-      // setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));
       //temp fix 
       swap.accept_sign = sign;
 
@@ -85,9 +81,9 @@ const PrivateMarketTabContent = () => {
 
       const triggerTransfer = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
 
-      // if (!triggerTransfer) {
-      //   throw new Error("Swap Failed");
-      // }
+      if (!triggerTransfer) {
+        throw new Error("Swap failed due to blockchain error.");
+      }
 
       const payload: SUP_CompleteSwap = {
         ...swap,
@@ -98,7 +94,6 @@ const PrivateMarketTabContent = () => {
       };
 
       //calling actual api 
-
       const offerResult = await completePrivateSwapOffer(payload);
 
       if (offerResult) {
