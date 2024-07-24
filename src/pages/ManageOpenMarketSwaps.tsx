@@ -23,6 +23,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import OpenMarketCreatedFiltersDrawer from "@/components/custom/swap-market/open-market/OpenMarketCreatedFiltersDrawer";
 import { getMyOpenSwapListApi } from "@/service/api";
 import { useQuery } from "@tanstack/react-query";
+import { getWalletProxy } from "@/lib/walletProxy";
 
 
 const ManageOpenMarketSwaps = () => {
@@ -107,62 +108,44 @@ const ManageOpenMarketSwaps = () => {
 
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
 
-      console.log(swapCancel.isLoading);
+      // Cancel swap blockchain logic
+      // const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
-      if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const payload: SUP_CancelSwap = {
-          swap_mode: swap.swap_mode,
-          open_trade_id: swap.open_trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        // console.log(swap.id);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
-        }
-      }
+      // if (!sign) {
+      //   throw new Error("Failed to obtain swap signature.");
+      // }
 
-      if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
-        const payload: SUP_CancelSwap = {
-          swap_mode: swap.swap_mode,
-          trade_id: swap.trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        console.log(swap.id);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
+      // const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL-ORIGINAL-OPEN-SWAP");
 
-        }
+      // if (!triggerCancelSwap) {
+      //   throw new Error("Cancel Swap failed due to blockchain error.");
+      // }
 
+      const payload: SUP_CancelSwap = {
+        swap_mode: swap.swap_mode,
+        open_trade_id: swap.open_trade_id
+      };
+
+      const offerResult = await cancelSwapOffer(payload);
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Swap Closed Successfully"
+              description={"You have successfully closed the swap"}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        navigate("/swap-up/my-swaps/history");
       }
 
     } catch (error: any) {
@@ -395,7 +378,7 @@ const ManageOpenMarketSwaps = () => {
                                 </button>
 
                                 <button
-                                  onClick={() => { wallet.isConnected ? navigate(`/swap-up/my-swaps`) : handleShowWalletConnectionToast(); }}
+                                  onClick={() => { wallet.isConnected ? navigate(`/swap-up/my-swaps/pending/?walletIdToFilterSwaps=${swap.init_address}`) : handleShowWalletConnectionToast(); }}
                                   className="action-hover-card-item"
                                 >
                                   <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
