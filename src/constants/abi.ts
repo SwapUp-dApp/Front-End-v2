@@ -628,46 +628,17 @@ export const abi = {
             "inputs": [
                 {
                     "internalType": "string",
-                    "name": "swapId",
+                    "name": "tradeId",
                     "type": "string"
-                },
-                {
-                    "components": [
-                        {
-                            "internalType": "address",
-                            "name": "assetAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "value",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct SwapUp.Asset[]",
-                    "name": "initiatorAssets",
-                    "type": "tuple[]"
-                },
-                {
-                    "components": [
-                        {
-                            "internalType": "address",
-                            "name": "assetAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "value",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct SwapUp.Asset[]",
-                    "name": "responderAssets",
-                    "type": "tuple[]"
                 },
                 {
                     "internalType": "string",
                     "name": "swapStatus",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "swapType",
                     "type": "string"
                 }
             ],
@@ -680,7 +651,12 @@ export const abi = {
             "inputs": [
                 {
                     "internalType": "string",
-                    "name": "swapId",
+                    "name": "tradeId",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "swapType",
                     "type": "string"
                 },
                 {

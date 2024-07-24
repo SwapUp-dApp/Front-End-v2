@@ -451,10 +451,6 @@ const OpenSwapCreationRoom = () => {
                     <h2 className="text-xs lg:sm text-primary font-semibold" >Estimate fees:</h2>
 
                     <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
-                      <p>Platform fee in USD:</p>
-                      <p className="text-text dark:text-su_primary" >$ 0</p>
-                    </div>
-                    <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
                       <p>Platform fee:</p>
                       <p className="text-text dark:text-su_primary" >0.00 ETH</p>
                     </div>

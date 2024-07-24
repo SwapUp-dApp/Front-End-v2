@@ -13,7 +13,7 @@ import LoadingDataset from '../../shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
 import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
 import CreatePrivateSwapDialog from "@/components/custom/swap-market/private-party/CreatePrivateSwapDialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { getWalletProxy } from '@/lib/walletProxy';
 import { SUI_SwapCreation } from "@/types/global.types";
@@ -42,6 +42,9 @@ const PendingSwapsTabContent = () => {
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+
+  const [searchParams] = useSearchParams();
+  const walletIdToFilterSwaps = searchParams.get('walletIdToFilterSwaps');
 
   const { mutateAsync: completeOpenSwapOffer } = useCompleteOpenSwapOffer();
   const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
@@ -137,10 +140,20 @@ const PendingSwapsTabContent = () => {
 
   const handleSwapReject = async (swap: SUI_Swap) => {
     try {
-
       setSwapRejection(prev => ({ ...prev, isLoading: true }));
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
-      console.log(swapRejection.isLoading);
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+      swap.accept_sign = sign;
+
+      const triggerReject = await getWalletProxy()
+        .createAndUpdateSwap(swap, "REJECT");
+
+      if (!triggerReject) {
+        throw new Error("Reject swap failed due to blockchain error.");
+      }
 
       if (swap.id) {
         const offerResult = await rejectSwapOffer(Number(swap.id));
@@ -193,64 +206,49 @@ const PendingSwapsTabContent = () => {
 
   const handleSwapCancel = async (swap: SUI_OpenSwap) => {
     try {
-
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
-      console.log(swapCancel.isLoading);
 
-      if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const payload: SUP_CancelSwap = {
-          swap_mode: swap.swap_mode,
-          open_trade_id: swap.open_trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        console.log(swap.id);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
-        }
-      }
+      // Cancel swap blockchain logic
+      // const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
-      if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
-        const payload: SUP_CancelSwap = {
-          swap_mode: swap.swap_mode,
-          trade_id: swap.trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        console.log(swap.id);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
+      // if (!sign) {
+      //   throw new Error("Failed to obtain swap signature.");
+      // }
 
-        }
+      // const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL");
 
+      // if (!triggerCancelSwap) {
+      //   throw new Error("Cancel Swap failed due to blockchain error.");
+      // }
+
+      // enforcing swap mode to private because
+      // 1.The original open swap can only be canceled through manage page
+      // 2.The user can only cancel the private swap and single proposed open swap
+
+      const payload: SUP_CancelSwap = {
+        swap_mode: SUE_SWAP_MODE.PRIVATE,
+        trade_id: swap.trade_id
+      };
+
+      const offerResult = await cancelSwapOffer(payload);
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Swap Closed Successfully"
+              description={"You have successfully closed the swap"}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapCancel(prev => ({ ...prev, created: true }));
       }
 
     } catch (error: any) {
@@ -282,7 +280,18 @@ const PendingSwapsTabContent = () => {
       try {
         if (wallet.address && wallet.isConnected) {
           const response = await getPendingSwapListApi(wallet.address);
-          await setMySwapsData(response.data.data as SUI_OpenSwap[], 'pending');
+          let filteredResponse: SUI_OpenSwap[];
+
+          if (walletIdToFilterSwaps) {
+            filteredResponse = (response.data.data as SUI_OpenSwap[]).filter(swap =>
+              (swap.swap_mode === SUE_SWAP_MODE.OPEN && (swap.init_address === walletIdToFilterSwaps || swap.accept_address === walletIdToFilterSwaps))
+            );
+          } else {
+            filteredResponse = response.data.data as SUI_OpenSwap[];
+          }
+
+
+          await setMySwapsData(filteredResponse, 'pending');
           return response.data.data;
         }
 

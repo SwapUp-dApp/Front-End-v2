@@ -225,6 +225,20 @@ const ViewSwapRoom = () => {
       setSwapRejection(prev => ({ ...prev, isLoading: true }));
       const swap = state.swap!;
 
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
+
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+      swap.accept_sign = sign;
+
+      const triggerReject = await getWalletProxy()
+        .createAndUpdateSwap(swap, "REJECT");
+
+      if (!triggerReject) {
+        throw new Error("Reject swap failed due to blockchain error.");
+      }
+
       if (swap.id) {
         await getWalletProxy().createAndUpdateSwap(swap, "REJECT");
         const offerResult = await rejectSwapOffer(Number(swap.id));
@@ -280,67 +294,43 @@ const ViewSwapRoom = () => {
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
       const swap = state.swap!;
 
-      if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const latestSwapObject = useSwapMarketStore.getState().openMarket.openRoom.swap;
+      // Cancel swap blockchain logic
+      // const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
-        const payload: SUP_CancelSwap = {
-          swap_mode: latestSwapObject.swap_mode,
-          open_trade_id: latestSwapObject.open_trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
-          setTimeout(() => {
+      // if (!sign) {
+      //   throw new Error("Failed to obtain swap signature.");
+      // }
 
-            navigate(-1);
-          }, 500);
-        }
-      }
+      // const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL");
 
-      if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
-        const payload: SUP_CancelSwap = {
-          swap_mode: swap.swap_mode,
-          trade_id: swap.trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
-          setTimeout(() => {
+      // if (!triggerCancelSwap) {
+      //   throw new Error("Cancel Swap failed due to blockchain error.");
+      // }
 
-            navigate(-1);
-          }, 500);
-        }
+      const payload: SUP_CancelSwap = {
+        swap_mode: swap.swap_mode,
+        trade_id: swap.trade_id
+      };
 
+      const offerResult = await cancelSwapOffer(payload);
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Swap Closed Successfully"
+              description={"You have successfully closed the swap"}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapCancel(prev => ({ ...prev, created: true }));
       }
 
     } catch (error: any) {

@@ -121,8 +121,8 @@ const RoomFooterSide = ({ layoutType, setEnableApproveButtonCriteria, roomKey, s
       const chainId = form.watch('chain');
       const amount = form.watch('amount');
 
-      if (chainId && amount && isValidForm) {
-        setAddedAmount(amount, chainId);
+      if (chainId && isValidForm) {
+        setAddedAmount(amount ? amount : '', chainId);
       }
     };
 
