@@ -1,3 +1,5 @@
+import { SUI_CurrencyChainItem } from "./global.types";
+
 export interface INetwork {
     id: string;
     name: string;
@@ -27,3 +29,13 @@ export interface IProfile {
     joinDate: string;
     details?: IProfileDetails;
 }
+
+
+export interface SUI_TokenDistributionPerChainChartItem {
+    key: string,
+    network: SUI_TokenDistributionPerChainChartItemNetwork;
+    totalPercentage: number;
+    tradePercentage: { available: number, openTrade: number; };
+}
+
+interface SUI_TokenDistributionPerChainChartItemNetwork extends Pick<SUI_CurrencyChainItem, "iconUrl" | "name" | "symbol"> { }
