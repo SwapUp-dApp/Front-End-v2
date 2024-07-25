@@ -14,7 +14,7 @@ import { useCounterSwapOffer } from "@/service/queries/swap-market.query";
 import { useGlobalStore } from "@/store/global-store";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
-import { SUI_OpenSwap, SUI_SwapPreferences, SUP_CounterSwap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CounterSwap } from "@/types/swap-market.types";
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -139,23 +139,16 @@ const CounterOfferSwapRoom = () => {
 
       await state.setSwapEncodedMsgAndSign(swapEncodedBytes, sign);
 
-      let approval;
-      let blockchainRes;
-
-      if (swapMode === SUE_SWAP_MODE.OPEN) {
-        approval = await getWalletProxy().getUserApproval(createdSwap, true);
-        blockchainRes = await getWalletProxy().createAndUpdateOpenSwap(createdSwap, "COUNTER");
-      } else {
-        approval = await getWalletProxy().getUserApproval(createdSwap, true);
-        blockchainRes = await getWalletProxy().createAndUpdateSwap(createdSwap, "COUNTER");
-      }
-
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
       if (!approval) {
         throw new Error("User approval not granted.");
       }
 
+      const blockchainRes = await getWalletProxy()
+        .createAndUpdateSwap(createdSwap, "COUNTER");
+
       if (!blockchainRes) {
-        throw new Error("Blockchain error while creating counter swap.");
+        throw new Error("Blockchain error while counter swap offer.");
       }
 
       const payload: SUP_CounterSwap = {

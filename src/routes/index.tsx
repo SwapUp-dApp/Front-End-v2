@@ -106,7 +106,7 @@ export const clientSideRoutes: SUI_RoutesType[] = [
           {
             id: 'my-swaps-pending-teb',
             title: "My Swaps Pending Tab",
-            path: "pending",
+            path: "pending/?",
             element: <PendingSwapsTabContent />,
           },
           {

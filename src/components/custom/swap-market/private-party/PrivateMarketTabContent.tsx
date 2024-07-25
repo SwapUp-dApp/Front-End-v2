@@ -27,7 +27,7 @@ import PrivateMarketSwapFilterDrawer from './PrivateMarketSwapFilterDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { getPrivateSwapPendingListApi } from '@/service/api';
 import { defaults } from '@/constants/defaults';
-import { SUE_SWAP_OFFER_TYPE } from '@/constants/enums';
+import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from '@/constants/enums';
 
 
 const PrivateMarketTabContent = () => {
@@ -142,9 +142,25 @@ const PrivateMarketTabContent = () => {
     try {
 
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
+      // Cancel swap blockchain logic
+      // const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
+
+      // if (!sign) {
+      //   throw new Error("Failed to obtain swap signature.");
+      // }
+
+      // const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL");
+
+      // if (!triggerCancelSwap) {
+      //   throw new Error("Cancel Swap failed due to blockchain error.");
+      // }
+
+      // enforcing swap mode to private because
+      // 1.The original open swap can only be canceled through manage page
+      // 2.The user can only cancel the private swap and single proposed open swap
 
       const payload: SUP_CancelSwap = {
-        swap_mode: swap.swap_mode,
+        swap_mode: SUE_SWAP_MODE.PRIVATE,
         trade_id: swap.trade_id
       };
       const offerResult = await cancelSwapOffer(payload);
@@ -196,11 +212,25 @@ const PrivateMarketTabContent = () => {
 
   const handleSwapReject = async (swap: SUI_Swap) => {
     try {
-
       setSwapRejection(prev => ({ ...prev, isLoading: true }));
+
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
+
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+      swap.accept_sign = sign;
+
+      const triggerReject = await getWalletProxy()
+        .createAndUpdateSwap(swap, "REJECT");
+
+      if (!triggerReject) {
+        throw new Error("Reject swap failed due to blockchain error.");
+      }
+
       if (swap.id) {
         const offerResult = await rejectSwapOffer(Number(swap.id));
-        console.log(swap.id);
+
         if (offerResult) {
           toast.custom(
             (id) => (
