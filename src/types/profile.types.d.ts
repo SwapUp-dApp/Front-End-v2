@@ -43,3 +43,14 @@ export interface SUI_TokenBreakdownChartItem extends Pick<SUI_TokenDistributionP
 }
 
 interface SUI_TokenDistributionPerChainChartItemNetwork extends Pick<SUI_CurrencyChainItem, "iconUrl" | "name" | "symbol"> { }
+
+export interface SUI_CollectionOwnedItem {
+    id: string;
+    cover: string;
+    collectionName: string;
+    assets: number;
+    floorPrice: number;
+    highestRankNft: number;
+    volume: number;
+    openApproval: boolean;
+}

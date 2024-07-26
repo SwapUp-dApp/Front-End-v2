@@ -46,7 +46,7 @@ const TokenBreakdownChart = () => {
     return config;
   }, {
     tokens: {
-      label: "Token",
+      label: "Token percentage",
     }
   } as ChartConfig);
 
