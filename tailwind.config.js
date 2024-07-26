@@ -51,10 +51,17 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
+        su_pie_chart_1: "var(--pie-chart-1)",
+        su_pie_chart_2: "var(--pie-chart-2)",
+        su_pie_chart_3: "var(--pie-chart-3)",
+        su_pie_chart_4: "var(--pie-chart-4)",
+
         su_primary_bg: "rgba(13, 13, 35, 1)",
         su_primary_black: "rgba(13, 13, 35, 0.8)",
         su_active_bg: "rgba(255, 255, 255, 0.15)",
         su_enable_bg: "rgba(255, 255, 255, 0.08)",
+
         su_overlay_bg: "rgba(13, 13, 35, 0.8)",
         su_least_bg: "rgba(46, 46, 65, 1)",
         su_secondary_bg: "rgba(37, 37, 57, 1)",
