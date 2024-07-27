@@ -81,13 +81,21 @@ const TableHead = React.forwardRef<
 ));
 TableHead.displayName = "TableHead";
 
+interface ITableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
+  hideDefaultPadding?: boolean;
+}
+
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+  ITableCellProps
+>(({ className, hideDefaultPadding, ...props }, ref) => (
   <td
     ref={ref}
-    className={cn("py-4 lg:py-5 align-middle [&:has([role=checkbox])]:pr-0", className)}
+    className={cn(
+      "align-middle [&:has([role=checkbox])]:pr-0",
+      hideDefaultPadding ? "py-0" : "py-4 lg:py-5",
+      className
+    )}
     {...props}
   />
 ));
