@@ -182,7 +182,7 @@ const PrivateMarketTabContent = () => {
           }
         );
         setSwapCancel(prev => ({ ...prev, created: true }));
-
+        navigate("/swap-up/my-swaps/history");
       }
 
 
@@ -435,7 +435,6 @@ const PrivateMarketTabContent = () => {
                     </TableCell>
                     <TableCell className="text-xs font-medium px-4 flex justify-start">
                       <span
-                        onClick={async () => { await handleSwapCancel(swap); }}
                         className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
                       >
                         <img
