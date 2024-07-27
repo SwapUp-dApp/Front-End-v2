@@ -290,6 +290,99 @@ export const abi = {
         {
             "inputs": [
                 {
+                    "internalType": "string",
+                    "name": "swapId",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "cancelType",
+                    "type": "string"
+                }
+            ],
+            "name": "cancelSwap",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "tradeId",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "swapStatus",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "swapType",
+                    "type": "string"
+                }
+            ],
+            "name": "completeSwap",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "tradeId",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "swapType",
+                    "type": "string"
+                },
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "value",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct SwapUp.Asset[]",
+                    "name": "initiatorAssets",
+                    "type": "tuple[]"
+                },
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "value",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct SwapUp.Asset[]",
+                    "name": "responderAssets",
+                    "type": "tuple[]"
+                }
+            ],
+            "name": "counterSwap",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
                     "internalType": "address",
                     "name": "initialOwner",
                     "type": "address"
@@ -400,6 +493,63 @@ export const abi = {
             "type": "event"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "swapId",
+                    "type": "string"
+                },
+                {
+                    "internalType": "address",
+                    "name": "responderAddress",
+                    "type": "address"
+                },
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "value",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct SwapUp.Asset[]",
+                    "name": "initiatorAssets",
+                    "type": "tuple[]"
+                },
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "value",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct SwapUp.Asset[]",
+                    "name": "responderAssets",
+                    "type": "tuple[]"
+                },
+                {
+                    "internalType": "string",
+                    "name": "swapType",
+                    "type": "string"
+                }
+            ],
+            "name": "createSwap",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
             "anonymous": false,
             "inputs": [],
             "name": "EIP712DomainChanged",
@@ -479,6 +629,100 @@ export const abi = {
             ],
             "name": "ProposalCreated",
             "type": "event"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "openSwapId",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "proposalId",
+                    "type": "string"
+                },
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "assetAddress",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "value",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct SwapUp.Asset[]",
+                    "name": "proposerAssets",
+                    "type": "tuple[]"
+                }
+            ],
+            "name": "proposeToOpenSwap",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "renounceOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_currencyFeeAmount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setCurrencyFeeAmount",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_currencyFeeAmountWithSubdomen",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setCurrencyFeeAmountWithSubdomen",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_platformFeeAmount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setPlatformFeeAmount",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_treasuryWalletAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "setTreasuryWalletAddress",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
             "anonymous": false,
@@ -614,12 +858,27 @@ export const abi = {
         {
             "inputs": [
                 {
-                    "internalType": "string",
-                    "name": "swapId",
-                    "type": "string"
+                    "internalType": "address",
+                    "name": "senderAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "recipient",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "nftAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
                 }
             ],
-            "name": "cancelSwap",
+            "name": "transferNFT",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -627,133 +886,42 @@ export const abi = {
         {
             "inputs": [
                 {
-                    "internalType": "string",
-                    "name": "tradeId",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "swapStatus",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "swapType",
-                    "type": "string"
+                    "internalType": "address",
+                    "name": "newOwner",
+                    "type": "address"
                 }
             ],
-            "name": "completeSwap",
+            "name": "transferOwnership",
             "outputs": [],
-            "stateMutability": "payable",
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
             "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "tradeId",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "swapType",
-                    "type": "string"
-                },
-                {
-                    "components": [
-                        {
-                            "internalType": "address",
-                            "name": "assetAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "value",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct SwapUp.Asset[]",
-                    "name": "initiatorAssets",
-                    "type": "tuple[]"
-                },
-                {
-                    "components": [
-                        {
-                            "internalType": "address",
-                            "name": "assetAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "value",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct SwapUp.Asset[]",
-                    "name": "responderAssets",
-                    "type": "tuple[]"
-                }
-            ],
-            "name": "counterSwap",
-            "outputs": [],
-            "stateMutability": "payable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "swapId",
-                    "type": "string"
-                },
                 {
                     "internalType": "address",
-                    "name": "responderAddress",
+                    "name": "senderAddress",
                     "type": "address"
                 },
                 {
-                    "components": [
-                        {
-                            "internalType": "address",
-                            "name": "assetAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "value",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct SwapUp.Asset[]",
-                    "name": "initiatorAssets",
-                    "type": "tuple[]"
+                    "internalType": "address",
+                    "name": "recipient",
+                    "type": "address"
                 },
                 {
-                    "components": [
-                        {
-                            "internalType": "address",
-                            "name": "assetAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "value",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct SwapUp.Asset[]",
-                    "name": "responderAssets",
-                    "type": "tuple[]"
+                    "internalType": "address",
+                    "name": "tokenAddress",
+                    "type": "address"
                 },
                 {
-                    "internalType": "string",
-                    "name": "swapType",
-                    "type": "string"
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
                 }
             ],
-            "name": "createSwap",
+            "name": "transferTokens",
             "outputs": [],
-            "stateMutability": "payable",
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -922,100 +1090,6 @@ export const abi = {
             "inputs": [
                 {
                     "internalType": "string",
-                    "name": "openSwapId",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
-                    "name": "proposalId",
-                    "type": "string"
-                },
-                {
-                    "components": [
-                        {
-                            "internalType": "address",
-                            "name": "assetAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "uint256",
-                            "name": "value",
-                            "type": "uint256"
-                        }
-                    ],
-                    "internalType": "struct SwapUp.Asset[]",
-                    "name": "proposerAssets",
-                    "type": "tuple[]"
-                }
-            ],
-            "name": "proposeToOpenSwap",
-            "outputs": [],
-            "stateMutability": "payable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "renounceOwnership",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_currencyFeeAmount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "setCurrencyFeeAmount",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_currencyFeeAmountWithSubdomen",
-                    "type": "uint256"
-                }
-            ],
-            "name": "setCurrencyFeeAmountWithSubdomen",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "_platformFeeAmount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "setPlatformFeeAmount",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "_treasuryWalletAddress",
-                    "type": "address"
-                }
-            ],
-            "name": "setTreasuryWalletAddress",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "string",
                     "name": "",
                     "type": "string"
                 }
@@ -1064,75 +1138,6 @@ export const abi = {
                 }
             ],
             "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "senderAddress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "recipient",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "nftAddress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "tokenId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "transferNFT",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "newOwner",
-                    "type": "address"
-                }
-            ],
-            "name": "transferOwnership",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "senderAddress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "recipient",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "tokenAddress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                }
-            ],
-            "name": "transferTokens",
-            "outputs": [],
-            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
