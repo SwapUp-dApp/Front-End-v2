@@ -109,17 +109,17 @@ const ManageOpenMarketSwaps = () => {
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
 
       // Cancel swap blockchain logic
-      // const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
+      const { sign } = await getWalletProxy().getUserSignature(swap, "state.swapEncodedMsg");
 
-      // if (!sign) {
-      //   throw new Error("Failed to obtain swap signature.");
-      // }
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
 
-      // const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL-ORIGINAL-OPEN-SWAP");
+      const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL-ORIGINAL-OPEN-SWAP");
 
-      // if (!triggerCancelSwap) {
-      //   throw new Error("Cancel Swap failed due to blockchain error.");
-      // }
+      if (!triggerCancelSwap) {
+        throw new Error("Cancel Swap failed due to blockchain error.");
+      }
 
       const payload: SUP_CancelSwap = {
         swap_mode: swap.swap_mode,
@@ -292,7 +292,10 @@ const ManageOpenMarketSwaps = () => {
                         <div className="w-auto flex justify-start" >  # {getLastCharacters(swap.open_trade_id, 7)}</div>
                       </TableCell>
                       <TableCell className="text-xs font-medium px-4 flex justify-start">
-                        <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                        <span
+                          onClick={async () => { await handleSwapCancel(swap); }}
+                          className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
+                        >
                           <img
                             className='w-4 h-4'
                             src={currentChain.iconUrl}
