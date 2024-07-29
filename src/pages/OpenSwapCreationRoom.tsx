@@ -256,6 +256,7 @@ const OpenSwapCreationRoom = () => {
 
   useEffect(() => {
     if (openTradeId && isValidTradeId(openTradeId) && profile) {
+      state.resetOpenSwapCreationRoom();
       state.setValuesOnCreateOpenSwapRoom(openTradeId, profile);
     }
   }, [openTradeId, profile]);

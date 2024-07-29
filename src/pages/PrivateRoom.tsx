@@ -179,6 +179,7 @@ const PrivateRoom = () => {
     }
 
     const handleSetValuesOnCreatingPrivateRoom = async () => {
+      state.resetPrivateRoom();
       await state.setValuesOnCreatingPrivateRoom(privateTradeId!, counterPartyWallet!, profile);
     };
 

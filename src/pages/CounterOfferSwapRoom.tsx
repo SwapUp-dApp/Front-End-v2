@@ -88,7 +88,7 @@ const CounterOfferSwapRoom = () => {
                   }
                 }
               };
-
+              state.resetViewSwapRoom();
               await state.setValuesOnViewSwapRoom(tradeId, counterSwap);
               return response.data.data;
             }
