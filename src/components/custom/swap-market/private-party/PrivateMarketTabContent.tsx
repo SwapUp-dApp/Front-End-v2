@@ -248,8 +248,7 @@ const PrivateMarketTabContent = () => {
             }
           );
           setSwapRejection(prev => ({ ...prev, created: true }));
-
-
+          navigate("/swap-up/my-swaps/history");
         }
 
       }

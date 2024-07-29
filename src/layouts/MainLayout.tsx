@@ -56,7 +56,7 @@ const MainLayout = () => {
     }
 
     if (pathname && wallet && !wallet.isConnected && !walletConnectionExistsInLocalStorage) {
-      const currentRoute = navItemsData.find(item => item.path === pathname);
+      const currentRoute = navItemsData.find(item => pathname.includes(item.basePath));
       if (currentRoute?.protected) {
         showWalletConnectionToast("warning");
         navigate(defaults.fallback.route);
