@@ -143,17 +143,17 @@ const PrivateMarketTabContent = () => {
 
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
       // Cancel swap blockchain logic
-      // const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
-      // if (!sign) {
-      //   throw new Error("Failed to obtain swap signature.");
-      // }
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
 
-      // const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL");
+      const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL");
 
-      // if (!triggerCancelSwap) {
-      //   throw new Error("Cancel Swap failed due to blockchain error.");
-      // }
+      if (!triggerCancelSwap) {
+        throw new Error("Cancel Swap failed due to blockchain error.");
+      }
 
       // enforcing swap mode to private because
       // 1.The original open swap can only be canceled through manage page
@@ -182,7 +182,7 @@ const PrivateMarketTabContent = () => {
           }
         );
         setSwapCancel(prev => ({ ...prev, created: true }));
-
+        navigate("/swap-up/my-swaps/history");
       }
 
 
@@ -248,8 +248,7 @@ const PrivateMarketTabContent = () => {
             }
           );
           setSwapRejection(prev => ({ ...prev, created: true }));
-
-
+          navigate("/swap-up/my-swaps/history");
         }
 
       }
@@ -435,9 +434,6 @@ const PrivateMarketTabContent = () => {
                     </TableCell>
                     <TableCell className="text-xs font-medium px-4 flex justify-start">
                       <span
-                        onClick={() => {
-                          navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
-                        }}
                         className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
                       >
                         <img

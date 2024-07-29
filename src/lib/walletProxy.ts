@@ -17,6 +17,7 @@ interface IAsset {
   value: number;
 }
 
+type SUT_CancelSwapType = "SWAP" | "PROPOSAL";
 let walletInstance: ReturnType<typeof walletProxy> | null = null;
 
 export const getWalletProxy = (): ReturnType<typeof walletProxy> => {
@@ -148,7 +149,7 @@ export const walletProxy = () => {
         });
       }
 
-      if (swap.metadata.accept.tokens.length > 0) {
+      if (swap.metadata.accept && swap.metadata.accept.tokens.length > 0) {
         swap.metadata.accept.tokens.forEach(ele => {
           acceptAssets.push({ assetAddress: ele.address, value: Number(ele.id) });
         });
@@ -208,30 +209,24 @@ export const walletProxy = () => {
             swap.trade_id,
             swapAction === 'ACCEPT' ? 'COMPLETED' : 'REJECTED',
             swapType,
-            {
-              gasLimit: gasLimit,
-              // value: feeInETH, //add a bit more to 
-            }
+            // {
+            //   gasLimit: gasLimit,
+            //   // value: feeInETH, //add a bit more to 
+            // }
           );
           console.log(tx);
           break;
         case 'CANCEL':
-          tx = await contract["cancelSwap(string)"](
+          tx = await contract["cancelSwap(string, string)"](
             swap.trade_id,
-            {
-              gasLimit: gasLimit,
-              value: feeInETH, //add a bit more to 
-            }
+            (swap.swap_mode === SUE_SWAP_MODE.OPEN ? 'PROPOSAL' : 'SWAP') as SUT_CancelSwapType
           );
           console.log(tx);
           break;
         case 'CANCEL-ORIGINAL-OPEN-SWAP':
-          tx = await contract["cancelSwap(string)"](
+          tx = await contract["cancelSwap(string, string)"](
             (swap as SUI_OpenSwap).open_trade_id,
-            {
-              gasLimit: gasLimit,
-              value: feeInETH, //add a bit more to 
-            }
+            'SWAP'
           );
           console.log(tx);
           break;
@@ -247,99 +242,6 @@ export const walletProxy = () => {
 
   };
 
-  const createAndUpdateOpenSwap = async (swap: SUI_OpenSwap, swapAction: SUT_SC_SwapMethodType) => {
-    let contract = await getSwapupContractInstance();
-
-    try {
-      let initAssets: IAsset[] = [];
-      let acceptAssets: IAsset[] = [];
-
-      swap.metadata.init.tokens.forEach(ele => {
-        initAssets.push({ assetAddress: ele.address, value: Number(ele.id) });
-      });
-
-      if (swap.metadata.accept.tokens.length > 0) {
-        swap.metadata.accept.tokens.forEach(ele => {
-          acceptAssets.push({ assetAddress: ele.address, value: Number(ele.id) });
-        });
-      }
-
-      let feeInETH = await contract.getFeeInETH();
-      console.log(feeInETH);
-
-      let gasLimit = 900000;
-      let tx = null;
-      switch (swapAction) {
-        case 'CREATE':
-          tx = await contract["createOpenMarketSwap(string, tuple(address, uint256)[])"](
-            swap.open_trade_id,
-            initAssets,
-            {
-              gasLimit: gasLimit,
-              value: feeInETH, //add a bit more to 
-            }
-          );
-          console.log(tx);
-          break;
-        case 'PROPOSE':
-          tx = await contract["proposeForOpenMarketSwap(string, string, tuple(address, uint256)[])"](
-            swap.open_trade_id,
-            swap.trade_id,
-            initAssets,
-            {
-              gasLimit: gasLimit,
-              value: feeInETH, //add a bit more to 
-            }
-          );
-          console.log(tx);
-          break;
-        case 'COUNTER':
-          tx = await contract["counterSwap(string, tuple(address, uint256)[], tuple(address, uint256)[])"](
-            swap.trade_id,
-            initAssets,
-            acceptAssets,
-            {
-              gasLimit: gasLimit,
-              value: feeInETH, //add a bit more to 
-            }
-          );
-          console.log(tx);
-          break;
-        case 'ACCEPT':
-          tx = await contract["acceptOpenMarketProposal(string, string)"](
-            swap.open_trade_id,
-            swap.trade_id,
-            {
-              gasLimit: gasLimit,
-              value: feeInETH, //add a bit more to 
-            }
-          );
-          console.log(tx);
-          break;
-        case 'REJECT':
-          tx = await contract["completeSwap(string, tuple(address, uint256)[], tuple(address, uint256)[], string)"](
-            swap.trade_id,
-            initAssets,
-            acceptAssets,
-            'REJECTED',
-            {
-              gasLimit: gasLimit,
-              // value: feeInETH, //add a bit more to 
-            }
-          );
-          console.log(tx);
-          break;
-      }
-
-      let res = await getTransactionReceipt(tx);
-      console.log("rec", res);
-      return res;
-    } catch (err) {
-      console.log("txErr", err);
-      return null; //transaction rejected or other issues
-    }
-
-  };
 
   const getFeeInETH = async () => {
     let contract = await getSwapupContractInstance();
@@ -399,7 +301,6 @@ export const walletProxy = () => {
     getUserApproval,
     getUserSignature,
     createAndUpdateSwap,
-    createAndUpdateOpenSwap,
     getFeeInETH,
     getSwap
   };

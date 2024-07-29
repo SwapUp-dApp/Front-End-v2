@@ -77,6 +77,7 @@ const ViewSwapRoom = () => {
           try {
             if (tradeId) {
               const response = await getSwapDetailsApi(tradeId!);
+              state.resetViewSwapRoom();
               await state.setValuesOnViewSwapRoom(tradeId, response.data.data as SUI_OpenSwap);
               return response.data.data;
             }
@@ -295,20 +296,24 @@ const ViewSwapRoom = () => {
       const swap = state.swap!;
 
       // Cancel swap blockchain logic
-      // const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
-      // if (!sign) {
-      //   throw new Error("Failed to obtain swap signature.");
-      // }
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
 
-      // const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL");
+      const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL");
 
-      // if (!triggerCancelSwap) {
-      //   throw new Error("Cancel Swap failed due to blockchain error.");
-      // }
+      if (!triggerCancelSwap) {
+        throw new Error("Cancel Swap failed due to blockchain error.");
+      }
+
+      // enforcing swap mode to private because
+      // 1.The original open swap can only be canceled through manage page
+      // 2.The user can only cancel the private swap and single proposed open swap
 
       const payload: SUP_CancelSwap = {
-        swap_mode: swap.swap_mode,
+        swap_mode: SUE_SWAP_MODE.PRIVATE,
         trade_id: swap.trade_id
       };
 
@@ -331,6 +336,7 @@ const ViewSwapRoom = () => {
           }
         );
         setSwapCancel(prev => ({ ...prev, created: true }));
+        navigate("/swap-up/my-swaps/history");
       }
 
     } catch (error: any) {
