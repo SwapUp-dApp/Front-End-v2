@@ -77,6 +77,7 @@ const ViewSwapRoom = () => {
           try {
             if (tradeId) {
               const response = await getSwapDetailsApi(tradeId!);
+              state.resetViewSwapRoom();
               await state.setValuesOnViewSwapRoom(tradeId, response.data.data as SUI_OpenSwap);
               return response.data.data;
             }
