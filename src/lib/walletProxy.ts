@@ -209,10 +209,10 @@ export const walletProxy = () => {
             swap.trade_id,
             swapAction === 'ACCEPT' ? 'COMPLETED' : 'REJECTED',
             swapType,
-            {
-              gasLimit: gasLimit,
-              // value: feeInETH, //add a bit more to 
-            }
+            // {
+            //   gasLimit: gasLimit,
+            //   // value: feeInETH, //add a bit more to 
+            // }
           );
           console.log(tx);
           break;
