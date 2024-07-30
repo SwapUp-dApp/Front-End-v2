@@ -2,7 +2,7 @@ import { ScrollBar, ScrollArea } from '@/components/ui/scroll-area';
 import { cn, getEtherScanTransactionURL, getLastCharacters } from '@/lib/utils';
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@/components/ui/dialog';
 import CopyTile from '@/components/custom/tiles/CopyTile';
-import AvoidingFeeDialog from '@/components/custom/swap-market/AvoidingFeeDialog';
+import AvoidingFeeDialog from '@/components/custom/shared/AvoidingFeeDialog';
 import { SUI_OpenSwap } from '@/types/swap-market.types';
 import { Link } from 'react-router-dom';
 import SwapHistoryDialogSideCard from './SwapHistoryDialogSideCard';

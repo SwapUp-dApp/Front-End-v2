@@ -1,18 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 interface IProp {
-  children: any;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleNavigationOfSteps: (navigationMode: "NEXT" | "PREVIOUS") => void;
+  open: boolean;
 }
 
-const AvoidingFeeDialog = ({ children }: IProp) => {
+const SubdomainAdvantagesDialog = ({ open, setOpen, handleNavigationOfSteps }: IProp) => {
   return (
-    <Dialog>
-      <DialogTrigger>
-        {children}
-      </DialogTrigger>
-
+    <Dialog open={open} onOpenChange={setOpen} >
       <DialogContent className="w-[400px] p-4" >
         <div className="space-y-3" >
           {/* header */}
@@ -79,19 +77,7 @@ const AvoidingFeeDialog = ({ children }: IProp) => {
             <Button
               variant={"default"}
               className="w-full"
-              onClick={() =>
-                toast.info("Min your subdomain", {
-                  position: 'bottom-left',
-                  duration: 2000,
-                  description: "This feature is under construction!",
-                  action: {
-                    label: "Close",
-                    onClick: () => console.log("Close"),
-                  },
-                  className: '!bg-gradient-primary border-none',
-                  descriptionClassName: '!text-white',
-                })
-              }
+              onClick={() => { handleNavigationOfSteps('NEXT'); }}
             >
               Mint your subdomain
             </Button>
@@ -103,4 +89,4 @@ const AvoidingFeeDialog = ({ children }: IProp) => {
   );
 };
 
-export default AvoidingFeeDialog;
+export default SubdomainAdvantagesDialog;

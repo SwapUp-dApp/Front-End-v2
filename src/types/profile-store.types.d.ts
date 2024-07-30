@@ -3,10 +3,13 @@ import { IWallet, IProfile, IProfileDetails } from "./profile.types";
 import { SUT_GridViewType } from "./swap-market-store.types";
 
 export type SUT_VisibilityToggleType = "all" | "hidden";
+export type SUT_CreatingNewSubdomainProcessStepType = "advantages" | "enter-name" | "confirmation" | "transaction";
+
 export interface IProfileAssetsFilters {
   collection?: string;
   rarityRank?: SUI_RarityRankItem;
 }
+
 export interface IProfileAssetTab {
   activeGridView: SUT_GridViewType;
   visibility: SUT_VisibilityToggleType;
@@ -24,13 +27,31 @@ export interface IProfileAssetTab {
   resetAllFilters: () => void;
 }
 
+export interface ICreateNewSubdomain {
+  steps: SUT_CreatingNewSubdomainProcessStepType[];
+  currentStep?: SUT_CreatingNewSubdomainProcessStepType;
+  name: string;
+  action: string;
+  subname: string;
+  navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => void;
+  setSubnameValue: (enteredValue: string) => void;
+}
+
+export interface ISubdomain {
+  createNewSubdomain: ICreateNewSubdomain;
+}
+
+export interface IProfileOverviewTab {
+  subdomain: ISubdomain;
+}
+
 export interface IProfileStore {
   profile: IProfile;
   assetTab: IProfileAssetTab;
+  overviewTab: IProfileOverviewTab;
   setProfileWallet: (connectedWallet: IWallet) => void;
   setProfileAvatar: (avatar: string) => void;
   setProfileCoverImage: (coverImage: string) => void;
   setProfileDetails: (details: IProfileDetails) => void;
 }
-
 

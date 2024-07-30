@@ -1,7 +1,7 @@
 import { compareRarityRankItems } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { SUI_NFTItem } from "@/types/global.types";
-import { IProfileAssetsFilters, IProfileStore, SUT_VisibilityToggleType } from "@/types/profile-store.types";
+import { IProfileAssetsFilters, IProfileStore, SUT_CreatingNewSubdomainProcessStepType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
 import { IProfile, IProfileDetails, IWallet } from "@/types/profile.types";
 import { SUT_GridViewType } from "@/types/swap-market-store.types";
 
@@ -166,4 +166,55 @@ const getFilteredNftsByFilters = (state: IProfileStore, filters: IProfileAssetsF
         return filteredSwaps;
     }, [] as SUI_NFTItem[]);
     return filteredItems;
+};
+
+
+// Subdomain minting helpers start here
+
+export const setNavigateCreateSubdomainStepHelper = (state: IProfileStore, navigationMode: "PREVIOUS" | "NEXT"): IProfileStore => {
+    const { steps, currentStep } = state.overviewTab.subdomain.createNewSubdomain;
+
+    const currentIndex = currentStep ? steps.indexOf(currentStep) : -1;
+
+    let newStepIndex = 0;
+    if (currentIndex !== -1) {
+        if (navigationMode === 'NEXT') {
+            newStepIndex = Math.min(currentIndex + 1, steps.length - 1);
+        } else if (navigationMode === "PREVIOUS") {
+            newStepIndex = Math.max(currentIndex - 1, 0);
+        }
+    }
+
+    const newCurrentStep = steps[newStepIndex];
+
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomain: {
+                ...state.overviewTab.subdomain,
+                createNewSubdomain: {
+                    ...state.overviewTab.subdomain.createNewSubdomain,
+                    currentStep: newCurrentStep
+                }
+            }
+        }
+    };
+};
+
+
+export const setSubnameValueHelper = (state: IProfileStore, enteredValue: string): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomain: {
+                ...state.overviewTab.subdomain,
+                createNewSubdomain: {
+                    ...state.overviewTab.subdomain.createNewSubdomain,
+                    subname: enteredValue
+                }
+            }
+        }
+    };
 };
