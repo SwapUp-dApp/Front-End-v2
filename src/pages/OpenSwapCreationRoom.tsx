@@ -8,7 +8,7 @@ import CopyTile from "@/components/custom/tiles/CopyTile";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 import StaySafeDialog from "@/components/custom/swap-market/StaySafeDialog";
-import AvoidingFeeDialog from "@/components/custom/swap-market/AvoidingFeeDialog";
+import AvoidingFeeDialog from "@/components/custom/profile/wallet-overview/subdomain/AvoidingFeeDialog";
 
 import { useSwapMarketStore } from "@/store/swap-market";
 import OpenMarketRoomFooter from "@/components/custom/swap-market/open-market/OpenMarketRoomFooter";

@@ -1,15 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface IProp {
   children: any;
+  className?: string;
 }
 
-const AvoidingFeeDialog = ({ children }: IProp) => {
+const AvoidingFeeDialog = ({ children, className, ...props }: IProp) => {
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger
+        className={cn(
+          "",
+          className
+        )}
+        {...props}
+      >
         {children}
       </DialogTrigger>
 
