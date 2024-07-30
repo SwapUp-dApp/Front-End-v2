@@ -201,3 +201,20 @@ export const setNavigateCreateSubdomainStepHelper = (state: IProfileStore, navig
         }
     };
 };
+
+
+export const setSubnameValueHelper = (state: IProfileStore, enteredValue: string): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomain: {
+                ...state.overviewTab.subdomain,
+                createNewSubdomain: {
+                    ...state.overviewTab.subdomain.createNewSubdomain,
+                    subname: enteredValue
+                }
+            }
+        }
+    };
+};

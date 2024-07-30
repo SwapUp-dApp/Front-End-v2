@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { IProfileAssetsFilters, IProfileStore, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { getInitialProfile, resetAllFiltersHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
 import { IProfileDetails, IWallet } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
@@ -28,11 +28,12 @@ const initialState: IProfileStore = {
   overviewTab: {
     subdomain: {
       createNewSubdomain: {
-        steps: ['enter-name', 'confirmation', 'sending-data'],
+        steps: ['advantages', 'enter-name', 'confirmation', 'transaction'],
         name: "swapup.eth",
         action: "Create subdomain",
         subname: "",
         navigateCreateSubdomainStep: () => { },
+        setSubnameValue: () => { }
       }
     }
   }
@@ -67,6 +68,7 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
       createNewSubdomain: {
         ...initialState.overviewTab.subdomain.createNewSubdomain,
         navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => set((state) => setNavigateCreateSubdomainStepHelper(state, navigationMode)),
+        setSubnameValue: (enteredValue: string) => set(state => setSubnameValueHelper(state, enteredValue))
       }
     }
   }

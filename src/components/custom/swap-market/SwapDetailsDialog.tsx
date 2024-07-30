@@ -4,7 +4,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@/components/
 import { Button } from '@/components/ui/button';
 import CustomOutlineButton from '../shared/CustomOutlineButton';
 import CopyTile from '../tiles/CopyTile';
-import AvoidingFeeDialog from '../profile/wallet-overview/subdomain/AvoidingFeeDialog';
+import AvoidingFeeDialog from '../shared/AvoidingFeeDialog';
 import StaySafeDialog from './StaySafeDialog';
 import SwapDialogSideCard from './SwapDialogSideCard';
 import { IOpenRoom, IPrivateRoom } from '@/types/swap-market-store.types';

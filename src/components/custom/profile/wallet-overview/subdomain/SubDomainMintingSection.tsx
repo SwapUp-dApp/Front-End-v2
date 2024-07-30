@@ -1,11 +1,14 @@
 import EmptyDataset from '../../../shared/EmptyDataset';
 import LoadingDataset from '../../../shared/LoadingDataset';
-import AvoidingFeeDialog from './AvoidingFeeDialog';
 import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import CreateNewSubdomainProcess from './CreateNewSubdomainProcess';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 const SubDomainMintingSection = () => {
+
+  const [startCreateSubdomainProcess, setStartCreateSubdomainProcess] = useState(false);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row lg:items-center lg:justify-between" >
@@ -24,9 +27,7 @@ const SubDomainMintingSection = () => {
             }
           />
 
-          <AvoidingFeeDialog className="w-full lg:w-[35%] gradient-button px-5 py-3 flex justify-center" >
-            Mint subdomain
-          </AvoidingFeeDialog>
+          <Button onClick={() => { setStartCreateSubdomainProcess(true); }} >Mint subdomain</Button>
         </div>
       </div>
 
@@ -34,9 +35,7 @@ const SubDomainMintingSection = () => {
         title="Subdomain Not Minted"
         description={`Consider obtaining a subdomain to enhance your identity across web3, consolidate all <br/> your crypto addresses under one name.`}
       >
-        <AvoidingFeeDialog className="gradient-button px-5 py-3" >
-          Mint subdomain
-        </AvoidingFeeDialog>
+        <Button onClick={() => { setStartCreateSubdomainProcess(true); }} >Mint subdomain</Button>
       </EmptyDataset>
 
       <LoadingDataset
@@ -44,6 +43,8 @@ const SubDomainMintingSection = () => {
         title="Loading mint subdomain"
         description='Minted subdomains data is being loaded...'
       />
+
+      <CreateNewSubdomainProcess setStartCreateSubdomainProcess={setStartCreateSubdomainProcess} startCreateSubdomainProcess={startCreateSubdomainProcess} />
     </div >
   );
 };

@@ -3,7 +3,7 @@ import { IWallet, IProfile, IProfileDetails } from "./profile.types";
 import { SUT_GridViewType } from "./swap-market-store.types";
 
 export type SUT_VisibilityToggleType = "all" | "hidden";
-export type SUT_CreatingNewSubdomainProcessStepType = "enter-name" | "confirmation" | "sending-data";
+export type SUT_CreatingNewSubdomainProcessStepType = "advantages" | "enter-name" | "confirmation" | "transaction";
 
 export interface IProfileAssetsFilters {
   collection?: string;
@@ -34,6 +34,7 @@ export interface ICreateNewSubdomain {
   action: string;
   subname: string;
   navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => void;
+  setSubnameValue: (enteredValue: string) => void;
 }
 
 export interface ISubdomain {
