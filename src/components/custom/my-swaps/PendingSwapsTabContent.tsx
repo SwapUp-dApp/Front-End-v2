@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
-import FilterButton from '../../shared/FilterButton';
+import FilterButton from '@/components/custom/shared/FilterButton';
 import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import EmptyDataset from '../../shared/EmptyDataset';
+import EmptyDataset from '@/components/custom/shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken, SUI_Swap, SUP_CompleteSwap, SUP_CancelSwap } from '@/types/swap-market.types';
 import { useCancelSwapOffer, useCompletePrivateSwapOffer, useRejectSwapOffer } from '@/service/queries/swap-market.query';
-import ToastLookCard from '../../shared/ToastLookCard';
+import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
-import LoadingDataset from '../../shared/LoadingDataset';
+import LoadingDataset from '@/components/custom/shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
 import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
 import CreatePrivateSwapDialog from "@/components/custom/swap-market/private-party/CreatePrivateSwapDialog";
@@ -21,7 +21,7 @@ import { useCompleteOpenSwapOffer } from "@/service/queries/swap-market.query";
 
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from '@/constants/enums';
 import { useProfileStore } from '@/store/profile';
-import BadgeTile from '../../tiles/BadgeTile';
+import BadgeTile from '@/components/custom/tiles/BadgeTile';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { showWalletConnectionToast } from '@/lib/helpers';
 import PendingSwapsFilterDrawer from './PendingSwapsFilterDrawer';

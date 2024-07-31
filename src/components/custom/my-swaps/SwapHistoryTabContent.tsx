@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
-import FilterButton from '../../shared/FilterButton';
+import FilterButton from '@/components/custom/shared/FilterButton';
 import { cn, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import EmptyDataset from '../../shared/EmptyDataset';
+import EmptyDataset from '@/components/custom/shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
-import ToastLookCard from '../../shared/ToastLookCard';
+import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
-import LoadingDataset from '../../shared/LoadingDataset';
+import LoadingDataset from '@/components/custom/shared/LoadingDataset';
 import CreatePrivateSwapDialog from "@/components/custom/swap-market/private-party/CreatePrivateSwapDialog";
 import { useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
@@ -16,7 +16,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/compon
 import { useProfileStore } from '@/store/profile';
 import SwapHistoryDetailsDialog from './SwapHistoryDetailsDialog';
 import { SUE_SWAP_MODE, SUE_SWAP_STATUS, SUE_SWAP_STATUS_TO_STRING } from '@/constants/enums';
-import BadgeTile from '../../tiles/BadgeTile';
+import BadgeTile from '@/components/custom/tiles/BadgeTile';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { showWalletConnectionToast } from '@/lib/helpers';
 import HistorySwapsFilterDrawer from './HistorySwapsFilterDrawer';

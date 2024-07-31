@@ -2,9 +2,9 @@ import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 
 import { SUI_OpenSwap, SUI_SwapToken } from "@/types/swap-market.types";
 import { chainsDataset } from "@/constants/data";
-import CustomAvatar from "../../shared/CustomAvatar";
-import ChainTile from "../../tiles/ChainTile";
-import WalletAddressTile from "../../tiles/WalletAddressTile";
+import CustomAvatar from "@/components/custom/shared/CustomAvatar";
+import ChainTile from "@/components/custom/tiles/ChainTile";
+import WalletAddressTile from "@/components/custom/tiles/WalletAddressTile";
 
 interface IProp {
   className?: string;
