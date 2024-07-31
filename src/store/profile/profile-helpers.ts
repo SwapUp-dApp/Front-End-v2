@@ -1,7 +1,7 @@
 import { compareRarityRankItems } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { SUI_NFTItem } from "@/types/global.types";
-import { IProfileAssetsFilters, IProfileStore, SUT_CreatingNewSubdomainProcessStepType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
+import { IProfileAssetsFilters, IProfileStore, SUT_CreatingNewSubdomainProcessStepType, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
 import { IProfile, IProfileDetails, IWallet } from "@/types/profile.types";
 import { SUT_GridViewType } from "@/types/swap-market-store.types";
 
@@ -172,7 +172,7 @@ const getFilteredNftsByFilters = (state: IProfileStore, filters: IProfileAssetsF
 // Subdomain minting helpers start here
 
 export const setNavigateCreateSubdomainStepHelper = (state: IProfileStore, navigationMode: "PREVIOUS" | "NEXT"): IProfileStore => {
-    const { steps, currentStep } = state.overviewTab.subdomain.createNewSubdomain;
+    const { steps, currentStep } = state.overviewTab.subdomainSection.createNewSubdomain;
 
     const currentIndex = currentStep ? steps.indexOf(currentStep) : -1;
 
@@ -191,10 +191,10 @@ export const setNavigateCreateSubdomainStepHelper = (state: IProfileStore, navig
         ...state,
         overviewTab: {
             ...state.overviewTab,
-            subdomain: {
-                ...state.overviewTab.subdomain,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
                 createNewSubdomain: {
-                    ...state.overviewTab.subdomain.createNewSubdomain,
+                    ...state.overviewTab.subdomainSection.createNewSubdomain,
                     currentStep: newCurrentStep
                 }
             }
@@ -208,12 +208,25 @@ export const setSubnameValueHelper = (state: IProfileStore, enteredValue: string
         ...state,
         overviewTab: {
             ...state.overviewTab,
-            subdomain: {
-                ...state.overviewTab.subdomain,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
                 createNewSubdomain: {
-                    ...state.overviewTab.subdomain.createNewSubdomain,
+                    ...state.overviewTab.subdomainSection.createNewSubdomain,
                     subname: enteredValue
                 }
+            }
+        }
+    };
+};
+
+export const setActiveTabHelper = (state: IProfileStore, switchTo: SUT_SubdomainTabType): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
+                activeTab: switchTo
             }
         }
     };

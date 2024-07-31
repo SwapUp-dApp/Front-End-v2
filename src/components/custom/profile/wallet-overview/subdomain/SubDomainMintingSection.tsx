@@ -4,10 +4,22 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import CreateNewSubdomainProcess from './CreateNewSubdomainProcess';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useProfileStore } from '@/store/profile';
+import SubnameListItem from './SubnameListItem';
+import { Card } from '@/components/ui/card';
+import SubdomainRecordsTabContent from './SubdomainRecordsTabContent';
 
 const SubDomainMintingSection = () => {
 
   const [startCreateSubdomainProcess, setStartCreateSubdomainProcess] = useState(false);
+
+  const [activeTab, subdomainSectionTabs, setActiveTab, availableSubnames] = useProfileStore(state => [
+    state.overviewTab.subdomainSection.activeTab,
+    state.overviewTab.subdomainSection.subdomainSectionTabs,
+    state.overviewTab.subdomainSection.setActiveTab,
+    state.overviewTab.subdomainSection.availableSubnames
+  ]);
 
   return (
     <div className="space-y-4">
@@ -17,8 +29,10 @@ const SubDomainMintingSection = () => {
         </div>
 
         <div className='w-full lg:w-2/5 flex items-center gap-2' >
+
           <Input
-            className="w-full lg:w-[65%] bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
+            className={`w-full lg:w-[65%] bg-su_enable_bg text-su_secondary !p-3.5 mr-1 ${availableSubnames.length === 0 ? "opacity-0" : "opacity-100"}`}
+            disabled={availableSubnames.length === 0}
             placeholder="Search by subname"
             icon={
               <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -31,20 +45,52 @@ const SubDomainMintingSection = () => {
         </div>
       </div>
 
-      <EmptyDataset
-        title="Subdomain Not Minted"
-        description={`Consider obtaining a subdomain to enhance your identity across web3, consolidate all <br/> your crypto addresses under one name.`}
-      >
-        <Button onClick={() => { setStartCreateSubdomainProcess(true); }} >Mint subdomain</Button>
-      </EmptyDataset>
-
       <LoadingDataset
         isLoading={false}
         title="Loading mint subdomain"
         description='Minted subdomains data is being loaded...'
       />
 
+      {/* Creating new subname */}
       <CreateNewSubdomainProcess setStartCreateSubdomainProcess={setStartCreateSubdomainProcess} startCreateSubdomainProcess={startCreateSubdomainProcess} />
+
+      {availableSubnames.length > 0 &&
+        <Tabs defaultValue={activeTab} className='min-h-40'>
+          <TabsList>
+            {subdomainSectionTabs.map(tab => (
+              <TabsTrigger key={tab} value={tab} className='capitalize' onClick={() => { setActiveTab(tab); }} >
+                {tab}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          <TabsContent
+            value={subdomainSectionTabs[subdomainSectionTabs.findIndex(tab => tab === 'subnames')]}
+            className="space-y-3 py-2"
+          >
+            {availableSubnames.map((subname) => (
+              <SubnameListItem key={subname.id} subname={subname} />
+            ))}
+          </TabsContent>
+
+          <TabsContent
+            value={subdomainSectionTabs[subdomainSectionTabs.findIndex(tab => tab === 'records')]}
+            className="grid grid-cols-1 lg:grid-cols-2 py-2"
+          >
+            <SubdomainRecordsTabContent />
+          </TabsContent>
+        </Tabs>
+      }
+
+
+      {availableSubnames.length === 0 &&
+        <EmptyDataset
+          title="Subdomain Not Minted"
+          description={`Consider obtaining a subdomain to enhance your identity across web3, consolidate all <br/> your crypto addresses under one name.`}
+        >
+          <Button onClick={() => { setStartCreateSubdomainProcess(true); }} >Mint subdomain</Button>
+        </EmptyDataset>
+      }
     </div >
   );
 };

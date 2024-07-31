@@ -1,6 +1,7 @@
 import { z } from "zod";
 import moment from "moment";
 import { isValidURL } from "@/lib/utils";
+import { SUI_SubnameRecordAddressItem, SUI_SubnameRecordTextItem } from "@/types/profile.types";
 
 
 /*====================================*/
@@ -410,5 +411,72 @@ export const Schema_ProfileEditCoverImageForm = z.object({
       });
     }
 
+  }
+});
+
+export const Schema_EditSubdomainRecordsForm = z.object({
+  recordTab: z.enum(["text", "address", "other"], {
+    required_error: "Please select a record tab.",
+  }),
+  text: z.string().optional(),
+  addresses: z
+    .array(
+      z.string().min(1, { message: "Address is required." })
+    )
+    .optional(),
+  contentHash: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.recordTab === "text") {
+    if (!data.text) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["text"],
+        message: "Please enter text",
+      });
+    }
+
+    if (data.text && !isValidURL(data.text)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["text"],
+        message: "Text must be a valid URL.",
+      });
+    }
+  } else if (data.recordTab === "address") {
+    if (!data.addresses || data.addresses.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["addresses"],
+        message: "At least one address is required.",
+      });
+    } else {
+      // Check for unique addresses
+      const uniqueAddresses = new Set(data.addresses);
+      if (uniqueAddresses.size !== data.addresses.length) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["addresses"],
+          message: "All addresses must be unique.",
+        });
+      }
+    }
+  } else if (data.recordTab === "other") {
+    const ipfsRegex = /^ipfs:\/\/[a-zA-Z0-9]{30}(\/.*)?$/;
+
+    if (!data.contentHash) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["contentHash"],
+        message: "Content hash is required.",
+      });
+    }
+
+    if (data.contentHash && !ipfsRegex.test(data.contentHash)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["contentHash"],
+        message: "Content is not a valid IPFS path.",
+      });
+    }
   }
 });

@@ -14,9 +14,9 @@ interface IProp {
 const TransactionSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp) => {
 
   const [name, action, subname, avatar, isPremium, title] = useProfileStore(state => [
-    state.overviewTab.subdomain.createNewSubdomain.name,
-    state.overviewTab.subdomain.createNewSubdomain.action,
-    state.overviewTab.subdomain.createNewSubdomain.subname,
+    state.overviewTab.subdomainSection.createNewSubdomain.name,
+    state.overviewTab.subdomainSection.createNewSubdomain.action,
+    state.overviewTab.subdomainSection.createNewSubdomain.subname,
     state.profile.avatar,
     state.profile.isPremium,
     state.profile.details?.title
