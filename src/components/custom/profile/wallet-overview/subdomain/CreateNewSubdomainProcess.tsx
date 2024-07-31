@@ -20,7 +20,7 @@ const CreateNewSubdomainProcess = ({ setStartCreateSubdomainProcess, startCreate
   const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
   const [openTransactionDataDialog, setOpenTransactionDataDialog] = useState(false);
 
-  const { currentStep, navigateCreateSubdomainStep } = useProfileStore(state => state.overviewTab.subdomain.createNewSubdomain);
+  const { currentStep, navigateCreateSubdomainStep } = useProfileStore(state => state.overviewTab.subdomainSection.createNewSubdomain);
 
   const handleNavigationOfSteps = (navigationMode: "NEXT" | "PREVIOUS") => {
     switch (currentStep) {

@@ -32,7 +32,7 @@ const CopyTile = ({ children, className, textToCopy, ...props }: IProp) => {
       {
         !textCopied ?
           <CopyToClipboard text={textToCopy} onCopy={() => setTextCopied(true)} >
-            <svg className="w-3 cursor-pointer" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className="size-3 cursor-pointer" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9.17647 2.74282V12H0V2.74282H9.17647ZM12 0V9.25718H10.5882V1.37141H2.82353V0H12Z" fill="#B6B6BD" />
             </svg>
           </CopyToClipboard>

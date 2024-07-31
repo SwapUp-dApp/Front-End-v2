@@ -23,7 +23,7 @@ const formSchema = z.object({
 
 const CreateNewSubnameDialog = ({ open, setOpen, handleNavigationOfSteps }: IProp) => {
 
-  const [name, setSubnameValue] = useProfileStore(state => [state.overviewTab.subdomain.createNewSubdomain.name, state.overviewTab.subdomain.createNewSubdomain.setSubnameValue]);
+  const [name, setSubnameValue] = useProfileStore(state => [state.overviewTab.subdomainSection.createNewSubdomain.name, state.overviewTab.subdomainSection.createNewSubdomain.setSubnameValue]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
