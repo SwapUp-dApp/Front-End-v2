@@ -54,3 +54,24 @@ export interface SUI_CollectionOwnedItem {
     volume: number;
     openApproval: boolean;
 }
+
+export interface SUI_SubnameItem {
+    id: string;
+    subname: string;
+    ownerAddress: string;
+    manager: string;
+    parent: string;
+    expiry: string;
+    isPrimary: boolean;
+}
+
+export interface SUI_SubnameRecordTextItem {
+    id: string;
+    title: string;
+    iconURL: string;
+    text: string;
+}
+
+export interface SUI_SubnameRecordAddressItem extends Pick<SUI_CurrencyChainItem, "iconUrl" | "symbol" | "name" | "uuid"> {
+    address: string;
+}

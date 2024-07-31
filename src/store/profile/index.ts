@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { IProfileAssetsFilters, IProfileStore, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, setFilteredNftsByFiltersHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
+import { getInitialProfile, resetAllFiltersHelper, setActiveTabHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
 import { IProfileDetails, IWallet } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
@@ -24,6 +24,42 @@ const initialState: IProfileStore = {
     setNftsBySearch: () => { },
     setNftsByFilters: () => { },
     resetAllFilters: () => { },
+  },
+  overviewTab: {
+    subdomainSection: {
+      createNewSubdomain: {
+        steps: ['advantages', 'enter-name', 'confirmation', 'transaction'],
+        name: "swapup.eth",
+        action: "Create subdomain",
+        subname: "",
+        navigateCreateSubdomainStep: () => { },
+        setSubnameValue: () => { }
+      },
+      availableSubnames: [
+        {
+          id: "khalil.swapup.eth",
+          subname: "khalil.swapup.eth",
+          expiry: "No expiry",
+          isPrimary: false,
+          manager: "swapup.eth",
+          parent: "swapup.eth",
+          ownerAddress: "0xe6a28D675f38856ad383557C76dfdA2238961A49"
+        },
+        {
+          id: "ahmad.swapup.eth",
+          subname: "ahmad.swapup.eth",
+          expiry: "No expiry",
+          isPrimary: true,
+          manager: "swapup.eth",
+          parent: "swapup.eth",
+          ownerAddress: "hdjshjdhjshjdhsjhdjshdjhdjhjshdjhsjhdjshjdh"
+        },
+      ],
+      records: {},
+      activeTab: 'subnames',
+      subdomainSectionTabs: ['subnames', 'records'],
+      setActiveTab: () => { }
+    }
   }
 };
 
@@ -37,7 +73,6 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
   setProfileAvatar: (avatar: string) => set(state => setProfileAvatarHelper(state, avatar)),
   setProfileDetails: (details: IProfileDetails) => set((state) => setProfileDetailsHelper(state, details)),
   setProfileCoverImage: (coverImage: string) => set((state) => setProfileCoverImageHelper(state, coverImage)),
-
   assetTab: {
     ...initialState.assetTab,
     toggleVisibility: (value: SUT_VisibilityToggleType) => set(state => toggleVisibilityHelper(state, value)),
@@ -49,5 +84,17 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
     },
     resetAllFilters: () => set(state => resetAllFiltersHelper(state)),
     setNftsByFilters: (filters: IProfileAssetsFilters) => set(state => setFilteredNftsByFiltersHelper(state, filters)),
+  },
+  overviewTab: {
+    ...initialState.overviewTab,
+    subdomainSection: {
+      ...initialState.overviewTab.subdomainSection,
+      createNewSubdomain: {
+        ...initialState.overviewTab.subdomainSection.createNewSubdomain,
+        navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => set((state) => setNavigateCreateSubdomainStepHelper(state, navigationMode)),
+        setSubnameValue: (enteredValue: string) => set(state => setSubnameValueHelper(state, enteredValue))
+      },
+      setActiveTab: (switchTo: SUT_SubdomainTabType) => set(state => setActiveTabHelper(state, switchTo))
+    }
   }
 }));

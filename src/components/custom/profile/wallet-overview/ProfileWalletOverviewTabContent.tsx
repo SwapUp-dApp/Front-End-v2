@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import TokenDistributionPerChainChart from './TokenDistributionPerChainChart';
 import TokenBreakdownChart from './TokenBreakdownChart';
 import CollectionDetailsSection from './CollectionDetailsSection';
+import SubDomainMintingSection from './subdomain/SubDomainMintingSection';
 
 const ProfileWalletOverviewTabContent = () => {
 
@@ -27,6 +28,7 @@ const ProfileWalletOverviewTabContent = () => {
       </div>
 
       <CollectionDetailsSection />
+      <SubDomainMintingSection />
     </section>
   );
 };
