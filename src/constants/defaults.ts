@@ -55,7 +55,7 @@ export const defaults: IDefaultVariables = {
   profile: {
     title: "Profile",
     baseRoute: profileBaseRoute,
-    defaultActiveTab: 'assets',
+    defaultActiveTab: 'wallet-overview',
     tabs: [
       {
         key: 'wallet-overview',
