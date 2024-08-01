@@ -36,6 +36,7 @@ export interface SUI_CreateNewSubdomain {
   action: string;
   subname: string;
   navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => void;
+  resetSwapCreation: () => void;
   setSubnameValue: (enteredValue: string) => void;
 }
 
@@ -50,6 +51,7 @@ export interface SUI_SubdomainStructure {
     contentHash?: string;
   };
   setActiveTab: (switchTo: SUT_SubdomainTabType) => void;
+
 }
 
 export interface SUI_ProfileOverviewTab {

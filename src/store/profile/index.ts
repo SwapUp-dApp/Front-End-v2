@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, setActiveTabHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { getInitialProfile, resetAllFiltersHelper, resetOpenSwapCreationRoomHelper, setActiveTabHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
 import { IProfileDetails, IWallet } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
@@ -33,7 +33,8 @@ const initialState: IProfileStore = {
         action: "Create subdomain",
         subname: "",
         navigateCreateSubdomainStep: () => { },
-        setSubnameValue: () => { }
+        setSubnameValue: () => { },
+        resetSwapCreation: () => { }
       },
       availableSubnames: [
         {
@@ -92,7 +93,8 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
       createNewSubdomain: {
         ...initialState.overviewTab.subdomainSection.createNewSubdomain,
         navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => set((state) => setNavigateCreateSubdomainStepHelper(state, navigationMode)),
-        setSubnameValue: (enteredValue: string) => set(state => setSubnameValueHelper(state, enteredValue))
+        setSubnameValue: (enteredValue: string) => set(state => setSubnameValueHelper(state, enteredValue)),
+        resetSwapCreation: () => set(state => resetOpenSwapCreationRoomHelper(state))
       },
       setActiveTab: (switchTo: SUT_SubdomainTabType) => set(state => setActiveTabHelper(state, switchTo))
     }

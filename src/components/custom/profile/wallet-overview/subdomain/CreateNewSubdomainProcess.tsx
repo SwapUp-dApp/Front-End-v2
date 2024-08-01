@@ -20,7 +20,7 @@ const CreateNewSubdomainProcess = ({ setStartCreateSubdomainProcess, startCreate
   const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
   const [openTransactionDataDialog, setOpenTransactionDataDialog] = useState(false);
 
-  const { currentStep, navigateCreateSubdomainStep } = useProfileStore(state => state.overviewTab.subdomainSection.createNewSubdomain);
+  const { currentStep, navigateCreateSubdomainStep, resetSwapCreation } = useProfileStore(state => state.overviewTab.subdomainSection.createNewSubdomain);
 
   const handleNavigationOfSteps = (navigationMode: "NEXT" | "PREVIOUS") => {
     switch (currentStep) {
@@ -35,6 +35,8 @@ const CreateNewSubdomainProcess = ({ setStartCreateSubdomainProcess, startCreate
         break;
       case 'transaction':
         setOpenTransactionDataDialog(false);
+        resetSwapCreation();
+        setStartCreateSubdomainProcess(false);
         toast.custom(
           (id) => (
             <ToastLookCard

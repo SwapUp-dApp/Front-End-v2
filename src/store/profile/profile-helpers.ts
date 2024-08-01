@@ -202,7 +202,6 @@ export const setNavigateCreateSubdomainStepHelper = (state: IProfileStore, navig
     };
 };
 
-
 export const setSubnameValueHelper = (state: IProfileStore, enteredValue: string): IProfileStore => {
     return {
         ...state,
@@ -213,6 +212,23 @@ export const setSubnameValueHelper = (state: IProfileStore, enteredValue: string
                 createNewSubdomain: {
                     ...state.overviewTab.subdomainSection.createNewSubdomain,
                     subname: enteredValue
+                }
+            }
+        }
+    };
+};
+
+export const resetOpenSwapCreationRoomHelper = (state: IProfileStore): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
+                createNewSubdomain: {
+                    ...state.overviewTab.subdomainSection.createNewSubdomain,
+                    currentStep: undefined,
+                    subname: ''
                 }
             }
         }
