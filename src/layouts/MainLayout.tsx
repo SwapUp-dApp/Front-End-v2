@@ -11,6 +11,8 @@ import { getInitialProfile } from "@/store/profile/profile-helpers";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { generateRandomKey } from "@/lib/utils";
 import { showWalletConnectionToast } from "@/lib/helpers";
+import { useGlobalStore } from "@/store/global-store";
+import SharingSwapCompletionOnSocialDialog from "@/components/custom/shared/SharingSwapCompletionOnSocialDialog";
 
 const MainLayout = () => {
   const [key, setKey] = useState(generateRandomKey(6));
@@ -22,6 +24,7 @@ const MainLayout = () => {
   const activeChain = useActiveWalletChain();
 
   const [setProfileWallet, wallet] = useProfileStore(state => [state.setProfileWallet, state.profile.wallet]);
+  const [openShareRecentSwapDialog, setOpenShareRecentSwapDialog] = useGlobalStore(state => [state.openShareRecentSwapDialog, state.setOpenShareRecentSwapDialog]);
 
   const walletConnectionExistsInLocalStorage = localStorage.getItem("thirdweb:active-wallet-id");
 
@@ -73,6 +76,11 @@ const MainLayout = () => {
         </section>
       </div>
       <Footer />
+
+      <SharingSwapCompletionOnSocialDialog
+        open={openShareRecentSwapDialog}
+        setOpen={setOpenShareRecentSwapDialog}
+      />
     </div>
   );
 };
