@@ -28,6 +28,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getPrivateSwapPendingListApi } from '@/service/api';
 import { defaults } from '@/constants/defaults';
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from '@/constants/enums';
+import { useGlobalStore } from '@/store/global-store';
 
 
 const PrivateMarketTabContent = () => {
@@ -41,6 +42,7 @@ const PrivateMarketTabContent = () => {
     availablePrivateSwapsSearchApplied
   } = useSwapMarketStore(state => state.privateMarket);
 
+  const [setOpenShareRecentSwapDialog, setRecentAcceptedSwap] = useGlobalStore(state => [state.setOpenShareRecentSwapDialog, state.setRecentAcceptedSwap]);
   const wallet = useProfileStore(state => state.profile.wallet);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -113,6 +115,8 @@ const PrivateMarketTabContent = () => {
           }
         );
         setSwapAcceptance(prev => ({ ...prev, created: true }));
+        setOpenShareRecentSwapDialog(true);
+        setRecentAcceptedSwap(swap);
         navigate(`${defaults.profile.baseRoute}/${defaults.profile.defaultActiveTab}`);
       }
     } catch (error: any) {
