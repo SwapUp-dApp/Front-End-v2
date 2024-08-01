@@ -19,7 +19,7 @@ const TransactionSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IP
     state.overviewTab.subdomainSection.createNewSubdomain.subname,
     state.profile.avatar,
     state.profile.isPremium,
-    state.profile.details?.title
+    state.profile.details?.title,
   ]);
 
 
