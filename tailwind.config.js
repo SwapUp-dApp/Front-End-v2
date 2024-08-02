@@ -56,6 +56,12 @@ module.exports = {
         su_pie_chart_2: "var(--pie-chart-2)",
         su_pie_chart_3: "var(--pie-chart-3)",
         su_pie_chart_4: "var(--pie-chart-4)",
+        su_pie_chart_5: "var(--pie-chart-5)",
+        su_pie_chart_6: "var(--pie-chart-6)",
+        su_pie_chart_7: "var(--pie-chart-7)",
+        su_pie_chart_8: "var(--pie-chart-8)",
+        su_pie_chart_9: "var(--pie-chart-9)",
+      
 
         su_primary_bg: "rgba(13, 13, 35, 1)",
         su_primary_black: "rgba(13, 13, 35, 0.8)",

@@ -2,7 +2,7 @@ import { compareRarityRankItems } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { SUI_NFTItem } from "@/types/global.types";
 import { IProfileAssetsFilters, IProfileStore, SUT_CreatingNewSubdomainProcessStepType, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { IProfile, IProfileDetails, IWallet } from "@/types/profile.types";
+import { IProfile, IProfileDetails, IWallet, SUI_TokenBreakdownChartItem } from "@/types/profile.types";
 import { SUT_GridViewType } from "@/types/swap-market-store.types";
 
 export const getInitialProfile = (userType: "sender" | "receiver") => {
@@ -234,7 +234,6 @@ export const resetOpenSwapCreationRoomHelper = (state: IProfileStore): IProfileS
         }
     };
 };
-
 export const setActiveTabHelper = (state: IProfileStore, switchTo: SUT_SubdomainTabType): IProfileStore => {
     return {
         ...state,
@@ -244,6 +243,17 @@ export const setActiveTabHelper = (state: IProfileStore, switchTo: SUT_Subdomain
                 ...state.overviewTab.subdomainSection,
                 activeTab: switchTo
             }
+        }
+    };
+};
+
+export const setWalletTokenBreakdownDataHelper = (state: IProfileStore, tokensData: SUI_TokenBreakdownChartItem[], totalUsdAmount: number): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            walletTokenBreakdownData: tokensData,
+            totalWalletValue: totalUsdAmount
         }
     };
 };

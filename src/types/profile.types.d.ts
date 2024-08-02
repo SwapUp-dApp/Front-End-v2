@@ -38,8 +38,10 @@ export interface SUI_TokenDistributionPerChainChartItem {
     tradePercentage: { available: number, openTrade: number; };
 }
 
-export interface SUI_TokenBreakdownChartItem extends Pick<SUI_TokenDistributionPerChainChartItem, "key" | "network" | "totalPercentage"> {
+export interface SUI_TokenBreakdownChartItem extends Pick<SUI_TokenDistributionPerChainChartItem, "key" | "network"> {
     usdAmount: number;
+    percentage: number;
+    balance?: number;
 }
 
 interface SUI_TokenDistributionPerChainChartItemNetwork extends Pick<SUI_CurrencyChainItem, "iconUrl" | "name" | "symbol"> { }

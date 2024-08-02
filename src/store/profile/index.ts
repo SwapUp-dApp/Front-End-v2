@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, resetOpenSwapCreationRoomHelper, setActiveTabHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
-import { IProfileDetails, IWallet } from '@/types/profile.types';
+import { getInitialProfile, resetAllFiltersHelper, resetOpenSwapCreationRoomHelper, setActiveTabHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, setWalletTokenBreakdownDataHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { IProfileDetails, IWallet, SUI_TokenBreakdownChartItem } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
 
@@ -26,6 +26,7 @@ const initialState: IProfileStore = {
     resetAllFilters: () => { },
   },
   overviewTab: {
+    totalWalletValue: 0,
     subdomainSection: {
       createNewSubdomain: {
         steps: ['advantages', 'enter-name', 'confirmation', 'transaction'],
@@ -60,7 +61,9 @@ const initialState: IProfileStore = {
       activeTab: 'subnames',
       subdomainSectionTabs: ['subnames', 'records'],
       setActiveTab: () => { }
-    }
+    },
+    walletTokenBreakdownData: [],
+    setWalletTokenBreakdownData: () => { }
   }
 };
 
@@ -97,6 +100,7 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
         resetSwapCreation: () => set(state => resetOpenSwapCreationRoomHelper(state))
       },
       setActiveTab: (switchTo: SUT_SubdomainTabType) => set(state => setActiveTabHelper(state, switchTo))
-    }
+    },
+    setWalletTokenBreakdownData: (tokensData: SUI_TokenBreakdownChartItem[], totalUsdAmount: number) => set(state => setWalletTokenBreakdownDataHelper(state, tokensData, totalUsdAmount))
   }
 }));
