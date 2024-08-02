@@ -55,7 +55,10 @@ export interface SUI_SubdomainStructure {
 }
 
 export interface SUI_ProfileOverviewTab {
+  totalWalletValue: number;
   subdomainSection: SUI_SubdomainStructure;
+  walletTokenBreakdownData: SUI_TokenBreakdownChartItem[];
+  setWalletTokenBreakdownData: (tokensData: SUI_TokenBreakdownChartItem[], totalUsdAmount: number) => void;
 }
 
 export interface IProfileStore {

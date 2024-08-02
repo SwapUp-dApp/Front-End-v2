@@ -323,7 +323,6 @@ const PendingSwapsTabContent = () => {
     retry: false,
   });
 
-
   const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
     return (
       nfts.map((nft, index) => {
