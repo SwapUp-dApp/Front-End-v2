@@ -33,28 +33,29 @@ export interface IProfile {
 
 export interface SUI_TokenDistributionPerChainChartItem {
     key: string,
-    network: SUI_TokenDistributionPerChainChartItemNetwork;
+    network: SUI_DistributionTokenNetwork;
+    usdAmount: number;
     totalPercentage: number;
     tradePercentage: { available: number, openTrade: number; };
 }
 
-export interface SUI_TokenBreakdownChartItem extends Pick<SUI_TokenDistributionPerChainChartItem, "key" | "network"> {
-    usdAmount: number;
+export interface SUI_TokenBreakdownChartItem extends Pick<SUI_TokenDistributionPerChainChartItem, "key" | "network" | "usdAmount"> {
     percentage: number;
     balance?: number;
 }
 
-interface SUI_TokenDistributionPerChainChartItemNetwork extends Pick<SUI_CurrencyChainItem, "iconUrl" | "name" | "symbol"> { }
+interface SUI_DistributionTokenNetwork extends Pick<SUI_CurrencyChainItem, "iconUrl" | "name" | "symbol"> { }
 
 export interface SUI_CollectionOwnedItem {
     id: string;
     cover: string;
     collectionName: string;
-    assets: number;
+    totalAssets: number;
+    ownedAssets: number;
     floorPrice: number;
     highestRankNft: number;
-    volume: number;
     openApproval: boolean;
+    volume: number;
 }
 
 export interface SUI_SubnameItem {

@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, resetOpenSwapCreationRoomHelper, setActiveTabHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, setWalletTokenBreakdownDataHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
-import { IProfileDetails, IWallet, SUI_TokenBreakdownChartItem } from '@/types/profile.types';
+import { getInitialProfile, resetAllFiltersHelper, resetOpenSwapCreationRoomHelper, setActiveTabHelper, setCollectionOwnedHelper, setDistributionOfTokensPerChainHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, setWalletTokenBreakdownDataHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { IProfileDetails, IWallet, SUI_CollectionOwnedItem, SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
 
@@ -27,6 +27,7 @@ const initialState: IProfileStore = {
   },
   overviewTab: {
     totalWalletValue: 0,
+    totalNftsOwned: 0,
     subdomainSection: {
       createNewSubdomain: {
         steps: ['advantages', 'enter-name', 'confirmation', 'transaction'],
@@ -63,7 +64,11 @@ const initialState: IProfileStore = {
       setActiveTab: () => { }
     },
     walletTokenBreakdownData: [],
-    setWalletTokenBreakdownData: () => { }
+    distributionOfTokensPerChain: [],
+    collectionsOwned: [],
+    setWalletTokenBreakdownData: () => { },
+    setDistributionOfTokensPerChain: () => { },
+    setCollectionOwned: () => { }
   }
 };
 
@@ -101,6 +106,8 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
       },
       setActiveTab: (switchTo: SUT_SubdomainTabType) => set(state => setActiveTabHelper(state, switchTo))
     },
-    setWalletTokenBreakdownData: (tokensData: SUI_TokenBreakdownChartItem[], totalUsdAmount: number) => set(state => setWalletTokenBreakdownDataHelper(state, tokensData, totalUsdAmount))
+    setWalletTokenBreakdownData: (tokensData: SUI_TokenBreakdownChartItem[], totalUsdAmount: number) => set(state => setWalletTokenBreakdownDataHelper(state, tokensData, totalUsdAmount)),
+    setDistributionOfTokensPerChain: (tokensData: SUI_TokenDistributionPerChainChartItem[]) => set(state => setDistributionOfTokensPerChainHelper(state, tokensData)),
+    setCollectionOwned: (collectionsData: SUI_CollectionOwnedItem[]) => set(state => setCollectionOwnedHelper(state, collectionsData))
   }
 }));

@@ -1,8 +1,8 @@
 import { compareRarityRankItems } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { SUI_NFTItem } from "@/types/global.types";
-import { IProfileAssetsFilters, IProfileStore, SUT_CreatingNewSubdomainProcessStepType, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { IProfile, IProfileDetails, IWallet, SUI_TokenBreakdownChartItem } from "@/types/profile.types";
+import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
+import { IProfile, IProfileDetails, IWallet, SUI_CollectionOwnedItem, SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from "@/types/profile.types";
 import { SUT_GridViewType } from "@/types/swap-market-store.types";
 
 export const getInitialProfile = (userType: "sender" | "receiver") => {
@@ -254,6 +254,32 @@ export const setWalletTokenBreakdownDataHelper = (state: IProfileStore, tokensDa
             ...state.overviewTab,
             walletTokenBreakdownData: tokensData,
             totalWalletValue: totalUsdAmount
+        }
+    };
+};
+
+export const setDistributionOfTokensPerChainHelper = (state: IProfileStore, tokensData: SUI_TokenDistributionPerChainChartItem[]): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            distributionOfTokensPerChain: tokensData,
+        }
+    };
+};
+
+export const setCollectionOwnedHelper = (state: IProfileStore, collectionsData: SUI_CollectionOwnedItem[]): IProfileStore => {
+    let totalNftsOwned = 0;
+    collectionsData.forEach(collection => {
+        totalNftsOwned = totalNftsOwned + collection.ownedAssets;
+    });
+
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            collectionsOwned: collectionsData,
+            totalNftsOwned
         }
     };
 };

@@ -16,7 +16,7 @@ import { useProfileStore } from '@/store/profile';
 
 const ProfileWalletOverviewTabContent = () => {
   const [setAvailableCurrencies] = useGlobalStore(state => [state.setAvailableCurrencies]);
-  const [totalWalletValue] = useProfileStore(state => [state.overviewTab.totalWalletValue]);
+  const [totalWalletValue, totalNftsOwned] = useProfileStore(state => [state.overviewTab.totalWalletValue, state.overviewTab.totalNftsOwned]);
 
   const { isLoading, isSuccess, isError } = useQuery({
     queryKey: [`getAvailableCurrenciesApi`],
@@ -56,7 +56,7 @@ const ProfileWalletOverviewTabContent = () => {
           <div className='grid grid-cols-1 lg:grid-cols-3 gap-4' >
             <WalletOverviewCard cardType="totalwalletvalue" value={totalWalletValue} description="Total Wallet Value" />
             <WalletOverviewCard cardType="cryptostored" value={235.12} description="Crypto stored in the smart contract" />
-            <WalletOverviewCard cardType="NFTs" value={7} description="NFTs located in the smart contract" />
+            <WalletOverviewCard cardType="NFTs" value={totalNftsOwned} description="NFTs located in the smart contract" />
           </div>
 
           {/* Charts section */}

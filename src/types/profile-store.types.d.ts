@@ -1,5 +1,5 @@
 import { SUI_NFTItem } from "./global.types";
-import { IWallet, IProfile, IProfileDetails, SUI_SubnameItem, SUI_SubnameRecordTextItem, SUI_SubnameRecordAddressItem } from "./profile.types";
+import { IWallet, IProfile, IProfileDetails, SUI_SubnameItem, SUI_SubnameRecordTextItem, SUI_SubnameRecordAddressItem, SUI_TokenDistributionPerChainChartItem, SUI_CollectionOwnedItem } from "./profile.types";
 import { SUT_GridViewType } from "./swap-market-store.types";
 
 export type SUT_VisibilityToggleType = "all" | "hidden";
@@ -56,9 +56,14 @@ export interface SUI_SubdomainStructure {
 
 export interface SUI_ProfileOverviewTab {
   totalWalletValue: number;
+  totalNftsOwned: number;
   subdomainSection: SUI_SubdomainStructure;
+  collectionsOwned: SUI_CollectionOwnedItem[];
   walletTokenBreakdownData: SUI_TokenBreakdownChartItem[];
+  distributionOfTokensPerChain: SUI_TokenDistributionPerChainChartItem[];
   setWalletTokenBreakdownData: (tokensData: SUI_TokenBreakdownChartItem[], totalUsdAmount: number) => void;
+  setDistributionOfTokensPerChain: (tokensData: SUI_TokenDistributionPerChainChartItem[]) => void;
+  setCollectionOwned: (collectionData: SUI_CollectionOwnedItem[]) => void;
 }
 
 export interface IProfileStore {

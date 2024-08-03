@@ -185,7 +185,7 @@ const EditRecordsDialog = ({ open, setOpen }: IProp) => {
                   disabled={form.watch('addresses')?.length === 4}
                 >
                   <svg className="w-3" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6.74764 0.996582V0.246582H5.24764V0.996582V5.24834H0.996094H0.246094V6.74834H0.996094H5.24764V11.0004V11.7504H6.74764V11.0004V6.74834H10.9999H11.7499V5.24834H10.9999H6.74764V0.996582Z" fill="#565665" />
+                    <path fillRule="evenodd" clipRule="evenodd" d="M6.74764 0.996582V0.246582H5.24764V0.996582V5.24834H0.996094H0.246094V6.74834H0.996094H5.24764V11.0004V11.7504H6.74764V11.0004V6.74834H10.9999H11.7499V5.24834H10.9999H6.74764V0.996582Z" fill="#565665" />
                   </svg>
 
                   Add Address

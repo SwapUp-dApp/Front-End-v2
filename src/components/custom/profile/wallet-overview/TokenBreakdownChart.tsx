@@ -53,7 +53,7 @@ const TokenBreakdownChart = () => {
           });
           setWalletTokenBreakdownData(computedRes, totalUsdAmount);
 
-          return response.data.data;
+          return response.data;
         }
 
         return null;
@@ -79,33 +79,6 @@ const TokenBreakdownChart = () => {
     },
     retry: false,
   });
-
-  // const dataset: SUI_TokenBreakdownChartItem[] = [
-  //   {
-  //     key: 'ethereum',
-  //     network: { iconUrl: '/assets/svgs/ethereum.svg', name: 'Ethereum', symbol: "ETH" },
-  //     percentage: 50.1,
-  //     usdAmount: 184.50
-  //   },
-  //   {
-  //     key: 'Serum',
-  //     network: { iconUrl: '/assets/svgs/serum.svg', name: 'Serum', symbol: "SRM" },
-  //     percentage: 9,
-  //     usdAmount: 84.50
-  //   },
-  //   {
-  //     key: 'usdc',
-  //     network: { iconUrl: '/assets/svgs/usdc.svg', name: 'USD Coin', symbol: "USDC" },
-  //     percentage: 34.5,
-  //     usdAmount: 34.50
-  //   },
-  //   {
-  //     key: 'tether',
-  //     network: { iconUrl: '/assets/svgs/tether.svg', name: 'Tether', symbol: "USDT" },
-  //     percentage: 6.4,
-  //     usdAmount: 14.50
-  //   },
-  // ];
 
   const pieChartData = walletTokenBreakdownData.map(item => ({
     cryptoToken: item.key.toLowerCase(),
