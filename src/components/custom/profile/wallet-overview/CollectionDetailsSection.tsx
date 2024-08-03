@@ -9,6 +9,11 @@ import { getDefaultNftImageOnError } from '@/lib/utils';
 import YesNoTile from '../../tiles/YesNoTile';
 import CollectionOwnedCard from './CollectionOwnedCard';
 import { SUI_CollectionOwnedItem } from '@/types/profile.types';
+import { useQuery } from '@tanstack/react-query';
+import { getCollectionsByWalletIdApi } from '@/service/api';
+import { useProfileStore } from '@/store/profile';
+import { toast } from 'sonner';
+import ToastLookCard from '../../shared/ToastLookCard';
 
 
 const collectionsDataset: SUI_CollectionOwnedItem[] = [
@@ -16,7 +21,8 @@ const collectionsDataset: SUI_CollectionOwnedItem[] = [
     id: '1',
     cover: '/assets/nfts/card-nft-1.png',
     collectionName: "Whispering Winds",
-    assets: 10,
+    totalAssets: 10,
+    ownedAssets: 1,
     floorPrice: 1.005,
     highestRankNft: 10,
     openApproval: true,
@@ -26,7 +32,8 @@ const collectionsDataset: SUI_CollectionOwnedItem[] = [
     id: '2',
     cover: '/assets/nfts/cool-lion.jpg',
     collectionName: "Cool loins",
-    assets: 10,
+    totalAssets: 10,
+    ownedAssets: 1,
     floorPrice: 1.005,
     highestRankNft: 10,
     openApproval: false,
@@ -36,7 +43,8 @@ const collectionsDataset: SUI_CollectionOwnedItem[] = [
     id: '3',
     cover: '/assets/nfts/cool-cat.jpg',
     collectionName: "cool cats",
-    assets: 10,
+    totalAssets: 10,
+    ownedAssets: 1,
     floorPrice: 1.005,
     highestRankNft: 10,
     openApproval: true,
@@ -46,7 +54,8 @@ const collectionsDataset: SUI_CollectionOwnedItem[] = [
     id: '4',
     cover: '/assets/nfts/cool-dog.jpg',
     collectionName: "cool dogs",
-    assets: 10,
+    totalAssets: 10,
+    ownedAssets: 1,
     floorPrice: 1.005,
     highestRankNft: 10,
     openApproval: false,
@@ -56,7 +65,8 @@ const collectionsDataset: SUI_CollectionOwnedItem[] = [
     id: '5',
     cover: '/assets/nfts/cool-elephant.jpg',
     collectionName: "cool elephants",
-    assets: 10,
+    totalAssets: 10,
+    ownedAssets: 1,
     floorPrice: 1.005,
     highestRankNft: 10,
     openApproval: true,
@@ -66,14 +76,54 @@ const collectionsDataset: SUI_CollectionOwnedItem[] = [
 
 const CollectionDetailsSection = () => {
 
+  const [wallet, collectionsOwned, setCollectionOwned] = useProfileStore(state => [
+    state.profile.wallet,
+    state.overviewTab.collectionsOwned,
+    state.overviewTab.setCollectionOwned,
+  ]);
+
+  const { isLoading } = useQuery({
+    queryKey: [`getCollectionsByWalletIdApi`],
+    queryFn: async () => {
+      try {
+        if (wallet.address && wallet.isConnected) {
+          const response = await getCollectionsByWalletIdApi(wallet.address);
+          setCollectionOwned(response.data as SUI_CollectionOwnedItem[]);
+          return response.data;
+        }
+
+        return null;
+      } catch (error: any) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Request failed!"
+              description={error.message}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        throw error;
+      }
+    },
+    retry: false,
+  });
+
   return (
     <div className="space-y-4">
       {/* Filter Data and Title */}
       <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row lg:items-center lg:justify-between" >
         <div className="flex items-center lg:justify-between gap-4" >
           <h2 className="text-1.5xl font-medium" >Collections owned</h2>
-          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(collectionsDataset || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
-            {(collectionsDataset || []).length}
+          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(collectionsOwned || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
+            {(collectionsOwned || []).length}
           </span>
         </div>
 
@@ -99,7 +149,8 @@ const CollectionDetailsSection = () => {
               <TableHead className="align-top font-semibold min-w-[50px]">#</TableHead>
               <TableHead className="align-top font-semibold min-w-[100px]">Cover</TableHead>
               <TableHead className="align-top font-semibold min-w-[200px]">Collection name</TableHead>
-              <TableHead className="align-top font-semibold min-w-[150px]" >Assets #</TableHead>
+              <TableHead className="align-top font-semibold min-w-[150px]" >Total Assets #</TableHead>
+              <TableHead className="align-top font-semibold min-w-[150px]" >Owned Assets #</TableHead>
               <TableHead className="align-top font-semibold min-w-[130px]" >Floor price</TableHead>
               <TableHead className="align-top font-semibold min-w-[150px]" >Highest rank NFT</TableHead>
               <TableHead className="align-top font-semibold min-w-[100px]" >Volume</TableHead>
@@ -116,10 +167,10 @@ const CollectionDetailsSection = () => {
 
           <TableBody className="divide-y">
             {
-              collectionsDataset.map(collection => (
+              collectionsOwned.map((collection, index) => (
                 <TableRow key={collection.id} >
                   <TableCell className="text-xs font-semibold">
-                    {collection.id}
+                    {index + 1}
                   </TableCell>
                   <TableCell className="text-xs font-semibold">
                     <img
@@ -133,7 +184,10 @@ const CollectionDetailsSection = () => {
                     <span className='capitalize' >{collection.collectionName}</span>
                   </TableCell>
                   <TableCell className="text-xs font-semibold">
-                    {collection.assets}
+                    {collection.totalAssets}
+                  </TableCell>
+                  <TableCell className="text-xs font-semibold">
+                    {collection.ownedAssets}
                   </TableCell>
                   <TableCell className="text-xs font-semibold">
                     {collection.floorPrice} SOL
@@ -173,8 +227,16 @@ const CollectionDetailsSection = () => {
           ))
         }
       </div>
+
+      {collectionsOwned.length === 0 &&
+        <EmptyDataset
+          title="No owned collections found"
+          description="Check back later!"
+        />
+      }
+
       <LoadingDataset
-        isLoading={false}
+        isLoading={isLoading}
         title="Loading open swaps"
         description='Open swaps data is being loaded...'
       />

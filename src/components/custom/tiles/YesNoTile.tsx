@@ -7,7 +7,7 @@ interface IProp {
 
 const YesNoTile = ({ className, yes = false }: IProp) => {
   return (
-    <div
+    <span
       className={cn(
         "max-w-fit rounded-full flex items-center gap-2 py-2 px-3 text-text dark:text-su_primary text-xs font-semibold",
         yes ? "bg-su_tag_tea_green" : "bg-su_tag_periwinkle",
@@ -21,12 +21,12 @@ const YesNoTile = ({ className, yes = false }: IProp) => {
         </svg>
         :
         <svg className="w-3" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" clip-rule="evenodd" d="M11.6184 1.94157L12.1487 1.41124L11.0881 0.350586L10.5578 0.880919L6.49971 4.939L2.44167 0.880919L1.91134 0.350586L0.850676 1.41124L1.381 1.94157L5.43906 5.99967L1.38091 10.0578L0.850586 10.5882L1.91125 11.6488L2.44158 11.1185L6.49971 7.06033L10.5578 11.1185L11.0882 11.6488L12.1488 10.5882L11.6185 10.0578L7.56037 5.99967L11.6184 1.94157Z" fill="white" />
+          <path fillRule="evenodd" clipRule="evenodd" d="M11.6184 1.94157L12.1487 1.41124L11.0881 0.350586L10.5578 0.880919L6.49971 4.939L2.44167 0.880919L1.91134 0.350586L0.850676 1.41124L1.381 1.94157L5.43906 5.99967L1.38091 10.0578L0.850586 10.5882L1.91125 11.6488L2.44158 11.1185L6.49971 7.06033L10.5578 11.1185L11.0882 11.6488L12.1488 10.5882L11.6185 10.0578L7.56037 5.99967L11.6184 1.94157Z" fill="white" />
         </svg>
       }
 
       {yes ? "Yes" : "No"}
-    </div>
+    </span>
   );
 };
 
