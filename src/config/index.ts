@@ -15,7 +15,6 @@ const config: SUI_Config = {
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
     COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
     COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
-    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_LOCAL_NAMESPACE_LISTED_ENS_NAME
   },
 
   dev: {
@@ -30,7 +29,6 @@ const config: SUI_Config = {
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
     COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
     COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
-    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_DEV_NAMESPACE_LISTED_ENS_NAME
   },
 
   qa: {
@@ -45,7 +43,6 @@ const config: SUI_Config = {
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
     COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
     COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
-    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_QA_NAMESPACE_LISTED_ENS_NAME
   },
 
   prod: {
@@ -60,7 +57,6 @@ const config: SUI_Config = {
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
     COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
     COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
-    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_PROD_NAMESPACE_LISTED_ENS_NAME
   },
 };
 
