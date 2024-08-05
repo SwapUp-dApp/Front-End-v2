@@ -7,6 +7,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useProfileStore } from '@/store/profile';
+import { useEffect, useState } from 'react';
+import { generateRandomKey } from '@/lib/utils';
+import { generateMintingParameters, sendMintTransaction } from '@/lib/minting';
+import { toast } from 'sonner';
+import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 
 
 interface IProp {
@@ -22,20 +27,70 @@ const formSchema = z.object({
 });
 
 const CreateNewSubnameDialog = ({ open, setOpen, handleNavigationOfSteps }: IProp) => {
+  const [formKey, setFormKey] = useState(generateRandomKey(6));
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [name, setSubnameValue] = useProfileStore(state => [state.overviewTab.subdomainSection.createNewSubdomain.name, state.overviewTab.subdomainSection.createNewSubdomain.setSubnameValue]);
+  const [wallet, name, setSubnameValue, subname] = useProfileStore(state => [
+    state.profile.wallet,
+    state.overviewTab.subdomainSection.createNewSubdomain.name,
+    state.overviewTab.subdomainSection.createNewSubdomain.setSubnameValue,
+    state.overviewTab.subdomainSection.createNewSubdomain.subname
+  ]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subname: "",
+      subname: subname || '',
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setSubnameValue(values.subname);
-    handleNavigationOfSteps("NEXT");
+
+    try {
+      setIsLoading(true);
+
+      let mintingParameters = null;
+
+      if (subname && wallet.address) {
+        mintingParameters = await generateMintingParameters(values.subname, wallet.address as `0x${string}`);
+      }
+
+      if (mintingParameters) {
+        handleNavigationOfSteps("NEXT");
+      }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Request failed!"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 3000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+      console.error(error);
+
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (open) {
+      setFormKey(generateRandomKey(6));
+      form.reset();
+
+      form.setValue('subname', subname);
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen} >
@@ -57,7 +112,7 @@ const CreateNewSubnameDialog = ({ open, setOpen, handleNavigationOfSteps }: IPro
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form key={formKey} onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
                 name="subname"
@@ -76,7 +131,7 @@ const CreateNewSubnameDialog = ({ open, setOpen, handleNavigationOfSteps }: IPro
                 )}
               />
 
-              <Button variant={"default"} type="submit" className='w-full'>
+              <Button variant={"default"} type="submit" className='w-full' isLoading={isLoading}>
                 Next
               </Button>
 
