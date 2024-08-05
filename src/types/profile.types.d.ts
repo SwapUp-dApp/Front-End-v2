@@ -50,7 +50,6 @@ export interface SUI_CollectionOwnedItem {
     id: string;
     cover: string;
     collectionName: string;
-    totalAssets: number;
     ownedAssets: number;
     floorPrice: number;
     highestRankNft: number;

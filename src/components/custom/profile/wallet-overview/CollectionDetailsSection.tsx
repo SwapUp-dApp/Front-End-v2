@@ -16,64 +16,6 @@ import { toast } from 'sonner';
 import ToastLookCard from '../../shared/ToastLookCard';
 
 
-const collectionsDataset: SUI_CollectionOwnedItem[] = [
-  {
-    id: '1',
-    cover: '/assets/nfts/card-nft-1.png',
-    collectionName: "Whispering Winds",
-    totalAssets: 10,
-    ownedAssets: 1,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: true,
-    volume: 150
-  },
-  {
-    id: '2',
-    cover: '/assets/nfts/cool-lion.jpg',
-    collectionName: "Cool loins",
-    totalAssets: 10,
-    ownedAssets: 1,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: false,
-    volume: 150
-  },
-  {
-    id: '3',
-    cover: '/assets/nfts/cool-cat.jpg',
-    collectionName: "cool cats",
-    totalAssets: 10,
-    ownedAssets: 1,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: true,
-    volume: 150
-  },
-  {
-    id: '4',
-    cover: '/assets/nfts/cool-dog.jpg',
-    collectionName: "cool dogs",
-    totalAssets: 10,
-    ownedAssets: 1,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: false,
-    volume: 150
-  },
-  {
-    id: '5',
-    cover: '/assets/nfts/cool-elephant.jpg',
-    collectionName: "cool elephants",
-    totalAssets: 10,
-    ownedAssets: 1,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: true,
-    volume: 150
-  },
-];
-
 const CollectionDetailsSection = () => {
 
   const [wallet, collectionsOwned, setCollectionOwned] = useProfileStore(state => [
@@ -149,8 +91,7 @@ const CollectionDetailsSection = () => {
               <TableHead className="align-top font-semibold min-w-[50px]">#</TableHead>
               <TableHead className="align-top font-semibold min-w-[100px]">Cover</TableHead>
               <TableHead className="align-top font-semibold min-w-[200px]">Collection name</TableHead>
-              <TableHead className="align-top font-semibold min-w-[150px]" >Total Assets #</TableHead>
-              <TableHead className="align-top font-semibold min-w-[150px]" >Owned Assets #</TableHead>
+              <TableHead className="align-top font-semibold min-w-[150px]" >Assets #</TableHead>
               <TableHead className="align-top font-semibold min-w-[130px]" >Floor price</TableHead>
               <TableHead className="align-top font-semibold min-w-[150px]" >Highest rank NFT</TableHead>
               <TableHead className="align-top font-semibold min-w-[100px]" >Volume</TableHead>
@@ -184,9 +125,6 @@ const CollectionDetailsSection = () => {
                     <span className='capitalize' >{collection.collectionName}</span>
                   </TableCell>
                   <TableCell className="text-xs font-semibold">
-                    {collection.totalAssets}
-                  </TableCell>
-                  <TableCell className="text-xs font-semibold">
                     {collection.ownedAssets}
                   </TableCell>
                   <TableCell className="text-xs font-semibold">
@@ -210,6 +148,7 @@ const CollectionDetailsSection = () => {
         </Table>
 
         {
+          // Needs to take care while implementing filters
           (false) &&
           <EmptyDataset
             title="No Results Found"
@@ -222,7 +161,7 @@ const CollectionDetailsSection = () => {
 
       <div className='flex flex-col gap-3 lg:hidden'>
         {
-          collectionsDataset.map(collection => (
+          collectionsOwned.map(collection => (
             <CollectionOwnedCard key={collection.id} collection={collection} />
           ))
         }
