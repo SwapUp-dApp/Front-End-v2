@@ -218,7 +218,7 @@ export const setSubnameValueHelper = (state: IProfileStore, enteredValue: string
     };
 };
 
-export const resetSubnameCreationProcess = (state: IProfileStore): IProfileStore => {
+export const resetOpenSwapCreationRoomHelper = (state: IProfileStore): IProfileStore => {
     return {
         ...state,
         overviewTab: {
@@ -228,7 +228,7 @@ export const resetSubnameCreationProcess = (state: IProfileStore): IProfileStore
                 createNewSubdomain: {
                     ...state.overviewTab.subdomainSection.createNewSubdomain,
                     currentStep: undefined,
-                    subname: '',
+                    subname: ''
                 }
             }
         }
