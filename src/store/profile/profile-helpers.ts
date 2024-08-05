@@ -218,7 +218,7 @@ export const setSubnameValueHelper = (state: IProfileStore, enteredValue: string
     };
 };
 
-export const resetOpenSwapCreationRoomHelper = (state: IProfileStore): IProfileStore => {
+export const resetSubnameMintingProcess = (state: IProfileStore): IProfileStore => {
     return {
         ...state,
         overviewTab: {

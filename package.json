@@ -41,6 +41,7 @@
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.379.0",
     "moment": "^2.30.1",
+    "namespace-sdk": "^1.1.10",
     "next-themes": "^0.3.0",
     "react": "^18.2.0",
     "react-copy-to-clipboard": "^5.1.0",
