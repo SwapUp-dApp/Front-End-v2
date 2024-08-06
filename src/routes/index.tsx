@@ -40,20 +40,6 @@ const NotFoundPage = () => (
   </div >
 );
 
-export const landingPageRoutes: SUI_RoutesType[] = [
-  {
-    id: 'swapup-website',
-    title: "Swapup landing page",
-    path: "/",
-    element: <SwapUpWebsite />
-  },
-  {
-    id: 'swapup-services',
-    title: "Swapup Services",
-    path: "/services",
-    element: <ServicesPage />
-  }
-]
 
 export const clientSideRoutes: SUI_RoutesType[] = [
   {
@@ -62,7 +48,12 @@ export const clientSideRoutes: SUI_RoutesType[] = [
     path: "/",
     element: <SwapUpWebsite />,
   },
-  
+  {
+    id: 'swapup-services',
+    title: "Swapup Services",
+    path: "/services",
+    element: <ServicesPage />
+  },
   {
     id: 'swapup-privacy-policy',
     title: "Swapup Privacy Policy",
