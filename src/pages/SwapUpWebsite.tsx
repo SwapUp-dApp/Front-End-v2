@@ -244,6 +244,7 @@ const SwapUpPage = () => {
 										description="A place for projects to enhance community engagement and reach a wider audience using our core smart contracts and application functionality."
 										buttonText="Find out more"
 										comingSoon
+										onClick={()=>{}}
 									/>
 									<CarousalCard
 										imageSrc="/assets/landing-page/community-rewards.png"
@@ -251,6 +252,7 @@ const SwapUpPage = () => {
 										description="Establish a DAO to reward users and Projects who help grow the community and promote a safe platform for users to trade assets."
 										buttonText="Find out more"
 										comingSoon
+										onClick={()=>{}}
 									/>
 								</div>
 							</div>
