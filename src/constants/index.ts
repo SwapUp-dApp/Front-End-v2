@@ -37,7 +37,7 @@ export const landingPageNavData: SUI_NavItem[] = [
     key: "services",
     title: "Services",
     basePath: '/',
-    path: "/",
+    path: "/services",
     protected: true,
   },
   {
