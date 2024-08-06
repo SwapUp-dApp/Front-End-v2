@@ -35,6 +35,8 @@ export interface SUI_CreateNewSubdomain {
   name: string;
   action: string;
   subname: string;
+  transactionHash: string;
+  setTransactionHash: (hash: string) => void;
   navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => void;
   resetSwapCreation: () => void;
   setSubnameValue: (enteredValue: string) => void;

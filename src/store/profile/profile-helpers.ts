@@ -228,7 +228,24 @@ export const resetSubnameMintingProcess = (state: IProfileStore): IProfileStore 
                 createNewSubdomain: {
                     ...state.overviewTab.subdomainSection.createNewSubdomain,
                     currentStep: undefined,
-                    subname: ''
+                    subname: '',
+                    transactionHash: ''
+                }
+            }
+        }
+    };
+};
+
+export const setTransactionHashHelper = (state: IProfileStore, hash: string): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
+                createNewSubdomain: {
+                    ...state.overviewTab.subdomainSection.createNewSubdomain,
+                    transactionHash: hash
                 }
             }
         }

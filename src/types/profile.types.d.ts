@@ -77,3 +77,46 @@ export interface SUI_SubnameRecordTextItem {
 export interface SUI_SubnameRecordAddressItem extends Pick<SUI_CurrencyChainItem, "iconUrl" | "symbol" | "name" | "uuid"> {
     address: string;
 }
+
+// Subname minting types start here
+export interface SUI_MintNewOffchainSubnameParams {
+    label: string;
+    domain: string;
+    address: string;
+}
+
+
+export interface SUI_MintParamsRequest {
+    subnameLabel: string;
+    parentLabel: string;
+    subnameOwner: string,
+    label: string;
+    resolver?: string,
+    network: string;
+}
+
+export interface SUI_MintParamsResponse {
+    parameters: {
+        subnameLabel: string;
+        parentNode: string;
+        resolver: string;
+        subnameOwner: string;
+        fuses: number;
+        mintPrice: string;
+        mintFee: string;
+        expiry: number;
+        ttl: number;
+    };
+    signature: string;
+}
+
+
+export interface SUI_CheckSubnameAvailabilityParams {
+    network: string;
+    subnameLabel: string;
+    minterAddress?: string;
+    parentLabel?: string;
+    owner?: string;
+    currentPage?: number;
+    pageSize?: number;
+}

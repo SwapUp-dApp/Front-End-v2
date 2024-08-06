@@ -130,6 +130,7 @@ const CreateNewSubdomainProcess = ({ setStartCreateSubdomainProcess, startCreate
         open={openTransactionDataDialog && currentStep === "transaction"}
         setOpen={setOpenTransactionDataDialog}
         handleNavigationOfSteps={handleNavigationOfSteps}
+        setStartCreateSubdomainProcess={setStartCreateSubdomainProcess}
       />
     </>
   );
