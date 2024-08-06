@@ -12,7 +12,9 @@ export interface SUI_ConfigEnvironment {
   THIRDWEB_CLIENT_ID: string;
   COIN_RANKING_API_KEY: string;
   COIN_RANKING_BASE_URL: string;
-  NAMESPACE_LISTED_ENS_NAME:string
+  NAMESPACE_LISTED_ENS_NAME: string;
+  NAMESPACE_API_KEY: string;
+  NAMESPACE_API_BASE_URL: string;
 }
 export interface SUI_Config {
   local: SUI_ConfigEnvironment;

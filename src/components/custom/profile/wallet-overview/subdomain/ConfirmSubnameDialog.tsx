@@ -3,13 +3,10 @@ import CustomOutlineButton from '@/components/custom/shared/CustomOutlineButton'
 import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { sendMintTransaction } from '@/lib/minting';
-import { thirdWebClient } from '@/lib/thirdWebClient';
+import { handleMintNewSubname } from '@/lib/minting';
 import { useProfileStore } from '@/store/profile';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { PayEmbed, ThirdwebProvider, useSendTransaction } from 'thirdweb/react';
 
 interface IProp {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,24 +17,40 @@ interface IProp {
 const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const [name, action, subname, avatar, isPremium, title, wallet] = useProfileStore(state => [
+  const [name, action, subname, setTransactionHash, avatar, isPremium, title, wallet] = useProfileStore(state => [
     state.overviewTab.subdomainSection.createNewSubdomain.name,
     state.overviewTab.subdomainSection.createNewSubdomain.action,
     state.overviewTab.subdomainSection.createNewSubdomain.subname,
+    state.overviewTab.subdomainSection.createNewSubdomain.setTransactionHash,
     state.profile.avatar,
     state.profile.isPremium,
     state.profile.details?.title,
     state.profile.wallet
   ]);
 
-  // const { mutateAsync } = useSendTransaction();
-
   const handleOpenWallet = async () => {
     try {
       setIsLoading(true);
-      const txt = await sendMintTransaction(subname, wallet.address as `0x${string}`);
+      const txt = await handleMintNewSubname(subname, wallet.address as `0x${string}`);
 
       if (txt) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Subname created Successfully"
+              description={`Transaction: \n ${txt}`}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        setTransactionHash(txt);
         handleNavigationOfSteps("NEXT");
       }
 
@@ -65,7 +78,6 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
   return (
     <Dialog open={open} onOpenChange={setOpen} >
       <DialogContent className="w-[400px] p-4 space-y-4" >
-        {/* <ScrollArea className="pr-2 h-[400px]" > */}
         <div className="space-y-3" >
           {/* header */}
           <div className="space-y-2">
@@ -137,13 +149,6 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
             Open wallet
           </Button>
         </div>
-
-        {/* <ThirdwebProvider>
-            <PayEmbed client={thirdWebClient} />
-          </ThirdwebProvider> */}
-        {/* <ScrollBar orientation="vertical" className="bg-transparent" />
-
-        </ScrollArea> */}
       </DialogContent>
     </Dialog >
   );

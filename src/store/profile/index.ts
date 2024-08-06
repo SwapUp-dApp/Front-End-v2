@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, resetSubnameMintingProcess, setActiveTabHelper, setCollectionOwnedHelper, setDistributionOfTokensPerChainHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, setWalletTokenBreakdownDataHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { getInitialProfile, resetAllFiltersHelper, resetSubnameMintingProcess, setActiveTabHelper, setCollectionOwnedHelper, setDistributionOfTokensPerChainHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, setTransactionHashHelper, setWalletTokenBreakdownDataHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
 import { IProfileDetails, IWallet, SUI_CollectionOwnedItem, SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
@@ -34,10 +34,12 @@ const initialState: IProfileStore = {
         steps: ['advantages', 'enter-name', 'confirmation', 'transaction'],
         name: Environment.NAMESPACE_LISTED_ENS_NAME,
         action: "Create subdomain",
+        transactionHash: '',
         subname: "",
         navigateCreateSubdomainStep: () => { },
         setSubnameValue: () => { },
-        resetSwapCreation: () => { }
+        resetSwapCreation: () => { },
+        setTransactionHash: () => { }
       },
       availableSubnames: [
         {
@@ -103,7 +105,8 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
         ...initialState.overviewTab.subdomainSection.createNewSubdomain,
         navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => set((state) => setNavigateCreateSubdomainStepHelper(state, navigationMode)),
         setSubnameValue: (enteredValue: string) => set(state => setSubnameValueHelper(state, enteredValue)),
-        resetSwapCreation: () => set(state => resetSubnameMintingProcess(state))
+        resetSwapCreation: () => set(state => resetSubnameMintingProcess(state)),
+        setTransactionHash: (hash: string) => set(state => setTransactionHashHelper(state, hash))
       },
       setActiveTab: (switchTo: SUT_SubdomainTabType) => set(state => setActiveTabHelper(state, switchTo))
     },
