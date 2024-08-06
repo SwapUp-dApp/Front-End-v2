@@ -1,11 +1,9 @@
 import { cn, getDefaultNftImageOnError, getEtherScanContractNftUrl, getOpenSeaNftUrl } from "@/lib/utils";
 import { SUT_GridViewType } from "@/types/swap-market-store.types";
 import { SUI_NFTItem } from "@/types/global.types";
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { defaults } from "@/constants/defaults";
 import { useProfileStore } from "@/store/profile";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 interface IProp {
   className?: string;

@@ -7,6 +7,7 @@ interface IProp {
   className?: string;
   variant?: variantType;
   title?: string;
+  showIcon?: boolean;
 }
 
 interface IVariantItem {
@@ -51,7 +52,7 @@ const variantsData: IVariantItem[] = [
   },
 ];
 
-const ProfileTagTile = ({ className, variant = "normie", title }: IProp) => {
+const ProfileTagTile = ({ className, variant = "normie", title, showIcon = true }: IProp) => {
 
   const currenVariantItem = variantsData.find(item => item.key === variant);
 
@@ -66,7 +67,7 @@ const ProfileTagTile = ({ className, variant = "normie", title }: IProp) => {
       className
     )} >
 
-      {currenVariantItem?.icon}
+      {showIcon && currenVariantItem?.icon}
 
       {title ? title : currenVariantItem?.title}
     </div>

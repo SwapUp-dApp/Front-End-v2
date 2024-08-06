@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
-import FilterButton from '../../shared/FilterButton';
+import FilterButton from '@/components/custom/shared/FilterButton';
 import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import EmptyDataset from '../../shared/EmptyDataset';
+import EmptyDataset from '@/components/custom/shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken, SUI_Swap, SUP_CompleteSwap, SUP_CancelSwap } from '@/types/swap-market.types';
 import { useCancelSwapOffer, useCompletePrivateSwapOffer, useRejectSwapOffer } from '@/service/queries/swap-market.query';
-import ToastLookCard from '../../shared/ToastLookCard';
+import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
-import LoadingDataset from '../../shared/LoadingDataset';
+import LoadingDataset from '@/components/custom/shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
 import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
 import CreatePrivateSwapDialog from "@/components/custom/swap-market/private-party/CreatePrivateSwapDialog";
@@ -21,14 +21,14 @@ import { useCompleteOpenSwapOffer } from "@/service/queries/swap-market.query";
 
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from '@/constants/enums';
 import { useProfileStore } from '@/store/profile';
-import BadgeTile from '../../tiles/BadgeTile';
+import BadgeTile from '@/components/custom/tiles/BadgeTile';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { showWalletConnectionToast } from '@/lib/helpers';
 import PendingSwapsFilterDrawer from './PendingSwapsFilterDrawer';
 import { useMySwapStore } from '@/store/my-swaps';
 import { useQuery } from '@tanstack/react-query';
 import { getPendingSwapListApi } from '@/service/api';
-import { defaults } from '@/constants/defaults';
+import { useGlobalStore } from '@/store/global-store';
 
 
 const PendingSwapsTabContent = () => {
@@ -38,6 +38,7 @@ const PendingSwapsTabContent = () => {
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [pendingSwapsSearchApplied, pendingSwapsFiltersApplied] = useMySwapStore(state => [state.pendingSwapsFiltersApplied, state.pendingSwapsSearchApplied]);
   const [setMySwapsData, filteredPendingSwaps, pendingSwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredPendingSwaps, state.pendingSwaps]);
+  const [setOpenShareRecentSwapDialog, setRecentAcceptedSwap] = useGlobalStore(state => [state.setOpenShareRecentSwapDialog, state.setRecentAcceptedSwap]);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -86,7 +87,7 @@ const PendingSwapsTabContent = () => {
       };
 
       let offerResult;
-      //calling actual api 
+      // calling actual api;
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
         offerResult = await completeOpenSwapOffer(payload);
       }
@@ -112,6 +113,8 @@ const PendingSwapsTabContent = () => {
           }
         );
         setSwapAcceptance(prev => ({ ...prev, created: true }));
+        setOpenShareRecentSwapDialog(true);
+        setRecentAcceptedSwap(swap);
         navigate("/swap-up/my-swaps/history");
       }
 
@@ -319,7 +322,6 @@ const PendingSwapsTabContent = () => {
     },
     retry: false,
   });
-
 
   const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
     return (
@@ -623,8 +625,6 @@ const PendingSwapsTabContent = () => {
 
         </EmptyDataset>
       }
-
-
     </div >
   );
 };

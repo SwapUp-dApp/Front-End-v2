@@ -15,8 +15,8 @@ import { Schema_HistoryMySwapsFiltersForm } from "@/schema";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { IHistoryFilters, SUT_FiltersSwapModeType, SUT_HistoryFiltersStatusType } from "@/types/my-swaps-store.types";
 import { Switch } from "@/components/ui/switch";
-import CustomOutlineButton from "../../shared/CustomOutlineButton";
 import { useMySwapStore } from "@/store/my-swaps";
+import CustomOutlineButton from "../shared/CustomOutlineButton";
 
 interface IProp {
   children: any;

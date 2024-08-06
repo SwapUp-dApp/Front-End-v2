@@ -1,26 +1,62 @@
 import CustomAvatar from '@/components/custom/shared/CustomAvatar';
 import CustomLoadingBar from '@/components/custom/shared/CustomLoadingBar';
 import CustomOutlineButton from '@/components/custom/shared/CustomOutlineButton';
+import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { useProfileStore } from '@/store/profile';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface IProp {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   open: boolean;
   handleNavigationOfSteps: (navigationMode: "NEXT" | "PREVIOUS") => void;
+  setStartCreateSubdomainProcess: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TransactionSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp) => {
+const TransactionSubnameDialog = ({ handleNavigationOfSteps, open, setOpen, setStartCreateSubdomainProcess }: IProp) => {
+  const [isDone, setIsDone] = useState(false);
 
-  const [name, action, subname, avatar, isPremium, title] = useProfileStore(state => [
-    state.overviewTab.subdomain.createNewSubdomain.name,
-    state.overviewTab.subdomain.createNewSubdomain.action,
-    state.overviewTab.subdomain.createNewSubdomain.subname,
+  const [name, action, subname, transactionHash, resetSwapCreation, avatar, isPremium, title] = useProfileStore(state => [
+    state.overviewTab.subdomainSection.createNewSubdomain.name,
+    state.overviewTab.subdomainSection.createNewSubdomain.action,
+    state.overviewTab.subdomainSection.createNewSubdomain.subname,
+    state.overviewTab.subdomainSection.createNewSubdomain.transactionHash,
+    state.overviewTab.subdomainSection.createNewSubdomain.resetSwapCreation,
     state.profile.avatar,
     state.profile.isPremium,
-    state.profile.details?.title
+    state.profile.details?.title,
   ]);
+
+  const handleSuccess = () => {
+    toast.custom(
+      (id) => (
+        <ToastLookCard
+          variant="success"
+          title="Subname created Successfully"
+          description={`Transaction: \n ${transactionHash}`}
+          onClose={() => toast.dismiss(id)}
+        />
+      ),
+      {
+        duration: 3000,
+        className: 'w-full !bg-transparent',
+        position: "bottom-left",
+      }
+    );
+
+    setOpen(false);
+    setStartCreateSubdomainProcess(false);
+    resetSwapCreation();
+  };
+
+  useEffect(() => {
+    if (isDone) {
+      handleSuccess();
+    }
+  }, [isDone]);
+
 
 
   return (
@@ -43,7 +79,7 @@ const TransactionSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IP
           </div>
 
           <div className='space-y-3' >
-            <CustomLoadingBar />
+            <CustomLoadingBar setIsDone={setIsDone} isDone={isDone} />
 
             <div className='border-[1.5px] border-su_enable_bg rounded-sm py-3.5 px-4 flex items-center justify-between text-xs lg:text-sm' >
               <p className='text-su_ternary' >Name</p>
@@ -89,7 +125,7 @@ const TransactionSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IP
               className='py-3'
               onClick={() => { handleNavigationOfSteps('NEXT'); }}
             >
-              Close
+              {isDone ? "Done" : "Close"}
             </CustomOutlineButton>
           </div>
         </div>

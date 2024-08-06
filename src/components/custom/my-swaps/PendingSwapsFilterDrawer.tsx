@@ -15,7 +15,7 @@ import { Schema_PendingMySwapsFiltersForm } from "@/schema";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { SUT_RequestStatusType, SUT_FiltersSwapModeType, IPendingFilters } from "@/types/my-swaps-store.types";
 import { Switch } from "@/components/ui/switch";
-import CustomOutlineButton from "../../shared/CustomOutlineButton";
+import CustomOutlineButton from "../shared/CustomOutlineButton";
 import { useMySwapStore } from "@/store/my-swaps";
 import { useProfileStore } from "@/store/profile";
 

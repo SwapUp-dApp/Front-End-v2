@@ -59,7 +59,7 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
                   </svg>
                 </DialogClose>
               </div>
-              <h2 className="text-sm font-semibold">Wallet and Asset Details</h2>
+              <h2 className="text-sm font-semibold">Trade Details</h2>
             </div>
 
             {/* side cards*/}

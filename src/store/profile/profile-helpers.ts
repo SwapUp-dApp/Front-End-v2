@@ -1,8 +1,8 @@
 import { compareRarityRankItems } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { SUI_NFTItem } from "@/types/global.types";
-import { IProfileAssetsFilters, IProfileStore, SUT_CreatingNewSubdomainProcessStepType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { IProfile, IProfileDetails, IWallet } from "@/types/profile.types";
+import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
+import { IProfile, IProfileDetails, IWallet, SUI_CollectionOwnedItem, SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from "@/types/profile.types";
 import { SUT_GridViewType } from "@/types/swap-market-store.types";
 
 export const getInitialProfile = (userType: "sender" | "receiver") => {
@@ -172,7 +172,7 @@ const getFilteredNftsByFilters = (state: IProfileStore, filters: IProfileAssetsF
 // Subdomain minting helpers start here
 
 export const setNavigateCreateSubdomainStepHelper = (state: IProfileStore, navigationMode: "PREVIOUS" | "NEXT"): IProfileStore => {
-    const { steps, currentStep } = state.overviewTab.subdomain.createNewSubdomain;
+    const { steps, currentStep } = state.overviewTab.subdomainSection.createNewSubdomain;
 
     const currentIndex = currentStep ? steps.indexOf(currentStep) : -1;
 
@@ -191,10 +191,10 @@ export const setNavigateCreateSubdomainStepHelper = (state: IProfileStore, navig
         ...state,
         overviewTab: {
             ...state.overviewTab,
-            subdomain: {
-                ...state.overviewTab.subdomain,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
                 createNewSubdomain: {
-                    ...state.overviewTab.subdomain.createNewSubdomain,
+                    ...state.overviewTab.subdomainSection.createNewSubdomain,
                     currentStep: newCurrentStep
                 }
             }
@@ -202,19 +202,101 @@ export const setNavigateCreateSubdomainStepHelper = (state: IProfileStore, navig
     };
 };
 
-
 export const setSubnameValueHelper = (state: IProfileStore, enteredValue: string): IProfileStore => {
     return {
         ...state,
         overviewTab: {
             ...state.overviewTab,
-            subdomain: {
-                ...state.overviewTab.subdomain,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
                 createNewSubdomain: {
-                    ...state.overviewTab.subdomain.createNewSubdomain,
+                    ...state.overviewTab.subdomainSection.createNewSubdomain,
                     subname: enteredValue
                 }
             }
+        }
+    };
+};
+
+export const resetSubnameMintingProcess = (state: IProfileStore): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
+                createNewSubdomain: {
+                    ...state.overviewTab.subdomainSection.createNewSubdomain,
+                    currentStep: undefined,
+                    subname: '',
+                    transactionHash: ''
+                }
+            }
+        }
+    };
+};
+
+export const setTransactionHashHelper = (state: IProfileStore, hash: string): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
+                createNewSubdomain: {
+                    ...state.overviewTab.subdomainSection.createNewSubdomain,
+                    transactionHash: hash
+                }
+            }
+        }
+    };
+};
+export const setActiveTabHelper = (state: IProfileStore, switchTo: SUT_SubdomainTabType): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
+                activeTab: switchTo
+            }
+        }
+    };
+};
+
+export const setWalletTokenBreakdownDataHelper = (state: IProfileStore, tokensData: SUI_TokenBreakdownChartItem[], totalUsdAmount: number): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            walletTokenBreakdownData: tokensData,
+            totalWalletValue: totalUsdAmount
+        }
+    };
+};
+
+export const setDistributionOfTokensPerChainHelper = (state: IProfileStore, tokensData: SUI_TokenDistributionPerChainChartItem[]): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            distributionOfTokensPerChain: tokensData,
+        }
+    };
+};
+
+export const setCollectionOwnedHelper = (state: IProfileStore, collectionsData: SUI_CollectionOwnedItem[]): IProfileStore => {
+    let totalNftsOwned = 0;
+    collectionsData.forEach(collection => {
+        totalNftsOwned = totalNftsOwned + collection.ownedAssets;
+    });
+
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            collectionsOwned: collectionsData,
+            totalNftsOwned
         }
     };
 };

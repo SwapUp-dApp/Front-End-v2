@@ -45,6 +45,11 @@
     --pie-chart-2: rgba(143, 143, 214, 1);
     --pie-chart-3: rgba(181, 181, 227, 1);
     --pie-chart-4: rgba(218, 218, 241, 1);
+    --pie-chart-5: rgb(83, 216, 152);
+    --pie-chart-6: rgb(31, 217, 192);
+    --pie-chart-7: rgb(34, 67, 232);
+    --pie-chart-8: rgb(234, 68, 68);
+    --pie-chart-9: rgb(230, 238, 119);
   }
 
   .dark {

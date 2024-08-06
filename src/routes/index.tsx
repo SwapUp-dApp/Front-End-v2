@@ -16,12 +16,12 @@ import { Navigate } from "react-router-dom";
 import OpenMarketTabContent from "@/components/custom/swap-market/open-market/OpenMarketTabContent";
 import PrivateMarketTabContent from "@/components/custom/swap-market/private-party/PrivateMarketTabContent";
 import { defaults } from "@/constants/defaults";
-import PendingSwapsTabContent from "@/components/custom/swap-market/my-swaps/PendingSwapsTabContent";
-import SwapHistoryTabContent from "@/components/custom/swap-market/my-swaps/SwapHistoryTabContent";
 import ProfileWalletOverviewTabContent from "@/components/custom/profile/wallet-overview/ProfileWalletOverviewTabContent";
 import ProfilePointsAndSwappotTabContent from "@/components/custom/profile/points-swappot/ProfilePointsAndSwappotTabContent";
 import ProfileAssetsTabContent from "@/components/custom/profile/assets/ProfileAssetsTabContent";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import PendingSwapsTabContent from "@/components/custom/my-swaps/PendingSwapsTabContent";
+import SwapHistoryTabContent from "@/components/custom/my-swaps/SwapHistoryTabContent";
 import ServicesPage from "@/pages/Services";
 
 
