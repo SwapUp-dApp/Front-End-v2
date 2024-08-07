@@ -6133,7 +6133,7 @@ export const communityCardDetails: CommunityCardDetails[] = [
   {
     src: "/assets/landing-page/contract.png",
     title: "Efficient Smart Contracts",
-    desc: "swift contract execution ensures reliability"
+    desc: "Execute transactions with lower fees."
   },
   {
     src: "/assets/landing-page/plug.png",
@@ -6164,21 +6164,6 @@ export const communityCardDetails: CommunityCardDetails[] = [
     src: "/assets/landing-page/community.png",
     title: "Community driven",
     desc: "Developed collaboratively with active community input."
-  },
-  {
-    src: "/assets/landing-page/safety.png",
-    title: "Safety",
-    desc: "SwapUp offers a secure and trustless solutions."
-  },
-  {
-    src: "/assets/landing-page/security.png",
-    title: "Security",
-    desc: "SwapUp provides a secure avenue for trading."
-  },
-  {
-    src: "/assets/landing-page/web3.png",
-    title: "Web 3 Value",
-    desc: "Building a business for web3, with web3 principles."
   },
 
 ];
