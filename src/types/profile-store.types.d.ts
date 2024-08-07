@@ -45,6 +45,7 @@ export interface SUI_CreateNewSubdomain {
 export interface SUI_SubdomainStructure {
   createNewSubdomain: SUI_CreateNewSubdomain;
   availableSubnames: SUI_SubnameItem[];
+  filteredAvailableSubnames: SUI_SubnameItem[];
   subdomainSectionTabs: SUT_SubdomainTabType[];
   activeTab: SUT_SubdomainTabType;
   records: {
@@ -53,7 +54,7 @@ export interface SUI_SubdomainStructure {
     contentHash?: string;
   };
   setActiveTab: (switchTo: SUT_SubdomainTabType) => void;
-
+  setAvailableSubnames: (subnamesData: SUI_SubnameItem[]) => void;
 }
 
 export interface SUI_ProfileOverviewTab {

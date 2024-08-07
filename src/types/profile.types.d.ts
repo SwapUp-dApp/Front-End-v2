@@ -59,7 +59,8 @@ export interface SUI_CollectionOwnedItem {
 
 export interface SUI_SubnameItem {
     id: string;
-    subname: string;
+    subnameLabel: string;
+    fullName: string;
     ownerAddress: string;
     manager: string;
     parent: string;
@@ -79,7 +80,7 @@ export interface SUI_SubnameRecordAddressItem extends Pick<SUI_CurrencyChainItem
 }
 
 // Subname minting types start here
-export interface SUI_MintNewOffchainSubnameParams {
+export interface SUI_MintNewOffchainSubnameRequestParams {
     label: string;
     domain: string;
     address: string;

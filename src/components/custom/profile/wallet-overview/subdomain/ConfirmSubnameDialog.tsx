@@ -3,7 +3,7 @@ import CustomOutlineButton from '@/components/custom/shared/CustomOutlineButton'
 import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
-import { handleMintNewSubname } from '@/lib/minting';
+import { handleMintNewOffchainSubname } from '@/lib/minting';
 import { useProfileStore } from '@/store/profile';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -31,15 +31,15 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
   const handleOpenWallet = async () => {
     try {
       setIsLoading(true);
-      const txt = await handleMintNewSubname(subname, wallet.address as `0x${string}`);
+      const createdFullName = await handleMintNewOffchainSubname(subname, wallet.address as `0x${string}`);
 
-      if (txt) {
+      if (createdFullName) {
         toast.custom(
           (id) => (
             <ToastLookCard
               variant="success"
               title="Subname created Successfully"
-              description={`Transaction: \n ${txt}`}
+              description={`Your fullname is: \n ${createdFullName}`}
               onClose={() => toast.dismiss(id)}
             />
           ),
@@ -50,7 +50,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
           }
         );
 
-        setTransactionHash(txt);
+        setTransactionHash(createdFullName);
         handleNavigationOfSteps("NEXT");
       }
 

@@ -8,7 +8,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useProfileStore } from '@/store/profile';
 import { useEffect, useState } from 'react';
-import { generateMintingParameters } from '@/lib/minting';
+import { handleCheckOffchainSubnameAvailability } from '@/lib/minting';
 import { toast } from 'sonner';
 import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 
@@ -48,9 +48,9 @@ const CreateNewSubnameDialog = ({ open, setOpen, handleNavigationOfSteps }: IPro
 
     try {
       setIsLoading(true);
-      const mintingPerms = await generateMintingParameters(values.subname, wallet.address as `0x${string}`);
+      const isAvailable = await handleCheckOffchainSubnameAvailability(values.subname);
 
-      if (mintingPerms) {
+      if (isAvailable) {
         handleNavigationOfSteps("NEXT");
       }
 

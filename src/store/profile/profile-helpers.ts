@@ -2,7 +2,7 @@ import { compareRarityRankItems } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { SUI_NFTItem } from "@/types/global.types";
 import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { IProfile, IProfileDetails, IWallet, SUI_CollectionOwnedItem, SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from "@/types/profile.types";
+import { IProfile, IProfileDetails, IWallet, SUI_CollectionOwnedItem, SUI_SubnameItem, SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from "@/types/profile.types";
 import { SUT_GridViewType } from "@/types/swap-market-store.types";
 
 export const getInitialProfile = (userType: "sender" | "receiver") => {
@@ -259,6 +259,20 @@ export const setActiveTabHelper = (state: IProfileStore, switchTo: SUT_Subdomain
             subdomainSection: {
                 ...state.overviewTab.subdomainSection,
                 activeTab: switchTo
+            }
+        }
+    };
+};
+
+export const setAvailableSubnamesHelper = (state: IProfileStore, subnamesData: SUI_SubnameItem[]): IProfileStore => {
+    return {
+        ...state,
+        overviewTab: {
+            ...state.overviewTab,
+            subdomainSection: {
+                ...state.overviewTab.subdomainSection,
+                availableSubnames: subnamesData,
+                filteredAvailableSubnames: subnamesData
             }
         }
     };

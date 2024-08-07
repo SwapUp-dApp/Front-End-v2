@@ -15,6 +15,7 @@ export interface SUI_ConfigEnvironment {
   NAMESPACE_LISTED_ENS_NAME: string;
   NAMESPACE_API_KEY: string;
   NAMESPACE_API_BASE_URL: string;
+  NAMESPACE_OFFCHAIN_API_BASE_URL: string;
 }
 export interface SUI_Config {
   local: SUI_ConfigEnvironment;

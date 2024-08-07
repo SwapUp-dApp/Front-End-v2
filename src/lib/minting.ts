@@ -4,8 +4,8 @@ import { createWalletClient, http } from "viem";
 import { sepolia } from "viem/chains";
 import { Environment } from "@/config";
 import { getWalletProxy } from "./walletProxy";
-import { SUI_MintParamsRequest, SUI_MintParamsResponse } from "@/types/profile.types";
-import { mintSubnameApi } from "@/service/api";
+import { SUI_MintNewOffchainSubnameRequestParams, SUI_MintParamsRequest, SUI_MintParamsResponse } from "@/types/profile.types";
+import { checkOffchainSubnameAvailabilityApi, mintOffchainSubnameApi, mintSubnameApi, resolveOffChainSubnameByWalletIdApi } from "@/service/api";
 
 import { ethers } from 'ethers';
 
@@ -157,6 +157,44 @@ export const handleMintNewSubname = async (subnameLabel: string, minterAddress: 
 
     return tx.hash;
 
+  } catch (error) {
+    throw error;
+  }
+};
+
+
+// Minting Offchain L2 subname handlers Starts here
+
+export const handleMintNewOffchainSubname = async (subnameLabel: string, minterAddress: `0x${string}`) => {
+
+  try {
+
+    const payloadParams: SUI_MintNewOffchainSubnameRequestParams = {
+      address: minterAddress,
+      domain: LISTED_NAME,
+      label: subnameLabel
+    };
+
+    const response = await mintOffchainSubnameApi(payloadParams);
+    console.log(response.data);
+
+    return response.data.fullName;
+
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const handleCheckOffchainSubnameAvailability = async (subnameLabel: string) => {
+  try {
+    const response = await checkOffchainSubnameAvailabilityApi(subnameLabel, LISTED_NAME);
+    console.log(response.data);
+
+    if (!response.data.isAvailable) {
+      throw new Error(`${subnameLabel}.${LISTED_NAME} is not available`);
+    }
+
+    return response.data.isAvailable;
   } catch (error) {
     throw error;
   }
