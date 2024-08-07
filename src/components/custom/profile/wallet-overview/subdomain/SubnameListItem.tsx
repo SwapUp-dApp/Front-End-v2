@@ -16,7 +16,7 @@ const SubnameListItem = ({ subname }: IProp) => {
 
   return (
     <div className='bg-su_secondary_bg p-6 rounded-md flex flex-col gap-2 text-xs lg:text-sm'>
-      <h3 className="font-semibold text-su_primary" >{subname.subname}</h3>
+      <h3 className="font-semibold text-su_primary" >{subname.fullName}</h3>
 
       <div className="flex flex-col gap-10 lg:flex-row lg:justify-between lg:items-center">
         <div className="flex items-center flex-wrap gap-2" >
@@ -59,7 +59,7 @@ const SubnameListItem = ({ subname }: IProp) => {
       <DeleteConfirmationDialog
         open={openDeleteConfirmationDialog}
         setOpen={setOpenDeleteConfirmationDialog}
-        title={`Are you sure you want to delete ${subname.subname} subdomain?`}
+        title={`Are you sure you want to delete ${subname.fullName} subdomain?`}
         description={"This action cannot be undone. Please proceed with caution."}
         handleConfirm={() => {
           toast.info("Deleting submain", {
