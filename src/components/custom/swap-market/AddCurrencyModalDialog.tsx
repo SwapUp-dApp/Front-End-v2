@@ -10,20 +10,25 @@ import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { SUI_CurrencyChainItem } from "@/types/global.types";
 import { Schema_AmountConversionForm } from "@/schema";
+import FooterSideSelectTokenDialog from "./FooterSideSelectTokenDialog";
+import { ChevronDown } from "lucide-react";
 
 
 interface IProp {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   children: any;
   availableChains: SUI_CurrencyChainItem[];
   getSelectedChain: () => SUI_CurrencyChainItem;
   handleFormSubmit: (values: z.infer<typeof Schema_AmountConversionForm>) => void,
+  handleSetSelectedCurrency: (selectedCurrencyValue: string) => void;
   form: UseFormReturn<{
     amount?: string;
     chain: string;
   }, any, undefined>;
 }
 
-const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableChains, getSelectedChain }: IProp) => {
+const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableChains, getSelectedChain, handleSetSelectedCurrency, open, setOpen }: IProp) => {
 
 
   return (
@@ -83,42 +88,22 @@ const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableCha
                   </span>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="chain"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="bg-transparent border-none flex items-center gap-2 w-[100px]">
-                            <SelectValue className="uppercase" placeholder={
-                              <span className=" flex items-center gap-2" >
-                                <img className="w-4 h-4 rounded-full" src={getSelectedChain().iconUrl} alt="" />
-                                {getSelectedChain().symbol}
-                              </span>
-                            } />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="bg-su_primary_bg border-none right-0 w-[80vw] h-[160px] absolute -left-[55vw] top-2 p-0.5" >
-                          {
-                            availableChains.map(coin => (
-                              <SelectItem key={coin.uuid} className="hover:bg-su_active_bg py-3" value={JSON.stringify(coin)}>
-                                <span className="flex items-center gap-2"  >
-                                  <img className="w-4 h-4 rounded-full" src={coin.iconUrl} alt="" />
-                                  {coin.symbol}
-                                </span>
-                              </SelectItem>
-                            ))
-                          }
-                        </SelectContent>
-                      </Select>
-                      <FormMessage className="absolute -bottom-6 right-0" />
-                    </FormItem>
-                  )}
-                />
+                <button
+                  onClick={() => setOpen(true)}
+                  className="min-w-[100px] border border-su_disabled rounded-full p-1.5 flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2 text-sm" >
+                    <img
+                      src={getSelectedChain().iconUrl}
+                      alt=""
+                      className="w-4 h-4"
+                    />
+
+                    {getSelectedChain().symbol}
+                  </span>
+
+                  <ChevronDown className={`h-4 w-4 ${open ? "rotate-180 animate-in" : "rotate-0 animate-in"}`} />
+                </button>
               </div>
 
               <div className="py-2" >
@@ -133,6 +118,12 @@ const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableCha
             </form>
           </Form>
         </div>
+
+        <FooterSideSelectTokenDialog
+          open={open}
+          setOpen={setOpen}
+          handleSetSelectedCurrency={handleSetSelectedCurrency}
+        />
       </DialogContent>
     </Dialog >
   );
