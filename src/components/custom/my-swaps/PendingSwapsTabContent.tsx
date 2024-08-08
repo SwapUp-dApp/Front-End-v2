@@ -28,7 +28,7 @@ import PendingSwapsFilterDrawer from './PendingSwapsFilterDrawer';
 import { useMySwapStore } from '@/store/my-swaps';
 import { useQuery } from '@tanstack/react-query';
 import { getPendingSwapListApi } from '@/service/api';
-import { defaults } from '@/constants/defaults';
+import { useGlobalStore } from '@/store/global-store';
 
 
 const PendingSwapsTabContent = () => {
@@ -38,6 +38,7 @@ const PendingSwapsTabContent = () => {
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [pendingSwapsSearchApplied, pendingSwapsFiltersApplied] = useMySwapStore(state => [state.pendingSwapsFiltersApplied, state.pendingSwapsSearchApplied]);
   const [setMySwapsData, filteredPendingSwaps, pendingSwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredPendingSwaps, state.pendingSwaps]);
+  const [setOpenShareRecentSwapDialog, setRecentAcceptedSwap] = useGlobalStore(state => [state.setOpenShareRecentSwapDialog, state.setRecentAcceptedSwap]);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -86,7 +87,7 @@ const PendingSwapsTabContent = () => {
       };
 
       let offerResult;
-      //calling actual api 
+      // calling actual api;
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
         offerResult = await completeOpenSwapOffer(payload);
       }
@@ -112,6 +113,8 @@ const PendingSwapsTabContent = () => {
           }
         );
         setSwapAcceptance(prev => ({ ...prev, created: true }));
+        setOpenShareRecentSwapDialog(true);
+        setRecentAcceptedSwap(swap);
         navigate("/swap-up/my-swaps/history");
       }
 
@@ -319,7 +322,6 @@ const PendingSwapsTabContent = () => {
     },
     retry: false,
   });
-
 
   const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
     return (
@@ -623,8 +625,6 @@ const PendingSwapsTabContent = () => {
 
         </EmptyDataset>
       }
-
-
     </div >
   );
 };

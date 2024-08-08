@@ -1,8 +1,12 @@
 import CustomAvatar from '@/components/custom/shared/CustomAvatar';
 import CustomOutlineButton from '@/components/custom/shared/CustomOutlineButton';
+import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
+import { handleMintNewOffchainSubname } from '@/lib/minting';
 import { useProfileStore } from '@/store/profile';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface IProp {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -11,20 +15,69 @@ interface IProp {
 }
 
 const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp) => {
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [name, action, subname, avatar, isPremium, title] = useProfileStore(state => [
+  const [name, action, subname, setTransactionHash, avatar, isPremium, title, wallet] = useProfileStore(state => [
     state.overviewTab.subdomainSection.createNewSubdomain.name,
     state.overviewTab.subdomainSection.createNewSubdomain.action,
     state.overviewTab.subdomainSection.createNewSubdomain.subname,
+    state.overviewTab.subdomainSection.createNewSubdomain.setTransactionHash,
     state.profile.avatar,
     state.profile.isPremium,
-    state.profile.details?.title
+    state.profile.details?.title,
+    state.profile.wallet
   ]);
 
+  const handleOpenWallet = async () => {
+    try {
+      setIsLoading(true);
+      const createdFullName = await handleMintNewOffchainSubname(subname, wallet.address as `0x${string}`);
+
+      if (createdFullName) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Subname created Successfully"
+              description={`Your fullname is: \n ${createdFullName}`}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        setTransactionHash(createdFullName);
+        handleNavigationOfSteps("NEXT");
+      }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Request failed!"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 3000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen} >
-      <DialogContent className="w-[400px] p-4" >
+      <DialogContent className="w-[400px] p-4 space-y-4" >
         <div className="space-y-3" >
           {/* header */}
           <div className="space-y-2">
@@ -80,19 +133,21 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
               </span>
             </div>
           </div>
+        </div>
 
-          <div className="w-full grid grid-cols-2 gap-4 py-2" >
-            <CustomOutlineButton
-              containerClasses="w-full h-full"
-              onClick={() => { handleNavigationOfSteps('PREVIOUS'); }}
-            >
-              Back
-            </CustomOutlineButton>
-
-            <Button variant={"default"} onClick={() => { handleNavigationOfSteps('NEXT'); }}>
-              Open wallet
-            </Button>
-          </div>
+        <div className="w-full grid grid-cols-2 gap-4 py-2" >
+          <CustomOutlineButton
+            containerClasses="w-full h-full"
+            onClick={() => { handleNavigationOfSteps('PREVIOUS'); }}
+          >
+            Back
+          </CustomOutlineButton>
+          <Button
+            onClick={handleOpenWallet}
+            isLoading={isLoading}
+          >
+            Open wallet
+          </Button>
         </div>
       </DialogContent>
     </Dialog >

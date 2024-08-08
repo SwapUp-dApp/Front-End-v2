@@ -7,19 +7,81 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProfileStore } from '@/store/profile';
 import SubnameListItem from './SubnameListItem';
-import { Card } from '@/components/ui/card';
 import SubdomainRecordsTabContent from './SubdomainRecordsTabContent';
+import { toast } from 'sonner';
+import ToastLookCard from '@/components/custom/shared/ToastLookCard';
+import { useQuery } from '@tanstack/react-query';
+import { resolveOffChainSubnameByWalletIdApi } from '@/service/api';
+import { SUI_SubnameItem } from '@/types/profile.types';
+
+interface NamespaceOffChainSubnameResponseItem {
+  domain: string;
+  fullName: string;
+  label: string;
+}
 
 const SubDomainMintingSection = () => {
 
   const [startCreateSubdomainProcess, setStartCreateSubdomainProcess] = useState(false);
 
-  const [activeTab, subdomainSectionTabs, setActiveTab, availableSubnames] = useProfileStore(state => [
+  const [wallet, activeTab, subdomainSectionTabs, setActiveTab, filteredAvailableSubnames, setAvailableSubnames] = useProfileStore(state => [
+    state.profile.wallet,
     state.overviewTab.subdomainSection.activeTab,
     state.overviewTab.subdomainSection.subdomainSectionTabs,
     state.overviewTab.subdomainSection.setActiveTab,
-    state.overviewTab.subdomainSection.availableSubnames
+    state.overviewTab.subdomainSection.filteredAvailableSubnames,
+    state.overviewTab.subdomainSection.setAvailableSubnames
   ]);
+
+  const { isLoading, isError, isSuccess } = useQuery({
+    queryKey: [`resolveOffChainSubnameByWalletIdApi`],
+    queryFn: async () => {
+      try {
+        if (wallet.address && wallet.isConnected) {
+          const response = await resolveOffChainSubnameByWalletIdApi(wallet.address);
+          const responseData: NamespaceOffChainSubnameResponseItem[] = response.data;
+
+          const formattedSubnamesDataset = responseData.map((resSubname, index) => {
+            const formattedSubnameItem: SUI_SubnameItem = {
+              id: resSubname.fullName,
+              expiry: "No expiry",
+              isPrimary: index === 0 ? true : false,
+              manager: resSubname.domain,
+              ownerAddress: wallet.address,
+              parent: resSubname.domain,
+              subnameLabel: resSubname.label,
+              fullName: resSubname.fullName
+            };
+            return formattedSubnameItem;
+          });
+
+          setAvailableSubnames(formattedSubnamesDataset);
+          return response.data;
+        }
+
+        return null;
+      } catch (error: any) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Request failed!"
+              description={error.message}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        throw error;
+      }
+    },
+    retry: false,
+  });
 
   return (
     <div className="space-y-4">
@@ -31,8 +93,8 @@ const SubDomainMintingSection = () => {
         <div className='w-full lg:w-2/5 flex items-center gap-2' >
 
           <Input
-            className={`w-full lg:w-[65%] bg-su_enable_bg text-su_secondary !p-3.5 mr-1 ${availableSubnames.length === 0 ? "opacity-0" : "opacity-100"}`}
-            disabled={availableSubnames.length === 0}
+            className={`w-full lg:w-[65%] bg-su_enable_bg text-su_secondary !p-3.5 mr-1 ${filteredAvailableSubnames.length === 0 ? "opacity-0" : "opacity-100"}`}
+            disabled={filteredAvailableSubnames.length === 0}
             placeholder="Search by subname"
             icon={
               <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -46,7 +108,7 @@ const SubDomainMintingSection = () => {
       </div>
 
       <LoadingDataset
-        isLoading={false}
+        isLoading={isLoading}
         title="Loading mint subdomain"
         description='Minted subdomains data is being loaded...'
       />
@@ -54,7 +116,7 @@ const SubDomainMintingSection = () => {
       {/* Creating new subname */}
       <CreateNewSubdomainProcess setStartCreateSubdomainProcess={setStartCreateSubdomainProcess} startCreateSubdomainProcess={startCreateSubdomainProcess} />
 
-      {availableSubnames.length > 0 &&
+      {filteredAvailableSubnames.length > 0 &&
         <Tabs defaultValue={activeTab} className='min-h-40'>
           <TabsList>
             {subdomainSectionTabs.map(tab => (
@@ -66,9 +128,9 @@ const SubDomainMintingSection = () => {
 
           <TabsContent
             value={subdomainSectionTabs[subdomainSectionTabs.findIndex(tab => tab === 'subnames')]}
-            className="space-y-3 py-2"
+            className='space-y-2 py-2'
           >
-            {availableSubnames.map((subname) => (
+            {filteredAvailableSubnames.map((subname) => (
               <SubnameListItem key={subname.id} subname={subname} />
             ))}
           </TabsContent>
@@ -83,9 +145,9 @@ const SubDomainMintingSection = () => {
       }
 
 
-      {availableSubnames.length === 0 &&
+      {((isError || isSuccess) && (filteredAvailableSubnames.length === 0)) &&
         <EmptyDataset
-          title="Subdomain Not Minted"
+          title="Subdomains not found"
           description={`Consider obtaining a subdomain to enhance your identity across web3, consolidate all <br/> your crypto addresses under one name.`}
         >
           <Button onClick={() => { setStartCreateSubdomainProcess(true); }} >Mint subdomain</Button>

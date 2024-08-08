@@ -22,6 +22,7 @@ import ProfileAssetsTabContent from "@/components/custom/profile/assets/ProfileA
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import PendingSwapsTabContent from "@/components/custom/my-swaps/PendingSwapsTabContent";
 import SwapHistoryTabContent from "@/components/custom/my-swaps/SwapHistoryTabContent";
+import ServicesPage from "@/pages/Services";
 
 
 export interface SUI_RoutesType {
@@ -39,12 +40,19 @@ const NotFoundPage = () => (
   </div >
 );
 
+
 export const clientSideRoutes: SUI_RoutesType[] = [
   {
     id: 'swapup-website',
     title: "Swapup landing page",
     path: "/",
     element: <SwapUpWebsite />,
+  },
+  {
+    id: 'swapup-services',
+    title: "Swapup Services",
+    path: "/services",
+    element: <ServicesPage />
   },
   {
     id: 'swapup-privacy-policy',

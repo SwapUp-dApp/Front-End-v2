@@ -7,6 +7,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useProfileStore } from '@/store/profile';
+import { useEffect, useState } from 'react';
+import { handleCheckOffchainSubnameAvailability } from '@/lib/minting';
+import { toast } from 'sonner';
+import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 
 
 interface IProp {
@@ -23,19 +27,60 @@ const formSchema = z.object({
 
 const CreateNewSubnameDialog = ({ open, setOpen, handleNavigationOfSteps }: IProp) => {
 
-  const [name, setSubnameValue] = useProfileStore(state => [state.overviewTab.subdomainSection.createNewSubdomain.name, state.overviewTab.subdomainSection.createNewSubdomain.setSubnameValue]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [name, setSubnameValue, subname, wallet] = useProfileStore(state => [
+    state.overviewTab.subdomainSection.createNewSubdomain.name,
+    state.overviewTab.subdomainSection.createNewSubdomain.setSubnameValue,
+    state.overviewTab.subdomainSection.createNewSubdomain.subname,
+    state.profile.wallet
+  ]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subname: "",
+      subname: subname || '',
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setSubnameValue(values.subname);
-    handleNavigationOfSteps("NEXT");
+
+    try {
+      setIsLoading(true);
+      const isAvailable = await handleCheckOffchainSubnameAvailability(values.subname);
+
+      if (isAvailable) {
+        handleNavigationOfSteps("NEXT");
+      }
+
+    } catch (error: any) {
+      toast.custom(
+        (id) => (
+          <ToastLookCard
+            variant="error"
+            title="Request failed!"
+            description={error.message}
+            onClose={() => toast.dismiss(id)}
+          />
+        ),
+        {
+          duration: 3000,
+          className: 'w-full !bg-transparent',
+          position: "bottom-left",
+        }
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (open) {
+      form.reset();
+      form.setValue("subname", subname);
+    }
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen} >
@@ -76,7 +121,7 @@ const CreateNewSubnameDialog = ({ open, setOpen, handleNavigationOfSteps }: IPro
                 )}
               />
 
-              <Button variant={"default"} type="submit" className='w-full'>
+              <Button variant={"default"} type="submit" className='w-full' isLoading={isLoading} >
                 Next
               </Button>
 

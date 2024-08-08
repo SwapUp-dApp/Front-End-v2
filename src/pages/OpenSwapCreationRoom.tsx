@@ -261,6 +261,24 @@ const OpenSwapCreationRoom = () => {
     }
   }, [openTradeId, profile]);
 
+  // For filtering available currencies ---- Temporary logic needs to remove later on
+
+  // useEffect(() => {
+  //   if (availableCurrencies && availableCurrencies.length > 0) {
+  //     const filteredTokenAddresses = availableCurrencies.filter(currency => currency.contractAddresses.find(address => address.startsWith("ethereum")))
+  //       .map(currency => (
+  //         {
+  //           id: currency.symbol,
+  //           symbol: currency.symbol,
+  //           name: currency.name,
+  //           iconUrl: currency.iconUrl,
+  //           address: currency.contractAddresses.find(address => address.startsWith("ethereum")).replace("ethereum/", ""),
+  //         }));
+
+  //     console.log("Filtered Tokens: ", filteredTokenAddresses);
+  //   }
+  // }, [availableCurrencies]);
+
   return (
     <div className="flex flex-col gap-4" >
       <RoomHeader

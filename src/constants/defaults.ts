@@ -55,7 +55,7 @@ export const defaults: IDefaultVariables = {
   profile: {
     title: "Profile",
     baseRoute: profileBaseRoute,
-    defaultActiveTab: 'assets',
+    defaultActiveTab: 'wallet-overview',
     tabs: [
       {
         key: 'wallet-overview',
@@ -64,12 +64,12 @@ export const defaults: IDefaultVariables = {
       },
       {
         key: 'assets',
-        title: 'Assets',
+        title: 'NFTs',
         path: `${profileBaseRoute}/assets`
       },
       {
         key: 'points-swappot',
-        title: 'Points & Swappot',
+        title: 'Member Benefits',
         path: `${profileBaseRoute}/points-swappot`
       },
     ]

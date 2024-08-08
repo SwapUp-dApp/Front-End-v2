@@ -1,9 +1,10 @@
 import { create } from 'zustand';
 import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, setActiveTabHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
-import { IProfileDetails, IWallet } from '@/types/profile.types';
+import { getInitialProfile, resetAllFiltersHelper, resetSubnameMintingProcess, setActiveTabHelper, setAvailableSubnamesHelper, setCollectionOwnedHelper, setDistributionOfTokensPerChainHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, setTransactionHashHelper, setWalletTokenBreakdownDataHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { IProfileDetails, IWallet, SUI_CollectionOwnedItem, SUI_SubnameItem, SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
+import { Environment } from '@/config';
 
 const initialState: IProfileStore = {
   profile: getInitialProfile("sender"),
@@ -26,40 +27,34 @@ const initialState: IProfileStore = {
     resetAllFilters: () => { },
   },
   overviewTab: {
+    totalWalletValue: 0,
+    totalNftsOwned: 0,
     subdomainSection: {
       createNewSubdomain: {
         steps: ['advantages', 'enter-name', 'confirmation', 'transaction'],
-        name: "swapup.eth",
+        name: Environment.NAMESPACE_LISTED_ENS_NAME,
         action: "Create subdomain",
+        transactionHash: '',
         subname: "",
         navigateCreateSubdomainStep: () => { },
-        setSubnameValue: () => { }
+        setSubnameValue: () => { },
+        resetSwapCreation: () => { },
+        setTransactionHash: () => { }
       },
-      availableSubnames: [
-        {
-          id: "khalil.swapup.eth",
-          subname: "khalil.swapup.eth",
-          expiry: "No expiry",
-          isPrimary: false,
-          manager: "swapup.eth",
-          parent: "swapup.eth",
-          ownerAddress: "0xe6a28D675f38856ad383557C76dfdA2238961A49"
-        },
-        {
-          id: "ahmad.swapup.eth",
-          subname: "ahmad.swapup.eth",
-          expiry: "No expiry",
-          isPrimary: true,
-          manager: "swapup.eth",
-          parent: "swapup.eth",
-          ownerAddress: "hdjshjdhjshjdhsjhdjshdjhdjhjshdjhsjhdjshjdh"
-        },
-      ],
+      availableSubnames: [],
+      filteredAvailableSubnames: [],
       records: {},
       activeTab: 'subnames',
       subdomainSectionTabs: ['subnames', 'records'],
-      setActiveTab: () => { }
-    }
+      setActiveTab: () => { },
+      setAvailableSubnames: () => { }
+    },
+    walletTokenBreakdownData: [],
+    distributionOfTokensPerChain: [],
+    collectionsOwned: [],
+    setWalletTokenBreakdownData: () => { },
+    setDistributionOfTokensPerChain: () => { },
+    setCollectionOwned: () => { }
   }
 };
 
@@ -92,9 +87,15 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
       createNewSubdomain: {
         ...initialState.overviewTab.subdomainSection.createNewSubdomain,
         navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => set((state) => setNavigateCreateSubdomainStepHelper(state, navigationMode)),
-        setSubnameValue: (enteredValue: string) => set(state => setSubnameValueHelper(state, enteredValue))
+        setSubnameValue: (enteredValue: string) => set(state => setSubnameValueHelper(state, enteredValue)),
+        resetSwapCreation: () => set(state => resetSubnameMintingProcess(state)),
+        setTransactionHash: (hash: string) => set(state => setTransactionHashHelper(state, hash))
       },
-      setActiveTab: (switchTo: SUT_SubdomainTabType) => set(state => setActiveTabHelper(state, switchTo))
-    }
+      setActiveTab: (switchTo: SUT_SubdomainTabType) => set(state => setActiveTabHelper(state, switchTo)),
+      setAvailableSubnames: (subnamesData: SUI_SubnameItem[]) => set(state => setAvailableSubnamesHelper(state, subnamesData))
+    },
+    setWalletTokenBreakdownData: (tokensData: SUI_TokenBreakdownChartItem[], totalUsdAmount: number) => set(state => setWalletTokenBreakdownDataHelper(state, tokensData, totalUsdAmount)),
+    setDistributionOfTokensPerChain: (tokensData: SUI_TokenDistributionPerChainChartItem[]) => set(state => setDistributionOfTokensPerChainHelper(state, tokensData)),
+    setCollectionOwned: (collectionsData: SUI_CollectionOwnedItem[]) => set(state => setCollectionOwnedHelper(state, collectionsData))
   }
 }));

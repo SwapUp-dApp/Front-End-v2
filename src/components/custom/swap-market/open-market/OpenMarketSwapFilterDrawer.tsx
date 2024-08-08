@@ -173,7 +173,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-su_secondary text-sm font-normal flex items-center justify-between">
-                            Offered asset rarity rank:
+                            NFT Rarity Rank:
 
                             <button
                               onClick={handleResetOfferedRarityRank}

@@ -75,6 +75,16 @@ export const walletProxy = () => {
     return contract;
   };
 
+  const getNamespaceContractInstance = async () => {
+    const { signer } = await getEthersProviderAndSigner();
+    const contract = new ethers.Contract(
+      "0x2674e4fae872780f01b99e109e67749b765703fb",
+      abi.namespace,
+      signer
+    );
+    return contract;
+  };
+
   const getUserSignature = async (
     swap: SUI_Swap,
     swapEncodedMsg: string,
@@ -242,7 +252,6 @@ export const walletProxy = () => {
 
   };
 
-
   const getFeeInETH = async () => {
     let contract = await getSwapupContractInstance();
 
@@ -298,6 +307,8 @@ export const walletProxy = () => {
     getConnectedWalletAccount,
     getEthersProviderAndSigner,
     getEnsInformationByWalletAddress,
+    getNamespaceContractInstance,
+    getTransactionReceipt,
     getUserApproval,
     getUserSignature,
     createAndUpdateSwap,

@@ -19,3 +19,17 @@ export const showWalletConnectionToast = (variant: SUT_ToastVariantType = "error
     }
   );
 };
+
+export const showUnderConstructionToast = (title?: string, description?: string) => {
+  toast.info(title ? title : "Under construction", {
+    position: 'bottom-left',
+    duration: 2000,
+    description: `${description ? description : "This feature is under construction!"}`,
+    action: {
+      label: "Close",
+      onClick: () => console.log("Close"),
+    },
+    className: '!bg-gradient-primary border-none',
+    descriptionClassName: '!text-white',
+  });
+};

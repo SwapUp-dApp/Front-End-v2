@@ -24,7 +24,7 @@ const CollectionOwnedCard = ({ collection }: IProp) => {
       <div className='p-3 grid grid-cols-3 gap-y-3' >
         <div className='flex flex-col gap-1' >
           <p className='text-su_secondary font-normal text-2xs' >Assets #</p>
-          <p className='text-text dark:text-su_primary text-sm font-semibold' >{collection.assets}</p>
+          <p className='text-text dark:text-su_primary text-sm font-semibold' >{collection.ownedAssets}</p>
         </div>
         <div className='flex flex-col gap-1' >
           <p className='text-su_secondary font-normal text-2xs' >Floor price</p>

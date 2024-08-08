@@ -9,62 +9,54 @@ import { getDefaultNftImageOnError } from '@/lib/utils';
 import YesNoTile from '../../tiles/YesNoTile';
 import CollectionOwnedCard from './CollectionOwnedCard';
 import { SUI_CollectionOwnedItem } from '@/types/profile.types';
+import { useQuery } from '@tanstack/react-query';
+import { getCollectionsByWalletIdApi } from '@/service/api';
+import { useProfileStore } from '@/store/profile';
+import { toast } from 'sonner';
+import ToastLookCard from '../../shared/ToastLookCard';
 
-
-const collectionsDataset: SUI_CollectionOwnedItem[] = [
-  {
-    id: '1',
-    cover: '/assets/nfts/card-nft-1.png',
-    collectionName: "Whispering Winds",
-    assets: 10,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: true,
-    volume: 150
-  },
-  {
-    id: '2',
-    cover: '/assets/nfts/cool-lion.jpg',
-    collectionName: "Cool loins",
-    assets: 10,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: false,
-    volume: 150
-  },
-  {
-    id: '3',
-    cover: '/assets/nfts/cool-cat.jpg',
-    collectionName: "cool cats",
-    assets: 10,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: true,
-    volume: 150
-  },
-  {
-    id: '4',
-    cover: '/assets/nfts/cool-dog.jpg',
-    collectionName: "cool dogs",
-    assets: 10,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: false,
-    volume: 150
-  },
-  {
-    id: '5',
-    cover: '/assets/nfts/cool-elephant.jpg',
-    collectionName: "cool elephants",
-    assets: 10,
-    floorPrice: 1.005,
-    highestRankNft: 10,
-    openApproval: true,
-    volume: 150
-  },
-];
 
 const CollectionDetailsSection = () => {
+
+  const [wallet, collectionsOwned, setCollectionOwned] = useProfileStore(state => [
+    state.profile.wallet,
+    state.overviewTab.collectionsOwned,
+    state.overviewTab.setCollectionOwned,
+  ]);
+
+  const { isLoading } = useQuery({
+    queryKey: [`getCollectionsByWalletIdApi`],
+    queryFn: async () => {
+      try {
+        if (wallet.address && wallet.isConnected) {
+          const response = await getCollectionsByWalletIdApi(wallet.address);
+          setCollectionOwned(response.data as SUI_CollectionOwnedItem[]);
+          return response.data;
+        }
+
+        return null;
+      } catch (error: any) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Request failed!"
+              description={error.message}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        throw error;
+      }
+    },
+    retry: false,
+  });
 
   return (
     <div className="space-y-4">
@@ -72,8 +64,8 @@ const CollectionDetailsSection = () => {
       <div className="flex flex-col gap-3 lg:gap-0 lg:flex-row lg:items-center lg:justify-between" >
         <div className="flex items-center lg:justify-between gap-4" >
           <h2 className="text-1.5xl font-medium" >Collections owned</h2>
-          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(collectionsDataset || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
-            {(collectionsDataset || []).length}
+          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(collectionsOwned || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
+            {(collectionsOwned || []).length}
           </span>
         </div>
 
@@ -116,10 +108,10 @@ const CollectionDetailsSection = () => {
 
           <TableBody className="divide-y">
             {
-              collectionsDataset.map(collection => (
+              collectionsOwned.map((collection, index) => (
                 <TableRow key={collection.id} >
                   <TableCell className="text-xs font-semibold">
-                    {collection.id}
+                    {index + 1}
                   </TableCell>
                   <TableCell className="text-xs font-semibold">
                     <img
@@ -133,7 +125,7 @@ const CollectionDetailsSection = () => {
                     <span className='capitalize' >{collection.collectionName}</span>
                   </TableCell>
                   <TableCell className="text-xs font-semibold">
-                    {collection.assets}
+                    {collection.ownedAssets}
                   </TableCell>
                   <TableCell className="text-xs font-semibold">
                     {collection.floorPrice} SOL
@@ -156,6 +148,7 @@ const CollectionDetailsSection = () => {
         </Table>
 
         {
+          // Needs to take care while implementing filters
           (false) &&
           <EmptyDataset
             title="No Results Found"
@@ -168,13 +161,21 @@ const CollectionDetailsSection = () => {
 
       <div className='flex flex-col gap-3 lg:hidden'>
         {
-          collectionsDataset.map(collection => (
+          collectionsOwned.map(collection => (
             <CollectionOwnedCard key={collection.id} collection={collection} />
           ))
         }
       </div>
+
+      {collectionsOwned.length === 0 &&
+        <EmptyDataset
+          title="No owned collections found"
+          description="Check back later!"
+        />
+      }
+
       <LoadingDataset
-        isLoading={false}
+        isLoading={isLoading}
         title="Loading open swaps"
         description='Open swaps data is being loaded...'
       />

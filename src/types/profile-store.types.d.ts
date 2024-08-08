@@ -1,5 +1,5 @@
 import { SUI_NFTItem } from "./global.types";
-import { IWallet, IProfile, IProfileDetails, SUI_SubnameItem, SUI_SubnameRecordTextItem, SUI_SubnameRecordAddressItem } from "./profile.types";
+import { IWallet, IProfile, IProfileDetails, SUI_SubnameItem, SUI_SubnameRecordTextItem, SUI_SubnameRecordAddressItem, SUI_TokenDistributionPerChainChartItem, SUI_CollectionOwnedItem } from "./profile.types";
 import { SUT_GridViewType } from "./swap-market-store.types";
 
 export type SUT_VisibilityToggleType = "all" | "hidden";
@@ -35,13 +35,17 @@ export interface SUI_CreateNewSubdomain {
   name: string;
   action: string;
   subname: string;
+  transactionHash: string;
+  setTransactionHash: (hash: string) => void;
   navigateCreateSubdomainStep: (navigationMode: "PREVIOUS" | "NEXT") => void;
+  resetSwapCreation: () => void;
   setSubnameValue: (enteredValue: string) => void;
 }
 
 export interface SUI_SubdomainStructure {
   createNewSubdomain: SUI_CreateNewSubdomain;
   availableSubnames: SUI_SubnameItem[];
+  filteredAvailableSubnames: SUI_SubnameItem[];
   subdomainSectionTabs: SUT_SubdomainTabType[];
   activeTab: SUT_SubdomainTabType;
   records: {
@@ -50,10 +54,19 @@ export interface SUI_SubdomainStructure {
     contentHash?: string;
   };
   setActiveTab: (switchTo: SUT_SubdomainTabType) => void;
+  setAvailableSubnames: (subnamesData: SUI_SubnameItem[]) => void;
 }
 
 export interface SUI_ProfileOverviewTab {
+  totalWalletValue: number;
+  totalNftsOwned: number;
   subdomainSection: SUI_SubdomainStructure;
+  collectionsOwned: SUI_CollectionOwnedItem[];
+  walletTokenBreakdownData: SUI_TokenBreakdownChartItem[];
+  distributionOfTokensPerChain: SUI_TokenDistributionPerChainChartItem[];
+  setWalletTokenBreakdownData: (tokensData: SUI_TokenBreakdownChartItem[], totalUsdAmount: number) => void;
+  setDistributionOfTokensPerChain: (tokensData: SUI_TokenDistributionPerChainChartItem[]) => void;
+  setCollectionOwned: (collectionData: SUI_CollectionOwnedItem[]) => void;
 }
 
 export interface IProfileStore {

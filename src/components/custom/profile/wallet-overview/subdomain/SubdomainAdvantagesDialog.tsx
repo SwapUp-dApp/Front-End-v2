@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { handleResolveOffchainSubnamesByWalletId } from "@/lib/minting";
 import { toast } from "sonner";
 
 interface IProp {
@@ -9,6 +10,7 @@ interface IProp {
 }
 
 const SubdomainAdvantagesDialog = ({ open, setOpen, handleNavigationOfSteps }: IProp) => {
+
   return (
     <Dialog open={open} onOpenChange={setOpen} >
       <DialogContent className="w-[400px] p-4" >

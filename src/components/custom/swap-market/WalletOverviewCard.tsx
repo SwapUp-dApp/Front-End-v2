@@ -4,11 +4,11 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface IProp {
   cardType?: "totalwalletvalue" | "cryptostored" | "NFTs";
-  Value: string;
+  value: number;
   description: string;
 }
 
-const WalletOverviewCard = ({ cardType, Value, description }: IProp) => {
+const WalletOverviewCard = ({ cardType, value, description }: IProp) => {
 
   return (
 
@@ -19,9 +19,9 @@ const WalletOverviewCard = ({ cardType, Value, description }: IProp) => {
           {
             cardType === 'NFTs'
               ?
-              <h2 className="flex justify-between items-center text-sm" >{Value}</h2>
+              <h2 className="flex justify-between items-center text-sm" >{value}</h2>
               :
-              <h2 className="flex justify-between items-center text-sm">${Value}</h2>
+              <h2 className="flex justify-between items-center text-sm">$ {Number(value.toFixed(2) || 0)}</h2>
           }
         </div>
         <div className="flex items-start justify-between">
