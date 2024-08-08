@@ -22,13 +22,15 @@ interface IProp {
 }
 
 const FooterSideSelectTokenDialog = ({ open, setOpen, handleSetSelectedCurrency }: IProp) => {
-  const preferredCurrenciesToBeFiltered = ["ETH", "DAI", "USDC", "USDT", "WBTC", "WETH"];
+
+  // This following array represents preferred currencies which will be shown in top section
+  const preferredCurrenciesToBeFiltered = ["DAI", "USDC", "USDT", "WBTC", "WETH"];
 
   const [preferredCurrenciesList, setPreferredCurrenciesList] = useState<SUI_CurrencyChainItem[]>([]);
   const [notPreferredCurrenciesList, setNotPreferredCurrenciesList] = useState<SUI_CurrencyChainItem[]>([]);
   const [filteredNotPreferredCurrenciesList, setFilteredNotPreferredCurrenciesList] = useState<SUI_CurrencyChainItem[]>([]);
 
-  const [availableCurrencies] = useGlobalStore(state => [state.availableCurrencies]);
+  const [filteredAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies]);
 
   const tokenSelectFormSchema = z.object({
     preferredToken: z.string().optional(),
@@ -62,9 +64,9 @@ const FooterSideSelectTokenDialog = ({ open, setOpen, handleSetSelectedCurrency 
 
   useEffect(() => {
 
-    if (availableCurrencies.length > 0) {
-      const newPreferredList = availableCurrencies.filter(currency => preferredCurrenciesToBeFiltered.find(symbol => currency.symbol === symbol));
-      const newNotPreferredList = availableCurrencies.filter(currency => !preferredCurrenciesToBeFiltered.find(symbol => currency.symbol === symbol));
+    if (filteredAvailableCurrencies.length > 0) {
+      const newPreferredList = filteredAvailableCurrencies.filter(currency => preferredCurrenciesToBeFiltered.find(symbol => currency.symbol === symbol));
+      const newNotPreferredList = filteredAvailableCurrencies.filter(currency => !preferredCurrenciesToBeFiltered.find(symbol => currency.symbol === symbol));
       setPreferredCurrenciesList(newPreferredList);
       setNotPreferredCurrenciesList(newNotPreferredList);
       setFilteredNotPreferredCurrenciesList(newNotPreferredList);
@@ -72,7 +74,7 @@ const FooterSideSelectTokenDialog = ({ open, setOpen, handleSetSelectedCurrency 
 
     form.reset();
 
-  }, [availableCurrencies]);
+  }, [filteredAvailableCurrencies]);
 
 
   useEffect(() => {

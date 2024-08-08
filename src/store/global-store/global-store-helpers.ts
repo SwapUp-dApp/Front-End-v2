@@ -5,9 +5,12 @@ import { SUI_OpenSwap, SUI_Swap } from "@/types/swap-market.types";
 
 export const setAvailableCurrenciesHelper = (state: IGlobalStore, currenciesData: SUI_CurrencyChainItem[]): IGlobalStore => {
 
+  const allFilteredCurrenciesWithoutMainnet = currenciesData.filter(currency => currency.symbol !== "ETH");
+
   return {
     ...state,
-    availableCurrencies: currenciesData.length > 0 ? currenciesData : []
+    availableCurrencies: currenciesData.length > 0 ? currenciesData : [],
+    filteredAvailableCurrencies: allFilteredCurrenciesWithoutMainnet
   };
 };
 

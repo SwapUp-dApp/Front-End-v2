@@ -1,5 +1,5 @@
 import { SUI_Swap, SUI_OpenSwap, SUI_SwapPreferences, SUT_SwapOfferType, SUI_SwapToken } from "@/types/swap-market.types";
-import { IOpenCreatedSwapFilters, IOpenMarketSwapFilters, IOpenRoom, IPrivateMarketSwapFilters, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "../../types/swap-market-store.types";
+import { IAddedAmount, IOpenCreatedSwapFilters, IOpenMarketSwapFilters, IOpenRoom, IPrivateMarketSwapFilters, IPrivateRoom, ISwapMarketStore, SUT_GridViewType } from "../../types/swap-market-store.types";
 import { SUI_RarityRankItem, SUI_NFTItem, SUI_SelectedCollectionItem } from "@/types/global.types";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { Environment } from "@/config";
@@ -365,12 +365,14 @@ export const createCounterSwapOfferHelper = async (
     offer_type: SUE_SWAP_OFFER_TYPE.COUNTER,
     metadata: {
       init: {
-        tokens: room.sender.nftsSelectedForSwap ?
-          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) : []
+        tokens: (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) ?
+          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) :
+          (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount) : []
       },
       accept: {
-        tokens: room.receiver.nftsSelectedForSwap ?
-          getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap) : []
+        tokens: (room.receiver.nftsSelectedForSwap && room.receiver.nftsSelectedForSwap.length > 0) ?
+          getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap) :
+          (room.receiver.addedAmount?.amount && room.receiver.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.receiver.addedAmount) : []
       },
     }
   };
@@ -490,12 +492,14 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, off
     offer_type,
     metadata: {
       init: {
-        tokens: room.sender.nftsSelectedForSwap ?
-          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) : []
+        tokens: (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) ?
+          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) :
+          (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount) : []
       },
       accept: {
-        tokens: room.receiver.nftsSelectedForSwap ?
-          getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap) : []
+        tokens: (room.receiver.nftsSelectedForSwap && room.receiver.nftsSelectedForSwap.length > 0) ?
+          getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap) :
+          (room.receiver.addedAmount?.amount && room.receiver.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.receiver.addedAmount) : []
       },
     }
   };
@@ -543,6 +547,25 @@ const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]): SUI_SwapToken[] => {
     image_url: nft.media[0].gateway
   }));
 
+};
+
+const getCurrencyChainSwapTokensFromSelectedChainItems = (addedAmount: IAddedAmount): SUI_SwapToken[] => {
+  const tokenAddress: string = addedAmount.coin.contractAddresses.find(address => address.includes("ethereum")).replace("ethereum/", "");
+  console.log("token address: ", tokenAddress);
+
+  const formattedObject: SUI_SwapToken = {
+    id: tokenAddress,
+    address: tokenAddress,
+    type: "ERC20",
+    image_url: addedAmount.coin.iconUrl,
+    value: {
+      amount: addedAmount.amount,
+      usdAmount: Number(addedAmount.amount) * Number(addedAmount.coin.price),
+      symbol: addedAmount.coin.symbol
+    }
+  };
+
+  return ([formattedObject]);
 };
 
 export const resetPrivateRoomDataHelper = (
@@ -1118,12 +1141,13 @@ export const createOpenSwapHelper = async (
     trading_chain: String(Environment.CHAIN_ID),
     metadata: {
       init: {
-        tokens: room.sender.nftsSelectedForSwap ?
-          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) : []
+        tokens: (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) ?
+          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) :
+          (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount) : []
       },
       accept: {
         tokens: []
-      }
+      },
     },
   };
 
@@ -1156,8 +1180,9 @@ export const createProposeOpenSwapHelper = async (
     trading_chain: String(Environment.CHAIN_ID),
     metadata: {
       init: {
-        tokens: room.sender.nftsSelectedForSwap ?
-          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) : []
+        tokens: (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) ?
+          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) :
+          (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount) : []
       },
       accept: {
         tokens: state.openMarket.openRoom.swap.metadata.init.tokens

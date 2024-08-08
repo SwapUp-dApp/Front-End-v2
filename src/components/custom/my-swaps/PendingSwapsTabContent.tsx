@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import FilterButton from '@/components/custom/shared/FilterButton';
-import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { cn, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '@/components/custom/shared/EmptyDataset';
-import { SUI_OpenSwap, SUI_SwapToken, SUI_Swap, SUP_CompleteSwap, SUP_CancelSwap } from '@/types/swap-market.types';
+import { SUI_OpenSwap, SUI_SwapToken, SUI_Swap, SUP_CompleteSwap, SUP_CancelSwap, SUT_SwapTokenContractType } from '@/types/swap-market.types';
 import { useCancelSwapOffer, useCompletePrivateSwapOffer, useRejectSwapOffer } from '@/service/queries/swap-market.query';
 import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
@@ -65,7 +65,7 @@ const PendingSwapsTabContent = () => {
       //temp fix
       swap.accept_sign = sign;
 
-      const approval = await getWalletProxy().getUserApproval(swap, true);
+      const approval = await getWalletProxy().getUserApproval(swap);
 
       if (!approval) {
         throw new Error("User approval not granted.");
@@ -323,23 +323,26 @@ const PendingSwapsTabContent = () => {
     retry: false,
   });
 
-  const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
+  const swapTokensMapper = (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number) => {
     return (
-      nfts.map((nft, index) => {
-        if (index < showMaxNumberOfNfts)
+      swapTokens.map((swapToken, index) => {
+        if (index < showMaxNumberOfTokensToShow)
           return (
-            <div className="relative w-8 h-8" key={nft.id}>
+            <div className="relative w-8 h-8" key={swapToken.id}>
               <img
-                className="w-full h-full object-cover rounded-xs border-[1.5px] border-white/20"
-                src={nft.image_url}
+                className={cn(
+                  "w-full h-full object-cover ",
+                  (swapToken.type as SUT_SwapTokenContractType) === "ERC20" ? "" : "rounded-xs border-[1.5px] border-white/20"
+                )}
+                src={swapToken.image_url}
                 alt="nft"
                 onError={getDefaultNftImageOnError}
               />
 
               {
-                ((index === showMaxNumberOfNfts - 1) && nfts.length > showMaxNumberOfNfts) ?
+                ((index === showMaxNumberOfTokensToShow - 1) && swapTokens.length > showMaxNumberOfTokensToShow) ?
                   <div className="absolute w-full h-full rounded-xs bg-black/50 top-0 flex justify-center items-center font-semibold" >
-                    +{nfts.length - showMaxNumberOfNfts}
+                    +{swapTokens.length - showMaxNumberOfTokensToShow}
                   </div> : ''
               }
             </div>
@@ -381,7 +384,7 @@ const PendingSwapsTabContent = () => {
                     <TableCell className="text-xs font-medium flex items-center gap-2">
 
                       <div className='flex items-center gap-1'>
-                        {nftsImageMapper(swap.metadata.init.tokens, 2)}
+                        {swapTokensMapper(swap.metadata.init.tokens, 2)}
                       </div>
 
                       <svg className="w-4" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -389,7 +392,7 @@ const PendingSwapsTabContent = () => {
                       </svg>
 
                       <div className="flex items-center gap-1" >
-                        {nftsImageMapper(swap.metadata.accept.tokens, 2)}
+                        {swapTokensMapper(swap.metadata.accept.tokens, 2)}
                       </div>
 
                     </TableCell>
