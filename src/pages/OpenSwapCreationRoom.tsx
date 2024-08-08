@@ -47,7 +47,7 @@ const OpenSwapCreationRoom = () => {
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
   const [wallet, profile] = useProfileStore(state => [state.profile.wallet, state.profile]);
-  const [availableCurrencies, setAvailableCurrencies, availableCollections, setAvailableCollections] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies, state.availableCollections, state.setAvailableCollections]);
+  const [filteredAvailableCurrencies, setAvailableCurrencies, availableCollections, setAvailableCollections] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies, state.availableCollections, state.setAvailableCollections]);
 
   const { expiration_date, preferred_asset } = state.swap.swap_preferences;
   const navigate = useNavigate();
@@ -261,23 +261,6 @@ const OpenSwapCreationRoom = () => {
     }
   }, [openTradeId, profile]);
 
-  // For filtering available currencies ---- Temporary logic needs to remove later on
-
-  // useEffect(() => {
-  //   if (availableCurrencies && availableCurrencies.length > 0) {
-  //     const filteredTokenAddresses = availableCurrencies.filter(currency => currency.contractAddresses.find(address => address.startsWith("ethereum")))
-  //       .map(currency => (
-  //         {
-  //           id: currency.symbol,
-  //           symbol: currency.symbol,
-  //           name: currency.name,
-  //           iconUrl: currency.iconUrl,
-  //           address: currency.contractAddresses.find(address => address.startsWith("ethereum")).replace("ethereum/", ""),
-  //         }));
-
-  //     console.log("Filtered Tokens: ", filteredTokenAddresses);
-  //   }
-  // }, [availableCurrencies]);
 
   return (
     <div className="flex flex-col gap-4" >
@@ -303,10 +286,10 @@ const OpenSwapCreationRoom = () => {
         }
 
         {
-          isSuccess && availableCurrencies ?
+          isSuccess && filteredAvailableCurrencies ?
             <SwapParametersCard
               setIsValidParametersForm={setIsValidParametersForm}
-              availableCurrencies={availableCurrencies}
+              availableCurrencies={filteredAvailableCurrencies}
               availableCollections={availableCollections}
             />
             :
@@ -536,8 +519,8 @@ const OpenSwapCreationRoom = () => {
 
         {/* Sender Side */}
         {
-          isSuccess && availableCurrencies ?
-            <OpenMarketRoomFooter setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={availableCurrencies} />
+          isSuccess && filteredAvailableCurrencies ?
+            <OpenMarketRoomFooter setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={filteredAvailableCurrencies} />
             :
             <div className="flex justify-center items-center w-full border border-su_disabled" >
               <LoadingDataset

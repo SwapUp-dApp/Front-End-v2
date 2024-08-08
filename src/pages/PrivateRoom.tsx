@@ -24,7 +24,7 @@ const PrivateRoom = () => {
 
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [wallet, profile] = useProfileStore(state => [state.profile.wallet, state.profile]);
-  const [availableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies]);
+  const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
 
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [swapCreation, setSwapCreation] = useState<SUI_SwapCreation>({ isLoading: false, created: false });
@@ -259,7 +259,7 @@ const PrivateRoom = () => {
         {/* Sender Side */}
         {
           isSuccess ?
-            <RoomFooterSide roomKey="privateRoom" layoutType="sender" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={availableCurrencies} />
+            <RoomFooterSide roomKey="privateRoom" layoutType="sender" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={filteredAvailableCurrencies} />
             :
             <div className="flex justify-center items-center w-1/2 border border-su_disabled" >
               <LoadingDataset
@@ -276,7 +276,7 @@ const PrivateRoom = () => {
 
         {
           isSuccess ?
-            <RoomFooterSide roomKey="privateRoom" layoutType="receiver" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={availableCurrencies} />
+            <RoomFooterSide roomKey="privateRoom" layoutType="receiver" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={filteredAvailableCurrencies} />
             :
             <div className="flex justify-center items-center w-1/2 border border-su_disabled" >
               <LoadingDataset

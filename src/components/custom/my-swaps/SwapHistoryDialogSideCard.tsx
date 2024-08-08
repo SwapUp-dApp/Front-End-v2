@@ -10,9 +10,10 @@ interface IProp {
   className?: string;
   swap: SUI_OpenSwap;
   side: "sender" | "receiver";
+  isErc20Swap: boolean;
 }
 
-const SwapHistoryDialogSideCard = ({ className, swap, side, ...props }: IProp) => {
+const SwapHistoryDialogSideCard = ({ className, swap, side, isErc20Swap, ...props }: IProp) => {
 
   const nftsImageMapper = (nfts: SUI_SwapToken[],) => (
     nfts.map((nft) => (
@@ -34,6 +35,9 @@ const SwapHistoryDialogSideCard = ({ className, swap, side, ...props }: IProp) =
   };
 
   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
+
+  const swapTokens = side === "sender" ? swap.metadata.init.tokens : swap.metadata.accept.tokens;
+
   return (
     <div
       className={cn(
@@ -65,14 +69,21 @@ const SwapHistoryDialogSideCard = ({ className, swap, side, ...props }: IProp) =
         <div className="flex gap-2" >
           <img
             className="w-4"
-            src={currentChain.iconUrl}
+            src={isErc20Swap ?
+              swapTokens[0].image_url
+              : currentChain.iconUrl
+            }
             alt=""
           />
 
           <p className="text-su_primary" >
-            0.00 ETH
+            {swapTokens[0].value?.amount}
+            {' '}
+            {swapTokens[0].value?.symbol}
+            {' '}
             <span className="text-su_secondary" >
-              /$ 0.00
+              / {' '}
+              ${swapTokens[0].value?.usdAmount.toFixed(5)}
             </span>
           </p>
         </div>
@@ -80,10 +91,12 @@ const SwapHistoryDialogSideCard = ({ className, swap, side, ...props }: IProp) =
 
       <div className="text-xs lg:text-sm text-su_secondary space-y-1" >
         <p>NFT assets:</p>
-
-        <div className="grid grid-cols-5 gap-2 lg:gap-3" >
-          {nftsImageMapper(side === "sender" ? swap.metadata.init.tokens : swap.metadata.accept.tokens)}
-        </div>
+        {
+          !isErc20Swap &&
+          <div className="grid grid-cols-5 gap-2 lg:gap-3" >
+            {nftsImageMapper(swapTokens)}
+          </div>
+        }
       </div>
     </div>
   );

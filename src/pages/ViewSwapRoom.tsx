@@ -38,7 +38,7 @@ const ViewSwapRoom = () => {
   const { tradeId } = useParams();
 
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
-  const [availableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies]);
+  const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
   const [setOpenShareRecentSwapDialog, setRecentAcceptedSwap] = useGlobalStore(state => [state.setOpenShareRecentSwapDialog, state.setRecentAcceptedSwap]);
 
   const queries = useQueries({
@@ -149,7 +149,7 @@ const ViewSwapRoom = () => {
 
       swap.accept_sign = sign;
 
-      const approval = await getWalletProxy().getUserApproval(swap, true);
+      const approval = await getWalletProxy().getUserApproval(swap, false);
 
       if (!approval) {
         throw new Error("User approval not granted.");
@@ -510,7 +510,7 @@ const ViewSwapRoom = () => {
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="sender"
               swapRoomViewType="view"
-              availableCurrencies={availableCurrencies}
+              availableCurrencies={filteredAvailableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
@@ -534,7 +534,7 @@ const ViewSwapRoom = () => {
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="receiver"
               swapRoomViewType="view"
-              availableCurrencies={availableCurrencies}
+              availableCurrencies={filteredAvailableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
