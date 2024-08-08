@@ -64,12 +64,12 @@ export const defaults: IDefaultVariables = {
       },
       {
         key: 'assets',
-        title: 'Assets',
+        title: 'NFTs',
         path: `${profileBaseRoute}/assets`
       },
       {
         key: 'points-swappot',
-        title: 'Points & Swappot',
+        title: 'Member Benefits',
         path: `${profileBaseRoute}/points-swappot`
       },
     ]

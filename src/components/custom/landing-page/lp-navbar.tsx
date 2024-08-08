@@ -54,7 +54,7 @@ const LpNavbar = () => {
 							Connect Wallet
 						</div>
 					</CustomOutlineButton> */}
-					<Button onClick={() => navigate("/swap-up/swap-market")} >Go to dApp</Button>
+					<Button onClick={() => navigate("/swap-up/swap-market")} >Start Trading</Button>
 				</div>
 			</div>
 
