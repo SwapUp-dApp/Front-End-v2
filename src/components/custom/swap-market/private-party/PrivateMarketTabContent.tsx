@@ -75,7 +75,7 @@ const PrivateMarketTabContent = () => {
       //temp fix 
       swap.accept_sign = sign;
 
-      const approval = await getWalletProxy().getUserApproval(swap);
+      const approval = await getWalletProxy().getUserApproval(swap, false);
 
       if (!approval) {
         throw new Error("User approval not granted.");
@@ -442,7 +442,7 @@ const PrivateMarketTabContent = () => {
                     <TableCell className="text-xs font-medium px-4 flex justify-start">
                       <span
                         className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
-                        onClick={async () => { await handleSwapAccept(swap); }}
+                      // onClick={async () => { await handleSwapAccept(swap); }}
                       >
                         <img
                           className='w-4 h-4'

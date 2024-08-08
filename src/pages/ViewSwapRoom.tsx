@@ -149,7 +149,7 @@ const ViewSwapRoom = () => {
 
       swap.accept_sign = sign;
 
-      const approval = await getWalletProxy().getUserApproval(swap);
+      const approval = await getWalletProxy().getUserApproval(swap, false);
 
       if (!approval) {
         throw new Error("User approval not granted.");
