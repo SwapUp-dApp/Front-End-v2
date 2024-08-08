@@ -174,23 +174,31 @@ export const walletProxy = () => {
 
       if (swap.metadata.init.tokens.length > 0) {
         swap.metadata.init.tokens.forEach(async (token) => {
-          initAssets.push({
+
+          const newInitToken: IAsset = {
             assetAddress: token.address,
             value: (token.type as SUT_SwapTokenContractType) === "ERC20" ?
               await getAmountInWeiForErc20Token(token) :
               Number(token.id)
-          });
+          };
+
+          // console.log("Init created token: ", newInitToken);
+
+          initAssets.push(newInitToken);
         });
       }
 
       if (swap.metadata.accept && swap.metadata.accept.tokens.length > 0) {
         swap.metadata.accept.tokens.forEach(async (token) => {
-          acceptAssets.push({
+
+          const newAcceptToken: IAsset = {
             assetAddress: token.address,
             value: (token.type as SUT_SwapTokenContractType) === "ERC20" ?
               await getAmountInWeiForErc20Token(token) :
               Number(token.id)
-          });
+          };
+
+          acceptAssets.push(newAcceptToken);
         });
       }
 
