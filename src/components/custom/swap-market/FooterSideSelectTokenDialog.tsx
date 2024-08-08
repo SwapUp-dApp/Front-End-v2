@@ -24,7 +24,7 @@ interface IProp {
 const FooterSideSelectTokenDialog = ({ open, setOpen, handleSetSelectedCurrency }: IProp) => {
 
   // This following array represents preferred currencies which will be shown in top section
-  const preferredCurrenciesToBeFiltered = ["DAI", "USDC", "USDT", "WBTC", "WETH"];
+  const preferredCurrenciesToBeFiltered = ["SWP", "DAI", "USDC", "USDT", "WBTC", "WETH"];
 
   const [preferredCurrenciesList, setPreferredCurrenciesList] = useState<SUI_CurrencyChainItem[]>([]);
   const [notPreferredCurrenciesList, setNotPreferredCurrenciesList] = useState<SUI_CurrencyChainItem[]>([]);
