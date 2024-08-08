@@ -6,8 +6,8 @@ import FilterButton from '../../shared/FilterButton';
 
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import EmptyDataset from '../../shared/EmptyDataset';
-import { getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import { SUI_Swap, SUI_SwapToken, SUP_CancelSwap, SUP_CompleteSwap, } from '@/types/swap-market.types';
+import { cn, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { SUI_Swap, SUI_SwapToken, SUP_CancelSwap, SUP_CompleteSwap, SUT_SwapTokenContractType, } from '@/types/swap-market.types';
 import { useCancelSwapOffer, useCompletePrivateSwapOffer, useRejectSwapOffer, } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
@@ -75,7 +75,7 @@ const PrivateMarketTabContent = () => {
       //temp fix 
       swap.accept_sign = sign;
 
-      const approval = await getWalletProxy().getUserApproval(swap, true);
+      const approval = await getWalletProxy().getUserApproval(swap, false);
 
       if (!approval) {
         throw new Error("User approval not granted.");
@@ -117,7 +117,7 @@ const PrivateMarketTabContent = () => {
         setSwapAcceptance(prev => ({ ...prev, created: true }));
         setOpenShareRecentSwapDialog(true);
         setRecentAcceptedSwap(swap);
-        navigate(`${defaults.profile.baseRoute}/${defaults.profile.defaultActiveTab}`);
+        navigate(`${defaults.profile.baseRoute}/assets`);
       }
     } catch (error: any) {
       toast.custom(
@@ -315,23 +315,26 @@ const PrivateMarketTabContent = () => {
     retry: false
   });
 
-  const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
+  const swapTokensMapper = (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number) => {
     return (
-      nfts.map((nft, index) => {
-        if (index < showMaxNumberOfNfts)
+      swapTokens.map((swapToken, index) => {
+        if (index < showMaxNumberOfTokensToShow)
           return (
-            <div className="relative w-8 h-8" key={nft.id}>
+            <div className="relative w-8 h-8" key={swapToken.id}>
               <img
-                className="w-full h-full object-cover rounded-xs border-[1.5px] border-white/20"
-                src={nft.image_url}
+                className={cn(
+                  "w-full h-full object-cover ",
+                  (swapToken.type as SUT_SwapTokenContractType) === "ERC20" ? "" : "rounded-xs border-[1.5px] border-white/20"
+                )}
+                src={swapToken.image_url}
                 alt="nft"
                 onError={getDefaultNftImageOnError}
               />
 
               {
-                ((index === showMaxNumberOfNfts - 1) && nfts.length > showMaxNumberOfNfts) ?
+                ((index === showMaxNumberOfTokensToShow - 1) && swapTokens.length > showMaxNumberOfTokensToShow) ?
                   <div className="absolute w-full h-full rounded-xs bg-black/50 top-0 flex justify-center items-center font-semibold" >
-                    +{nfts.length - showMaxNumberOfNfts}
+                    +{swapTokens.length - showMaxNumberOfTokensToShow}
                   </div> : ''
               }
             </div>
@@ -393,7 +396,7 @@ const PrivateMarketTabContent = () => {
                   <TableRow key={swap.trade_id}>
                     <TableCell className="text-xs font-medium flex items-center gap-2">
                       <div className="flex items-center gap-1" >
-                        {nftsImageMapper(swap.metadata.init.tokens, 3)}
+                        {swapTokensMapper(swap.metadata.init.tokens, 3)}
                       </div>
 
                       <svg className="w-4" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -401,7 +404,7 @@ const PrivateMarketTabContent = () => {
                       </svg>
 
                       <div className="flex items-center gap-1" >
-                        {nftsImageMapper(swap.metadata.accept.tokens, 3)}
+                        {swapTokensMapper(swap.metadata.accept.tokens, 3)}
                       </div>
                     </TableCell>
                     <TableCell className="text-xs font-medium">#{getLastCharacters(swap.trade_id, 7)}</TableCell>
@@ -439,6 +442,7 @@ const PrivateMarketTabContent = () => {
                     <TableCell className="text-xs font-medium px-4 flex justify-start">
                       <span
                         className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
+                      // onClick={async () => { await handleSwapAccept(swap); }}
                       >
                         <img
                           className='w-4 h-4'

@@ -2,7 +2,7 @@
 
 import { Environment } from "@/config";
 import { abi } from "@/constants/abi";
-import { SUI_OpenSwap, SUI_Swap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_Swap, SUI_SwapToken, SUT_SwapTokenContractType } from "@/types/swap-market.types";
 import { ethers, JsonRpcProvider } from 'ethers';
 import { ethers6Adapter } from "thirdweb/adapters/ethers6";
 import { Account } from "thirdweb/wallets";
@@ -14,7 +14,7 @@ import { SUE_SWAP_MODE } from "@/constants/enums.ts";
 
 interface IAsset {
   assetAddress: string,
-  value: number;
+  value: number | bigint;
 }
 
 type SUT_CancelSwapType = "SWAP" | "PROPOSAL";
@@ -96,16 +96,16 @@ export const walletProxy = () => {
     //if there are multiple NFT's in different smart contracts then we will have to call approve for all
     //get unique contracts from swap.metadata.init.tokens
     let tokens =
-      init === true
+      (init === true)
         ? swap.metadata.init.tokens
         : swap.metadata.accept.tokens;
-    let uniqueContracts = [...new Set(tokens.map((e) => e.address))];
+
     let transactions = [];
 
     //initiate all the approves at once and then wait
-    for (const contract of uniqueContracts) {
+    for (const currentToken of tokens) {
       try {
-        let tx = await setApprovalForAll(contract);
+        let tx = await setApprovalForAll(currentToken);
         if (tx) transactions.push(tx);
       } catch (err) {
         //errors like user rejecting the transaction in metamask
@@ -121,21 +121,40 @@ export const walletProxy = () => {
     return true;
   };
 
-  //This function checks if our swap contract is given approval to move NFT minted from a contract 
-  const setApprovalForAll = async (contractAddress: string) => {
+  const getAmountInWeiForErc20Token = async (currentToken: SUI_SwapToken) => {
     const { signer } = await getEthersProviderAndSigner();
     const contract = new ethers.Contract(
-      contractAddress,
-      abi.nft,
+      currentToken.address,
+      abi.erc20,
+      signer
+    );
+
+    const decimals = await contract.decimals();
+    const amountInWei = await ethers.parseUnits(String(currentToken.value?.amount), decimals);
+    return amountInWei;
+  };
+
+  //This function checks if our swap contract is given approval to move NFT minted from a contract 
+  const setApprovalForAll = async (currentToken: SUI_SwapToken) => {
+    const { signer } = await getEthersProviderAndSigner();
+    const contract = new ethers.Contract(
+      currentToken.address,
+      (currentToken.type as SUT_SwapTokenContractType) === "ERC20" ? abi.erc20 : abi.nft,
       signer
     );
 
     const currentSmartContract = Environment.SWAPUP_CONTRACT;
 
-    const approved4all = await contract.isApprovedForAll(
-      signer,
-      currentSmartContract
-    );
+    let approved4all;
+
+    if ((currentToken.type as SUT_SwapTokenContractType) === 'ERC20') {
+      const decimals = await contract.decimals();
+      const amountInWei = await ethers.parseUnits(String(currentToken.value?.amount), decimals);
+      approved4all = await contract.approve(currentSmartContract, amountInWei);
+    } else {
+      approved4all = await contract.isApprovedForAll(signer, currentSmartContract);
+    }
+
 
     console.log('ApprovedForAll : ' + approved4all);
     if (approved4all) return null;
@@ -154,14 +173,32 @@ export const walletProxy = () => {
       let acceptAssets: IAsset[] = [];
 
       if (swap.metadata.init.tokens.length > 0) {
-        swap.metadata.init.tokens.forEach(ele => {
-          initAssets.push({ assetAddress: ele.address, value: Number(ele.id) });
+        swap.metadata.init.tokens.forEach(async (token) => {
+
+          const newInitToken: IAsset = {
+            assetAddress: token.address,
+            value: (token.type as SUT_SwapTokenContractType) === "ERC20" ?
+              await getAmountInWeiForErc20Token(token) :
+              Number(token.id)
+          };
+
+          // console.log("Init created token: ", newInitToken);
+
+          initAssets.push(newInitToken);
         });
       }
 
       if (swap.metadata.accept && swap.metadata.accept.tokens.length > 0) {
-        swap.metadata.accept.tokens.forEach(ele => {
-          acceptAssets.push({ assetAddress: ele.address, value: Number(ele.id) });
+        swap.metadata.accept.tokens.forEach(async (token) => {
+
+          const newAcceptToken: IAsset = {
+            assetAddress: token.address,
+            value: (token.type as SUT_SwapTokenContractType) === "ERC20" ?
+              await getAmountInWeiForErc20Token(token) :
+              Number(token.id)
+          };
+
+          acceptAssets.push(newAcceptToken);
         });
       }
 
@@ -219,10 +256,10 @@ export const walletProxy = () => {
             swap.trade_id,
             swapAction === 'ACCEPT' ? 'COMPLETED' : 'REJECTED',
             swapType,
-            // {
-            //   gasLimit: gasLimit,
-            //   // value: feeInETH, //add a bit more to 
-            // }
+            {
+              gasLimit: gasLimit,
+              // value: feeInETH, //add a bit more to 
+            }
           );
           console.log(tx);
           break;

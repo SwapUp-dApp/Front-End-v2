@@ -5,9 +5,9 @@ import { toast } from 'sonner';
 import FilterButton from '../../shared/FilterButton';
 import { Button } from '@/components/ui/button';
 import EmptyDataset from '../../shared/EmptyDataset';
-import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { cn, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
+import { SUI_OpenSwap, SUI_SwapToken, SUT_SwapTokenContractType } from '@/types/swap-market.types';
 import CreatedSwapsCards from './CreatedSwapsCards';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
@@ -65,24 +65,26 @@ const OpenMarketTabContent = () => {
     retry: false
   });
 
-  const nftsImageMapper = (nfts: SUI_SwapToken[]) => {
+  const swapTokensMapper = (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number) => {
     return (
-      nfts.map((nft, index) => {
-        if (index < 3)
+      swapTokens.map((swapToken, index) => {
+        if (index < showMaxNumberOfTokensToShow)
           return (
-            <div className="relative w-8 h-8" key={nft.id}>
+            <div className="relative w-8 h-8" key={swapToken.id}>
               <img
-                className="w-full h-full object-cover rounded-xs border-[1.5px] border-white/20"
-                src={nft.image_url}
+                className={cn(
+                  "w-full h-full object-cover ",
+                  (swapToken.type as SUT_SwapTokenContractType) === "ERC20" ? "" : "rounded-xs border-[1.5px] border-white/20"
+                )}
+                src={swapToken.image_url}
                 alt="nft"
                 onError={getDefaultNftImageOnError}
               />
 
               {
-                (index === 2) &&
-                  nfts.length > 3 ?
+                ((index === showMaxNumberOfTokensToShow - 1) && swapTokens.length > showMaxNumberOfTokensToShow) ?
                   <div className="absolute w-full h-full rounded-xs bg-black/50 top-0 flex justify-center items-center font-semibold" >
-                    +{nfts.length - 3}
+                    +{swapTokens.length - showMaxNumberOfTokensToShow}
                   </div> : ''
               }
             </div>
@@ -181,7 +183,7 @@ const OpenMarketTabContent = () => {
                   <TableRow key={swap.open_trade_id}>
                     <TableCell className="text-xs font-medium flex items-center gap-2">
                       <div className="flex items-center gap-1" >
-                        {nftsImageMapper(swap.metadata.init.tokens)}
+                        {swapTokensMapper(swap.metadata.init.tokens, 3)}
                       </div>
                     </TableCell>
                     <TableCell className="text-xs font-medium pl-4">#{getLastCharacters(swap.open_trade_id, 7)}</TableCell>

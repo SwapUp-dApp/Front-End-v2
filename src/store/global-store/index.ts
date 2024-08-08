@@ -7,6 +7,7 @@ import { SUI_OpenSwap, SUI_Swap } from "@/types/swap-market.types";
 
 const initialState: IGlobalStore = {
   availableCurrencies: [],
+  filteredAvailableCurrencies: [],
   availableCollections: [],
   openShareRecentSwapDialog: false,
   setAvailableCurrencies: () => { },

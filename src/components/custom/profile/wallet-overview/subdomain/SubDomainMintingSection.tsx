@@ -61,21 +61,21 @@ const SubDomainMintingSection = () => {
 
         return null;
       } catch (error: any) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
-        );
+        // toast.custom(
+        //   (id) => (
+        //     <ToastLookCard
+        //       variant="error"
+        //       title="Request failed!"
+        //       description={error.message}
+        //       onClose={() => toast.dismiss(id)}
+        //     />
+        //   ),
+        //   {
+        //     duration: 3000,
+        //     className: 'w-full !bg-transparent',
+        //     position: "bottom-left",
+        //   }
+        // );
 
         throw error;
       }

@@ -906,47 +906,47 @@ const ServicesPage = () => {
 															<TableCell className="text-xs font-medium px-4 capitalize">
 																{swap.swap_preferences.preferred_asset.type ===
 																	"any" && (
-																	<span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize">
-																		Any
-																	</span>
-																)}
+																		<span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize">
+																			Any
+																		</span>
+																	)}
 
 																{swap.swap_preferences.preferred_asset.type ===
 																	"nft" && (
-																	<div className="flex items-center gap-1 flex-wrap">
-																		<span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize">
-																			{
-																				swap.swap_preferences.preferred_asset
-																					.parameters.collection
-																			}
-																		</span>
-																		/
-																		<span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize">
-																			{
-																				swap.swap_preferences.preferred_asset
-																					.parameters.rank?.from
-																			}{" "}
-																			-{" "}
-																			{
-																				swap.swap_preferences.preferred_asset
-																					.parameters.rank?.to
-																			}
-																		</span>
-																	</div>
-																)}
+																		<div className="flex items-center gap-1 flex-wrap">
+																			<span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize">
+																				{
+																					swap.swap_preferences.preferred_asset
+																						.parameters.collection
+																				}
+																			</span>
+																			/
+																			<span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize">
+																				{
+																					swap.swap_preferences.preferred_asset
+																						.parameters.rank?.from
+																				}{" "}
+																				-{" "}
+																				{
+																					swap.swap_preferences.preferred_asset
+																						.parameters.rank?.to
+																				}
+																			</span>
+																		</div>
+																	)}
 
 																{swap.swap_preferences.preferred_asset.type ===
 																	"currency" && (
-																	<div className="flex items-center gap-1">
-																		<span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize">
-																			{
-																				swap.swap_preferences.preferred_asset
-																					.parameters.added_amount
-																			}{" "}
-																			USD
-																		</span>
-																	</div>
-																)}
+																		<div className="flex items-center gap-1">
+																			<span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize">
+																				{
+																					swap.swap_preferences.preferred_asset
+																						.parameters.added_amount
+																				}{" "}
+																				USD
+																			</span>
+																		</div>
+																	)}
 															</TableCell>
 															<TableCell className="text-xs font-medium flex pr-8 justify-end">
 																<svg
@@ -1360,7 +1360,7 @@ const ServicesPage = () => {
 								</div>
 							</div>
 						</div>
-                        {/* Section 8 */}
+						{/* Section 8 */}
 						<div
 							className="h-[auto] bg-cover w-full "
 							style={{

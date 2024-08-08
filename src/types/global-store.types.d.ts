@@ -3,6 +3,7 @@ import { SUI_OpenSwap, SUI_Swap } from "./swap-market.types";
 
 export interface IGlobalStore {
   availableCurrencies: SUI_CurrencyChainItem[];
+  filteredAvailableCurrencies: SUI_CurrencyChainItem[];
   availableCollections: SUI_CollectionItem[];
   recentAcceptedSwap?: SUI_OpenSwap | SUI_Swap;
   openShareRecentSwapDialog: boolean;

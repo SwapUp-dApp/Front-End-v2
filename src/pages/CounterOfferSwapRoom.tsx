@@ -33,7 +33,7 @@ const CounterOfferSwapRoom = () => {
 
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
   const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom.swap.swap_preferences : null);
-  const [availableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies]);
+  const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
 
   const queries = useQueries({
     queries: [
@@ -377,7 +377,7 @@ const CounterOfferSwapRoom = () => {
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="sender"
               swapRoomViewType="counter"
-              availableCurrencies={availableCurrencies}
+              availableCurrencies={filteredAvailableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
@@ -396,7 +396,7 @@ const CounterOfferSwapRoom = () => {
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="receiver"
               swapRoomViewType="counter"
-              availableCurrencies={availableCurrencies}
+              availableCurrencies={filteredAvailableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >

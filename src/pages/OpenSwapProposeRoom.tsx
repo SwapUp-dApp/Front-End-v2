@@ -30,7 +30,7 @@ const OpenSwapProposeRoom = () => {
 
   const profile = useProfileStore(state => state.profile);
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
-  const [availableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies]);
+  const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
 
   const { mutateAsync: proposeOpenSwapOffer } = useProposeOpenSwapOffer();
 
@@ -306,7 +306,7 @@ const OpenSwapProposeRoom = () => {
               roomKey="openRoom"
               layoutType="sender"
               setEnableApproveButtonCriteria={setEnableApproveButtonCriteria}
-              availableCurrencies={availableCurrencies}
+              availableCurrencies={filteredAvailableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
@@ -331,7 +331,7 @@ const OpenSwapProposeRoom = () => {
               layoutType="receiver"
               setEnableApproveButtonCriteria={setEnableApproveButtonCriteria}
               swapRoomViewType="propose"
-              availableCurrencies={availableCurrencies}
+              availableCurrencies={filteredAvailableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
