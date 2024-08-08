@@ -187,7 +187,10 @@ const SwapParametersCard = ({ setIsValidParametersForm, availableCurrencies, ava
                       key={asset}
                       value={asset}
                       aria-label="Toggle bold"
-                      className="capitalize"
+                      className={cn(
+                        "",
+                        asset === "nft" ? "uppercase" : "capitalize"
+                      )}
                     >
                       {asset}
                     </ToggleGroupItem>
