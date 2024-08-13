@@ -70,6 +70,10 @@ const MainLayout = () => {
   return (
     <div className="flex flex-col justify-between min-h-screen ">
       <div>
+        <div className="relative w-full px-4 py-1.5 bg-gradient-primary text-xs lg:text-center">
+          We are currently in the testing phase and only support sepolia base transactions.  Follow our socials for updates on our Mainnet release.
+        </div>
+
         <Navbar />
         <section className="px-6 lg:px-10 py-4" >
           <Outlet key={key} />
