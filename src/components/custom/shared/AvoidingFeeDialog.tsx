@@ -88,10 +88,10 @@ const AvoidingFeeDialog = ({ children, className, ...props }: IProp) => {
               variant={"default"}
               className="w-full"
               onClick={() =>
-                toast.info("Min your subdomain", {
+                toast.info("Mint your subdomain", {
                   position: 'bottom-left',
                   duration: 2000,
-                  description: "This feature is under construction!",
+                  description: "This feature is available now under Profile Tab --> Wallet Subsection!",
                   action: {
                     label: "Close",
                     onClick: () => console.log("Close"),
