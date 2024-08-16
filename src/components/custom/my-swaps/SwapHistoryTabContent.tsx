@@ -38,7 +38,7 @@ const SwapHistoryTabContent = () => {
       try {
         if (wallet.address && wallet.isConnected) {
           const response = await getSwapHistoryListApi(wallet.address);
-          console.log("Res: ", response.data.data);
+          // console.log("Res: ", response.data.data);
           await setMySwapsData(response.data.data as SUI_OpenSwap[], 'history');
           return response.data.data;
         }
