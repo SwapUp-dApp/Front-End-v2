@@ -16,6 +16,7 @@ export interface SUI_ConfigEnvironment {
   NAMESPACE_API_KEY: string;
   NAMESPACE_API_BASE_URL: string;
   NAMESPACE_OFFCHAIN_API_BASE_URL: string;
+  TWITTER_CLIENT_ID: string;
 }
 export interface SUI_Config {
   local: SUI_ConfigEnvironment;
