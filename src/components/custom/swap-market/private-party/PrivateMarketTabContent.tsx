@@ -42,7 +42,7 @@ const PrivateMarketTabContent = () => {
     availablePrivateSwapsSearchApplied
   } = useSwapMarketStore(state => state.privateMarket);
 
-  const [setOpenShareRecentSwapDialog, setRecentAcceptedSwap] = useGlobalStore(state => [state.setOpenShareRecentSwapDialog, state.setRecentAcceptedSwap]);
+  const [setStartRecentSwapSharingProcess, setRecentAcceptedSwap] = useGlobalStore(state => [state.setStartRecentSwapSharingProcess, state.setRecentAcceptedSwap]);
   const wallet = useProfileStore(state => state.profile.wallet);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -115,7 +115,7 @@ const PrivateMarketTabContent = () => {
           }
         );
         setSwapAcceptance(prev => ({ ...prev, created: true }));
-        setOpenShareRecentSwapDialog(true);
+        setStartRecentSwapSharingProcess(true);
         setRecentAcceptedSwap(swap);
         navigate(`${defaults.profile.baseRoute}/assets`);
       }

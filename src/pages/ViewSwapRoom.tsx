@@ -39,7 +39,7 @@ const ViewSwapRoom = () => {
 
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
   const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
-  const [setOpenShareRecentSwapDialog, setRecentAcceptedSwap] = useGlobalStore(state => [state.setOpenShareRecentSwapDialog, state.setRecentAcceptedSwap]);
+  const [setStartRecentSwapSharingProcess, setRecentAcceptedSwap] = useGlobalStore(state => [state.setStartRecentSwapSharingProcess, state.setRecentAcceptedSwap]);
 
   const queries = useQueries({
     queries: [
@@ -198,7 +198,7 @@ const ViewSwapRoom = () => {
         );
         setSwapAcceptance(prev => ({ ...prev, created: true }));
         setRecentAcceptedSwap(swap);
-        setOpenShareRecentSwapDialog(true);
+        setStartRecentSwapSharingProcess(true);
         navigate("/swap-up/my-swaps/history");
       }
 
