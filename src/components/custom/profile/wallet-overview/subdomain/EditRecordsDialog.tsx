@@ -84,7 +84,7 @@ const EditRecordsDialog = ({ open, setOpen }: IProp) => {
           {/* header */}
           <div className="space-y-2">
             <div className="flex justify-between items-start">
-              <h2 className="font-bold text-xl pt-3" >{primarySubname?.subname} records </h2>
+              <h2 className="font-bold text-xl pt-3" >{primarySubname?.fullName} records </h2>
 
               <DialogClose className="p-1 rounded-xs hover:bg-su_active_bg" >
                 <svg className="w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">

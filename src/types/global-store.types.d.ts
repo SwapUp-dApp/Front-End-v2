@@ -6,9 +6,9 @@ export interface IGlobalStore {
   filteredAvailableCurrencies: SUI_CurrencyChainItem[];
   availableCollections: SUI_CollectionItem[];
   recentAcceptedSwap?: SUI_OpenSwap | SUI_Swap;
-  openShareRecentSwapDialog: boolean;
+  startRecentSwapSharingProcess: boolean;
   setAvailableCurrencies: (currenciesData: SUI_CurrencyChainItem[]) => void;
   setAvailableCollections: (collectionsData: SUI_CollectionItem[]) => void;
   setRecentAcceptedSwap: (swap: SUI_OpenSwap | SUI_Swap) => void;
-  setOpenShareRecentSwapDialog: (isOpen: boolean) => void;
+  setStartRecentSwapSharingProcess: (isOpen: boolean) => void;
 }

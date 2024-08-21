@@ -38,7 +38,7 @@ const PendingSwapsTabContent = () => {
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [pendingSwapsSearchApplied, pendingSwapsFiltersApplied] = useMySwapStore(state => [state.pendingSwapsFiltersApplied, state.pendingSwapsSearchApplied]);
   const [setMySwapsData, filteredPendingSwaps, pendingSwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredPendingSwaps, state.pendingSwaps]);
-  const [setOpenShareRecentSwapDialog, setRecentAcceptedSwap] = useGlobalStore(state => [state.setOpenShareRecentSwapDialog, state.setRecentAcceptedSwap]);
+  const [setStartRecentSwapSharingProcess, setRecentAcceptedSwap] = useGlobalStore(state => [state.setStartRecentSwapSharingProcess, state.setRecentAcceptedSwap]);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -113,7 +113,7 @@ const PendingSwapsTabContent = () => {
           }
         );
         setSwapAcceptance(prev => ({ ...prev, created: true }));
-        setOpenShareRecentSwapDialog(true);
+        setStartRecentSwapSharingProcess(true);
         setRecentAcceptedSwap(swap);
         navigate("/swap-up/my-swaps/history");
       }
@@ -436,7 +436,7 @@ const PendingSwapsTabContent = () => {
                           <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.init_address)}</div>
                       }
                     </TableCell>
-                    <TableCell className="text-xs font-medium px-4">
+                    <TableCell className="text-xs font-medium px-4" >
                       <BadgeTile>
                         <img
                           className='w-3 h-3'

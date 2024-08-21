@@ -33,3 +33,22 @@ export const showUnderConstructionToast = (title?: string, description?: string)
     descriptionClassName: '!text-white',
   });
 };
+
+// To get normal swapup notification for APIs etc
+export const showNotificationToast = (variant: SUT_ToastVariantType = "error", title: string, description: string) => {
+  toast.custom(
+    (id) => (
+      <ToastLookCard
+        variant={variant}
+        title={title}
+        description={description}
+        onClose={() => toast.dismiss(id)}
+      />
+    ),
+    {
+      duration: 3000,
+      className: 'w-full !bg-transparent',
+      position: "bottom-left",
+    }
+  );
+};
