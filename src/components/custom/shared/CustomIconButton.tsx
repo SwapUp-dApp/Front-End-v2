@@ -12,7 +12,8 @@ const CustomIconButton = ({ className, children, isLoading = false, ...props }: 
     <button
       className={cn(
         `p-2 rounded-full text-su_secondary hover:bg-su_active_bg hover:text-su_primary disabled:text-su_disabled disabled:pointer-events-none disabled:cursor-not-allowed cursor-pointer`,
-        className
+        isLoading && "cursor-not-allowed pointer-events-none",
+        className,
       )}
       {...props}
     >
