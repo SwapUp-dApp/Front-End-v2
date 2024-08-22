@@ -1,12 +1,11 @@
 {
     "navigationFallback": {
         "rewrite": "/index.html",
-        "exclude": [
-            "/assets/*",
-            "/static/*",
-            "/images/*",
-            "/css/*",
-            "/js/*"
+        "routes": [
+            {
+                "route": "/swap-up/*",
+                "rewrite": "/index.html"
+            }
         ]
     },
     "mimeTypes": {
