@@ -51,10 +51,23 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
+        su_pie_chart_1: "var(--pie-chart-1)",
+        su_pie_chart_2: "var(--pie-chart-2)",
+        su_pie_chart_3: "var(--pie-chart-3)",
+        su_pie_chart_4: "var(--pie-chart-4)",
+        su_pie_chart_5: "var(--pie-chart-5)",
+        su_pie_chart_6: "var(--pie-chart-6)",
+        su_pie_chart_7: "var(--pie-chart-7)",
+        su_pie_chart_8: "var(--pie-chart-8)",
+        su_pie_chart_9: "var(--pie-chart-9)",
+      
+
         su_primary_bg: "rgba(13, 13, 35, 1)",
         su_primary_black: "rgba(13, 13, 35, 0.8)",
         su_active_bg: "rgba(255, 255, 255, 0.15)",
         su_enable_bg: "rgba(255, 255, 255, 0.08)",
+
         su_overlay_bg: "rgba(13, 13, 35, 0.8)",
         su_least_bg: "rgba(46, 46, 65, 1)",
         su_secondary_bg: "rgba(37, 37, 57, 1)",
@@ -80,13 +93,16 @@ module.exports = {
         su_warning_week: "rgba(255, 193, 117, 0.3)",
         su_warning_bg: "rgb(49, 39, 47)",
         su_brand: "rgba(117, 134, 255, 1)",
-        su_light_purple: "rgba(208, 204, 244, 1)",
+        su_brand_week: "rgba(208, 204, 244, 1)",
         su_light_pink: "rgba(249, 207, 242, 1)",
         su_tea_green: "rgba(207, 240, 206, 1)",
-        su_buttermilk: "rgba(247, 242, 187, 1)",
         su_greyed_bg: "rgba(243, 243, 244, 1)",
         su_greyed: "rgba(204, 204, 208, 1)",
-
+        su_buttermilk: "rgba(247, 242, 187, 1)",
+        su_tag_buttermilk: "rgba(61, 57, 13, 1)",
+        su_tag_periwinkle: "rgba(45, 42, 66, 1)",
+        su_tag_pale_mauve: "rgba(79, 54, 75, 1)",
+        su_tag_tea_green: "rgba(29, 64, 29, 1)"
       },
       backgroundImage: (theme) => ({
         "gradient-primary": `linear-gradient(to right, ${theme(

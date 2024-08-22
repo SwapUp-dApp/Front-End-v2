@@ -4,6 +4,10 @@ import { resetAllFiltersHelper, setFilteredHistorySwapByFiltersHelper, setFilter
 import { SUI_OpenSwap } from '@/types/swap-market.types';
 
 const initialState: IMySwapsStore = {
+  pendingSwapsFiltersApplied: false,
+  pendingSwapsSearchApplied: false,
+  historySwapsFiltersApplied: false,
+  historySwapsSearchApplied: false,
   pendingFilters: {
     offersFromCurrentChain: false,
     requestedDate: '',
@@ -28,7 +32,11 @@ const initialState: IMySwapsStore = {
 
 export const useMySwapStore = create<IMySwapsStore>((set, get): IMySwapsStore => ({
   ...initialState,
-  setMySwapsData: (data: SUI_OpenSwap[], tabType: SUT_MySwapsTabType) => set(state => setMySwapsDataHelper(state, data, tabType)),
+  setMySwapsData: async (data: SUI_OpenSwap[], tabType: SUT_MySwapsTabType) => {
+    const state = get();
+    const newState = await setMySwapsDataHelper(state, data, tabType);
+    set(newState);
+  },
   setFilteredMySwapsBySearch: (searchValue: string, tabType: SUT_MySwapsTabType, loginWalletAddress: string) => set(state => setFilteredMySwapsBySearchHelper(state, searchValue, tabType, loginWalletAddress)),
   setFilteredPendingSwapByFilters: (filters: IPendingFilters, loginWalletAddress: string) => set(state => setFilteredPendingSwapByFiltersHelper(state, filters, loginWalletAddress)),
   setFilteredHistorySwapByFilters: (filters: IHistoryFilters) => set(state => setFilteredHistorySwapByFiltersHelper(state, filters)),

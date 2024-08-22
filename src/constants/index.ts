@@ -34,13 +34,6 @@ export const landingPageNavData: SUI_NavItem[] = [
     protected: false,
   },
   {
-    key: "services",
-    title: "Services",
-    basePath: '/',
-    path: "/",
-    protected: true,
-  },
-  {
     key: "teck-stack",
     title: "Teck Stack",
     basePath: '/',
@@ -55,17 +48,10 @@ export const landingPageNavData: SUI_NavItem[] = [
     protected: true,
   },
   {
-    key: "utility",
-    title: "Utility",
+    key: "services",
+    title: "Services",
     basePath: '/',
-    path: "/",
-    protected: true,
-  },
-  {
-    key: "education",
-    title: "Education",
-    basePath: '/',
-    path: "/",
+    path: "/services",
     protected: true,
   },
 ];

@@ -23,7 +23,7 @@ const OpenMarketSwapDialogSideCard = ({ className, data, ...props }: IProp) => {
   );
 
   const getConvertedAmount = (usdAmount: number | string, chainAmount: number | string) => {
-    return Number(usdAmount) / Number(chainAmount);
+    return (Number(usdAmount) * Number(chainAmount));
   };
 
   return (
@@ -37,7 +37,7 @@ const OpenMarketSwapDialogSideCard = ({ className, data, ...props }: IProp) => {
       <div className="flex items-center gap-1 lg:gap-2">
         <CustomAvatar
           imageSrc={data.profile.avatar}
-          fallbackName={data.profile.title}
+          fallbackName={data.profile.details?.title || data.profile.ensAddress || ''}
           sizeClasses="w-4 h-4 lg:w-6 lg:h-6"
           textSizeClasses="text-2xs lg:text-xs"
         />
@@ -52,17 +52,20 @@ const OpenMarketSwapDialogSideCard = ({ className, data, ...props }: IProp) => {
         <p>Added amount:</p>
 
         <div className="flex gap-2" >
-          <img
-            className="w-4"
-            src={data.addedAmount?.coin.iconUrl}
-            alt=""
-          />
+          {
+            data.addedAmount?.coin.iconUrl &&
+            <img
+              className="w-4"
+              src={data.addedAmount.coin.iconUrl}
+              alt=""
+            />
+          }
 
           <p className="text-su_primary" >
-            {data.addedAmount && getConvertedAmount(data.addedAmount.usdAmount, data.addedAmount.coin.price).toFixed(6)}
+            {data.addedAmount?.amount || 0}
             {' '} {data.addedAmount?.coin.symbol} {' '}
             <span className="text-su_secondary" >
-              / $ {data.addedAmount?.usdAmount}
+              / $ {data.addedAmount?.amount ? getConvertedAmount(data.addedAmount.coin.price, data.addedAmount.amount).toFixed(6) : 0}
             </span>
           </p>
         </div>

@@ -59,6 +59,7 @@ const Combobox = ({ items, className, value, onChange, title = "item" }: ICombob
                       onChange(currentValue === value ? "" : currentValue);
                       setOpen(false);
                     }}
+                    className="capitalize"
                   >
                     {item.label}
 

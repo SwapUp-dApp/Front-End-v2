@@ -1,4 +1,4 @@
-import { SUI_ChainItem, SUI_NFTItem } from "@/types/global.types";
+import { SUI_CurrencyChainItem, SUI_NFTItem } from "@/types/global.types";
 
 export const tempNftsData: SUI_NFTItem[] = [
   {
@@ -3676,7 +3676,7 @@ export const tempNftsData: SUI_NFTItem[] = [
 ];
 
 
-export const chainsDataset: SUI_ChainItem[] = [
+export const chainsDataset: SUI_CurrencyChainItem[] = [
   {
     "uuid": "Qwsogvtv82FCd",
     "symbol": "BTC",
@@ -3763,6 +3763,50 @@ export const chainsDataset: SUI_ChainItem[] = [
     "coinrankingUrl": "https://coinranking.com/coin/Qwsogvtv82FCd+bitcoin-btc",
     "24hVolume": "21884806754",
     "btcPrice": "1",
+    "contractAddresses": []
+  },
+  {
+    "uuid": "1",
+    "symbol": "ETH",
+    "name": "Ethereum",
+    "color": "#3C3C3D",
+    "iconUrl": "https://cdn.coinranking.com/rk4RKHOuW/eth.svg",
+    "marketCap": "465367878140",
+    "price": "3812.473011954728",
+    "listedAt": 1438905600,
+    "tier": 1,
+    "change": "0.87",
+    "rank": 2,
+    "sparkline": [
+      "3785.5509306465415",
+      "3795.8323374989263",
+      "3789.749911290197",
+      "3799.430850549383",
+      "3798.244867401148",
+      "3793.761443678319",
+      "3780.168925394356",
+      "3768.719201360257",
+      "3772.6745644002804",
+      "3779.0393878390933",
+      "3788.500510651138",
+      "3788.06737684962",
+      "3784.3210702522483",
+      "3773.6761520284945",
+      "3791.2017887204815",
+      "3810.2600674693194",
+      "3798.9876998670893",
+      "3804.389494060936",
+      "3818.95656674164",
+      "3824.501608846006",
+      "3820.665138510233",
+      "3824.6375966554447",
+      "3818.2005775702496",
+      "3815.601150257186"
+    ],
+    "lowVolume": false,
+    "coinrankingUrl": "https://coinranking.com/coin/razxDUgYGNAdQ+ethereum-eth",
+    "24hVolume": "10115104665",
+    "btcPrice": "0.05516019391987125",
     "contractAddresses": []
   },
   {
@@ -6089,7 +6133,7 @@ export const communityCardDetails: CommunityCardDetails[] = [
   {
     src: "/assets/landing-page/contract.png",
     title: "Efficient Smart Contracts",
-    desc: "swift contract execution ensures reliability"
+    desc: "Execute transactions with lower fees."
   },
   {
     src: "/assets/landing-page/plug.png",
@@ -6121,23 +6165,8 @@ export const communityCardDetails: CommunityCardDetails[] = [
     title: "Community driven",
     desc: "Developed collaboratively with active community input."
   },
-  {
-    src: "/assets/landing-page/safety.png",
-    title: "Safety",
-    desc: "SwapUp offers a secure and trustless solutions."
-  },
-  {
-    src: "/assets/landing-page/security.png",
-    title: "Security",
-    desc: "SwapUp provides a secure avenue for trading."
-  },
-  {
-    src: "/assets/landing-page/web3.png",
-    title: "Web 3 Value",
-    desc: "Building a business for web3, with web3 principles."
-  },
 
-]
+];
 
 export const availableCollections: ICollectionItem[] = [
   {
@@ -6192,67 +6221,67 @@ export interface IMember {
 export const membersData: IMember[] = [
   {
     id: '1',
-    image: 'assets/images/member1.jpg',
+    image: '/assets/images/member1.jpg',
     title: 'John D'
   },
   {
     id: '2',
-    image: 'assets/images/member2.jpg',
+    image: '/assets/images/member2.jpg',
     title: 'Max P'
   },
   {
     id: '3',
-    image: 'assets/images/member3.jpg',
+    image: '/assets/images/member3.jpg',
     title: 'Rudy T'
   },
   {
     id: '4',
-    image: 'assets/images/member4.jpg',
+    image: '/assets/images/member4.jpg',
     title: 'John D'
   },
   {
     id: '5',
-    image: 'assets/images/member5.jpg',
+    image: '/assets/images/member5.jpg',
     title: 'John D'
   },
   {
     id: '6',
-    image: 'assets/images/member6.jpg',
+    image: '/assets/images/member6.jpg',
     title: 'John D'
   },
   {
     id: '7',
-    image: 'assets/images/member7.jpg',
+    image: '/assets/images/member7.jpg',
     title: 'John D'
   },
   {
     id: '8',
-    image: 'assets/images/member8.jpg',
+    image: '/assets/images/member8.jpg',
     title: 'John D'
   },
   {
     id: '9',
-    image: 'assets/images/member9.jpg',
+    image: '/assets/images/member9.jpg',
     title: 'John D'
   },
   {
     id: '10',
-    image: 'assets/images/member10.jpg',
+    image: '/assets/images/member10.jpg',
     title: 'John D'
   },
   {
     id: '11',
-    image: 'assets/images/avatar.png',
+    image: '/assets/images/avatar.png',
     title: 'John D'
   },
   {
     id: '12',
-    image: 'assets/images/avatar.png',
+    image: '/assets/images/avatar.png',
     title: 'John D'
   },
   {
     id: '13',
-    image: 'assets/images/avatar.png',
+    image: '/assets/images/avatar.png',
     title: 'John D'
   },
 ];
@@ -6260,25 +6289,25 @@ export const membersData: IMember[] = [
 export const tradersData: IMember[] = [
   {
     id: '1',
-    image: 'assets/images/member11.jpg',
+    image: '/assets/images/member11.jpg',
     title: 'John D',
     topRated: true
   },
   {
     id: '2',
-    image: 'assets/images/member12.jpg',
+    image: '/assets/images/member12.jpg',
     title: 'John D',
     topRated: true
   },
   {
     id: '3',
-    image: 'assets/images/member9.jpg',
+    image: '/assets/images/member9.jpg',
     title: 'John D',
     topRated: true
   },
   {
     id: '4',
-    image: 'assets/images/member10.jpg',
+    image: '/assets/images/member10.jpg',
     title: 'John D'
   },
   {
@@ -6288,12 +6317,12 @@ export const tradersData: IMember[] = [
   },
   {
     id: '6',
-    image: 'assets/images/member8.jpg',
+    image: '/assets/images/member8.jpg',
     title: 'John D'
   },
   {
     id: '7',
-    image: 'assets/images/member7.jpg',
+    image: '/assets/images/member7.jpg',
     title: 'John D'
   },
   {
@@ -6303,27 +6332,27 @@ export const tradersData: IMember[] = [
   },
   {
     id: '9',
-    image: 'assets/images/member6.jpg',
+    image: '/assets/images/member6.jpg',
     title: 'John D'
   },
   {
     id: '10',
-    image: 'assets/images/avatar.png',
+    image: '/assets/images/avatar.png',
     title: 'John D'
   },
   {
     id: '11',
-    image: 'assets/images/avatar.png',
+    image: '/assets/images/avatar.png',
     title: 'John D'
   },
   {
     id: '12',
-    image: 'assets/images/avatar.png',
+    image: '/assets/images/avatar.png',
     title: 'John D'
   },
   {
     id: '13',
-    image: 'assets/images/avatar.png',
+    image: '/assets/images/avatar.png',
     title: 'John D'
   },
 ];

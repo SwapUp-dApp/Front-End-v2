@@ -16,7 +16,7 @@ import {
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
 
 
 const SwapUpPage = () => {
@@ -50,7 +50,7 @@ const SwapUpPage = () => {
 								agreements with others locally and worldwide.
 							</p>
 							<div className="mt-8">
-								<Button onClick={() => navigate(`${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`)} >Go to dApp</Button>
+								<Button onClick={() => navigate(`${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`)} >Start Trading</Button>
 							</div>
 						</div>
 						<div className="w-full max-w-[450px] mt-8 md:mt-0">
@@ -103,7 +103,7 @@ const SwapUpPage = () => {
 									number="01"
 									title="Traders"
 									description={
-										"Trade assets on multiple blockchains and diversify your NFT exposure."
+										"Trade assets on multiple blockchains and diversify your NFT exposure. Trade up to 20 tokens at once. Private and Open Market trading. Trade and buy with any cryptocurrency"
 									}
 								/>
 								<CommunityCard
@@ -136,7 +136,7 @@ const SwapUpPage = () => {
 							<div>
 								<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-center mt-12 lg:text-left">
 									We are{" "}
-									<span className="px-3 py-1 rounded-full bg-su_light_purple text-su_primary_bg inline-block">
+									<span className="px-3 py-1 rounded-full bg-su_brand_week text-su_primary_bg inline-block">
 										Growing!
 									</span>
 								</p>
@@ -161,27 +161,13 @@ const SwapUpPage = () => {
 										<HorizontalDivider />
 									</div>
 
-									<div className="text-center max-w-[194px]">
-										<p className="font-Poppins text-5xl font-semibold">$</p>
-										<p className="font-Urbanist text-xs mt-4">
-											SwapUp DAO Rewards
-										</p>
-									</div>
-									<div className="hidden md:block">
-										<VerticalDivider />
-									</div>
+
+
 									<div className="h-px w-40 mt-4 mb-4 block lg:hidden">
 										<HorizontalDivider />
 									</div>
-									<div className="text-center max-w-[194px]">
-										<p className="font-Poppins text-5xl font-semibold">$</p>
-										<p className="font-Urbanist text-xs mt-4">
-											SwapUp DAO Rewards
-										</p>
-									</div>
-									<div className="hidden md:block">
-										<VerticalDivider />
-									</div>
+
+
 									<div className="h-px w-40 mt-4 mb-4 block lg:hidden">
 										<HorizontalDivider />
 									</div>
@@ -189,7 +175,7 @@ const SwapUpPage = () => {
 									<div className="text-center max-w-[194px]">
 										<p className="font-Poppins text-5xl font-semibold">550</p>
 										<p className="font-Urbanist text-xs mt-4">
-											Number of active users
+											Members
 										</p>
 									</div>
 								</div>
@@ -233,24 +219,26 @@ const SwapUpPage = () => {
 							<div className="mt-16 mb-16 w-full flex justify-start overflow-x-auto">
 								<div className="flex space-x-2 md:space-x-10">
 									<CarousalCard
-										imageSrc="/assets/landing-page/carousal1.png"
+										imageSrc="/assets/landing-page/exchange-nfts.png"
 										title="Exchange NFT's and Crypto On Multiple Networks"
 										description="Create the perfect trade between you and your peers using a customizable swap agreement to pick the right amount of NFT's and crypto to make a fair trade."
 										buttonText="Find out more"
 									/>
 									<CarousalCard
-										imageSrc="/assets/landing-page/carousal2.png"
+										imageSrc="/assets/landing-page/project-hub.png"
 										title="Project Hub"
 										description="A place for projects to enhance community engagement and reach a wider audience using our core smart contracts and application functionality."
 										buttonText="Find out more"
 										comingSoon
+										onClick={() => { }}
 									/>
 									<CarousalCard
-										imageSrc="/assets/landing-page/carousal3.png"
-										title="Communty Rewards"
+										imageSrc="/assets/landing-page/community-rewards.png"
+										title="Community Rewards"
 										description="Establish a DAO to reward users and Projects who help grow the community and promote a safe platform for users to trade assets."
 										buttonText="Find out more"
 										comingSoon
+										onClick={() => { }}
 									/>
 								</div>
 							</div>
@@ -348,6 +336,15 @@ const SwapUpPage = () => {
 						<div className="w-full flex justify-start overflow-x-auto space-x-5">
 							<Testimonial
 								rating={5}
+								text="Swapup has been an integral part of one of the main holder perks of Stone Nomads NFT, the ability to “swap up” your Stone Nomads for higher ranked Stone Nomads from the vault. The process is smooth, secure and minimizes gas fees. Swapup is a trusted partner in a trustless ecosystem and we’re looking forward to seeing what features are added to the Swapup dapp as the Stone Nomads wander the blockchain!"
+								author="StoneNomads NFT Project"
+								containerClasses="w-[340px]"
+							/>
+							<div>
+								<VerticalDivider />
+							</div>
+							<Testimonial
+								rating={5}
 								text="I've been relying on this platform for several months now, and
 								it has truly been a game-changer. Its seamless operation and
 								attentive customer service have simplified my transactions and
@@ -391,12 +388,12 @@ const SwapUpPage = () => {
 						<ScrollBar orientation="horizontal" className=" h-2" />
 					</ScrollArea>
 
-					<p className="font-Urbanist text-sm text-su_primary_lighter text-center">
+					{/* <p className="font-Urbanist text-sm text-su_primary_lighter text-center">
 						Ready to share your experience?
 						<span className="font-Urbanist text-sm text-su_primary">
 							{"  "}Leave your feedback
 						</span>
-					</p>
+					</p> */}
 				</div>
 
 
@@ -410,7 +407,7 @@ const SwapUpPage = () => {
 						<div className="max-w-[850px]  mt-0 md:mt-2">
 							<p className="text-4xl text-start  font-Poppins md:text-5xl text-su_primary_bg font-semibold md:text-center mt-12 ">
 								Key Development{" "}
-								<span className="px-3 py-1 rounded-full bg-su_light_purple text-su_primary_bg inline-block">
+								<span className="px-3 py-1 rounded-full bg-su_brand_week text-su_primary_bg inline-block">
 									Roadmap
 								</span>
 							</p>
@@ -730,7 +727,7 @@ const SwapUpPage = () => {
 								<div className="w-full mt-12 ">
 									<p className="w-full text-su_primary max-w-[550px] text-4xl font-Poppins md:text-5xl font-semibold text-center md:text-center md:justify-center mt-12 ">
 										Join the 	{" "}
-										<span className="px-3 py-1 rounded-full bg-su_light_purple text-black inline-block ml-2">
+										<span className="px-3 py-1 rounded-full bg-su_brand_week text-black inline-block ml-2">
 											Future
 										</span>
 										{" "} of Trading!
@@ -742,7 +739,7 @@ const SwapUpPage = () => {
 							</div>
 						</div>
 						<div className="mt-8 mb-32 items-center md:justify-center   md:text-center md:text-lg ">
-							<Button onClick={() => navigate(`${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`)} >Go to dApp</Button>
+							<Button onClick={() => navigate(`${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`)} >Start Trading</Button>
 						</div>
 
 						<div className="flex justify-normal w-full mt-8 pb-8 overflow-x-auto  md:justify-center">

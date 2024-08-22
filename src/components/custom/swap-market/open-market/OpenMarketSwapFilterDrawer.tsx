@@ -11,12 +11,12 @@ import { Schema_OpenMarketFiltersForm, } from "@/schema";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { SUI_CurrencyItem } from "@/types/global.types";
+import { SUI_SelectedCurrencyItem } from "@/types/global.types";
 import { SUT_PreferredAssetType } from "@/types/swap-market.types";
 import Combobox from "../../shared/Combobox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { availableRarityRanking } from "@/constants";
-import { availableCollections, chainsDataset } from "@/constants/data";
+import { chainsDataset } from "@/constants/data";
 import { Input } from "@/components/ui/input";
 import CurrencySelectCombobox from "../../shared/CurrencySelectCombobox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -28,17 +28,18 @@ interface IProp {
   children: any;
 }
 
-const currenciesDataset: SUI_CurrencyItem[] = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
+const currenciesDataset: SUI_SelectedCurrencyItem[] = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
 const preferredAssetsData: SUT_PreferredAssetType[] = ["any", "nft", "currency"];
 
 const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
   const [formKey, setFormKey] = useState(generateRandomKey(6));
 
-  const [openMarketSwapsFilters, setOpenMarketAvailableSwapsByFilters, resetAllOpenMarketFilters] = useSwapMarketStore(state => [
+  const [openMarketSwapsFilters, setOpenMarketAvailableSwapsByFilters, resetAllOpenMarketFilters, availableOpenSwapCollections] = useSwapMarketStore(state => [
     state.openMarket.openMarketSwapsFilters,
     state.openMarket.setOpenMarketAvailableSwapsByFilters,
-    state.openMarket.resetAllOpenMarketFilters
+    state.openMarket.resetAllOpenMarketFilters,
+    state.openMarket.availableOpenSwapCollections
   ]);
 
   const form = useForm<z.infer<typeof Schema_OpenMarketFiltersForm>>({
@@ -172,7 +173,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-su_secondary text-sm font-normal flex items-center justify-between">
-                            Offered asset rarity rank:
+                            NFT Rarity Rank:
 
                             <button
                               onClick={handleResetOfferedRarityRank}
@@ -276,7 +277,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                             <FormItem>
                               <FormLabel className="text-su_secondary text-sm font-normal">Preferred collection:</FormLabel>
                               <Combobox
-                                items={availableCollections}
+                                items={availableOpenSwapCollections}
                                 onChange={field.onChange}
                                 value={field.value}
                                 title="collection"

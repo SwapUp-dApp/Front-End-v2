@@ -18,8 +18,12 @@ export interface IHistoryFilters extends Pick<IPendingFilters, 'offersFromCurren
 
 export interface IMySwapsStore {
   pendingSwaps?: SUI_OpenSwap[];
+  pendingSwapsFiltersApplied: boolean;
+  pendingSwapsSearchApplied: boolean;
   filteredPendingSwaps?: SUI_OpenSwap[];
   historySwaps?: SUI_OpenSwap[];
+  historySwapsFiltersApplied: boolean;
+  historySwapsSearchApplied: boolean;
   filteredHistorySwaps?: SUI_OpenSwap[];
   pendingFilters: IPendingFilters;
   historyFilters: IHistoryFilters;

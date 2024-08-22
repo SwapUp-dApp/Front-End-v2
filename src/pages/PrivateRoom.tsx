@@ -12,13 +12,19 @@ import { toast } from "sonner";
 import { useCreatePrivateSwapOffer } from "@/service/queries/swap-market.query";
 import { SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
-import { SUI_SwapCreation } from "@/types/global.types";
+import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
 import { useProfileStore } from "@/store/profile";
+import LoadingDataset from "@/components/custom/shared/LoadingDataset";
+import { useQuery } from "@tanstack/react-query";
+import { getAvailableCurrenciesApi } from "@/service/api";
+import { useGlobalStore } from "@/store/global-store";
+import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 
 const PrivateRoom = () => {
 
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
-  const wallet = useProfileStore(state => state.profile.wallet);
+  const [wallet, profile] = useProfileStore(state => [state.profile.wallet, state.profile]);
+  const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
 
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [swapCreation, setSwapCreation] = useState<SUI_SwapCreation>({ isLoading: false, created: false });
@@ -27,6 +33,36 @@ const PrivateRoom = () => {
   const navigate = useNavigate();
 
   const { mutateAsync: createSwapOffer } = useCreatePrivateSwapOffer();
+
+  const { isLoading, isSuccess, isError } = useQuery({
+    queryKey: [`getAvailableCurrenciesApi`],
+    queryFn: async () => {
+      try {
+        const response = await getAvailableCurrenciesApi();
+        setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
+        return response.data.data.coins;
+      } catch (error: any) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Request failed!"
+              description={error.message}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        throw error;
+      }
+    },
+    retry: false
+  });
 
   const handleCreatePrivatePartySwap = async () => {
     try {
@@ -54,9 +90,11 @@ const PrivateRoom = () => {
       const updatedSwap = await useSwapMarketStore.getState().privateMarket.privateRoom.swap;
 
       // Create a record in the blockchain for this.
-      await getWalletProxy().createAndUpdateSwap(updatedSwap!, "CREATE");
+      const blockchainRes = await getWalletProxy().createAndUpdateSwap(updatedSwap!, "CREATE");
+      if (!blockchainRes) {
+        throw new Error("Failed with blockchain error.");
+      }
 
-      // console.info("Updated swap: =======> \n", updatedSwap);
       const offerResult = await createSwapOffer(updatedSwap!);
       if (offerResult) {
         toast.custom(
@@ -77,7 +115,7 @@ const PrivateRoom = () => {
         setSwapCreation(prev => ({ ...prev, created: true }));
         state.resetPrivateRoom();
         setTimeout(() => {
-          navigate('/swap-up/swap-market');
+          navigate(-1);
         }, 3000);
       }
 
@@ -124,21 +162,29 @@ const PrivateRoom = () => {
   };
 
   useEffect(() => {
-    if (state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length) {
+    if (
+      (state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length) ||
+      ((state.sender.addedAmount?.amount) && state.receiver.addedAmount?.amount)
+    ) {
       setEnableApproveButtonCriteria(true);
     } else {
       setEnableApproveButtonCriteria(false);
     }
 
-  }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap]);
+  }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap, state.sender.addedAmount, state.receiver.addedAmount]);
 
   useEffect(() => {
     if ((counterPartyWallet && !isValidWalletAddress(counterPartyWallet)) || (privateTradeId && !isValidTradeId(privateTradeId))) {
       navigate(-1);
     }
 
-    if (counterPartyWallet && privateTradeId && wallet) {
-      state.setValuesOnCreatingRoom(privateTradeId, counterPartyWallet, wallet);
+    const handleSetValuesOnCreatingPrivateRoom = async () => {
+      state.resetPrivateRoom();
+      await state.setValuesOnCreatingPrivateRoom(privateTradeId!, counterPartyWallet!, profile);
+    };
+
+    if (counterPartyWallet && privateTradeId && profile) {
+      handleSetValuesOnCreatingPrivateRoom();
     }
   }, [counterPartyWallet, privateTradeId]);
 
@@ -152,10 +198,39 @@ const PrivateRoom = () => {
         existTitle="Are you sure you want to exit the trade?"
       />
 
-      <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <RoomLayoutCard layoutType={"sender"} roomKey="privateRoom" senderWallet={wallet.address} />
-        {counterPartyWallet &&
-          <RoomLayoutCard layoutType={"receiver"} counterPartyWallet={counterPartyWallet} roomKey="privateRoom" />}
+      <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
+        {
+          state.sender.profile.wallet.address ?
+            <RoomLayoutCard
+              layoutType={"sender"}
+              roomKey="privateRoom"
+              senderWallet={state.sender.profile.wallet.address}
+            />
+            :
+            <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
+              <LoadingDataset
+                isLoading={!state.sender.profile.wallet.address}
+                title="Loading wallet connected wallet information"
+              />
+            </div>
+        }
+
+        {state.receiver.profile.wallet.address ?
+          <RoomLayoutCard
+            layoutType={"receiver"}
+            counterPartyWallet={state.receiver.profile.wallet.address}
+            roomKey="privateRoom"
+          />
+          :
+          <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
+            <LoadingDataset
+              isLoading={!state.receiver.profile.wallet.address}
+              title="Loading wallet counter party wallet information"
+            />
+          </div>
+        }
+
+
       </div>
 
 
@@ -182,12 +257,41 @@ const PrivateRoom = () => {
         </div >
 
         {/* Sender Side */}
-        < RoomFooterSide roomKey="privateRoom" layoutType="sender" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} />
+        {
+          isSuccess ?
+            <RoomFooterSide roomKey="privateRoom" layoutType="sender" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={filteredAvailableCurrencies} />
+            :
+            <div className="flex justify-center items-center w-1/2 border border-su_disabled" >
+              <LoadingDataset
+                isLoading={isLoading}
+                title="Loading currencies data."
+              />
+              {isError &&
+                <p className="text-xs md:text-sm">Unable to get currencies.</p>
+              }
+            </div>
+        }
+
         {/* Receiver Side */}
-        < RoomFooterSide roomKey="privateRoom" layoutType="receiver" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} />
+
+        {
+          isSuccess ?
+            <RoomFooterSide roomKey="privateRoom" layoutType="receiver" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={filteredAvailableCurrencies} />
+            :
+            <div className="flex justify-center items-center w-1/2 border border-su_disabled" >
+              <LoadingDataset
+                isLoading={isLoading}
+                title="Loading currencies data."
+              />
+              {isError &&
+                <p className="text-xs md:text-sm">Unable to get currencies.</p>
+              }
+            </div>
+        }
       </footer >
     </div >
   );
+
 };
 
 export default PrivateRoom;

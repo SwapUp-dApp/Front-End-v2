@@ -48,7 +48,7 @@ const RoomHeader = ({
           </span>
         </ExitPageDialog>
 
-        <h2 className="font-semibold text-1.5xl">{title}</h2>
+        <h2 className="font-semibold text-lg lg:text-1.5xl">{title}</h2>
 
         <div className="flex items-center gap-2" >
           {showOpenMarketTile &&

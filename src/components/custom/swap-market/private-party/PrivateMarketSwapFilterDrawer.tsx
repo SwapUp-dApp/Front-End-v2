@@ -11,7 +11,7 @@ import { Schema_PrivateMarketFiltersForm, } from "@/schema";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { SUI_CurrencyItem } from "@/types/global.types";
+import { SUI_SelectedCurrencyItem } from "@/types/global.types";
 import { SUT_PreferredAssetType } from "@/types/swap-market.types";
 
 import { chainsDataset } from "@/constants/data";

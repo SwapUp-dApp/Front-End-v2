@@ -1,12 +1,4 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useState } from "react";
-import WalletOverviewCard from "@/components/custom/swap-market/WalletOverviewCard";
-import EmptyDataset from "@/components/custom/shared/EmptyDataset";
-import ProfileAssetsLayout from "@/components/custom/profile/ProfileAssetsLayout";
-import { useSwapMarketStore } from "@/store/swap-market";
 import ProfileHeader from "@/components/custom/profile/ProfileHeader";
-import ProfilePointsCard from "@/components/custom/profile/ProfilePointsCard";
-import { useProfileStore } from "@/store/profile";
 import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
 import { defaults } from "@/constants/defaults";
 import { getActiveTabFromPathname } from "@/lib/utils";
@@ -16,9 +8,6 @@ const UserProfile = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  const wallet = useProfileStore(state => state.profile.wallet);
-  const profile = useSwapMarketStore(state => state.privateMarket.privateRoom.sender.profile);
-
   const handleResetData = () => {
     // resetRoom('privateMarket', 'privateRoom');
   };
@@ -27,14 +16,9 @@ const UserProfile = () => {
     <>
       <section className="flex flex-col gap-4" >
         <ProfileHeader
-          walletAddress={wallet.address}
           resetData={handleResetData}
           existDescription="By leaving profile, your changes will not be saved"
           existTitle="Are you sure you want to exit your Profile page?"
-          ensAddress={profile.ensAddress}
-          joinData="Joined Sept 2023"
-          profileImage={profile.avatar}
-          avatarFallbackI="No Image"
         />
 
         <CustomTabContainer >

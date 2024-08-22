@@ -1,14 +1,17 @@
 import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer } from "@/components/ui/drawer";
 import { navItemsData } from "@/constants";
 import { getIsActiveNav, } from "@/lib/utils";
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ConnectWalletButton from "./ConnectWalletButton";
+import { useProfileStore } from "@/store/profile";
+import { showWalletConnectionToast } from "@/lib/helpers";
+import { defaults } from "@/constants/defaults";
 
 const Navbar = () => {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-
+  const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
 
   return (
@@ -21,15 +24,26 @@ const Navbar = () => {
       />
 
 
-
       {/* Desktop navbar */}
       <div className="w-full hidden lg:flex items-center justify-between">
         <ol className="flex gap-4 items-center" >
           {
             navItemsData.map(navItem => (
-              <Link to={navItem.path} key={navItem.key}>
-                <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`} >{navItem.title}</li>
-              </Link>
+
+              <li
+                key={navItem.key}
+                className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`}
+                onClick={() => {
+                  if (navItem.protected && !wallet.isConnected) {
+                    showWalletConnectionToast("warning");
+                  } else {
+                    navigate(`${navItem.path}`);
+                  }
+                }}
+              >
+                {navItem.title}
+              </li>
+
             ))
           }
         </ol>
@@ -87,9 +101,21 @@ const Navbar = () => {
               <ol className="flex flex-col gap-8" >
                 {
                   navItemsData.map(navItem => (
-                    <Link to={navItem.path} key={navItem.key}>
-                      <li className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`} >{navItem.title}</li>
-                    </Link>
+
+                    <li
+                      key={navItem.key}
+                      className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.basePath, pathname) ? "active" : ""}`}
+                      onClick={() => {
+                        if (navItem.protected && !wallet.isConnected) {
+                          showWalletConnectionToast("warning");
+                        } else {
+                          navigate(`${navItem.path}`);
+                        }
+                      }}
+                    >
+                      {navItem.title}
+                    </li>
+
                   ))
                 }
               </ol>

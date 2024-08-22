@@ -19,8 +19,9 @@ import { useNFTsByWallet } from "@/service/queries/swap-market.query";
 import { SUI_NFTItem } from "@/types/global.types";
 import { toast } from "sonner";
 import ToastLookCard from "../shared/ToastLookCard";
-import { SUT_SwapRoomViewType } from "@/types/swap-market.types";
+import { SUT_SwapRoomViewType, SUT_SwapTokenContractType } from "@/types/swap-market.types";
 import { defaults } from "@/constants/defaults";
+import { useGlobalStore } from "@/store/global-store";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
@@ -49,12 +50,15 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
     removeAllFilters,
     collections,
     setNftsDataset,
-    setFilteredNftsBySwapTokens
+    setFilteredNftsBySwapTokens,
+    setAddedAmount
   } = useSwapMarketStore((state) =>
     roomKey === 'privateRoom' ?
       (layoutType === "sender" ? state.privateMarket.privateRoom.sender : state.privateMarket.privateRoom.receiver)
       : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
+
+  const [filteredAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies]);
 
   const swap = useSwapMarketStore(state => roomKey === 'privateRoom' ? state.privateMarket.privateRoom.swap : state.openMarket.openRoom.swap);
 
@@ -65,6 +69,11 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
 
   const walletAddress = ((layoutType === "receiver") && (counterPartyWallet)) ? counterPartyWallet : senderWallet!;
   const { isLoading, data, isSuccess, isError, error } = useNFTsByWallet(walletAddress);
+
+  const getCurrencyChainByAddress = (tokenAddress: string) => {
+    const foundCurrency = filteredAvailableCurrencies.find(currency => currency.contractAddresses.find(address => address.includes(tokenAddress)));
+    return foundCurrency;
+  };
 
   useEffect(() => {
 
@@ -83,54 +92,96 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
 
       if (setDataSavedInStore) {
         if (roomKey === 'openRoom' && layoutType === "receiver" && swap && swapRoomViewType === 'propose') {
-          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-            swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-          );
-          setFilteredNftsBySwapTokens(filteredNfts);
+
+          if ((swap.metadata.init.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
+            const erc20Token = swap.metadata.init.tokens[0];
+            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+
+            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
+          } else {
+            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+              swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+            );
+            setFilteredNftsBySwapTokens(filteredNfts);
+          }
+
           setTimeout(() => {
             setDataSavedInStore(prev => ({ ...prev, receiver: true }));
           }, 200);
         }
 
         if (layoutType === "sender" && swap && swapRoomViewType === 'view') {
-          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-            swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-          );
-          setFilteredNftsBySwapTokens(filteredNfts);
+
+          if ((swap.metadata.init.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
+            const erc20Token = swap.metadata.init.tokens[0];
+            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+
+            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
+          } else {
+            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+              swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+            );
+            setFilteredNftsBySwapTokens(filteredNfts);
+          }
+
           setTimeout(() => {
             setDataSavedInStore(prev => ({ ...prev, sender: true }));
           }, 200);
         }
 
         if (layoutType === "receiver" && swap && swapRoomViewType === 'view') {
-          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-            swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-          );
-          // console.log("Inside receiver filter function NFTs: ", filteredNfts);
-          setFilteredNftsBySwapTokens(filteredNfts);
+          if ((swap.metadata.accept.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
+            const erc20Token = swap.metadata.accept.tokens[0];
+            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+
+            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
+          } else {
+            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+              swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+            );
+            setFilteredNftsBySwapTokens(filteredNfts);
+          }
+
           setTimeout(() => {
             setDataSavedInStore(prev => ({ ...prev, receiver: true }));
           }, 200);
         }
 
         if (layoutType === "sender" && swap && swapRoomViewType === 'counter') {
-          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-            swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-          );
+
+          if ((swap.metadata.init.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
+            const erc20Token = swap.metadata.init.tokens[0];
+            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+
+            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
+          } else {
+            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+              swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+            );
+            setSelectedNftsForSwap([...filteredNfts]);
+          }
+
           setNftsDataset(resNfts);
-          setSelectedNftsForSwap([...filteredNfts]);
           setTimeout(() => {
             setDataSavedInStore(prev => ({ ...prev, sender: true }));
           }, 200);
         }
 
         if (layoutType === "receiver" && swap && swapRoomViewType === 'counter') {
-          const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-            swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-          );
-          // console.log("Inside receiver filter function NFTs: ", filteredNfts);
+
+          if ((swap.metadata.accept.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
+            const erc20Token = swap.metadata.accept.tokens[0];
+            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+
+            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
+          } else {
+            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+              swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+            );
+            setSelectedNftsForSwap([...filteredNfts]);
+          }
+
           setNftsDataset(resNfts);
-          setSelectedNftsForSwap([...filteredNfts]);
           setTimeout(() => {
             setDataSavedInStore(prev => ({ ...prev, receiver: true }));
           }, 200);
@@ -170,7 +221,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
       <CardHeader className="flex flex-col p-0 gap-3" >
         <div className={`flex justify-between items-center`} >
           <div className="flex items-center gap-2 lg:gap-3">
-            <CustomAvatar imageSrc={profile.avatar} fallbackName={profile.title} isPremium={profile?.isPremium} />
+            <CustomAvatar imageSrc={profile.avatar} fallbackName={profile.details?.title || profile.ensAddress || ''} isPremium={profile?.isPremium} />
             <h2 className="font-semibold text-sm lg:text-lg line-clamp-1 w-2/3 lg:w-auto">{profile.ensAddress}</h2>
           </div>
 

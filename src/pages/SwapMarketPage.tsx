@@ -17,7 +17,7 @@ const SwapMarketPage = () => {
   const { pathname } = useLocation();
   const wallet = useProfileStore(state => state.profile.wallet);
 
-  const openMarketSwapLength = useSwapMarketStore(state => (state.openMarket.filteredAvailableSwaps || []).length + (state.openMarket.createdSwaps || []).length);
+  const openMarketSwapLength = useSwapMarketStore(state => (state.openMarket.filteredAvailableOpenSwaps || []).length + (state.openMarket.createdSwaps || []).length);
   const privateSwapLength = useSwapMarketStore(state => (state.privateMarket.filteredAvailablePrivateSwaps || []).length);
 
 
@@ -72,11 +72,10 @@ const SwapMarketPage = () => {
           </DropdownMenu>
         </div>
 
-        {/* leaderboard */}
-        <div className="flex flex-col lg:flex-row items-center gap-3" >
+        <div className="grid grid-cols-1 lg:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5 5xl:grid-cols-6 gap-3" >
           <NewMembersCard users={membersData} />
           <NewMembersCard cardType="trader" users={tradersData} />
-          {/* <LeaderboardCard users={membersData} /> */}
+          <LeaderboardCard users={membersData} />
         </div>
 
         <CustomTabContainer >

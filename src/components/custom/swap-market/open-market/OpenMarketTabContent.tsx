@@ -5,11 +5,10 @@ import { toast } from 'sonner';
 import FilterButton from '../../shared/FilterButton';
 import { Button } from '@/components/ui/button';
 import EmptyDataset from '../../shared/EmptyDataset';
-import { generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { cn, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { SUI_OpenSwap, SUI_SwapToken } from '@/types/swap-market.types';
+import { SUI_OpenSwap, SUI_SwapToken, SUT_SwapTokenContractType } from '@/types/swap-market.types';
 import CreatedSwapsCards from './CreatedSwapsCards';
-import { useOpenSwapsPendingList } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -19,97 +18,87 @@ import { useProfileStore } from '@/store/profile';
 import { showWalletConnectionToast } from '@/lib/helpers';
 import OpenMarketSwapFilterDrawer from './OpenMarketSwapFilterDrawer';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { useQuery } from '@tanstack/react-query';
+import { getOpenSwapPendingListApi } from '@/service/api';
 
 const OpenMarketTabContent = () => {
-  const [filtersApplied, setFiltersApplied] = useState(false);
-  const { setOpenSwapsData, createdSwaps, availableSwaps, filteredAvailableSwaps, setOpenMarketAvailableSwapsBySearch, openMarketSwapsFilters } = useSwapMarketStore(state => state.openMarket);
   const wallet = useProfileStore(state => state.profile.wallet);
   const navigate = useNavigate();
-
+  const { setOpenSwapsData, setOpenMarketAvailableSwapsBySearch, createdSwaps, availableOpenSwaps, filteredAvailableOpenSwaps, availableOpenSwapsFiltersApplied, availableOpenSwapsSearchApplied } = useSwapMarketStore(state => state.openMarket);
 
   const handleFilterAvailableSwapsBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value.toLowerCase();
     setOpenMarketAvailableSwapsBySearch(value);
   };
 
-  const { isLoading, isError, error, data, isSuccess } = useOpenSwapsPendingList();
 
-  useEffect(() => {
-    if (data?.data && isSuccess) {
+  const { isLoading, isSuccess, isError } = useQuery({
+    queryKey: [`getOpenSwapPendingList`],
+    queryFn: async () => {
+      try {
+        const response = await getOpenSwapPendingListApi();
+        await setOpenSwapsData(response.data.data as SUI_OpenSwap[], wallet);
+        // console.log(useSwapMarketStore.getState().openMarket.availableOpenSwaps);
 
-      if (data.data.data.length > 0) {
-        setOpenSwapsData(data.data.data as SUI_OpenSwap[], wallet);
+        return response.data.data;
+      } catch (error: any) {
+        await setOpenSwapsData([], wallet);
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Request failed!"
+              description={error.message}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        throw error;
       }
-    }
+    },
+    retry: false
+  });
 
-    if (error && isError) {
-      setOpenSwapsData([], wallet);
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
-      );
-    }
-
-  }, [isError, error, data, isSuccess]);
-
-  useEffect(() => {
-    if (
-      openMarketSwapsFilters.offersFromCurrentChain === true ||
-      openMarketSwapsFilters.offeredRarityRank ||
-      (openMarketSwapsFilters.collection && openMarketSwapsFilters.rarityRank) ||
-      (openMarketSwapsFilters.amountRangeFrom && openMarketSwapsFilters.amountRangeTo && openMarketSwapsFilters.currencies)
-    ) {
-      setFiltersApplied(true);
-    } else {
-      setFiltersApplied(false);
-    }
-
-  }, [
-    openMarketSwapsFilters.offersFromCurrentChain,
-    openMarketSwapsFilters.collection,
-    openMarketSwapsFilters.rarityRank,
-    openMarketSwapsFilters.offeredRarityRank,
-    openMarketSwapsFilters.amountRangeFrom,
-    openMarketSwapsFilters.amountRangeTo,
-    openMarketSwapsFilters.currencies,
-
-  ]);
-
-  const nftsImageMapper = (nfts: SUI_SwapToken[]) => {
+  const swapTokensMapper = (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number) => {
     return (
-      nfts.map((nft, index) => {
-        if (index < 3)
+      swapTokens.map((swapToken, index) => {
+        if (index < showMaxNumberOfTokensToShow)
           return (
-            <div className="relative w-8 h-8" key={nft.id}>
+            <div className="relative w-8 h-8" key={swapToken.id}>
               <img
-                className="w-full h-full object-cover rounded-xs border-[1.5px] border-white/20"
-                src={nft.image_url}
+                className={cn(
+                  "w-full h-full object-cover ",
+                  (swapToken.type as SUT_SwapTokenContractType) === "ERC20" ? "" : "rounded-xs border-[1.5px] border-white/20"
+                )}
+                src={swapToken.image_url}
                 alt="nft"
                 onError={getDefaultNftImageOnError}
               />
 
               {
-                (index === 2) &&
-                  nfts.length > 3 ?
+                ((index === showMaxNumberOfTokensToShow - 1) && swapTokens.length > showMaxNumberOfTokensToShow) ?
                   <div className="absolute w-full h-full rounded-xs bg-black/50 top-0 flex justify-center items-center font-semibold" >
-                    +{nfts.length - 3}
+                    +{swapTokens.length - showMaxNumberOfTokensToShow}
                   </div> : ''
               }
             </div>
           );
       })
     );
+  };
+
+  const handleNavigateToProposeRoom = (swap: SUI_OpenSwap) => {
+    if (wallet.isConnected && wallet.address) {
+      navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`);
+    } else {
+      showWalletConnectionToast("error", "Please connect to your wallet to propose swap.");
+    }
   };
 
   return (
@@ -152,8 +141,8 @@ const OpenMarketTabContent = () => {
       <div className="flex items-center justify-between" >
         <div className="flex items-center justify-between gap-4" >
           <h2 className="text-1.5xl font-medium" >Available</h2>
-          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(filteredAvailableSwaps || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
-            {filteredAvailableSwaps?.length || 0}
+          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(filteredAvailableOpenSwaps || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
+            {filteredAvailableOpenSwaps?.length || 0}
           </span>
         </div>
 
@@ -174,27 +163,27 @@ const OpenMarketTabContent = () => {
           <TableHeader>
             <TableRow>
               <TableHead className="align-top font-semibold min-w-[150px]">Assets</TableHead>
-              <TableHead className="align-top font-semibold" >Unique trade ID</TableHead>
-              <TableHead className="align-top font-semibold" >Owner's wallet</TableHead>
-              <TableHead className="align-top font-semibold" >Trading chain</TableHead>
-              <TableHead className="align-top font-semibold" >Open swap date</TableHead>
-              <TableHead className="align-top font-semibold" >Expiry date</TableHead>
-              <TableHead className="align-top font-semibold " >Swap Preferences</TableHead>
+              <TableHead className="align-top font-semibold line-clamp-1 h-1 min-w-[100px] pl-4" >Unique trade ID</TableHead>
+              <TableHead className="align-top font-semibold px-4" >Owner's wallet</TableHead>
+              <TableHead className="align-top font-semibold min-w-[130px] px-4" >Trading chain</TableHead>
+              <TableHead className="align-top font-semibold min-w-[120px] px-4" >Open swap date</TableHead>
+              <TableHead className="align-top font-semibold min-w-[100px] px-4" >Expiry date</TableHead>
+              <TableHead className="align-top font-semibold min-w-[130px] px-4" >Swap Preferences</TableHead>
               <TableHead className="pr-2" >
-                <div className='-mt-3' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile filterApplied={filtersApplied} /></OpenMarketSwapFilterDrawer></div>
+                <div className='-mt-3' ><OpenMarketSwapFilterDrawer><FilterButton showTitleOnMobile filterApplied={availableOpenSwapsFiltersApplied} /></OpenMarketSwapFilterDrawer></div>
               </TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody className="divide-y">
             {
-              filteredAvailableSwaps?.map((swap) => {
+              filteredAvailableOpenSwaps?.map((swap) => {
                 const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
                 return (
                   <TableRow key={swap.open_trade_id}>
                     <TableCell className="text-xs font-medium flex items-center gap-2">
                       <div className="flex items-center gap-1" >
-                        {nftsImageMapper(swap.metadata.init.tokens)}
+                        {swapTokensMapper(swap.metadata.init.tokens, 3)}
                       </div>
                     </TableCell>
                     <TableCell className="text-xs font-medium pl-4">#{getLastCharacters(swap.open_trade_id, 7)}</TableCell>
@@ -245,7 +234,7 @@ const OpenMarketTabContent = () => {
                     </TableCell>
                     <TableCell className="text-xs font-medium flex pr-8 justify-end">
                       <svg
-                        onClick={() => { navigate(`/swap-up/swap-market/open-swap/propose/${swap.open_trade_id}/${generateRandomTradeId()}`); }}
+                        onClick={() => { handleNavigateToProposeRoom(swap); }}
 
                         className="w-12 h-6 cursor-pointer"
                         viewBox="0 0 30 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -267,7 +256,7 @@ const OpenMarketTabContent = () => {
         </Table>
 
         {
-          ((filteredAvailableSwaps || []).length === 0) &&
+          (((filteredAvailableOpenSwaps || []).length === 0) && (availableOpenSwapsFiltersApplied || availableOpenSwapsSearchApplied)) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -278,7 +267,6 @@ const OpenMarketTabContent = () => {
         <ScrollBar orientation='horizontal' className='h-2' />
       </ScrollArea>
 
-
       <LoadingDataset
         isLoading={isLoading}
         title="Loading open swaps"
@@ -286,7 +274,7 @@ const OpenMarketTabContent = () => {
       />
 
       {
-        (isSuccess && ((availableSwaps || []).length === 0)) &&
+        ((isError || isSuccess) && ((availableOpenSwaps || []).length === 0) && !availableOpenSwapsFiltersApplied && !availableOpenSwapsSearchApplied) &&
         <EmptyDataset
           title="No Open Swaps Available"
           description="Check back later or create your own swap!"

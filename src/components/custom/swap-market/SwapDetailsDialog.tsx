@@ -4,7 +4,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@/components/
 import { Button } from '@/components/ui/button';
 import CustomOutlineButton from '../shared/CustomOutlineButton';
 import CopyTile from '../tiles/CopyTile';
-import AvoidingFeeDialog from './AvoidingFeeDialog';
+import AvoidingFeeDialog from '../shared/AvoidingFeeDialog';
 import StaySafeDialog from './StaySafeDialog';
 import SwapDialogSideCard from './SwapDialogSideCard';
 import { IOpenRoom, IPrivateRoom } from '@/types/swap-market-store.types';
@@ -59,7 +59,7 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
                   </svg>
                 </DialogClose>
               </div>
-              <h2 className="text-sm font-semibold">Wallet and Asset Details</h2>
+              <h2 className="text-sm font-semibold">Trade Details</h2>
             </div>
 
             {/* side cards*/}
@@ -77,10 +77,6 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
             <div className="custom-border-card" >
               <h2 className="text-xs lg:sm text-primary font-semibold" >Estimate fees:</h2>
 
-              <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
-                <p>Platform fee in USD:</p>
-                <p className="text-text dark:text-su_primary" >$ 0</p>
-              </div>
               <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
                 <p>Platform fee:</p>
                 <p className="text-text dark:text-su_primary" >0.00 ETH</p>

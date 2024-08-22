@@ -1,3 +1,4 @@
+export type SUT_ToastVariantType = "default" | "success" | "error" | "info" | "warning";
 export interface SUI_NavItem {
   key: string;
   title: string;
@@ -35,14 +36,12 @@ export interface SUI_RarityRankItem {
   to: number;
 }
 
-export interface SUI_CurrencyItem {
+export interface SUI_SelectedCurrencyItem {
   uuid: string;
   name: string;
   iconUrl: string;
 }
-
-
-export interface SUI_ChainItem {
+export interface SUI_CurrencyChainItem {
   uuid: string;
   symbol: string;
   name: string;
@@ -142,4 +141,36 @@ declare global {
 export interface SUI_SwapCreation {
   isLoading: boolean,
   created: boolean;
+}
+
+export interface SUI_SelectedCollectionItem {
+  label: string,
+  value: string;
+}
+export interface SUI_CollectionItem {
+  collection: string;
+  name: string;
+  description: string;
+  image_url: string;
+  banner_image_url: string;
+  owner: string;
+  safelist_status: string;
+  category: string;
+  is_disabled: boolean;
+  is_nsfw: boolean;
+  trait_offers_enabled: boolean;
+  collection_offers_enabled: boolean;
+  opensea_url: string;
+  project_url: string;
+  wiki_url: string;
+  discord_url: string;
+  telegram_url: string;
+  twitter_username: string;
+  instagram_username: string;
+  contracts: SUI_CollectionContract[];
+}
+
+interface SUI_CollectionContract {
+  address: string;
+  chain: string;
 }

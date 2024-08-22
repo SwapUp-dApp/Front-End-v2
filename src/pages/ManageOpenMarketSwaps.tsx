@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate } from "react-router-dom";
@@ -11,13 +11,9 @@ import { Input } from "@/components/ui/input";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import FilterButton from "@/components/custom/shared/FilterButton";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
-import { useCancelSwapOffer, useMyOpenSwapsList } from "@/service/queries/swap-market.query";
+import { useCancelSwapOffer } from "@/service/queries/swap-market.query";
 import { chainsDataset } from "@/constants/data";
 import moment from "moment";
 import { SUI_SwapCreation } from "@/types/global.types";
@@ -25,13 +21,15 @@ import { SUE_SWAP_MODE } from "@/constants/enums";
 import { useProfileStore } from "@/store/profile";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import OpenMarketCreatedFiltersDrawer from "@/components/custom/swap-market/open-market/OpenMarketCreatedFiltersDrawer";
+import { getMyOpenSwapListApi } from "@/service/api";
+import { useQuery } from "@tanstack/react-query";
+import { getWalletProxy } from "@/lib/walletProxy";
 
 
 const ManageOpenMarketSwaps = () => {
   const navigate = useNavigate();
-  const [filtersApplied, setFiltersApplied] = useState(false);
 
-  const { setOpenCreatedSwapsData, filteredCreatedSwaps, createdSwaps, createdSwapsFilters, setOpenCreatedSwapsBySearch } = useSwapMarketStore(state => state.openMarket);
+  const { setOpenCreatedSwapsData, filteredCreatedSwaps, createdSwaps, createdSwapsFilters, setOpenCreatedSwapsBySearch, createdSwapsFiltersApplied, createdSwapsSearchApplied } = useSwapMarketStore(state => state.openMarket);
   const wallet = useProfileStore(state => state.profile.wallet);
 
   const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -110,62 +108,44 @@ const ManageOpenMarketSwaps = () => {
 
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
 
-      console.log(swapCancel.isLoading);
+      // Cancel swap blockchain logic
+      const { sign } = await getWalletProxy().getUserSignature(swap, "state.swapEncodedMsg");
 
-      if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const payload: SUP_CancelSwap = {
-          swap_mode: swap.swap_mode,
-          open_trade_id: swap.open_trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        // console.log(swap.id);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
-        }
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
       }
 
-      if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
-        const payload: SUP_CancelSwap = {
-          swap_mode: swap.swap_mode,
-          trade_id: swap.trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        console.log(swap.id);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
+      const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL-ORIGINAL-OPEN-SWAP");
 
-        }
+      if (!triggerCancelSwap) {
+        throw new Error("Cancel Swap failed due to blockchain error.");
+      }
 
+      const payload: SUP_CancelSwap = {
+        swap_mode: swap.swap_mode,
+        open_trade_id: swap.open_trade_id
+      };
+
+      const offerResult = await cancelSwapOffer(payload);
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Swap Closed Successfully"
+              description={"You have successfully closed the swap"}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+
+        navigate("/swap-up/my-swaps/history");
       }
 
     } catch (error: any) {
@@ -191,59 +171,40 @@ const ManageOpenMarketSwaps = () => {
     }
   };
 
-  const { isLoading, isError, error, data, isSuccess } = useMyOpenSwapsList(wallet.address);
-
-  useEffect(() => {
-    if (data?.data && isSuccess) {
-
-      if (data.data.data.length > 0) {
-        setOpenCreatedSwapsData(data.data.data as SUI_OpenSwap[], wallet);
-      }
-    }
-
-    if (error && isError) {
-      setOpenCreatedSwapsData([], wallet);
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
+  const { isLoading, isSuccess, isError } = useQuery({
+    queryKey: [`getPrivateSwapPendingListApi`],
+    queryFn: async () => {
+      try {
+        if (wallet.address && wallet.isConnected) {
+          const response = await getMyOpenSwapListApi(wallet.address);
+          await setOpenCreatedSwapsData(response.data.data as SUI_OpenSwap[], wallet);
+          return response.data.data;
         }
-      );
-    }
 
-  }, [isError, error, data, isSuccess]);
+        return null;
+      } catch (error: any) {
+        await setOpenCreatedSwapsData([], wallet);
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Request failed!"
+              description={error.message}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
 
-  useEffect(() => {
-    if (
-      createdSwapsFilters.offersFromCurrentChain === true ||
-      createdSwapsFilters.offeredRarityRank ||
-      (createdSwapsFilters.collection && createdSwapsFilters.rarityRank) ||
-      (createdSwapsFilters.amountRangeFrom && createdSwapsFilters.amountRangeTo && createdSwapsFilters.currencies)
-    ) {
-      setFiltersApplied(true);
-    } else {
-      setFiltersApplied(false);
-    }
-
-  }, [
-    createdSwapsFilters.offersFromCurrentChain,
-    createdSwapsFilters.collection,
-    createdSwapsFilters.rarityRank,
-    createdSwapsFilters.offeredRarityRank,
-    createdSwapsFilters.amountRangeFrom,
-    createdSwapsFilters.amountRangeTo,
-    createdSwapsFilters.currencies,
-
-  ]);
+        throw error;
+      }
+    },
+    retry: false
+  });
 
   return (
     <div className="flex flex-col gap-4" >
@@ -268,6 +229,7 @@ const ManageOpenMarketSwaps = () => {
         <div className=" w-full flex items-center justify-between">
           <h2 className="font-semibold text-1.5xl " >Manage Open Market Swaps</h2>
           <div className="flex items-center gap-2">
+
             <Input
               className="min-w-full-[10px] bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
               placeholder="Search by NFT, trade ID, trading chain, etc..."
@@ -281,9 +243,13 @@ const ManageOpenMarketSwaps = () => {
             <Button
               className="gradient-button"
               onClick={() => {
-                wallet.isConnected ? navigate(`/swap-up/swap-market/open-swap/create/${generateRandomTradeId()}`) : handleShowWalletConnectionToast();
+                wallet.isConnected ?
+                  navigate(`/swap-up/swap-market/open-swap/create/${generateRandomTradeId()}`) :
+                  handleShowWalletConnectionToast();
               }}
-            >Create open swap</Button>
+            >
+              Create open swap
+            </Button>
           </div>
         </div>
       </div>
@@ -303,7 +269,7 @@ const ManageOpenMarketSwaps = () => {
               <TableHead className="pr-2" >
                 <div className='-mt-3' >
                   <OpenMarketCreatedFiltersDrawer>
-                    <FilterButton showTitleOnMobile filterApplied={filtersApplied} />
+                    <FilterButton showTitleOnMobile filterApplied={createdSwapsFiltersApplied} />
                   </OpenMarketCreatedFiltersDrawer></div>
               </TableHead>
             </TableRow>
@@ -326,7 +292,10 @@ const ManageOpenMarketSwaps = () => {
                         <div className="w-auto flex justify-start" >  # {getLastCharacters(swap.open_trade_id, 7)}</div>
                       </TableCell>
                       <TableCell className="text-xs font-medium px-4 flex justify-start">
-                        <span className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize" >
+                        <span
+                          onClick={async () => { await handleSwapCancel(swap); }}
+                          className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
+                        >
                           <img
                             className='w-4 h-4'
                             src={currentChain.iconUrl}
@@ -370,58 +339,71 @@ const ManageOpenMarketSwaps = () => {
                         }
                       </TableCell>
                       <TableCell className="text-xs font-medium flex pr-16 justify-end">
-                        <HoverCard>
-                          <HoverCardTrigger className=" px-3 py-1.5 rounded-xs hover:bg-su_enable_bg cursor-pointer" >
-                            <svg
-                              className="w-1 cursor-pointer" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M2.00039 12.8C2.42474 12.8 2.8317 12.9686 3.13176 13.2686C3.43182 13.5687 3.60039 13.9757 3.60039 14.4C3.60039 14.8243 3.43182 15.2313 3.13176 15.5314C2.8317 15.8314 2.42474 16 2.00039 16C1.57604 16 1.16908 15.8314 0.86902 15.5314C0.568961 15.2313 0.400391 14.8243 0.400391 14.4C0.400391 13.9757 0.568961 13.5687 0.86902 13.2686C1.16908 12.9686 1.57604 12.8 2.00039 12.8ZM2.00039 6.4C2.42474 6.4 2.8317 6.56857 3.13176 6.86863C3.43182 7.16869 3.60039 7.57565 3.60039 8C3.60039 8.42435 3.43182 8.83131 3.13176 9.13137C2.8317 9.43143 2.42474 9.6 2.00039 9.6C1.57604 9.6 1.16908 9.43143 0.86902 9.13137C0.568961 8.83131 0.400391 8.42435 0.400391 8C0.400391 7.57565 0.568961 7.16869 0.86902 6.86863C1.16908 6.56857 1.57604 6.4 2.00039 6.4ZM2.00039 0C2.42474 0 2.8317 0.168571 3.13176 0.468629C3.43182 0.768687 3.60039 1.17565 3.60039 1.6C3.60039 2.02435 3.43182 2.43131 3.13176 2.73137C2.8317 3.03143 2.42474 3.2 2.00039 3.2C1.57604 3.2 1.16908 3.03143 0.86902 2.73137C0.568961 2.43131 0.400391 2.02435 0.400391 1.6C0.400391 1.17565 0.568961 0.768687 0.86902 0.468629C1.16908 0.168571 1.57604 0 2.00039 0Z" fill="#B6B6BD" />
+                        {
+                          (swapCancel.isLoading) ?
+                            <svg className="animate-spin duration-700 w-3.5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M8 0C3.58236 0 0 3.58236 0 8C0 12.4176 3.58236 16 8 16V14.0004C6.81346 14.0002 5.65362 13.6483 4.66712 12.989C3.68061 12.3296 2.91176 11.3926 2.45777 10.2964C2.00377 9.20014 1.88503 7.99389 2.11655 6.83016C2.34807 5.66643 2.91946 4.59748 3.75847 3.75847C4.59748 2.91946 5.66643 2.34807 6.83016 2.11655C7.99389 1.88503 9.20014 2.00377 10.2964 2.45777C11.3926 2.91176 12.3296 3.68061 12.989 4.66712C13.6483 5.65362 14.0002 6.81346 14.0004 8H16C16 3.58236 12.4176 0 8 0Z" fill="white" />
                             </svg>
-                          </HoverCardTrigger>
-                          <HoverCardContent className="border-none bg-card  dark:bg-su_secondary_bg p-0 rounded-xs" >
-                            <button
-                              onClick={() =>
-                                toast.info("Filter", {
-                                  duration: 2000,
-                                  description: "Open Swap Edit is under construction!",
-                                  action: {
-                                    label: "Close",
-                                    onClick: () => console.log("Close"),
-                                  },
-                                  className: '!bg-gradient-primary border-none',
-                                  descriptionClassName: '!text-white',
-                                })
-                              }
+                            :
+                            <HoverCard openDelay={100}>
+                              <HoverCardTrigger className=" px-3 py-1.5 rounded-xs hover:bg-su_enable_bg cursor-pointer" >
+                                <svg
+                                  className="w-1 cursor-pointer" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M2.00039 12.8C2.42474 12.8 2.8317 12.9686 3.13176 13.2686C3.43182 13.5687 3.60039 13.9757 3.60039 14.4C3.60039 14.8243 3.43182 15.2313 3.13176 15.5314C2.8317 15.8314 2.42474 16 2.00039 16C1.57604 16 1.16908 15.8314 0.86902 15.5314C0.568961 15.2313 0.400391 14.8243 0.400391 14.4C0.400391 13.9757 0.568961 13.5687 0.86902 13.2686C1.16908 12.9686 1.57604 12.8 2.00039 12.8ZM2.00039 6.4C2.42474 6.4 2.8317 6.56857 3.13176 6.86863C3.43182 7.16869 3.60039 7.57565 3.60039 8C3.60039 8.42435 3.43182 8.83131 3.13176 9.13137C2.8317 9.43143 2.42474 9.6 2.00039 9.6C1.57604 9.6 1.16908 9.43143 0.86902 9.13137C0.568961 8.83131 0.400391 8.42435 0.400391 8C0.400391 7.57565 0.568961 7.16869 0.86902 6.86863C1.16908 6.56857 1.57604 6.4 2.00039 6.4ZM2.00039 0C2.42474 0 2.8317 0.168571 3.13176 0.468629C3.43182 0.768687 3.60039 1.17565 3.60039 1.6C3.60039 2.02435 3.43182 2.43131 3.13176 2.73137C2.8317 3.03143 2.42474 3.2 2.00039 3.2C1.57604 3.2 1.16908 3.03143 0.86902 2.73137C0.568961 2.43131 0.400391 2.02435 0.400391 1.6C0.400391 1.17565 0.568961 0.768687 0.86902 0.468629C1.16908 0.168571 1.57604 0 2.00039 0Z" fill="#B6B6BD" />
+                                </svg>
+                              </HoverCardTrigger>
+                              <HoverCardContent
+                                align='start'
+                                className="w-52 px-2 py-3 bg-card dark:bg-su_secondary_bg rounded-xs mr-10"
+                              >
+                                <button
+                                  onClick={() =>
+                                    toast.info("Filter", {
+                                      duration: 2000,
+                                      description: "Open Swap Edit is under construction!",
+                                      action: {
+                                        label: "Close",
+                                        onClick: () => console.log("Close"),
+                                      },
+                                      className: '!bg-gradient-primary border-none',
+                                      descriptionClassName: '!text-white',
+                                    })
+                                  }
 
-                              className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg"
-                            >
+                                  className="action-hover-card-item"
+                                >
 
-                              <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2 14.8538V17.5556C2 17.8045 2.19553 18 2.44438 18H5.14624C5.26178 18 5.37732 17.9556 5.45731 17.8667L15.1627 8.17022L11.8298 4.83734L2.13332 14.5338C2.04444 14.6227 2 14.7293 2 14.8538ZM17.7401 4.33963L15.6604 2.25991C15.5781 2.17752 15.4805 2.11216 15.373 2.06756C15.2654 2.02296 15.1502 2 15.0338 2C14.9174 2 14.8021 2.02296 14.6946 2.06756C14.5871 2.11216 14.4894 2.17752 14.4072 2.25991L12.7808 3.88636L16.1136 7.21924L17.7401 5.5928C17.8225 5.51057 17.8878 5.41291 17.9324 5.30539C17.977 5.19787 18 5.08261 18 4.96621C18 4.84981 17.977 4.73456 17.9324 4.62704C17.8878 4.51952 17.8225 4.42186 17.7401 4.33963Z" fill="#868691" />
-                              </svg>
+                                  <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2 14.8538V17.5556C2 17.8045 2.19553 18 2.44438 18H5.14624C5.26178 18 5.37732 17.9556 5.45731 17.8667L15.1627 8.17022L11.8298 4.83734L2.13332 14.5338C2.04444 14.6227 2 14.7293 2 14.8538ZM17.7401 4.33963L15.6604 2.25991C15.5781 2.17752 15.4805 2.11216 15.373 2.06756C15.2654 2.02296 15.1502 2 15.0338 2C14.9174 2 14.8021 2.02296 14.6946 2.06756C14.5871 2.11216 14.4894 2.17752 14.4072 2.25991L12.7808 3.88636L16.1136 7.21924L17.7401 5.5928C17.8225 5.51057 17.8878 5.41291 17.9324 5.30539C17.977 5.19787 18 5.08261 18 4.96621C18 4.84981 17.977 4.73456 17.9324 4.62704C17.8878 4.51952 17.8225 4.42186 17.7401 4.33963Z" fill="#868691" />
+                                  </svg>
 
-                              Edit
-                            </button>
-                            <button onClick={() => {
-                              wallet.isConnected ? navigate(`/swap-up/my-swaps`) : handleShowWalletConnectionToast();
-                            }} type="reset" className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg" >
+                                  Edit
+                                </button>
 
-                              <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
-                              </svg>
+                                <button
+                                  onClick={() => { wallet.isConnected ? navigate(`/swap-up/my-swaps/pending/?walletIdToFilterSwaps=${swap.init_address}`) : handleShowWalletConnectionToast(); }}
+                                  className="action-hover-card-item"
+                                >
+                                  <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
+                                  </svg>
 
-                              View Incoming Offers
-                            </button>
-                            <button onClick={async () => {
-                              await handleSwapCancel(swap);
-                            }} type="reset" className="flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg" >
-                              <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
-                              </svg>
+                                  View Incoming Offers
+                                </button>
 
-                              Close
-                            </button>
-                          </HoverCardContent>
-                        </HoverCard>
+                                <button
+                                  onClick={async () => { await handleSwapCancel(swap); }}
+                                  className="action-hover-card-item"
+                                >
+                                  <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
+                                  </svg>
+
+                                  Close
+                                </button>
+                              </HoverCardContent>
+                            </HoverCard>
+                        }
                       </TableCell>
                     </TableRow>
                   );
@@ -432,7 +414,7 @@ const ManageOpenMarketSwaps = () => {
         </Table>
 
         {
-          (((filteredCreatedSwaps || []).length === 0)) &&
+          (((filteredCreatedSwaps || []).length === 0) && (createdSwapsFiltersApplied || createdSwapsSearchApplied)) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -450,7 +432,7 @@ const ManageOpenMarketSwaps = () => {
       />
 
       {
-        (!isLoading && ((createdSwaps || []).length === 0)) &&
+        ((isError || isSuccess) && ((createdSwaps || []).length === 0) && (!createdSwapsFiltersApplied && !createdSwapsSearchApplied)) &&
         <EmptyDataset
           title="No Open Swaps Available"
           description="Check back later or create your own swap!"

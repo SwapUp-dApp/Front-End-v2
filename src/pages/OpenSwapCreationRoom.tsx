@@ -8,7 +8,7 @@ import CopyTile from "@/components/custom/tiles/CopyTile";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 import StaySafeDialog from "@/components/custom/swap-market/StaySafeDialog";
-import AvoidingFeeDialog from "@/components/custom/swap-market/AvoidingFeeDialog";
+import AvoidingFeeDialog from "@/components/custom/shared/AvoidingFeeDialog";
 
 import { useSwapMarketStore } from "@/store/swap-market";
 import OpenMarketRoomFooter from "@/components/custom/swap-market/open-market/OpenMarketRoomFooter";
@@ -22,12 +22,18 @@ import { getLastCharacters, isValidTradeId } from "@/lib/utils";
 import SwapDialogSideCard from "@/components/custom/swap-market/SwapDialogSideCard";
 import SwapParameterTile from "@/components/custom/tiles/SwapParameterTile";
 import moment from "moment";
-import { availableCollections } from "@/constants/data";
 import ChainTile from "@/components/custom/tiles/ChainTile";
 import { SUP_CreateOpenSwap } from "@/types/swap-market.types";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { useCreateOpenSwapOffer } from "@/service/queries/swap-market.query";
 import { useProfileStore } from "@/store/profile";
+import LoadingDataset from "@/components/custom/shared/LoadingDataset";
+import { Query, useQueries, useQuery } from "@tanstack/react-query";
+import { getAvailableCollectionsApi, getAvailableCurrenciesApi } from "@/service/api";
+import { useGlobalStore } from "@/store/global-store";
+import { SUI_CollectionItem, SUI_CurrencyChainItem } from "@/types/global.types";
+import EmptyDataset from "@/components/custom/shared/EmptyDataset";
+import { getWalletProxy } from "@/lib/walletProxy";
 
 interface ISwapCreation {
   isLoading: boolean;
@@ -40,7 +46,8 @@ const OpenSwapCreationRoom = () => {
   const [swapCreation, setSwapCreation] = useState<ISwapCreation>({ isLoading: false, created: false });
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
-  const wallet = useProfileStore(state => state.profile.wallet);
+  const [wallet, profile] = useProfileStore(state => [state.profile.wallet, state.profile]);
+  const [filteredAvailableCurrencies, setAvailableCurrencies, availableCollections, setAvailableCollections] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies, state.availableCollections, state.setAvailableCollections]);
 
   const { expiration_date, preferred_asset } = state.swap.swap_preferences;
   const navigate = useNavigate();
@@ -48,6 +55,73 @@ const OpenSwapCreationRoom = () => {
 
   const { mutateAsync: createOpenSwapOffer } = useCreateOpenSwapOffer();
 
+  const queries = useQueries({
+    queries: [
+      {
+        queryKey: [`getAvailableCurrenciesApi`],
+        queryFn: async () => {
+          try {
+            const response = await getAvailableCurrenciesApi();
+            setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
+            return response.data.data.coins;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      },
+      {
+        queryKey: [`getAvailableCollectionsApi`],
+        queryFn: async () => {
+          try {
+            const response = await getAvailableCollectionsApi();
+            // console.log("Collections dataset: ", response.data.collections);
+            setAvailableCollections(response.data.collections as SUI_CollectionItem[]);
+            return response.data.collections;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      }
+    ]
+  });
+
+  const isLoading = queries.some(query => query.isLoading);
+  const isError = queries.some(query => query.isError);
+  const isSuccess = queries.every(query => query.isSuccess);
 
   const handleResetData = () => {
     state.resetOpenSwapCreationRoom();
@@ -75,6 +149,16 @@ const OpenSwapCreationRoom = () => {
 
       if (!createdSwap) {
         throw new Error("Failed to create swap.");
+      }
+
+      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
+      if (!approval) {
+        throw new Error("User approval not granted.");
+      }
+
+      const blockchainRes = await getWalletProxy().createAndUpdateSwap(createdSwap!, "CREATE");
+      if (!blockchainRes) {
+        throw new Error("Blockchain error creating swap.");
       }
 
       const swapPayload: SUP_CreateOpenSwap = {
@@ -137,20 +221,6 @@ const OpenSwapCreationRoom = () => {
     }
   };
 
-  useEffect(() => {
-    if ((state.sender.nftsSelectedForSwap.length) && isValidParametersForm) {
-      setEnableApproveButtonCriteria(true);
-    } else {
-      setEnableApproveButtonCriteria(false);
-    }
-  }, [state.sender.nftsSelectedForSwap, isValidParametersForm]);
-
-  useEffect(() => {
-    if (openTradeId && isValidTradeId(openTradeId)) {
-      state.setValuesOnCreateOpenSwapRoom(openTradeId, wallet);
-    }
-  }, [openTradeId]);
-
   if (openTradeId && !isValidTradeId(openTradeId)) {
     toast.custom(
       (id) => (
@@ -173,6 +243,25 @@ const OpenSwapCreationRoom = () => {
     }, 300);
   }
 
+  useEffect(() => {
+    if (
+      ((state.sender.nftsSelectedForSwap.length) && isValidParametersForm) ||
+      ((state.sender.addedAmount?.amount) && isValidParametersForm)
+    ) {
+      setEnableApproveButtonCriteria(true);
+    } else {
+      setEnableApproveButtonCriteria(false);
+    }
+  }, [state.sender.nftsSelectedForSwap, isValidParametersForm, state.sender.addedAmount]);
+
+  useEffect(() => {
+    if (openTradeId && isValidTradeId(openTradeId) && profile) {
+      state.resetOpenSwapCreationRoom();
+      state.setValuesOnCreateOpenSwapRoom(openTradeId, profile);
+    }
+  }, [openTradeId, profile]);
+
+
   return (
     <div className="flex flex-col gap-4" >
       <RoomHeader
@@ -183,9 +272,48 @@ const OpenSwapCreationRoom = () => {
         existDescription="By closing the open market swap, your changes would not be saved."
       />
 
-      <div className="grid lg:grid-cols-2 gap-4 mb-16 lg:mb-16" >
-        <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={wallet.address} />
-        <SwapParametersCard setIsValidParametersForm={setIsValidParametersForm} />
+      <div className="grid lg:grid-cols-2 gap-4 mb-32" >
+        {
+          wallet.address ?
+            <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={wallet.address} />
+            :
+            <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
+              <LoadingDataset
+                isLoading={!wallet.address}
+                title="Loading wallet connected wallet information"
+              />
+            </div>
+        }
+
+        {
+          isSuccess && filteredAvailableCurrencies ?
+            <SwapParametersCard
+              setIsValidParametersForm={setIsValidParametersForm}
+              availableCurrencies={filteredAvailableCurrencies}
+              availableCollections={availableCollections}
+            />
+            :
+            <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
+              <LoadingDataset
+                isLoading={isLoading}
+                title="Loading available currencies data."
+              />
+
+              {isError &&
+                <EmptyDataset
+                  showBackgroundPicture={false}
+                  className="lg:h-[200px]"
+                  title="No Results Found"
+                  description="We couldn't find any results. Please check you network and try again."
+                  icon={
+                    <svg className="w-8" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M10.5706 2.67447L23.7935 8.45832L18.4991 10.7735L5.3523 5.02231C5.64832 4.71198 6.01034 4.46699 6.42237 4.30366L10.5706 2.67447ZM13.2448 1.62509L16.345 0.408294C17.7316 -0.136098 19.2667 -0.136098 20.6533 0.408294L30.5779 4.30366C30.9804 4.46205 31.3447 4.70717 31.6459 5.02231L26.3336 7.34565L13.2448 1.62509ZM32.486 6.87608L19.4992 12.5558V27.7678C19.8934 27.6998 20.2801 27.5917 20.6533 27.4452L30.5779 23.5478C31.1437 23.3254 31.6302 22.9333 31.9733 22.423C32.3165 21.9128 32.5001 21.3084 32.5 20.6895V7.1619C32.5 7.06663 32.4953 6.97135 32.486 6.87608ZM17.4991 12.5579V21.0713C17.4991 15.9979 13.0208 11.8841 7.49844 11.8841C6.44637 11.8841 5.43831 12.0679 4.49825 12.4088V7.1619C4.49964 7.06649 4.50431 6.97116 4.51225 6.87608L17.4991 12.5579ZM11.6907 26.7939C10.5226 27.6861 9.07053 28.2169 7.49844 28.2169C5.92196 28.2165 4.3918 27.6729 3.15569 26.6742C1.91959 25.6754 1.04992 24.2801 0.687503 22.714C0.325087 21.148 0.49114 19.5029 1.15878 18.0452C1.82641 16.5874 2.95655 15.4024 4.36618 14.6819C5.77582 13.9615 7.38243 13.7478 8.92587 14.0754C10.4693 14.4031 11.8592 15.2529 12.8706 16.4873C13.8819 17.7217 14.4554 19.2684 14.4983 20.877C14.5412 22.4856 14.0509 24.0618 13.1068 25.3505L18.2071 30.5566L16.7841 31.9929L11.6907 26.7939ZM3.96268 24.6804C4.90042 25.6376 6.17227 26.1753 7.49844 26.1753C8.8246 26.1753 10.0964 25.6376 11.0342 24.6804C11.9719 23.7232 12.4987 22.425 12.4987 21.0713C12.4987 19.7177 11.9719 18.4194 11.0342 17.4622C10.0964 16.5051 8.8246 15.9673 7.49844 15.9673C6.17227 15.9673 4.90042 16.5051 3.96268 17.4622C3.02494 18.4194 2.49812 19.7177 2.49812 21.0713C2.49812 22.425 3.02494 23.7232 3.96268 24.6804Z" fill="#565665" />
+                    </svg>
+                  }
+                />
+              }
+            </div>
+        }
       </div>
 
 
@@ -238,11 +366,11 @@ const OpenSwapCreationRoom = () => {
                         </svg>
                       </DialogClose>
                     </div>
-                    <h2 className="text-sm font-semibold">Wallet and Asset Details</h2>
+                    <h2 className="text-sm font-semibold">Open Trade Details</h2>
                   </div>
 
                   {/* side cards*/}
-                  <SwapDialogSideCard data={state.sender} showEscroTile />
+                  <SwapDialogSideCard data={state.sender} />
 
                   {/* swap parameters section */}
                   <div className="custom-border-card" >
@@ -266,7 +394,7 @@ const OpenSwapCreationRoom = () => {
                       {preferred_asset.type === 'nft' &&
                         <SwapParameterTile
                           title="Preferred collection:"
-                          value={availableCollections.find(collection => collection.value === preferred_asset.parameters.collection)?.label || ''}
+                          value={availableCollections.find(collection => collection.collection === preferred_asset.parameters.collection)?.name || ''}
                         />
                       }
 
@@ -324,10 +452,6 @@ const OpenSwapCreationRoom = () => {
                   <div className="custom-border-card" >
                     <h2 className="text-xs lg:sm text-primary font-semibold" >Estimate fees:</h2>
 
-                    <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
-                      <p>Platform fee in USD:</p>
-                      <p className="text-text dark:text-su_primary" >$ 0</p>
-                    </div>
                     <div className="text-xs lg:text-sm dark:text-su_secondary font-normal flex items-center justify-between" >
                       <p>Platform fee:</p>
                       <p className="text-text dark:text-su_primary" >0.00 ETH</p>
@@ -394,7 +518,21 @@ const OpenSwapCreationRoom = () => {
         </div>
 
         {/* Sender Side */}
-        <OpenMarketRoomFooter setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} />
+        {
+          isSuccess && filteredAvailableCurrencies ?
+            <OpenMarketRoomFooter setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={filteredAvailableCurrencies} />
+            :
+            <div className="flex justify-center items-center w-full border border-su_disabled" >
+              <LoadingDataset
+                isLoading={isLoading}
+                title="Loading currencies data."
+              />
+              {isError &&
+                <p className="text-xs md:text-sm">Unable to get currencies.</p>
+              }
+            </div>
+        }
+
       </footer>
     </div >
   );

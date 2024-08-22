@@ -5,9 +5,9 @@ import { SUI_OpenSwap } from "@/types/swap-market.types";
 import moment from "moment";
 
 
-export const setMySwapsDataHelper = (state: IMySwapsStore, data: SUI_OpenSwap[], tabType: SUT_MySwapsTabType): IMySwapsStore => {
-  const pendingSwaps = data.length > 0 ? data : state.pendingSwaps;
-  const historySwaps = data.length > 0 ? data : state.pendingSwaps;
+export const setMySwapsDataHelper = async (state: IMySwapsStore, data: SUI_OpenSwap[], tabType: SUT_MySwapsTabType): Promise<IMySwapsStore> => {
+  const pendingSwaps = data.length > 0 ? data : [];
+  const historySwaps = data.length > 0 ? data : [];
 
   if (tabType === 'pending') {
     return ({
@@ -25,6 +25,7 @@ export const setMySwapsDataHelper = (state: IMySwapsStore, data: SUI_OpenSwap[],
 };
 
 export const setFilteredMySwapsBySearchHelper = (state: IMySwapsStore, searchValue: string, tabType: SUT_MySwapsTabType, loginWalletAddress: string): IMySwapsStore => {
+  let searchApplied = false;
   const lowerCaseSearchValue = searchValue.toLowerCase();
 
   const filteredPendingSwaps = state.pendingSwaps?.filter(swap =>
@@ -43,35 +44,68 @@ export const setFilteredMySwapsBySearchHelper = (state: IMySwapsStore, searchVal
     swap.init_address.toLowerCase().includes(lowerCaseSearchValue)
   );
 
+  if (lowerCaseSearchValue.length > 0) {
+    searchApplied = true;
+  } else {
+    searchApplied = false;
+  }
+
+
   if (tabType === 'pending') {
     return ({
       ...state,
-      filteredPendingSwaps: (filteredPendingSwaps || []).length > 0 ? filteredPendingSwaps : []
+      filteredPendingSwaps: (filteredPendingSwaps || []).length > 0 ? filteredPendingSwaps : [],
+      pendingSwapsSearchApplied: searchApplied
     });
   } else {
     return ({
       ...state,
-      filteredHistorySwaps: (filteredHistorySwaps || []).length > 0 ? filteredHistorySwaps : []
+      filteredHistorySwaps: (filteredHistorySwaps || []).length > 0 ? filteredHistorySwaps : [],
+      historySwapsSearchApplied: searchApplied
     });
   }
 };
 
 export const setFilteredPendingSwapByFiltersHelper = (state: IMySwapsStore, filters: IPendingFilters, loginWalletAddress: string): IMySwapsStore => {
+  let filtersApplied = false;
   const filteredItems = getPendingFilteredSwaps(state, filters, loginWalletAddress);
+
+  if (
+    filters.offersFromCurrentChain === true ||
+    filters.requestedDate !== '' ||
+    filters.swapMode !== 'all' ||
+    filters.swapRequestStatus !== 'all'
+  ) {
+    filtersApplied = true;
+  }
+
+
   return {
     ...state,
     pendingFilters: filters,
-    filteredPendingSwaps: filteredItems
+    filteredPendingSwaps: filteredItems,
+    pendingSwapsFiltersApplied: filtersApplied
   };
 };
 
 export const setFilteredHistorySwapByFiltersHelper = (state: IMySwapsStore, filters: IHistoryFilters): IMySwapsStore => {
+  let filtersApplied = false;
   const filteredItems = getHistoryFilteredSwaps(state, filters);
+
+  if (
+    filters.offersFromCurrentChain === true ||
+    filters.requestedDate !== '' ||
+    filters.swapMode !== 'all' ||
+    filters.swapStatus !== 'all'
+  ) {
+    filtersApplied = true;
+  }
 
   return {
     ...state,
     historyFilters: filters,
-    filteredHistorySwaps: filteredItems
+    filteredHistorySwaps: filteredItems,
+    historySwapsFiltersApplied: filtersApplied
   };
 };
 
@@ -86,7 +120,8 @@ export const resetAllFiltersHelper = (state: IMySwapsStore, tabType: SUT_MySwaps
         swapRequestStatus: 'all',
         swapMode: 'all',
       },
-      filteredPendingSwaps: state.pendingSwaps
+      filteredPendingSwaps: state.pendingSwaps,
+      pendingSwapsFiltersApplied: false
     });
   } else {
     return ({
@@ -97,7 +132,8 @@ export const resetAllFiltersHelper = (state: IMySwapsStore, tabType: SUT_MySwaps
         swapMode: 'all',
         swapStatus: 'all'
       },
-      filteredHistorySwaps: state.historySwaps
+      filteredHistorySwaps: state.historySwaps,
+      historySwapsFiltersApplied: false
     });
   }
 

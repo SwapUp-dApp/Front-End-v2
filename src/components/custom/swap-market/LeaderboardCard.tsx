@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { getNameInitials, resolveAssetPath } from "@/lib/utils";
-import { IMember } from '@/constants/data' ;
+import { getNameInitials, getShortenWalletAddress } from "@/lib/utils";
+import { IMember } from '@/constants/data';
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
 interface IProp {
@@ -53,14 +53,14 @@ const LeaderboardCard = ({ users }: IProp) => {
                       <div className="flex items-center justify-between" key={user.id}>
                         <div className="w-[25%] border">
                           <Avatar className="relative w-4 h-4 mx-auto">
-                            <AvatarImage className="w-4 h-4" src={user.image ? resolveAssetPath(user.image) : ''} alt="@shadcn" />
-                            <AvatarFallback className="text-[8px] font-semibold rounded-full dark:bg-su_enable_bg w-4 h-4 flex justify-center items-center">
+                            <AvatarImage className="w-4 h-4 rounded-full" src={user.image} alt="@shadcn" />
+                            <AvatarFallback className="text-[8px] rounded-full font-semibold dark:bg-su_enable_bg w-4 h-4 flex justify-center items-center">
                               {getNameInitials(user.title)}
                             </AvatarFallback>
                           </Avatar>
                         </div>
 
-                        <span className="w-[72%] line-clamp-1 text-2xs dark:text-su_secondary" >0xaE30Cb8B6348e0aB7995F1E2d3E85718B75eF074</span>
+                        <p className="w-[72%] text-2xs dark:text-su_secondary line-clamp-1 " >{getShortenWalletAddress("0xaE30Cb8B6348e0aB7995F1E2d3E85718B75eF074")}</p>
                       </div>
                     );
 

@@ -10,18 +10,19 @@ import ManageOpenMarketSwaps from "@/pages/ManageOpenMarketSwaps";
 import OpenSwapCreationRoom from "@/pages/OpenSwapCreationRoom";
 import OpenSwapProposeRoom from "@/pages/OpenSwapProposeRoom";
 import ViewSwapRoom from "@/pages/ViewSwapRoom";
-import CounterOfferSwapRoom from "@/pages/CouterOfferSwapRoom";
+import CounterOfferSwapRoom from "@/pages/CounterOfferSwapRoom";
 import SwapUpWebsite from "@/pages/SwapUpWebsite";
 import { Navigate } from "react-router-dom";
 import OpenMarketTabContent from "@/components/custom/swap-market/open-market/OpenMarketTabContent";
 import PrivateMarketTabContent from "@/components/custom/swap-market/private-party/PrivateMarketTabContent";
 import { defaults } from "@/constants/defaults";
-import PendingSwapsTabContent from "@/components/custom/swap-market/my-swaps/PendingSwapsTabContent";
-import SwapHistoryTabContent from "@/components/custom/swap-market/my-swaps/SwapHistoryTabContent";
-import ProfileWalletOverviewTabContent from "@/components/custom/profile/ProfileWalletOverviewTabContent";
-import ProfilePointsAndSwappotTabContent from "@/components/custom/profile/ProfilePointsAndSwappotTabContent";
-import ProfileAssetsTabContent from "@/components/custom/profile/ProfileAssetsTabContent";
+import ProfileWalletOverviewTabContent from "@/components/custom/profile/wallet-overview/ProfileWalletOverviewTabContent";
+import ProfilePointsAndSwappotTabContent from "@/components/custom/profile/points-swappot/ProfilePointsAndSwappotTabContent";
+import ProfileAssetsTabContent from "@/components/custom/profile/assets/ProfileAssetsTabContent";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import PendingSwapsTabContent from "@/components/custom/my-swaps/PendingSwapsTabContent";
+import SwapHistoryTabContent from "@/components/custom/my-swaps/SwapHistoryTabContent";
+import ServicesPage from "@/pages/Services";
 
 
 export interface SUI_RoutesType {
@@ -39,12 +40,19 @@ const NotFoundPage = () => (
   </div >
 );
 
+
 export const clientSideRoutes: SUI_RoutesType[] = [
   {
     id: 'swapup-website',
     title: "Swapup landing page",
     path: "/",
     element: <SwapUpWebsite />,
+  },
+  {
+    id: 'swapup-services',
+    title: "Swapup Services",
+    path: "/services",
+    element: <ServicesPage />
   },
   {
     id: 'swapup-privacy-policy',
@@ -106,7 +114,7 @@ export const clientSideRoutes: SUI_RoutesType[] = [
           {
             id: 'my-swaps-pending-teb',
             title: "My Swaps Pending Tab",
-            path: "pending",
+            path: "pending/?",
             element: <PendingSwapsTabContent />,
           },
           {

@@ -7,6 +7,7 @@ export type SUT_SwapOfferType = 0 | 1;
 export type SUT_PreferredAssetType = "any" | "nft" | "currency";
 export type SUT_TradeIdType = "trade_id" | "open_trade_id";
 export type SUT_SwapRoomViewType = "default" | "view" | "propose" | "counter";
+export type SUT_SwapTokenContractType = "ERC20" | "ERC21" | "ERC1155";
 
 
 // Swap Type starts here
@@ -42,6 +43,11 @@ export interface SUI_SwapToken {
   address: string;
   type: string;
   image_url: string;
+  value?: {
+    amount: number;
+    usdAmount: number;
+    symbol: string;
+  };
 }
 
 

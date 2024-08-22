@@ -6,9 +6,9 @@ import FilterButton from '../../shared/FilterButton';
 
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import EmptyDataset from '../../shared/EmptyDataset';
-import { getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import { SUI_Swap, SUI_SwapToken, SUP_CancelSwap, SUP_CompleteSwap, } from '@/types/swap-market.types';
-import { useCancelSwapOffer, useCompletePrivateSwapOffer, usePrivateSwapsPendingList, useRejectSwapOffer, } from '@/service/queries/swap-market.query';
+import { cn, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { SUI_Swap, SUI_SwapToken, SUP_CancelSwap, SUP_CompleteSwap, SUT_SwapTokenContractType, } from '@/types/swap-market.types';
+import { useCancelSwapOffer, useCompletePrivateSwapOffer, useRejectSwapOffer, } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
@@ -24,14 +24,27 @@ import { useProfileStore } from '@/store/profile';
 import { showWalletConnectionToast } from '@/lib/helpers';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import PrivateMarketSwapFilterDrawer from './PrivateMarketSwapFilterDrawer';
+import { useQuery } from '@tanstack/react-query';
+import { getPrivateSwapPendingListApi } from '@/service/api';
+import { defaults } from '@/constants/defaults';
+import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from '@/constants/enums';
+import { useGlobalStore } from '@/store/global-store';
 
 
 const PrivateMarketTabContent = () => {
   const navigate = useNavigate();
-  const { setPrivateSwapsData, availablePrivateSwaps, filteredAvailablePrivateSwaps, setPrivateMarketAvailableSwapsBySearch, privateMarketSwapsFilters } = useSwapMarketStore(state => state.privateMarket);
+  const {
+    setPrivateSwapsData,
+    availablePrivateSwaps,
+    filteredAvailablePrivateSwaps,
+    setPrivateMarketAvailableSwapsBySearch,
+    availablePrivateSwapsFiltersApplied,
+    availablePrivateSwapsSearchApplied
+  } = useSwapMarketStore(state => state.privateMarket);
+
+  const [setStartRecentSwapSharingProcess, setRecentAcceptedSwap] = useGlobalStore(state => [state.setStartRecentSwapSharingProcess, state.setRecentAcceptedSwap]);
   const wallet = useProfileStore(state => state.profile.wallet);
 
-  const [filtersApplied, setFiltersApplied] = useState(false);
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -40,6 +53,7 @@ const PrivateMarketTabContent = () => {
   const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
   const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
 
+  // private room store state
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
 
   const handlePrivateSwapFilterData = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,45 +66,36 @@ const PrivateMarketTabContent = () => {
 
       setSwapAcceptance(prev => ({ ...prev, isLoading: true }));
 
-      //update swap - 
-      // setAcceptSwap(swap);
-
       const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
       if (!sign) {
         throw new Error("Failed to obtain swap signature.");
       }
 
-      // setAcceptSwap(prev => ({ ...prev, accept_sign: sign }));
       //temp fix 
       swap.accept_sign = sign;
 
-      const approval = await getWalletProxy().getUserApproval(swap, true);
+      const approval = await getWalletProxy().getUserApproval(swap, false);
 
       if (!approval) {
         throw new Error("User approval not granted.");
       }
 
-      const triggerTranfer = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
-      console.log(swapAcceptance.isLoading);
+      const triggerTransfer = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
 
-      // if (!triggerTranfer) {
-      //   throw new Error("Swap Failed");
-      // }
+      if (!triggerTransfer) {
+        throw new Error("Swap failed due to blockchain error.");
+      }
 
       const payload: SUP_CompleteSwap = {
         ...swap,
-        status: triggerTranfer?.status || 0,
-        tx: triggerTranfer?.hash || "",
-        notes: triggerTranfer?.notes || "",
-        timestamp: triggerTranfer?.timeStamp || "",
+        status: triggerTransfer?.status || 0,
+        tx: triggerTransfer?.hash || "",
+        notes: triggerTransfer?.notes || "",
+        timestamp: triggerTransfer?.timeStamp || "",
       };
 
       //calling actual api 
-
-
-      //calling actual api 
-
       const offerResult = await completePrivateSwapOffer(payload);
 
       if (offerResult) {
@@ -110,13 +115,10 @@ const PrivateMarketTabContent = () => {
           }
         );
         setSwapAcceptance(prev => ({ ...prev, created: true }));
-
-
+        setStartRecentSwapSharingProcess(true);
+        setRecentAcceptedSwap(swap);
+        navigate(`${defaults.profile.baseRoute}/assets`);
       }
-
-
-
-
     } catch (error: any) {
       toast.custom(
         (id) => (
@@ -144,14 +146,29 @@ const PrivateMarketTabContent = () => {
     try {
 
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
+      // Cancel swap blockchain logic
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
-      console.log(swapCancel.isLoading);
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+
+      const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL");
+
+      if (!triggerCancelSwap) {
+        throw new Error("Cancel Swap failed due to blockchain error.");
+      }
+
+      // enforcing swap mode to private because
+      // 1.The original open swap can only be canceled through manage page
+      // 2.The user can only cancel the private swap and single proposed open swap
+
       const payload: SUP_CancelSwap = {
-        swap_mode: swap.swap_mode,
+        swap_mode: SUE_SWAP_MODE.PRIVATE,
         trade_id: swap.trade_id
       };
       const offerResult = await cancelSwapOffer(payload);
-      console.log(swap.id);
+
       if (offerResult) {
         toast.custom(
           (id) => (
@@ -169,7 +186,7 @@ const PrivateMarketTabContent = () => {
           }
         );
         setSwapCancel(prev => ({ ...prev, created: true }));
-
+        navigate("/swap-up/my-swaps/history");
       }
 
 
@@ -199,14 +216,25 @@ const PrivateMarketTabContent = () => {
 
   const handleSwapReject = async (swap: SUI_Swap) => {
     try {
-
       setSwapRejection(prev => ({ ...prev, isLoading: true }));
 
-      console.log(swapRejection.isLoading);
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
+
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+      swap.accept_sign = sign;
+
+      const triggerReject = await getWalletProxy()
+        .createAndUpdateSwap(swap, "REJECT");
+
+      if (!triggerReject) {
+        throw new Error("Reject swap failed due to blockchain error.");
+      }
 
       if (swap.id) {
         const offerResult = await rejectSwapOffer(Number(swap.id));
-        console.log(swap.id);
+
         if (offerResult) {
           toast.custom(
             (id) => (
@@ -224,8 +252,7 @@ const PrivateMarketTabContent = () => {
             }
           );
           setSwapRejection(prev => ({ ...prev, created: true }));
-
-
+          navigate("/swap-up/my-swaps/history");
         }
 
       }
@@ -253,73 +280,61 @@ const PrivateMarketTabContent = () => {
     }
   };
 
-  const { isLoading, isError, error, data, isSuccess } = usePrivateSwapsPendingList(wallet.address);
-
-  useEffect(() => {
-    if (data?.data && isSuccess) {
-
-      if (data.data.data.length > 0) {
-        setPrivateSwapsData(data.data.data as SUI_Swap[]);
-      }
-    }
-
-    if (error && isError) {
-      setPrivateSwapsData([]);
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
+  const { isLoading, isSuccess, isError } = useQuery({
+    queryKey: [`getPrivateSwapPendingListApi`],
+    queryFn: async () => {
+      try {
+        if (wallet.address && wallet.isConnected) {
+          const response = await getPrivateSwapPendingListApi(wallet.address);
+          await setPrivateSwapsData(response.data.data as SUI_Swap[]);
+          return response.data.data;
         }
-      );
-    }
+        return null;
 
-  }, [isError, error, data, isSuccess]);
+      } catch (error: any) {
+        await setPrivateSwapsData([]);
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="error"
+              title="Request failed!"
+              description={error.message}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
 
-  useEffect(() => {
-    if (
-      privateMarketSwapsFilters.offersFromCurrentChain === true ||
-      privateMarketSwapsFilters.swapRequestStatus !== "all" ||
-      (privateMarketSwapsFilters.dateRangeFrom && privateMarketSwapsFilters.dateRangeTo)
-    ) {
-      setFiltersApplied(true);
-    } else {
-      setFiltersApplied(false);
-    }
+        throw error;
+      }
+    },
+    retry: false
+  });
 
-  }, [
-    privateMarketSwapsFilters.offersFromCurrentChain,
-    privateMarketSwapsFilters.swapRequestStatus,
-    privateMarketSwapsFilters.dateRangeFrom,
-    privateMarketSwapsFilters.dateRangeTo,
-
-  ]);
-
-  const nftsImageMapper = (nfts: SUI_SwapToken[], showMaxNumberOfNfts: number) => {
+  const swapTokensMapper = (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number) => {
     return (
-      nfts.map((nft, index) => {
-        if (index < showMaxNumberOfNfts)
+      swapTokens.map((swapToken, index) => {
+        if (index < showMaxNumberOfTokensToShow)
           return (
-            <div className="relative w-8 h-8" key={nft.id}>
+            <div className="relative w-8 h-8" key={swapToken.id}>
               <img
-                className="w-full h-full object-cover rounded-xs border-[1.5px] border-white/20"
-                src={nft.image_url}
+                className={cn(
+                  "w-full h-full object-cover ",
+                  (swapToken.type as SUT_SwapTokenContractType) === "ERC20" ? "" : "rounded-xs border-[1.5px] border-white/20"
+                )}
+                src={swapToken.image_url}
                 alt="nft"
                 onError={getDefaultNftImageOnError}
               />
 
               {
-                ((index === showMaxNumberOfNfts - 1) && nfts.length > showMaxNumberOfNfts) ?
+                ((index === showMaxNumberOfTokensToShow - 1) && swapTokens.length > showMaxNumberOfTokensToShow) ?
                   <div className="absolute w-full h-full rounded-xs bg-black/50 top-0 flex justify-center items-center font-semibold" >
-                    +{nfts.length - showMaxNumberOfNfts}
+                    +{swapTokens.length - showMaxNumberOfTokensToShow}
                   </div> : ''
               }
             </div>
@@ -365,7 +380,7 @@ const PrivateMarketTabContent = () => {
               <TableHead className="min-w-[100px] pr-2 relative" >
                 <PrivateMarketSwapFilterDrawer>
                   <div className="absolute top-2 left-2">
-                    <FilterButton showTitleOnMobile filterApplied={filtersApplied} />
+                    <FilterButton showTitleOnMobile filterApplied={availablePrivateSwapsFiltersApplied} />
                   </div>
                 </PrivateMarketSwapFilterDrawer>
               </TableHead>
@@ -381,7 +396,7 @@ const PrivateMarketTabContent = () => {
                   <TableRow key={swap.trade_id}>
                     <TableCell className="text-xs font-medium flex items-center gap-2">
                       <div className="flex items-center gap-1" >
-                        {nftsImageMapper(swap.metadata.init.tokens, 3)}
+                        {swapTokensMapper(swap.metadata.init.tokens, 3)}
                       </div>
 
                       <svg className="w-4" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -389,7 +404,7 @@ const PrivateMarketTabContent = () => {
                       </svg>
 
                       <div className="flex items-center gap-1" >
-                        {nftsImageMapper(swap.metadata.accept.tokens, 3)}
+                        {swapTokensMapper(swap.metadata.accept.tokens, 3)}
                       </div>
                     </TableCell>
                     <TableCell className="text-xs font-medium">#{getLastCharacters(swap.trade_id, 7)}</TableCell>
@@ -426,10 +441,8 @@ const PrivateMarketTabContent = () => {
                     </TableCell>
                     <TableCell className="text-xs font-medium px-4 flex justify-start">
                       <span
-                        onClick={() => {
-                          navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
-                        }}
                         className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
+                      // onClick={async () => { await handleSwapAccept(swap); }}
                       >
                         <img
                           className='w-4 h-4'
@@ -441,56 +454,29 @@ const PrivateMarketTabContent = () => {
                       </span>
                     </TableCell>
                     <TableCell className="text-xs font-medium px-4">{moment.utc(swap.created_at).format('MMM DD, YYYY')}</TableCell>
+
                     <TableCell className="text-xs font-medium flex pr-8 justify-end">
                       {
-                        swap.init_address === wallet.address
-                          ?
-                          <HoverCard>
-                            <HoverCardTrigger className=" px-3 py-1.5 rounded-xs hover:bg-su_enable_bg cursor-pointer" >
-                              <svg
-                                className="w-1 cursor-pointer" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2.00039 12.8C2.42474 12.8 2.8317 12.9686 3.13176 13.2686C3.43182 13.5687 3.60039 13.9757 3.60039 14.4C3.60039 14.8243 3.43182 15.2313 3.13176 15.5314C2.8317 15.8314 2.42474 16 2.00039 16C1.57604 16 1.16908 15.8314 0.86902 15.5314C0.568961 15.2313 0.400391 14.8243 0.400391 14.4C0.400391 13.9757 0.568961 13.5687 0.86902 13.2686C1.16908 12.9686 1.57604 12.8 2.00039 12.8ZM2.00039 6.4C2.42474 6.4 2.8317 6.56857 3.13176 6.86863C3.43182 7.16869 3.60039 7.57565 3.60039 8C3.60039 8.42435 3.43182 8.83131 3.13176 9.13137C2.8317 9.43143 2.42474 9.6 2.00039 9.6C1.57604 9.6 1.16908 9.43143 0.86902 9.13137C0.568961 8.83131 0.400391 8.42435 0.400391 8C0.400391 7.57565 0.568961 7.16869 0.86902 6.86863C1.16908 6.56857 1.57604 6.4 2.00039 6.4ZM2.00039 0C2.42474 0 2.8317 0.168571 3.13176 0.468629C3.43182 0.768687 3.60039 1.17565 3.60039 1.6C3.60039 2.02435 3.43182 2.43131 3.13176 2.73137C2.8317 3.03143 2.42474 3.2 2.00039 3.2C1.57604 3.2 1.16908 3.03143 0.86902 2.73137C0.568961 2.43131 0.400391 2.02435 0.400391 1.6C0.400391 1.17565 0.568961 0.768687 0.86902 0.468629C1.16908 0.168571 1.57604 0 2.00039 0Z" fill="#B6B6BD" />
-                              </svg>
-                            </HoverCardTrigger>
-                            <HoverCardContent className="border-none bg-card  dark:bg-su_secondary_bg p-0 rounded-xs" >
-                              <button
-                                onClick={() => {
-                                  navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
-                                }}
-                                className="flex items-center  gap-2 py-1 px-1  rounded-sm hover:bg-su_active_bg"
-                              >
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
-                                </svg>
-
-                                View Offer
-                              </button>
-
-                              <button onClick={async () => {
-                                await handleSwapCancel(swap);
-                              }} type="reset" className="flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg" >
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
-                                </svg>
-
-                                Close
-                              </button>
-                            </HoverCardContent>
-                          </HoverCard>
+                        (swapCancel.isLoading || swapRejection.isLoading || swapAcceptance.isLoading) ?
+                          <svg className="animate-spin duration-700 w-3.5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 0C3.58236 0 0 3.58236 0 8C0 12.4176 3.58236 16 8 16V14.0004C6.81346 14.0002 5.65362 13.6483 4.66712 12.989C3.68061 12.3296 2.91176 11.3926 2.45777 10.2964C2.00377 9.20014 1.88503 7.99389 2.11655 6.83016C2.34807 5.66643 2.91946 4.59748 3.75847 3.75847C4.59748 2.91946 5.66643 2.34807 6.83016 2.11655C7.99389 1.88503 9.20014 2.00377 10.2964 2.45777C11.3926 2.91176 12.3296 3.68061 12.989 4.66712C13.6483 5.65362 14.0002 6.81346 14.0004 8H16C16 3.58236 12.4176 0 8 0Z" fill="white" />
+                          </svg>
                           :
-                          <HoverCard>
+                          <HoverCard openDelay={100}>
                             <HoverCardTrigger className="px-3 py-1.5 rounded-xs hover:bg-su_enable_bg cursor-pointer" >
                               <svg
                                 className="w-1 cursor-pointer" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M2.00039 12.8C2.42474 12.8 2.8317 12.9686 3.13176 13.2686C3.43182 13.5687 3.60039 13.9757 3.60039 14.4C3.60039 14.8243 3.43182 15.2313 3.13176 15.5314C2.8317 15.8314 2.42474 16 2.00039 16C1.57604 16 1.16908 15.8314 0.86902 15.5314C0.568961 15.2313 0.400391 14.8243 0.400391 14.4C0.400391 13.9757 0.568961 13.5687 0.86902 13.2686C1.16908 12.9686 1.57604 12.8 2.00039 12.8ZM2.00039 6.4C2.42474 6.4 2.8317 6.56857 3.13176 6.86863C3.43182 7.16869 3.60039 7.57565 3.60039 8C3.60039 8.42435 3.43182 8.83131 3.13176 9.13137C2.8317 9.43143 2.42474 9.6 2.00039 9.6C1.57604 9.6 1.16908 9.43143 0.86902 9.13137C0.568961 8.83131 0.400391 8.42435 0.400391 8C0.400391 7.57565 0.568961 7.16869 0.86902 6.86863C1.16908 6.56857 1.57604 6.4 2.00039 6.4ZM2.00039 0C2.42474 0 2.8317 0.168571 3.13176 0.468629C3.43182 0.768687 3.60039 1.17565 3.60039 1.6C3.60039 2.02435 3.43182 2.43131 3.13176 2.73137C2.8317 3.03143 2.42474 3.2 2.00039 3.2C1.57604 3.2 1.16908 3.03143 0.86902 2.73137C0.568961 2.43131 0.400391 2.02435 0.400391 1.6C0.400391 1.17565 0.568961 0.768687 0.86902 0.468629C1.16908 0.168571 1.57604 0 2.00039 0Z" fill="#B6B6BD" />
                               </svg>
                             </HoverCardTrigger>
-                            <HoverCardContent className="border-none bg-card  dark:bg-su_secondary_bg p-3" >
+
+                            <HoverCardContent
+                              align='start'
+                              className="w-52 px-2 py-3 bg-card dark:bg-su_secondary_bg rounded-xs mr-10"
+                            >
                               <button
-                                onClick={() => {
-                                  navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
-                                }}
-                                className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
+                                onClick={() => { navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`); }}
+                                className="action-hover-card-item"
                               >
                                 <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                   <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
@@ -499,47 +485,65 @@ const PrivateMarketTabContent = () => {
                                 View Offer
                               </button>
 
+                              {
+                                swap.init_address === wallet.address &&
+                                <button
+                                  onClick={async () => { await handleSwapCancel(swap); }}
+                                  className="action-hover-card-item"
+                                >
+                                  <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
+                                  </svg>
 
-                              <button
-                                onClick={() => { navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`); }}
-                                type="reset"
-                                className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
-                              >
+                                  Close
+                                </button>
+                              }
 
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M17.381 10.9091C17.8667 10.9091 18.2714 11.0727 18.5143 11.4C18.8381 11.7273 19 12.1364 19 12.5455L12.5238 15L6.85714 13.3636V6H8.39524L14.3048 8.20909C14.7095 8.37273 14.9524 8.7 14.9524 9.10909C14.9524 9.35455 14.8714 9.6 14.7095 9.76364C14.5476 9.92727 14.3048 10.0909 13.981 10.0909H11.7143L10.3381 9.51818L10.0952 10.2545L11.7143 10.9091H17.381ZM2 6H5.2381V15H2V6Z" fill="#868691" />
-                                </svg>
+                              {
+                                (swap.init_address !== wallet.address && swap.offer_type === SUE_SWAP_OFFER_TYPE.PRIMARY) &&
 
-                                Counter Offer
-                              </button>
+                                <button
+                                  onClick={() => { navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`); }}
+                                  className="action-hover-card-item"
+                                >
+                                  <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.381 10.9091C17.8667 10.9091 18.2714 11.0727 18.5143 11.4C18.8381 11.7273 19 12.1364 19 12.5455L12.5238 15L6.85714 13.3636V6H8.39524L14.3048 8.20909C14.7095 8.37273 14.9524 8.7 14.9524 9.10909C14.9524 9.35455 14.8714 9.6 14.7095 9.76364C14.5476 9.92727 14.3048 10.0909 13.981 10.0909H11.7143L10.3381 9.51818L10.0952 10.2545L11.7143 10.9091H17.381ZM2 6H5.2381V15H2V6Z" fill="#868691" />
+                                  </svg>
 
+                                  Counter Offer
+                                </button>
+                              }
 
-                              <button onClick={async () => {
-                                await handleSwapAccept(swap);
-                              }}
-                                type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                              {
+                                swap.init_address !== wallet.address &&
+                                <div className='flex flex-col gap-1'>
+                                  <button
+                                    onClick={async () => { await handleSwapAccept(swap); }}
+                                    className="action-hover-card-item"
+                                  >
+                                    <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM8.22222 14.4444L3.77778 10L5.03111 8.74667L8.22222 11.9289L14.9689 5.18222L16.2222 6.44444L8.22222 14.4444Z" fill="#75FFC1" />
+                                    </svg>
 
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM8.22222 14.4444L3.77778 10L5.03111 8.74667L8.22222 11.9289L14.9689 5.18222L16.2222 6.44444L8.22222 14.4444Z" fill="#75FFC1" />
-                                </svg>
+                                    Accept
+                                  </button>
 
-                                Accept
-                              </button>
-                              <button onClick={async () => {
-                                await handleSwapReject(swap);
-                              }} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                                  <button
+                                    onClick={async () => { await handleSwapReject(swap); }}
+                                    className="action-hover-card-item"
+                                  >
+                                    <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
+                                    </svg>
 
-
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
-                                </svg>
-
-                                Reject
-                              </button>
+                                    Reject
+                                  </button>
+                                </div>
+                              }
                             </HoverCardContent>
                           </HoverCard>
-
                       }
+
                     </TableCell>
                   </TableRow>
                 );
@@ -549,7 +553,7 @@ const PrivateMarketTabContent = () => {
         </Table>
 
         {
-          ((filteredAvailablePrivateSwaps || []).length === 0) &&
+          (((filteredAvailablePrivateSwaps || []).length === 0) && (availablePrivateSwapsSearchApplied || availablePrivateSwapsFiltersApplied)) &&
           <EmptyDataset
             title="No Results Found"
             description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
@@ -567,7 +571,7 @@ const PrivateMarketTabContent = () => {
       />
 
       {
-        (isSuccess && ((availablePrivateSwaps || []).length === 0)) &&
+        ((isSuccess || isError) && ((availablePrivateSwaps || []).length === 0) && (!availablePrivateSwapsFiltersApplied && !availablePrivateSwapsSearchApplied)) &&
         <EmptyDataset
           title="No Private Party Swaps Available"
           description="Check back later or create your own swap!"

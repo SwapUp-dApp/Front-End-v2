@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { defaults } from "@/constants/defaults";
 import { SUI_RarityRankItem } from "@/types/global.types";
 import moment from "moment";
+import { SUI_TwitterPostLocalStorageState } from "@/types/third-party.types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -89,6 +90,7 @@ export const getOpenSeaNftUrl = (token: string, nftId: string) => {
   return `${baseUrl}/assets/${network}/${token}/${nftId}`;
 };
 
+// This the api that we used to get chains dataset
 // const options = {
 //   method: 'GET',
 //   url: 'https://coinranking1.p.rapidapi.com/coins',
@@ -125,10 +127,6 @@ export const getDefaultNftImageOnError = (e: any) => {
   e.currentTarget.src = defaults.fallback.nftImageUrl;
 };
 
-export const resolveAssetPath = (path: string) => {
-  return `/${path}`; // Assuming assets are under /public directory
-};
-
 export const getNetworkImageById = (id: string) => {
   const network = chainsDataset.find(chain => chain.uuid === id);
 
@@ -159,4 +157,48 @@ export const checkIsDateInRange = (dateToCheck: string, dateRangeFrom: string, d
   const dateRangeToUTC = moment.utc(dateRangeTo);
 
   return dateToCheckUTC.isSameOrAfter(dateRangeFromUTC) && dateToCheckUTC.isSameOrBefore(dateRangeToUTC);
+};
+
+
+export const isValidURL = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const getAspectRatio = (width: number, height: number) => {
+  return width / height;
+};
+
+// Localstorage helper functions start here
+
+export const handleTwitterSharingProcessLocalstorageState = (actionType: "SET" | "REMOVE" | "GET", tradeId?: string) => {
+
+  let foundItem: SUI_TwitterPostLocalStorageState = { started: false, tradeId: '' };
+
+  switch (actionType) {
+    case 'SET':
+      // Remember: while setting data to localstorage must pass trade id
+      const itemState: SUI_TwitterPostLocalStorageState = { started: true, tradeId: tradeId! };
+      localStorage.setItem("isTwitterPostProcessStarted", JSON.stringify(itemState));
+      break;
+
+    case 'GET':
+      if (localStorage.getItem("isTwitterPostProcessStarted")) {
+        foundItem = JSON.parse(localStorage.getItem("isTwitterPostProcessStarted")!);
+      }
+      break;
+
+    case 'REMOVE':
+      localStorage.removeItem("isTwitterPostProcessStarted");
+      break;
+
+    default:
+      break;
+  }
+
+  return foundItem;
 };

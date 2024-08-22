@@ -9,11 +9,14 @@ import { Button } from "@/components/ui/button";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
+import { getAvailableCurrenciesApi, getSwapDetailsApi } from "@/service/api";
 import { useCancelSwapOffer, useCompleteOpenSwapOffer, useCompletePrivateSwapOffer, useGetSwapDetails, useRejectSwapOffer } from "@/service/queries/swap-market.query";
+import { useGlobalStore } from "@/store/global-store";
 import { useProfileStore } from "@/store/profile";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUI_SwapCreation } from "@/types/global.types";
+import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
 import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CancelSwap, SUP_CompleteSwap } from "@/types/swap-market.types";
+import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -23,6 +26,7 @@ const ViewSwapRoom = () => {
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapCancel, setSwapCancel] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
+
   const { mutateAsync: completeOpenSwapOffer } = useCompleteOpenSwapOffer();
   const { mutateAsync: completePrivateSwapOffer } = useCompletePrivateSwapOffer();
   const { mutateAsync: rejectSwapOffer } = useRejectSwapOffer();
@@ -33,13 +37,79 @@ const ViewSwapRoom = () => {
   const swapMode = Number(searchParams.get('swapMode'));
   const { tradeId } = useParams();
 
-
-  const { isLoading, data, isSuccess, isError, error } = useGetSwapDetails(tradeId!);
-
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
+  const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
+  const [setStartRecentSwapSharingProcess, setRecentAcceptedSwap] = useGlobalStore(state => [state.setStartRecentSwapSharingProcess, state.setRecentAcceptedSwap]);
+
+  const queries = useQueries({
+    queries: [
+      {
+        queryKey: [`getAvailableCurrenciesApi`],
+        queryFn: async () => {
+          try {
+            const response = await getAvailableCurrenciesApi();
+            setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
+            return response.data.data.coins;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      },
+      {
+        queryKey: [`useGetSwapDetails`],
+        queryFn: async () => {
+          try {
+            if (tradeId) {
+              const response = await getSwapDetailsApi(tradeId!);
+              state.resetViewSwapRoom();
+              await state.setValuesOnViewSwapRoom(tradeId, response.data.data as SUI_OpenSwap);
+              return response.data.data;
+            }
+            return null;
+          } catch (error: any) {
+            toast.custom(
+              (id) => (
+                <ToastLookCard
+                  variant="error"
+                  title="Request failed!"
+                  description={error.message}
+                  onClose={() => toast.dismiss(id)}
+                />
+              ),
+              {
+                duration: 3000,
+                className: 'w-full !bg-transparent',
+                position: "bottom-left",
+              }
+            );
+
+            throw error;
+          }
+        },
+        retry: false
+      }
+    ]
+  });
 
   const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom.swap.swap_preferences : null);
-  const profile = useProfileStore(state => state.profile);
+  const wallet = useProfileStore(state => state.profile.wallet);
 
   const handleResetData = async () => {
     state.resetViewSwapRoom();
@@ -61,10 +131,8 @@ const ViewSwapRoom = () => {
     );
   };
 
-  const handleCounterSwap = async () => {
+  const handleCounterSwap = () => {
     const swap = state.swap!;
-    console.log(swap.trade_id);
-
     navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`);
   };
 
@@ -81,80 +149,57 @@ const ViewSwapRoom = () => {
 
       swap.accept_sign = sign;
 
-      const approval = await getWalletProxy().getUserApproval(swap, true);
+      const approval = await getWalletProxy().getUserApproval(swap, false);
 
       if (!approval) {
         throw new Error("User approval not granted.");
       }
 
-      const txRcpt = await getWalletProxy().createAndUpdateSwap(swap, "ACCEPT");
-      console.log(swapAcceptance.isLoading);
+      const triggerTransfer = await getWalletProxy()
+        .createAndUpdateSwap(swap.swap_mode === SUE_SWAP_MODE.OPEN ? (swap as SUI_OpenSwap) : (swap as SUI_Swap), "ACCEPT");
 
-      if (!txRcpt) {
-        throw new Error("Swap Failed");
+      if (!triggerTransfer) {
+        throw new Error("Swap failed due to blockchain error.");
       }
 
       const payload: SUP_CompleteSwap = {
         ...swap,
-        status: txRcpt.status,
-        tx: txRcpt.hash,
-        notes: txRcpt.notes,
-        timestamp: txRcpt.timeStamp,
+        status: triggerTransfer.status,
+        tx: triggerTransfer.hash,
+        notes: triggerTransfer.notes,
+        timestamp: triggerTransfer.timeStamp,
       };
 
+      let offerResult;
       //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const offerResult = await completeOpenSwapOffer(payload);
-
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Open Swap Completed Successfully"
-                description={"You will receive a notification on metamask about the transaction."}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapAcceptance(prev => ({ ...prev, created: true }));
-          setTimeout(() => {
-
-            navigate(-1);
-          }, 500);
-        }
+        offerResult = await completeOpenSwapOffer(payload);
       }
 
-      //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
-        const offerResult = await completePrivateSwapOffer(payload);
+        offerResult = await completePrivateSwapOffer(payload);
+      }
 
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Private Swap Completed Successfully"
-                description={"You will receive a notification on metamask about the transaction."}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapAcceptance(prev => ({ ...prev, created: true }));
-          setTimeout(() => {
-            navigate(-1);
-          }, 500);
-        }
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title={`${swap.swap_mode === SUE_SWAP_MODE.OPEN ? "Open" : "Private"} Swap Completed Successfully`}
+              description={"You will receive a notification on metamask about the transaction."}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapAcceptance(prev => ({ ...prev, created: true }));
+        setRecentAcceptedSwap(swap);
+        setStartRecentSwapSharingProcess(true);
+        navigate("/swap-up/my-swaps/history");
       }
 
     } catch (error: any) {
@@ -173,8 +218,6 @@ const ViewSwapRoom = () => {
           position: "bottom-left",
         }
       );
-
-      // console.log(error);
     } finally {
       setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
     }
@@ -185,12 +228,24 @@ const ViewSwapRoom = () => {
 
       setSwapRejection(prev => ({ ...prev, isLoading: true }));
       const swap = state.swap!;
-      console.log(swapRejection.isLoading);
+
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
+
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
+      }
+      swap.accept_sign = sign;
+
+      const triggerReject = await getWalletProxy()
+        .createAndUpdateSwap(swap, "REJECT");
+
+      if (!triggerReject) {
+        throw new Error("Reject swap failed due to blockchain error.");
+      }
 
       if (swap.id) {
         await getWalletProxy().createAndUpdateSwap(swap, "REJECT");
         const offerResult = await rejectSwapOffer(Number(swap.id));
-        console.log(swap.id);
         if (offerResult) {
           toast.custom(
             (id) => (
@@ -233,7 +288,6 @@ const ViewSwapRoom = () => {
         }
       );
 
-      // console.log(error);
     } finally {
       setSwapRejection(prev => ({ ...prev, isLoading: false }));
     }
@@ -243,72 +297,49 @@ const ViewSwapRoom = () => {
     try {
       setSwapCancel(prev => ({ ...prev, isLoading: true }));
       const swap = state.swap!;
-      console.log(swapCancel.isLoading);
 
-      if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
-        const swapobj = useSwapMarketStore.getState().openMarket.openRoom.swap;
+      // Cancel swap blockchain logic
+      const { sign } = await getWalletProxy().getUserSignature(swap, state.swapEncodedMsg);
 
-        console.log(swapobj);
-        const payload: SUP_CancelSwap = {
-          swap_mode: swapobj.swap_mode,
-          open_trade_id: swapobj.open_trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        console.log(swap.id);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
-          setTimeout(() => {
-
-            navigate(-1);
-          }, 500);
-        }
+      if (!sign) {
+        throw new Error("Failed to obtain swap signature.");
       }
 
-      if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
-        const payload: SUP_CancelSwap = {
-          swap_mode: swap.swap_mode,
-          trade_id: swap.trade_id
-        };
-        const offerResult = await cancelSwapOffer(payload);
-        console.log(swap.id);
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Closed Successfully"
-                description={"You have successfully closed the swap"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapCancel(prev => ({ ...prev, created: true }));
-          setTimeout(() => {
+      const triggerCancelSwap = await getWalletProxy().createAndUpdateSwap(swap, "CANCEL");
 
-            navigate(-1);
-          }, 500);
-        }
+      if (!triggerCancelSwap) {
+        throw new Error("Cancel Swap failed due to blockchain error.");
+      }
 
+      // enforcing swap mode to private because
+      // 1.The original open swap can only be canceled through manage page
+      // 2.The user can only cancel the private swap and single proposed open swap
+
+      const payload: SUP_CancelSwap = {
+        swap_mode: SUE_SWAP_MODE.PRIVATE,
+        trade_id: swap.trade_id
+      };
+
+      const offerResult = await cancelSwapOffer(payload);
+
+      if (offerResult) {
+        toast.custom(
+          (id) => (
+            <ToastLookCard
+              variant="success"
+              title="Swap Closed Successfully"
+              description={"You have successfully closed the swap"}
+              onClose={() => toast.dismiss(id)}
+            />
+          ),
+          {
+            duration: 3000,
+            className: 'w-full !bg-transparent',
+            position: "bottom-left",
+          }
+        );
+        setSwapCancel(prev => ({ ...prev, created: true }));
+        navigate("/swap-up/my-swaps/history");
       }
 
     } catch (error: any) {
@@ -328,38 +359,10 @@ const ViewSwapRoom = () => {
         }
       );
 
-      // console.log(error);
     } finally {
       setSwapCancel(prev => ({ ...prev, isLoading: false }));
     }
   };
-
-  useEffect(() => {
-    const setValues = async () => {
-      if (data?.data?.data && tradeId) {
-        await state.setValuesOnViewSwapRoom(tradeId, data.data.data as SUI_OpenSwap);
-      }
-    };
-    setValues();
-
-    if (isError && error) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
-      );
-    }
-  }, [data?.data?.data, tradeId, isError, error]);
 
   useEffect(() => {
     if ((tradeId && !isValidTradeId(tradeId)) || !(swapMode === 1 || swapMode === 0)) {
@@ -368,7 +371,6 @@ const ViewSwapRoom = () => {
       }, 1000);
     }
   }, [tradeId, swapMode]);
-
 
   return (
     <div className="space-y-4" >
@@ -383,9 +385,9 @@ const ViewSwapRoom = () => {
         swapPreferences={swapPreferences}
       />
 
-      <div className="grid lg:grid-cols-2 gap-4 pb-16" >
+      <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
         {
-          isSuccess && state.sender.profile.wallet.address ?
+          queries[1].isSuccess && state.sender.profile.wallet.address ?
             <RoomLayoutCard
               layoutType={"sender"}
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
@@ -395,15 +397,13 @@ const ViewSwapRoom = () => {
             />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
+              <LoadingDataset
+                isLoading={queries[1].isLoading || !state.sender.profile.wallet.address}
+                title="Loading wallet address"
+              />
+
               {
-                isLoading &&
-                <LoadingDataset
-                  isLoading={isLoading}
-                  title="Loading wallet address"
-                />
-              }
-              {
-                isError &&
+                queries[1].isError &&
                 <EmptyDataset
                   showBackgroundPicture={false}
                   className="lg:h-[200px]"
@@ -419,7 +419,7 @@ const ViewSwapRoom = () => {
             </div>
         }
 
-        {isSuccess && (state.receiver.profile.wallet.address) ?
+        {queries[1].isSuccess && (state.receiver.profile.wallet.address) ?
           <RoomLayoutCard
             counterPartyWallet={state.receiver.profile.wallet.address}
             layoutType={"receiver"}
@@ -429,15 +429,13 @@ const ViewSwapRoom = () => {
           />
           :
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
+            <LoadingDataset
+              isLoading={queries[1].isLoading || !state.receiver.profile.wallet.address}
+              title="Loading counter-party address"
+            />
+
             {
-              isLoading &&
-              <LoadingDataset
-                isLoading={isLoading}
-                title="Loading counter-party address"
-              />
-            }
-            {
-              isError &&
+              queries[1].isError &&
               <EmptyDataset
                 showBackgroundPicture={false}
                 className="lg:h-[200px]"
@@ -455,78 +453,100 @@ const ViewSwapRoom = () => {
 
       </div>
 
-
       <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
         <h2 className="trade-summary" >Trade Offer Summary:</h2>
         <div className="absolute -top-14 flex justify-center w-full items-center gap-2" >
 
           {
-            profile.wallet.address === state.sender.profile.wallet.address ?
-              <CustomOutlineButton onClick={async () => {
-                await handleCancelSwap();
-              }} className="px-5 py-3">
+            wallet.address === state.sender.profile.wallet.address ?
+              <CustomOutlineButton
+                onClick={async () => { await handleCancelSwap(); }}
+                className="px-5 py-3"
+                isLoading={swapCancel.isLoading}
+                disabled={swapCancel.created}
+              >
                 Cancel Swap
               </CustomOutlineButton>
               :
               <div className="flex items-center gap-2" >
-                <Button onClick={async () => {
-                  await handleSwapReject();
-                }}
-                  variant={"outline"} type="submit">
+                <Button
+                  onClick={async () => { await handleSwapReject(); }}
+                  variant={"outline"}
+                  type="submit"
+                  isLoading={swapRejection.isLoading}
+                  disabled={swapRejection.created}
+                >
                   Reject
                 </Button>
-                {state.swap?.offer_type === SUE_SWAP_OFFER_TYPE.PRIMARY &&
-                  < CustomOutlineButton onClick={async () => {
-                    await handleCounterSwap();
-                  }}
-                    className="px-5 py-3">
+
+                {
+                  state.swap?.offer_type === SUE_SWAP_OFFER_TYPE.PRIMARY &&
+
+                  <CustomOutlineButton
+                    onClick={handleCounterSwap}
+                    className="px-5 py-3"
+                  >
                     Counter offer
                   </CustomOutlineButton>
                 }
 
-                <Button onClick={async () => {
-                  await handleSwapAccept();
-                }} isLoading={swapAcceptance.isLoading} disabled={swapAcceptance.created} variant={"default"} type="submit">
+                <Button
+                  onClick={async () => { await handleSwapAccept(); }}
+                  isLoading={swapAcceptance.isLoading}
+                  disabled={swapAcceptance.created}
+                  variant={"default"} type="submit"
+                >
                   Accept
                 </Button>
               </div>
           }
         </div >
 
+
         {
-          dataSavedInStore.sender ?
+          queries[0].isSuccess && dataSavedInStore.sender ?
             <RoomFooterSide
               showRemoveNftButton={false}
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="sender"
               swapRoomViewType="view"
+              availableCurrencies={filteredAvailableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
               <LoadingDataset
-                isLoading={!dataSavedInStore.sender}
+                isLoading={!dataSavedInStore.sender && queries[0].isLoading}
                 title="Loading sender NFTs"
                 description=""
               />
+
+              {queries[0].isError &&
+                <p className="text-xs md:text-sm">Unable to get currencies.</p>
+              }
             </div>
         }
 
 
         {
-          dataSavedInStore.receiver ?
+          queries[0].isSuccess && dataSavedInStore.receiver ?
             <RoomFooterSide
               showRemoveNftButton={false}
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
               layoutType="receiver"
               swapRoomViewType="view"
+              availableCurrencies={filteredAvailableCurrencies}
             />
             :
             <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
               <LoadingDataset
-                isLoading={!dataSavedInStore.receiver}
+                isLoading={!dataSavedInStore.receiver && queries[0].isLoading}
                 title="Loading counter-party NFTs"
                 description=""
               />
+
+              {queries[0].isError &&
+                <p className="text-xs md:text-sm">Unable to get currencies.</p>
+              }
             </div>
         }
       </footer >

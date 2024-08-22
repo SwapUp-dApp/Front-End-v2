@@ -41,17 +41,15 @@ import {
   setOpenCreatedSwapsByFiltersHelper,
 } from './swap-market-helpers';
 
-import { chainsDataset } from '@/constants/data';
 import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUT_SwapOfferType } from '@/types/swap-market.types';
 import { SUE_SWAP_MODE } from '@/constants/enums';
 import { getInitialProfile } from '../profile/profile-helpers';
-import { IWallet } from '@/types/profile.types';
+import { IProfile, IWallet } from '@/types/profile.types';
 
 
 export const openMarketRoomInitialState: IOpenRoom = {
   chainId: Environment.CHAIN_ID,
   uniqueTradeId: '',
-  nftsLength: 0,
   sign: '',
   swapEncodedMsg: '',
   sender: {
@@ -60,7 +58,6 @@ export const openMarketRoomInitialState: IOpenRoom = {
     profile: getInitialProfile("sender"),
     collections: [],
     nfts: [],
-    availableChains: chainsDataset,
     filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
@@ -77,7 +74,6 @@ export const openMarketRoomInitialState: IOpenRoom = {
     profile: getInitialProfile("receiver"),
     collections: [],
     nfts: [],
-    availableChains: chainsDataset,
     filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
@@ -130,7 +126,6 @@ export const openMarketRoomInitialState: IOpenRoom = {
 export const privateMarketRoomInitialState: IPrivateRoom = {
   chainId: Environment.CHAIN_ID,
   uniqueTradeId: '',
-  nftsLength: 0,
   sign: '',
   swapEncodedMsg: '',
   sender: {
@@ -140,7 +135,6 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
     profile: getInitialProfile("sender"),
     collections: [],
     nfts: [],
-    availableChains: chainsDataset,
     filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
@@ -157,7 +151,6 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
     profile: getInitialProfile("receiver"),
     collections: [],
     nfts: [],
-    availableChains: chainsDataset,
     filteredNfts: [],
     nftsSelectedForSwap: [],
     setSelectedNftsForSwap: () => { },
@@ -168,7 +161,7 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
     setNftsDataset: () => { },
     setFilteredNftsBySwapTokens: () => { }
   },
-  setValuesOnCreatingRoom: () => { },
+  setValuesOnCreatingPrivateRoom: () => { },
   createPrivateMarketSwap: () => { },
   setSwapEncodedMsgAndSign: () => { },
   resetPrivateRoom: () => { },
@@ -179,6 +172,12 @@ export const privateMarketRoomInitialState: IPrivateRoom = {
 
 const initialState: ISwapMarketStore = {
   openMarket: {
+    availableOpenSwapCollections: [],
+    availableOpenSwapsSearchApplied: false,
+    availableOpenSwapsFiltersApplied: false,
+    createdSwapsFiltersApplied: false,
+    createdSwapCollections: [],
+    createdSwapsSearchApplied: false,
     openMarketSwapsFilters: {
       offersFromCurrentChain: false,
       preferredAsset: {
@@ -197,13 +196,15 @@ const initialState: ISwapMarketStore = {
     setOpenSwapsData: () => { },
     setOpenCreatedSwapsData: () => { },
     setOpenMarketAvailableSwapsBySearch: () => { },
-    resetAllOpenMarketFilters: () => { },
     setOpenMarketAvailableSwapsByFilters: () => { },
     setOpenCreatedSwapsBySearch: () => { },
     setOpenCreatedSwapsByFilters: () => { },
+    resetAllOpenMarketFilters: () => { },
     resetAllCreatedSwaps: () => { }
   },
   privateMarket: {
+    availablePrivateSwapsFiltersApplied: false,
+    availablePrivateSwapsSearchApplied: false,
     privateMarketSwapsFilters: {
       offersFromCurrentChain: false,
       swapRequestStatus: 'all'
@@ -247,10 +248,10 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       resetOpenSwapCreationRoom: () => set(state => resetOpenSwapCreationRoomHelper(state)),
       resetOpenSwapProposeRoom: () => set(state => resetOpenSwapProposeRoomHelper(state)),
       resetViewSwapRoom: () => set(state => resetViewSwapRoomHelper(state, 'openMarket', 'openRoom')),
-      setValuesOnCreateOpenSwapRoom: (tradeId: string, senderWalletInfo: IWallet) => set((state) => setValuesOnCreateOpenSwapRoomHelper(state, tradeId, senderWalletInfo)),
-      setValuesOnProposeOpenSwapRoom: async (tradeId: string, swap: SUI_OpenSwap, senderWalletInfo) => {
+      setValuesOnCreateOpenSwapRoom: (tradeId: string, senderProfile: IProfile) => set((state) => setValuesOnCreateOpenSwapRoomHelper(state, tradeId, senderProfile)),
+      setValuesOnProposeOpenSwapRoom: async (tradeId: string, swap: SUI_OpenSwap, senderProfile: IProfile) => {
         const state = get();
-        const newState = await setValuesOnProposeOpenSwapRoomHelper(state, tradeId, swap, senderWalletInfo);
+        const newState = await setValuesOnProposeOpenSwapRoomHelper(state, tradeId, swap, senderProfile);
         set(newState);
       },
       setValuesOnViewSwapRoom: async (tradeId: string, swap: SUI_OpenSwap) => {
@@ -280,8 +281,16 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       },
       setSwapPreferences: (preferences: SUI_SwapPreferences) => set((state) => setSwapPreferencesHelper(state, preferences))
     },
-    setOpenSwapsData: (swapsData: SUI_OpenSwap[], wallet: IWallet) => set(state => setOpenSwapsDataHelper(state, swapsData, wallet)),
-    setOpenCreatedSwapsData: (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => set(state => setOpenCreatedSwapsDataHelper(state, createdSwaps, wallet)),
+    setOpenSwapsData: async (swapsData: SUI_OpenSwap[], wallet: IWallet) => {
+      const state = get();
+      const newState = await setOpenSwapsDataHelper(state, swapsData, wallet);
+      set(newState);
+    },
+    setOpenCreatedSwapsData: async (createdSwaps: SUI_OpenSwap[], wallet: IWallet) => {
+      const state = get();
+      const newState = await setOpenCreatedSwapsDataHelper(state, createdSwaps, wallet);
+      set(newState);
+    },
     setOpenMarketAvailableSwapsBySearch: (searchValue: string) => set(state => setOpenMarketAvailableSwapsBySearchHelper(state, searchValue)),
     setOpenMarketAvailableSwapsByFilters: (filters: IOpenMarketSwapFilters) => set(state => setOpenMarketAvailableSwapsByFiltersHelper(state, filters)),
     setOpenCreatedSwapsBySearch: (searchValue: string) => set(state => setOpenCreatedSwapsBySearchHelper(state, searchValue)),
@@ -316,7 +325,11 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
         setFilteredNftsBySwapTokens: (dataset: SUI_NFTItem[]) => set((state) => setFilteredNftsBySwapTokensHelper(state, dataset, 'privateMarket', 'privateRoom', 'receiver')),
       },
       resetViewSwapRoom: () => set(state => resetViewSwapRoomHelper(state, 'privateMarket', 'privateRoom')),
-      setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string, senderWalletInfo: IWallet) => set((state) => setValuesOnCreatingPrivateRoomHelper(state, 'privateMarket', 'privateRoom', tradeId, counterPartyWalletAddress, senderWalletInfo)),
+      setValuesOnCreatingPrivateRoom: async (tradeId: string, counterPartyWalletAddress: string, senderProfile: IProfile) => {
+        const state = get();
+        const newState = await setValuesOnCreatingPrivateRoomHelper(state, 'privateMarket', 'privateRoom', tradeId, counterPartyWalletAddress, senderProfile);
+        set(newState);
+      },
       setValuesOnViewSwapRoom: async (tradeId: string, swap: SUI_Swap) => {
         const state = get();
         const newState = await setValuesOnViewSwapRoomHelper(state, tradeId, 'privateMarket', 'privateRoom', swap);
@@ -340,7 +353,11 @@ export const useSwapMarketStore = create<ISwapMarketStore>((set, get) => ({
       resetPrivateRoom: () => set((state) => resetPrivateRoomDataHelper(state)),
 
     },
-    setPrivateSwapsData: (data: SUI_Swap[]) => set(state => setPrivateSwapsDataHelper(state, data)),
+    setPrivateSwapsData: async (data: SUI_Swap[]) => {
+      const state = get();
+      const newState = await setPrivateSwapsDataHelper(state, data);
+      set(newState);
+    },
     setPrivateMarketAvailableSwapsBySearch: (searchValue: string) => set(state => setPrivateMarketAvailableSwapsBySearchHelper(state, searchValue)),
     setPrivateMarketAvailableSwapsByFilters: (filters: IPrivateMarketSwapFilters, loginWalletAddress: string) => set(state => setPrivateMarketAvailableSwapsByFiltersHelper(state, filters, loginWalletAddress)),
     resetAllPrivateMarketFilters: () => set(state => resetAllPrivateMarketFiltersHelper(state)),

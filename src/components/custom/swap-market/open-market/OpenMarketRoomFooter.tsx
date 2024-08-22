@@ -1,6 +1,5 @@
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormMessage, } from "@/components/ui/form";
-import { SUI_ChainItem, SUI_NFTItem } from "@/types/global.types";
+import { SUI_CurrencyChainItem, SUI_NFTItem } from "@/types/global.types";
 import AddCurrencyModalDialog from "../AddCurrencyModalDialog";
 
 import { z } from "zod";
@@ -8,29 +7,24 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSwapMarketStore } from "@/store/swap-market";
+import { Schema_AmountConversionForm } from "@/schema";
+import FooterSideSelectTokenDialog from "../FooterSideSelectTokenDialog";
+import { ChevronDown } from "lucide-react";
 
 interface IProp {
   setEnableApproveButtonCriteria: React.Dispatch<React.SetStateAction<boolean>>;
+  availableCurrencies: SUI_CurrencyChainItem[];
 }
 
-export const amountConvertFormSchema = z.object({
-  amount: z.string().min(1, { message: "Amount is required.", })
-    .refine((val) => !isNaN(Number(val)), { message: "Amount must be a number.", })
-    .refine((val) => Number(val) > 0, { message: "Amount must be greater than 0.", }),
 
-  chain: z.string().min(1, {
-    message: "Chain is required.",
-  }),
-});
-
-const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
+const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria, availableCurrencies }: IProp) => {
+  const [openTokenSelectDialog, setOpenTokenSelectDialog] = useState(false);
 
   const {
     setSelectedNftsForSwap,
     nftsSelectedForSwap,
-    availableChains,
     setAddedAmount
   } = useSwapMarketStore((state) => state.openMarket.openRoom.sender);
 
@@ -83,34 +77,42 @@ const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
   };
 
   // Form Handling
-  const form = useForm<z.infer<typeof amountConvertFormSchema>>({
-    resolver: zodResolver(amountConvertFormSchema),
+  const form = useForm<z.infer<typeof Schema_AmountConversionForm>>({
+    resolver: zodResolver(Schema_AmountConversionForm),
     defaultValues: {
       amount: '',
-      chain: 'razxDUgYGNAdQ'
+      chain: JSON.stringify(availableCurrencies[0])
     },
   });
 
-  const handleFormSubmit = (values: z.infer<typeof amountConvertFormSchema>) => {
+  const handleFormSubmit = (values: z.infer<typeof Schema_AmountConversionForm>) => {
     console.log(values);
   };
 
-  const getSelectedChain = () => {
-    const selectedChainId = form.getValues("chain");
-    const chain: SUI_ChainItem | undefined = availableChains.find(chain => chain.uuid === selectedChainId);
+  const handleSetSelectedCurrency = (selectedCurrencyValue: string) => {
+    console.log("Selected Chain: ", JSON.parse(selectedCurrencyValue));
+    form.setValue('chain', selectedCurrencyValue);
+  };
 
-    return chain || availableChains[1];
+  const getSelectedChain = () => {
+    const selectedChain = form.getValues("chain");
+    const chain: SUI_CurrencyChainItem = JSON.parse(selectedChain);
+
+    return chain || availableCurrencies[0];
   };
 
   useEffect(() => {
-    if (form.watch('chain') && form.watch('amount')) {
-      const chainId = form.getValues('chain');
-      const amount = form.getValues('amount');
+    const handleSetAddedAmount = async () => {
+      const isValidForm = await form.trigger();
+      const chainId = form.watch('chain');
+      const amount = form.watch('amount');
 
-      if (amount && chainId) {
-        setAddedAmount(amount, chainId);
+      if (chainId && isValidForm) {
+        setAddedAmount(amount ? amount : '', chainId);
       }
-    }
+    };
+
+    handleSetAddedAmount();
 
   }, [form.watch('chain'), form.watch('amount')]);
 
@@ -120,10 +122,7 @@ const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
         <h2 className="dark:text-white text-xs">Offer:</h2>
 
         <div className="lg:w-[245px] lg:grid lg:grid-cols-2" >
-
           <p className="hidden lg:inline-block text-xs font-semibold" > Add Cryptocurrency:</p>
-
-
           {
             nftsSelectedForSwap.length > 0 &&
             <span
@@ -194,47 +193,22 @@ const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
                   </span>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="chain"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Select onValueChange={field.onChange} defaultValue={field.value} >
-                        <FormControl>
-                          <SelectTrigger className="bg-transparent border-none flex items-center gap-2 w-[100px]">
-                            <SelectValue
-                              className="uppercase"
-                              placeholder={
-                                <span className="flex items-center gap-2" >
-                                  <img className="w-4 h-4 rounded-full" src={'/assets/svgs/ethereum.svg'} alt="" />
-                                  Eth
-                                </span>
-                              }
-                            />
-                          </SelectTrigger>
-                        </FormControl>
+                <button
+                  onClick={() => setOpenTokenSelectDialog(true)}
+                  className="min-w-[100px] border border-su_disabled rounded-full p-1.5 flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-2 text-sm" >
+                    <img
+                      src={getSelectedChain().iconUrl}
+                      alt=""
+                      className="w-4 h-4"
+                    />
 
+                    {getSelectedChain().symbol}
+                  </span>
 
-                        <SelectContent
-                          className="bg-su_primary_bg border-none absolute w-[240px] h-[160px] -left-[130px] -top-[210px]"
-                        >
-                          {
-                            availableChains.map(coin => (
-                              <SelectItem key={coin.uuid} className="hover:bg-su_active_bg py-3" value={coin.uuid}>
-                                <span className="flex items-center gap-2"  >
-                                  <img className="w-4 h-4 rounded-full" src={coin.iconUrl} alt="" />
-                                  {coin.symbol}
-                                </span>
-                              </SelectItem>
-                            ))
-                          }
-                        </SelectContent>
-
-                      </Select>
-                      <FormMessage className="absolute -bottom-4 right-0 text-2xs" />
-                    </FormItem>
-                  )}
-                />
+                  <ChevronDown className={`h-4 w-4 ${openTokenSelectDialog ? "rotate-180 animate-in" : "rotate-0 animate-in"}`} />
+                </button>
               </div>
 
               <button className="hidden" type="submit" >Hidden Submit pressing</button>
@@ -248,7 +222,15 @@ const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
         {
           !form.formState.isValid ?
 
-            <AddCurrencyModalDialog availableChains={availableChains} handleFormSubmit={handleFormSubmit} form={form} >
+            <AddCurrencyModalDialog
+              open={openTokenSelectDialog}
+              setOpen={setOpenTokenSelectDialog}
+              availableChains={availableCurrencies}
+              handleFormSubmit={handleFormSubmit}
+              getSelectedChain={getSelectedChain}
+              form={form}
+              handleSetSelectedCurrency={handleSetSelectedCurrency}
+            >
               <span className="flex items-center gap-2 font-semibold text-xs" >
                 <svg className="w-3.5" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fillRule="evenodd" clipRule="evenodd" d="M6.74862 0.996582V0.246582H5.24862V0.996582V5.24834H0.99707H0.24707V6.74834H0.99707H5.24862V11.0004V11.7504H6.74862V11.0004V6.74834H11.0009H11.7509V5.24834H11.0009H6.74862V0.996582Z" fill="white" />
@@ -273,7 +255,15 @@ const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
                   </span>
                 </span>
 
-                <AddCurrencyModalDialog availableChains={availableChains} handleFormSubmit={handleFormSubmit} form={form}>
+                <AddCurrencyModalDialog
+                  open={openTokenSelectDialog}
+                  setOpen={setOpenTokenSelectDialog}
+                  availableChains={availableCurrencies}
+                  handleFormSubmit={handleFormSubmit}
+                  getSelectedChain={getSelectedChain}
+                  form={form}
+                  handleSetSelectedCurrency={handleSetSelectedCurrency}
+                >
                   <svg className="w-3" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M0 9.63998V11.6666C0 11.8533 0.146667 12 0.333333 12H2.36C2.44667 12 2.53333 11.9666 2.59333 11.9L9.87333 4.62665L7.37333 2.12665L0.1 9.39998C0.0333334 9.46665 0 9.54665 0 9.63998ZM11.8067 1.75331L10.2467 0.193315C10.185 0.131512 10.1117 0.0824806 10.0311 0.0490263C9.95043 0.015572 9.86398 -0.00164795 9.77667 -0.00164795C9.68935 -0.00164795 9.6029 0.015572 9.52225 0.0490263C9.4416 0.0824806 9.36834 0.131512 9.30667 0.193315L8.08667 1.41331L10.5867 3.91331L11.8067 2.69332C11.8685 2.63164 11.9175 2.55838 11.951 2.47773C11.9844 2.39708 12.0016 2.31063 12.0016 2.22331C12.0016 2.136 11.9844 2.04955 11.951 1.9689C11.9175 1.88825 11.8685 1.81499 11.8067 1.75331Z" fill="#B6B6BD" />
                   </svg>
@@ -283,6 +273,13 @@ const OpenMarketRoomFooter = ({ setEnableApproveButtonCriteria }: IProp) => {
             </div>
         }
       </div>
+
+      {/* Token select dialog */}
+      <FooterSideSelectTokenDialog
+        open={openTokenSelectDialog}
+        setOpen={setOpenTokenSelectDialog}
+        handleSetSelectedCurrency={handleSetSelectedCurrency}
+      />
     </aside>
   );
 };

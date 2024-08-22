@@ -1,5 +1,5 @@
 import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUT_SwapOfferType } from "@/types/swap-market.types";
-import { SUI_ChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem } from "@/types/global.types";
+import { SUI_CurrencyChainItem, INetwork, INFTItem, SUI_RarityRankItem, SUI_NFTItem, SUI_SelectedCollectionItem } from "@/types/global.types";
 import { IProfile, IWallet } from "./profile.types";
 import { SUT_RequestStatusType } from "./my-swaps-store.types";
 
@@ -16,10 +16,6 @@ export interface IOpenRoomFilterItem {
   rarityRank: SUI_RarityRankItem;
 }
 
-export interface IOpenMarketAddedAmount {
-  usdAmount: number;
-  coin: SUI_ChainItem;
-}
 
 export interface IOpenRoom {
   uniqueTradeId: string;
@@ -29,10 +25,9 @@ export interface IOpenRoom {
   proposeSwap?: SUI_OpenSwap;
   swapEncodedMsg: string;
   sign: string;
-  nftsLength: number;
   chainId: number;
-  setValuesOnCreateOpenSwapRoom: (tradeId: string, senderWalletInfo: IWallet) => void;
-  setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap, senderWalletInfo: IWallet) => void;
+  setValuesOnCreateOpenSwapRoom: (tradeId: string, senderProfile: IProfile) => void;
+  setValuesOnProposeOpenSwapRoom: (tradeId: string, swap: SUI_OpenSwap, senderProfile: IProfile) => void;
   setValuesOnViewSwapRoom: (tradeId: string, swap: SUI_OpenSwap) => void;
   createOpenSwap: (initWalletAddress: string) => void;
   createProposeOpenSwap: (initWalletAddress: string) => void;
@@ -49,8 +44,7 @@ export interface IOpenMarketLayoutSide {
   toggleGridView: (value: SUT_GridViewType) => void;
   profile: IProfile;
   collections: string[] | [];
-  addedAmount?: IOpenMarketAddedAmount;
-  availableChains: SUI_ChainItem[];
+  addedAmount?: IAddedAmount;
   filters?: IOpenRoomFilterItem;
   nfts?: SUI_NFTItem[];
   filteredNfts?: SUI_NFTItem[];
@@ -84,8 +78,8 @@ export interface IPrivateRoomFilterItem {
 }
 
 export interface IAddedAmount {
-  usdAmount: number;
-  coin: SUI_ChainItem;
+  amount: number;
+  coin: SUI_CurrencyChainItem;
 }
 
 export interface IPrivateMarketSwapFilters {
@@ -101,7 +95,6 @@ export interface IPrivateRoomsLayoutSide {
   profile: IProfile;
   collections: string[] | [];
   addedAmount?: IAddedAmount;
-  availableChains: SUI_ChainItem[];
   filters?: IPrivateRoomFilterItem;
   nfts?: SUI_NFTItem[];
   filteredNfts?: SUI_NFTItem[];
@@ -122,9 +115,8 @@ export interface IPrivateRoom {
   swap?: SUI_Swap;
   swapEncodedMsg: string;
   sign: string;
-  nftsLength: number;
   chainId: number;
-  setValuesOnCreatingRoom: (tradeId: string, counterPartyWalletAddress: string, senderWalletInfo: IWallet) => void;
+  setValuesOnCreatingPrivateRoom: (tradeId: string, counterPartyWalletAddress: string, senderProfile: IProfile) => void;
   createPrivateMarketSwap: (offer_type: SUT_SwapOfferType, initWalletAddress: string) => void;
   setSwapEncodedMsgAndSign: (swapEncodedBytes: string, sign: string) => void;
   resetPrivateRoom: () => void;
@@ -135,9 +127,15 @@ export interface IPrivateRoom {
 
 export interface ISwapMarketStore {
   openMarket: {
-    availableSwaps?: SUI_OpenSwap[];
-    filteredAvailableSwaps?: SUI_OpenSwap[];
+    availableOpenSwaps?: SUI_OpenSwap[];
+    availableOpenSwapCollections: SUI_SelectedCollectionItem[];
+    availableOpenSwapsFiltersApplied: boolean;
+    availableOpenSwapsSearchApplied: boolean;
+    filteredAvailableOpenSwaps?: SUI_OpenSwap[];
     createdSwaps?: SUI_OpenSwap[];
+    createdSwapCollections: SUI_SelectedCollectionItem[];
+    createdSwapsFiltersApplied: boolean;
+    createdSwapsSearchApplied: boolean;
     createdSwapsFilters: IOpenCreatedSwapFilters,
     filteredCreatedSwaps?: SUI_OpenSwap[];
     openRoom: IOpenRoom;
@@ -153,6 +151,8 @@ export interface ISwapMarketStore {
   },
   privateMarket: {
     availablePrivateSwaps?: SUI_Swap[];
+    availablePrivateSwapsFiltersApplied: boolean;
+    availablePrivateSwapsSearchApplied: boolean;
     filteredAvailablePrivateSwaps?: SUI_Swap[];
     privateRoom: IPrivateRoom;
     privateMarketSwapsFilters: IPrivateMarketSwapFilters;
