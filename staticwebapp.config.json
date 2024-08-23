@@ -5,6 +5,13 @@
             "*.{css, scss, js, png, gif, ico, jpg, svg, woff, woff2, ttf, fonts}"
         ]
     },
+    "routes": [
+        {
+            "route": "/*",
+            "redirect": "/index.html",
+            "statusCode": 301
+        }
+    ],
     "mimeTypes": {
         ".json": "application/json",
         ".js": "application/javascript",
