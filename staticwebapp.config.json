@@ -1,13 +1,19 @@
 {
     "navigationFallback": {
-        "rewrite": "/index.html",
-        "routes": [
-            {
-                "route": "/swap-up/*",
-                "rewrite": "/index.html"
-            }
-        ]
+        "rewrite": "/index.html"
     },
+    "routes": [
+        {
+            "route": "/",
+            "serve": "/index.html",
+            "statusCode": 200
+        },
+        {
+            "route": "/**",
+            "serve": "/index.html",
+            "statusCode": 200
+        }
+    ],
     "mimeTypes": {
         ".json": "application/json",
         ".js": "application/javascript",
