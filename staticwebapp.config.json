@@ -4,5 +4,13 @@
         "exclude": [
             "*.{css, scss, js, png, gif, ico, jpg, svg, woff, woff2, ttf, fonts}"
         ]
+    },
+    "mimeTypes": {
+        ".json": "application/json",
+        ".js": "application/javascript",
+        ".mjs": "application/javascript",
+        ".jsx": "application/javascript",
+        ".tsx": "application/javascript",
+        ".ts": "application/javascript"
     }
 }
