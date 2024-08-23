@@ -15,25 +15,5 @@
             "*.ttf",
             "*.ico"
         ]
-    },
-    "routes": [
-        {
-            "route": "/",
-            "serve": "/index.html",
-            "statusCode": 200
-        },
-        {
-            "route": "/**",
-            "serve": "/index.html",
-            "statusCode": 200
-        }
-    ],
-    "mimeTypes": {
-        ".json": "application/json",
-        ".js": "application/javascript",
-        ".mjs": "application/javascript",
-        ".jsx": "application/javascript",
-        ".tsx": "application/javascript",
-        ".ts": "application/javascript"
     }
 }
