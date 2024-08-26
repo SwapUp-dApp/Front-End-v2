@@ -173,33 +173,29 @@ export const walletProxy = () => {
       let acceptAssets: IAsset[] = [];
 
       if (swap.metadata.init.tokens.length > 0) {
-        swap.metadata.init.tokens.forEach(async (token) => {
-
+        for (const token of swap.metadata.init.tokens) {
           const newInitToken: IAsset = {
             assetAddress: token.address,
-            value: (token.type as SUT_SwapTokenContractType) === "ERC20" ?
-              await getAmountInWeiForErc20Token(token) :
-              Number(token.id)
+            value: (token.type as SUT_SwapTokenContractType) === "ERC20"
+              ? await getAmountInWeiForErc20Token(token)
+              : Number(token.id)
           };
 
-          // console.log("Init created token: ", newInitToken);
-
           initAssets.push(newInitToken);
-        });
+        }
       }
 
       if (swap.metadata.accept && swap.metadata.accept.tokens.length > 0) {
-        swap.metadata.accept.tokens.forEach(async (token) => {
-
+        for (const token of swap.metadata.accept.tokens) {
           const newAcceptToken: IAsset = {
             assetAddress: token.address,
-            value: (token.type as SUT_SwapTokenContractType) === "ERC20" ?
-              await getAmountInWeiForErc20Token(token) :
-              Number(token.id)
+            value: (token.type as SUT_SwapTokenContractType) === "ERC20"
+              ? await getAmountInWeiForErc20Token(token)
+              : Number(token.id)
           };
 
           acceptAssets.push(newAcceptToken);
-        });
+        }
       }
 
       let feeInETH = await contract.getFeeInETH();

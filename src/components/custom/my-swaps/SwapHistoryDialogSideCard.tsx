@@ -1,19 +1,21 @@
 import { cn, getDefaultNftImageOnError } from "@/lib/utils";
 
-import { SUI_OpenSwap, SUI_SwapToken } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_SwapToken, SUT_SwapTokenContractType } from "@/types/swap-market.types";
 import { chainsDataset } from "@/constants/data";
 import CustomAvatar from "@/components/custom/shared/CustomAvatar";
 import ChainTile from "@/components/custom/tiles/ChainTile";
 import WalletAddressTile from "@/components/custom/tiles/WalletAddressTile";
+import { useEffect, useState } from "react";
 
 interface IProp {
   className?: string;
   swap: SUI_OpenSwap;
   side: "sender" | "receiver";
-  isErc20Swap: boolean;
 }
 
-const SwapHistoryDialogSideCard = ({ className, swap, side, isErc20Swap, ...props }: IProp) => {
+const SwapHistoryDialogSideCard = ({ className, swap, side, ...props }: IProp) => {
+
+  const [isErc20Swap, setErc20Swap] = useState(false);
 
   const nftsImageMapper = (nfts: SUI_SwapToken[],) => (
     nfts.map((nft) => (
@@ -35,8 +37,16 @@ const SwapHistoryDialogSideCard = ({ className, swap, side, isErc20Swap, ...prop
   };
 
   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
-
   const swapTokens = side === "sender" ? swap.metadata.init.tokens : swap.metadata.accept.tokens;
+
+  useEffect(() => {
+    if (swap &&
+      ((swapTokens[0].type as SUT_SwapTokenContractType) === 'ERC20')
+    ) {
+      setErc20Swap(true);
+    }
+
+  }, [swap]);
 
   return (
     <div

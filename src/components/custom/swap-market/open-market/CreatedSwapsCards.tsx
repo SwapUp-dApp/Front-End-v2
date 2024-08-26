@@ -10,41 +10,12 @@ import { showWalletConnectionToast } from "@/lib/helpers";
 
 interface IProp {
   swap: SUI_OpenSwap;
+  swapTokensMapper: (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number) => (JSX.Element | undefined)[];
 }
 
-
-
-const CreatedSwapsCards = ({ swap }: IProp) => {
+const CreatedSwapsCards = ({ swap, swapTokensMapper }: IProp) => {
   const navigate = useNavigate();
   const wallet = useProfileStore(state => state.profile.wallet);
-
-  const nftsImageMapperNew = (nfts: SUI_SwapToken[]) => {
-    return (
-      nfts.map((nft, index) => {
-        if (index < 5)
-          return (
-            <div
-              className="relative w-8 h-8"
-              key={nft.id}
-            >
-              <img
-                className="w-full h-full object-cover rounded-xs border-[1.5px] border-white/20"
-                src={nft.image_url}
-                alt="nft"
-
-              />
-              {
-                (index === 4) &&
-                  nfts.length > 4 ?
-                  <div className="absolute w-full h-full rounded-xs bg-black/50 top-0 flex justify-center items-center font-semibold" >
-                    +{nfts.length - 4}
-                  </div> : ''
-              }
-            </div>
-          );
-      })
-    );
-  };
 
   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
 
@@ -56,7 +27,7 @@ const CreatedSwapsCards = ({ swap }: IProp) => {
       <CardContent className={`p-0 flex flex-col 'gap-1'}`}>
         <div className="flex gap-1 items-center">
           <div className="flex items-center gap-1 p-1" >
-            {nftsImageMapperNew(swap.metadata.init.tokens)}
+            {swapTokensMapper(swap.metadata.init.tokens, 4)}
           </div>
         </div>
         <div className="flex items-center gap-1 p-1" >
