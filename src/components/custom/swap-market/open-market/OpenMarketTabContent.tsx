@@ -130,7 +130,7 @@ const OpenMarketTabContent = () => {
         <div className="flex items-center gap-3 p-2" >
           {createdSwaps &&
             createdSwaps.map(swap => (
-              <CreatedSwapsCards key={swap.open_trade_id} swap={swap} />
+              <CreatedSwapsCards key={swap.open_trade_id} swap={swap} swapTokensMapper={swapTokensMapper} />
             ))
           }
         </div>

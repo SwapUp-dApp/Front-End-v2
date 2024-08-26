@@ -12,7 +12,7 @@ import { SUE_SWAP_MODE } from '@/constants/enums';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import PostFromPreviousTwitterAccountConfirmationDialog from './PostFromPreviousTwitterAccountConfirmationDialog';
 import TwitterPostFinalDialog from './TwitterPostFinalDialog';
-import { getLastCharacters, handleTwitterSharingProcessLocalstorageState } from '@/lib/utils';
+import { getCurrentBaseUrl, getLastCharacters, handleTwitterSharingProcessLocalstorageState } from '@/lib/utils';
 import { showNotificationToast } from '@/lib/helpers';
 import { SUI_OpenSwap, SUI_Swap } from '@/types/swap-market.types';
 
@@ -47,7 +47,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
   const swap = useGlobalStore(state => state.recentAcceptedSwap);
   const [wallet] = useProfileStore(state => [state.profile.wallet.address]);
 
-  const baseUrl = `${window.location.protocol}//${window.location.host}`;
+  const baseUrl = getCurrentBaseUrl();
   const fallbackUrl = `${baseUrl}/swap-up/swap-market/open`;
 
   const handleExchangeCodeWithToken = async () => {

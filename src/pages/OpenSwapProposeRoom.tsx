@@ -186,13 +186,16 @@ const OpenSwapProposeRoom = () => {
   };
 
   useEffect(() => {
-    if (state.sender.nftsSelectedForSwap.length) {
+    if (
+      (state.sender.nftsSelectedForSwap.length || state.sender.addedAmount?.amount) &&
+      (state.receiver.nftsSelectedForSwap.length || state.receiver.addedAmount?.amount)
+    ) {
       setEnableApproveButtonCriteria(true);
     } else {
       setEnableApproveButtonCriteria(false);
     }
 
-  }, [state.sender.nftsSelectedForSwap]);
+  }, [state.sender.nftsSelectedForSwap.length, state.receiver.nftsSelectedForSwap.length, state.sender.addedAmount, state.receiver.addedAmount]);
 
   useEffect(() => {
     if ((openTradeId && !isValidTradeId(openTradeId)) || (tradeId && !isValidTradeId(tradeId))) {

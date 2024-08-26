@@ -89,35 +89,6 @@ export const getOpenSeaNftUrl = (token: string, nftId: string) => {
 
   return `${baseUrl}/assets/${network}/${token}/${nftId}`;
 };
-
-// This the api that we used to get chains dataset
-// const options = {
-//   method: 'GET',
-//   url: 'https://coinranking1.p.rapidapi.com/coins',
-//   params: {
-//     referenceCurrencyUuid: 'yhjMzLPhuIDl',
-//     timePeriod: '24h',
-//     'tiers[0]': '1',
-//     orderBy: 'marketCap',
-//     orderDirection: 'desc',
-//     limit: '50',
-//     offset: '0'
-//   },
-//   headers: {
-//     'X-RapidAPI-Key': '54b84c30c5msh0e4a7ee7fa87fc2p1e8e3ajsn27e01700ad9c',
-//     'X-RapidAPI-Host': 'coinranking1.p.rapidapi.com'
-//   }
-// };
-
-// export const getCoinsData = async () => {
-//   try {
-//     const response = await axios.request(options);
-//     console.log(response.data);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
-
 export const isValidWalletAddress = (address: string) => {
   const regex = /^0x[0-9a-fA-F]{40}$/;
   return regex.test(address);
@@ -201,4 +172,8 @@ export const handleTwitterSharingProcessLocalstorageState = (actionType: "SET" |
   }
 
   return foundItem;
+};
+
+export const getCurrentBaseUrl = () => {
+  return (`${window.location.protocol}//${window.location.host}`);
 };
