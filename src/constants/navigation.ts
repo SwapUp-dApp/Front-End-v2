@@ -55,12 +55,3 @@ export const landingPageNavData: SUI_NavItem[] = [
     protected: true,
   },
 ];
-
-export const availableRarityRanking: SUI_RarityRankItem[] = [
-  { from: 1, to: 100 },
-  { from: 101, to: 500 },
-  { from: 501, to: 1000 },
-  { from: 1001, to: 2500 },
-  { from: 2501, to: 5000 },
-  { from: 5001, to: 10000 },
-];

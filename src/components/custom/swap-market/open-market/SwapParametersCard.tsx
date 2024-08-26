@@ -13,12 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import CurrencySelectCombobox from "../../shared/CurrencySelectCombobox";
 import { Schema_OpenSwapParametersForm } from "@/schema";
-import { availableRarityRanking } from "@/constants";
 import { SUI_SwapCurrencyItem, SUI_SwapPreferences, SUT_PreferredAssetType } from "@/types/swap-market.types";
 import { SUI_CollectionItem, SUI_CurrencyChainItem, SUI_SelectedCollectionItem, SUI_SelectedCurrencyItem } from "@/types/global.types";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useEffect } from "react";
 import Combobox from "../../shared/Combobox";
+import { availableRarityRanking } from "@/constants/data";
 
 
 const preferredAssetsData: SUT_PreferredAssetType[] = ["any", "nft", "currency"];

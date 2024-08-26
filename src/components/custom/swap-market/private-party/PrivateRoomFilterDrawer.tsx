@@ -7,8 +7,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { availableRarityRanking } from "@/constants";
 import { SUI_RarityRankItem } from "@/types/global.types";
+import { availableRarityRanking } from "@/constants/data";
 
 
 const FormSchema = z.object({

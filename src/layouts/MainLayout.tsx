@@ -1,6 +1,6 @@
 import Footer from "@/components/custom/shared/Footer";
 import Navbar from "@/components/custom/shared/Navbar";
-import { navItemsData } from "@/constants";
+import { navItemsData } from "@/constants/navigation";
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useProfileStore } from "@/store/profile";

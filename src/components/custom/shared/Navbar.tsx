@@ -1,12 +1,12 @@
 import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer } from "@/components/ui/drawer";
-import { navItemsData } from "@/constants";
+import { navItemsData } from "@/constants/navigation";
 import { getIsActiveNav, } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ConnectWalletButton from "./ConnectWalletButton";
 import { useProfileStore } from "@/store/profile";
 import { showWalletConnectionToast } from "@/lib/helpers";
-import { defaults } from "@/constants/defaults";
+
 
 const Navbar = () => {
   const { pathname } = useLocation();
