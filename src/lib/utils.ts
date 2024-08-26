@@ -146,7 +146,7 @@ export const getAspectRatio = (width: number, height: number) => {
 
 // Localstorage helper functions start here
 
-export const handleTwitterSharingProcessLocalstorageState = (actionType: "SET" | "REMOVE" | "GET", tradeId?: string) => {
+export const handleTwitterSharingProcessLocalstorageState = (actionType: "SET" | "REMOVE" | "GET" | "SET-FALSE", tradeId?: string) => {
 
   let foundItem: SUI_TwitterPostLocalStorageState = { started: false, tradeId: '' };
 
@@ -155,6 +155,12 @@ export const handleTwitterSharingProcessLocalstorageState = (actionType: "SET" |
       // Remember: while setting data to localstorage must pass trade id
       const itemState: SUI_TwitterPostLocalStorageState = { started: true, tradeId: tradeId! };
       localStorage.setItem("isTwitterPostProcessStarted", JSON.stringify(itemState));
+      break;
+
+    case 'SET-FALSE':
+      // Remember: while setting data to localstorage must pass trade id
+      const falseItemState: SUI_TwitterPostLocalStorageState = { started: false, tradeId: handleTwitterSharingProcessLocalstorageState('GET').tradeId };
+      localStorage.setItem("isTwitterPostProcessStarted", JSON.stringify(falseItemState));
       break;
 
     case 'GET':

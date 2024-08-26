@@ -1,4 +1,4 @@
-import { SUI_CurrencyChainItem, SUI_NFTItem } from "@/types/global.types";
+import { SUI_CurrencyChainItem, SUI_NFTItem, SUI_RarityRankItem } from "@/types/global.types";
 
 export const tempNftsData: SUI_NFTItem[] = [
   {
@@ -6355,4 +6355,13 @@ export const tradersData: IMember[] = [
     image: '/assets/images/avatar.png',
     title: 'John D'
   },
+];
+
+export const availableRarityRanking: SUI_RarityRankItem[] = [
+  { from: 1, to: 100 },
+  { from: 101, to: 500 },
+  { from: 501, to: 1000 },
+  { from: 1001, to: 2500 },
+  { from: 2501, to: 5000 },
+  { from: 5001, to: 10000 },
 ];

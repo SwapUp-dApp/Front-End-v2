@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
 import { Button } from "@/components/ui/button";
-import { landingPageNavData } from "@/constants";
+import { landingPageNavData } from "@/constants/navigation";
 
 const LpNavbar = () => {
 	const { pathname } = useLocation();
