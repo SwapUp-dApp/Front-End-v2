@@ -163,8 +163,8 @@ const PrivateRoom = () => {
 
   useEffect(() => {
     if (
-      (state.sender.nftsSelectedForSwap.length && state.receiver.nftsSelectedForSwap.length) ||
-      ((state.sender.addedAmount?.amount) && state.receiver.addedAmount?.amount)
+      (state.sender.nftsSelectedForSwap.length || state.sender.addedAmount?.amount) &&
+      (state.receiver.nftsSelectedForSwap.length || state.receiver.addedAmount?.amount)
     ) {
       setEnableApproveButtonCriteria(true);
     } else {

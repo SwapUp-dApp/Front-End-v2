@@ -12,9 +12,10 @@ import { SUE_SWAP_MODE } from '@/constants/enums';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import PostFromPreviousTwitterAccountConfirmationDialog from './PostFromPreviousTwitterAccountConfirmationDialog';
 import TwitterPostFinalDialog from './TwitterPostFinalDialog';
-import { getLastCharacters, handleTwitterSharingProcessLocalstorageState } from '@/lib/utils';
+import { getCurrentBaseUrl, getLastCharacters, handleTwitterSharingProcessLocalstorageState } from '@/lib/utils';
 import { showNotificationToast } from '@/lib/helpers';
 import { SUI_OpenSwap, SUI_Swap } from '@/types/swap-market.types';
+import { twitterPostContent } from '@/constants/params';
 
 interface IProp {
   startRecentSwapSharingProcess: boolean;
@@ -42,12 +43,14 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [URLSearchParams] = useSearchParams();
+
   const twitterAuthCode = URLSearchParams.get('code');
+  const twitterAuthError = URLSearchParams.get('error');
 
   const swap = useGlobalStore(state => state.recentAcceptedSwap);
   const [wallet] = useProfileStore(state => [state.profile.wallet.address]);
 
-  const baseUrl = `${window.location.protocol}//${window.location.host}`;
+  const baseUrl = getCurrentBaseUrl();
   const fallbackUrl = `${baseUrl}/swap-up/swap-market/open`;
 
   const handleExchangeCodeWithToken = async () => {
@@ -65,20 +68,20 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
     }
   };
 
-  const handlePostTweet = async (postTitle: string) => {
+  const handlePostTweet = async () => {
     try {
       const twitterPostPayload: SUI_CreateTweetOnBehalfOfUserReqParams = {
         imageProps: {
           tradeId: getLastCharacters(recentAcceptedSwap?.trade_id!, 6),
           initTokens: recentAcceptedSwap?.metadata.init.tokens!,
           acceptTokens: recentAcceptedSwap?.metadata.accept.tokens!,
-          title: "I am trading"
+          title: twitterPostContent.imageTitle
         },
-        appLink: "https://white-dune-0fb9b1810.5.azurestaticapps.net",
-        postTitle,
-        hashtags: ["SWAPUP"],
-        mentions: ["Khalil111Ahmad"],
-        postDescription: 'Here is some description',
+        appLink: twitterPostContent.appLink,
+        postTitle: twitterPostContent.postTitle,
+        hashtags: twitterPostContent.hashtags,
+        mentions: twitterPostContent.mentions,
+        postDescription: twitterPostContent.postDescription,
         walletAddress: wallet
       };
 
@@ -95,7 +98,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
     window.location.href = twitterOAuthUrl;
   };
 
-  const handleShareSwapPostOnSocialPlatform = async (platformActionType: SUT_SwapSharingActionType, base64Image = '') => {
+  const handleShareSwapPostOnSocialPlatform = async (platformActionType: SUT_SwapSharingActionType) => {
 
     const postTitle: string = `Check out my recent ${swap?.swap_mode === SUE_SWAP_MODE.OPEN ? "open" : "private"} Swap `;
 
@@ -148,7 +151,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
       case 'TWITTER_POST':
         try {
           setIsLoadingFinalTwitterPost(true);
-          const postRes = await handlePostTweet(postTitle);
+          const postRes = await handlePostTweet();
 
           if (postRes) {
             showNotificationToast(
@@ -214,7 +217,14 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
       navigate(pathname);
     }
 
-  }, [twitterAuthCode, wallet]);
+    // if user denies auth then ending loading
+    if (twitterAuthError) {
+      setIsTwitterPostProcessStarted(false);
+      handleTwitterSharingProcessLocalstorageState('SET-FALSE');
+      showNotificationToast("error", "Access denied!", "Twitter post access denied, Try again authorizing SwapUp to create twitter post!");
+    }
+
+  }, [twitterAuthCode, wallet, twitterAuthError]);
 
 
   useEffect(() => {

@@ -6,11 +6,11 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { availableRarityRanking } from "@/constants";
 import { IProfileAssetsFilters } from "@/types/profile-store.types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { Schema_ProfileAssetFiltersForm } from "@/schema";
+import { availableRarityRanking } from "@/constants/data";
 
 
 interface IProp {

@@ -13,7 +13,7 @@ export const setAvailableCurrenciesHelper = (state: IGlobalStore, currenciesData
     "symbol": "SWP",
     "name": "Swapup Demo",
     "color": "#22a079",
-    "iconUrl": "/assets/images/swapip-logo-black.png",
+    "iconUrl": "https://www.swapup.io/assets/images/swapip-logo-black.png",
     "marketCap": "115217077712",
     "price": "2",
     "listedAt": 1420600,

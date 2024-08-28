@@ -16,17 +16,7 @@ interface IProp {
 
 
 const SwapHistoryDetailsDialog = ({ children, swap }: IProp) => {
-  const [isErc20Swap, setErc20Swap] = useState(false);
 
-  useEffect(() => {
-    if (swap && (
-      ((swap.metadata.init.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') &&
-      ((swap.metadata.accept.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20')
-    )) {
-      setErc20Swap(true);
-    }
-
-  }, [swap]);
 
   return (
     <Dialog key={Math.random()}>
@@ -97,13 +87,13 @@ const SwapHistoryDetailsDialog = ({ children, swap }: IProp) => {
 
             {/* side cards*/}
             <div className="flex flex-col lg:flex-row items-center gap-4" >
-              <SwapHistoryDialogSideCard swap={swap} side="sender" isErc20Swap={isErc20Swap} />
+              <SwapHistoryDialogSideCard swap={swap} side="sender" className='self-start' />
 
               <svg className="w-3.5" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7.72844 0L12 4.15863H0.238525V3.0368H9.21836L6.91377 0.793135L7.72844 0ZM11.7615 5.84137V6.9632H2.78164L5.08623 9.20687L4.27156 10L0 5.84137H11.7615Z" fill="#B6B6BD" />
               </svg>
 
-              <SwapHistoryDialogSideCard swap={swap} side="receiver" isErc20Swap={isErc20Swap} />
+              <SwapHistoryDialogSideCard swap={swap} side="receiver" className='self-start' />
             </div>
 
             {/* Fee section*/}
