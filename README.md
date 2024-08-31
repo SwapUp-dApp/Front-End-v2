@@ -2,12 +2,12 @@
 *npm run build*
 vite will produce a client side output in the dist folder
 
-From VSCode, deploy -> select the dist directory.
+From VSCode, deploy -> select the root directory.
 
 In Azure App Service Configuration, specify startup command to be 
-*npx serve*
+*node server.js*
 
-If deploying from the root folder, use 
-*npx serve -s dist*
+check Server.js to see how it handles the client routing issues
+* Increased the App Service Plan to have enough space and memory for node packages.
 
 # React + TypeScript + Vite
