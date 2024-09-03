@@ -15,7 +15,7 @@ import TwitterPostFinalDialog from './TwitterPostFinalDialog';
 import { getCurrentBaseUrl, getLastCharacters, handleTwitterSharingProcessLocalstorageState } from '@/lib/utils';
 import { showNotificationToast } from '@/lib/helpers';
 import { SUI_OpenSwap, SUI_Swap } from '@/types/swap-market.types';
-import { twitterPostContent } from '@/constants/params';
+import { twitterPostContent, warpcastFrameUrl } from '@/constants/params';
 
 interface IProp {
   startRecentSwapSharingProcess: boolean;
@@ -184,7 +184,8 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
         break;
 
       case 'WARPCAST_POST':
-        const warpcastPostUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(postTitle)}&embeds[]=https://mint.farcaster.xyz/`;
+        const frameUrl = warpcastFrameUrl + swap?.trade_id;
+        const warpcastPostUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(postTitle)}&embeds[]=${frameUrl}`;
         window.open(warpcastPostUrl, "_blank");
         break;
     }
