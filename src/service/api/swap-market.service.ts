@@ -12,8 +12,8 @@ export const getPendingSwapsForWalletApi = (walletId: string): Promise<AxiosResp
 export const getSwapHistoryForWalletApi = (walletId: string): Promise<AxiosResponse> =>
   API.get(`/api/swaps/history/?address=${walletId}`);
 
-export const getSwapDetailsApi = (tradeId: string): Promise<AxiosResponse> =>
-  API.get(`/api/swaps/get-swap-details/?trade_id=${tradeId}`);
+export const getSwapDetailsByTradeOrOpenTradeIdApi = (tradeOrOpenTradeId: string): Promise<AxiosResponse> =>
+  API.get(`/api/swaps/get-swap-details/${tradeOrOpenTradeId}`);
 
 export const createPrivateSwapOfferApi = (swap: SUI_Swap): Promise<AxiosResponse> =>
   API.post('/api/swaps/', swap);
@@ -43,9 +43,6 @@ export const createOpenSwapOfferApi = (swap: SUP_CreateOpenSwap): Promise<AxiosR
 
 export const getOpenSwapPendingListApi = (): Promise<AxiosResponse> =>
   API.get(`/api/openswap/list`);
-
-export const getOpenSwapByOpenTradeIdApi = (openTradeId: string): Promise<AxiosResponse> =>
-  API.get(`/api/openswap/get-swap-by-id/?open_trade_id=${openTradeId}`);
 
 export const proposeSwapApi = (swap: SUI_OpenSwap): Promise<AxiosResponse> =>
   API.post(`/api/openswap/propose`, swap);
