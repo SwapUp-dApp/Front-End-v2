@@ -357,22 +357,56 @@ export const createCounterSwapOfferHelper = async (
   marketKey: 'openMarket' | 'privateMarket',
   roomKey: 'openRoom' | 'privateRoom',
 ): Promise<ISwapMarketStore> => {
+
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;
+
+  let initSwapTokens: SUI_SwapToken[] = [];
+  let acceptSwapTokens: SUI_SwapToken[] = [];
+
+  /*=== Init / Sender side:  Swap generation ===*/
+  // If user has selected Currency for sender side
+  if (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) {
+    initSwapTokens = [
+      ...initSwapTokens,
+      ...getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount)
+    ];
+  }
+
+  // If user has selected NFTs for sender side
+  if (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) {
+    initSwapTokens = [
+      ...initSwapTokens,
+      ...getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap)
+    ];
+  }
+
+  /*=== Accept / Receiver side:  Swap generation ===*/
+  // If user has selected Currency for receiver side
+  if (room.receiver.addedAmount?.amount && room.receiver.addedAmount.coin) {
+    acceptSwapTokens = [
+      ...acceptSwapTokens,
+      ...getCurrencyChainSwapTokensFromSelectedChainItems(room.receiver.addedAmount)
+    ];
+  }
+
+  // If user has selected NFTs for receiver side
+  if (room.receiver.nftsSelectedForSwap && room.receiver.nftsSelectedForSwap.length > 0) {
+    acceptSwapTokens = [
+      ...acceptSwapTokens,
+      ...getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap)
+    ];
+  }
 
   const swap: SUI_OpenSwap = {
     ...room.swap,
     offer_type: SUE_SWAP_OFFER_TYPE.COUNTER,
     metadata: {
       init: {
-        tokens: (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) ?
-          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) :
-          (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount) : []
+        tokens: initSwapTokens
       },
       accept: {
-        tokens: (room.receiver.nftsSelectedForSwap && room.receiver.nftsSelectedForSwap.length > 0) ?
-          getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap) :
-          (room.receiver.addedAmount?.amount && room.receiver.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.receiver.addedAmount) : []
+        tokens: acceptSwapTokens
       },
     }
   };
@@ -481,6 +515,45 @@ export const setValuesOnCreatingPrivateRoomHelper = async (
 export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, offer_type: SUT_SwapOfferType, initWalletAddress: string): Promise<ISwapMarketStore> => {
   const room = state.privateMarket.privateRoom as IPrivateRoom;
 
+  let initSwapTokens: SUI_SwapToken[] = [];
+  let acceptSwapTokens: SUI_SwapToken[] = [];
+
+  /*=== Init / Sender side:  Swap generation ===*/
+
+  // If user has selected Currency for sender side
+  if (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) {
+    initSwapTokens = [
+      ...initSwapTokens,
+      ...getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount)
+    ];
+  }
+
+  // If user has selected NFTs for sender side
+  if (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) {
+    initSwapTokens = [
+      ...initSwapTokens,
+      ...getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap)
+    ];
+  }
+
+  /*=== Accept / Receiver side:  Swap generation ===*/
+
+  // If user has selected Currency for receiver side
+  if (room.receiver.addedAmount?.amount && room.receiver.addedAmount.coin) {
+    acceptSwapTokens = [
+      ...acceptSwapTokens,
+      ...getCurrencyChainSwapTokensFromSelectedChainItems(room.receiver.addedAmount)
+    ];
+  }
+
+  // If user has selected NFTs for receiver side
+  if (room.receiver.nftsSelectedForSwap && room.receiver.nftsSelectedForSwap.length > 0) {
+    acceptSwapTokens = [
+      ...acceptSwapTokens,
+      ...getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap)
+    ];
+  }
+
   const swap: SUI_Swap = {
     trade_id: state.privateMarket.privateRoom.uniqueTradeId,
     swap_mode: SUE_SWAP_MODE.PRIVATE,
@@ -492,19 +565,13 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, off
     offer_type,
     metadata: {
       init: {
-        tokens: (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) ?
-          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) :
-          (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount) : []
+        tokens: initSwapTokens
       },
       accept: {
-        tokens: (room.receiver.nftsSelectedForSwap && room.receiver.nftsSelectedForSwap.length > 0) ?
-          getNftSwapTokensFromNftItems(room.receiver.nftsSelectedForSwap) :
-          (room.receiver.addedAmount?.amount && room.receiver.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.receiver.addedAmount) : []
+        tokens: acceptSwapTokens
       },
     }
   };
-
-  // console.info("Private Swaps ---------> \n", swap);
 
   return {
     ...state,
@@ -517,6 +584,7 @@ export const createPrivateMarketSwapHelper = async (state: ISwapMarketStore, off
     },
   };
 };
+
 export const setSwapEncodedMsgAndSignPrivateHelper = async (
   state: ISwapMarketStore,
   swapEncodedMsg: string,
@@ -538,6 +606,7 @@ export const setSwapEncodedMsgAndSignPrivateHelper = async (
     }
   };
 };
+
 const getNftSwapTokensFromNftItems = (nfts: SUI_NFTItem[]): SUI_SwapToken[] => {
 
   return nfts.map(nft => ({
@@ -963,6 +1032,7 @@ const getFilteredOpenCreatedSwapsByFilter = (state: ISwapMarketStore, filters: I
   }, [] as SUI_OpenSwap[]);
   return filteredItems;
 };
+
 const getAvailableFilteredOpenSwapsByFilter = (state: ISwapMarketStore, filters: IOpenMarketSwapFilters) => {
   const filteredItems = state.openMarket.availableOpenSwaps?.reduce((filteredSwaps, swap) => {
 
@@ -1131,7 +1201,27 @@ export const createOpenSwapHelper = async (
   state: ISwapMarketStore,
   initWalletAddress: string
 ): Promise<ISwapMarketStore> => {
+
   const room = state.openMarket.openRoom as IOpenRoom;
+  let initSwapTokens: SUI_SwapToken[] = [];
+
+  /*=== Init / Sender side:  Swap generation ===*/
+  // If user has selected Currency for sender side
+
+  if (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) {
+    initSwapTokens = [
+      ...initSwapTokens,
+      ...getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount)
+    ];
+  }
+
+  // If user has selected NFTs for sender side
+  if (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) {
+    initSwapTokens = [
+      ...initSwapTokens,
+      ...getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap)
+    ];
+  }
 
   const swap: SUI_OpenSwap = {
     ...state.openMarket.openRoom.swap,
@@ -1141,9 +1231,7 @@ export const createOpenSwapHelper = async (
     trading_chain: String(Environment.CHAIN_ID),
     metadata: {
       init: {
-        tokens: (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) ?
-          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) :
-          (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount) : []
+        tokens: initSwapTokens
       },
       accept: {
         tokens: []
@@ -1167,7 +1255,27 @@ export const createProposeOpenSwapHelper = async (
   state: ISwapMarketStore,
   initWalletAddress: string
 ): Promise<ISwapMarketStore> => {
+
   const room = state.openMarket.openRoom as IOpenRoom;
+  let initSwapTokens: SUI_SwapToken[] = [];
+
+  /*=== Init / Sender side:  Swap generation ===*/
+  // If user has selected Currency for sender side
+  if (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) {
+    initSwapTokens = [
+      ...initSwapTokens,
+      ...getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount)
+    ];
+  }
+
+  // If user has selected NFTs for sender side
+  if (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) {
+    initSwapTokens = [
+      ...initSwapTokens,
+      ...getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap)
+    ];
+  }
+
 
   const swap: SUI_OpenSwap = {
     ...state.openMarket.openRoom.swap,
@@ -1180,9 +1288,7 @@ export const createProposeOpenSwapHelper = async (
     trading_chain: String(Environment.CHAIN_ID),
     metadata: {
       init: {
-        tokens: (room.sender.nftsSelectedForSwap && room.sender.nftsSelectedForSwap.length > 0) ?
-          getNftSwapTokensFromNftItems(room.sender.nftsSelectedForSwap) :
-          (room.sender.addedAmount?.amount && room.sender.addedAmount.coin) ? getCurrencyChainSwapTokensFromSelectedChainItems(room.sender.addedAmount) : []
+        tokens: initSwapTokens
       },
       accept: {
         tokens: state.openMarket.openRoom.swap.metadata.init.tokens

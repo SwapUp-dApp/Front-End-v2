@@ -12,3 +12,5 @@ export const twitterPostContent: SUI_TwitterPostContent = {
   mentions: ["Swapupdapp"],
   postDescription: 'Here is some description',
 };
+
+export const warpcastFrameUrl = "https://warpcast-frame-five.vercel.app/swaps/";

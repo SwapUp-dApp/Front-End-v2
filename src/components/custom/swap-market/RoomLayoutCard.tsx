@@ -19,7 +19,7 @@ import { useNFTsByWallet } from "@/service/queries/swap-market.query";
 import { SUI_NFTItem } from "@/types/global.types";
 import { toast } from "sonner";
 import ToastLookCard from "../shared/ToastLookCard";
-import { SUT_SwapRoomViewType, SUT_SwapTokenContractType } from "@/types/swap-market.types";
+import { SUI_SwapToken, SUT_SwapRoomViewType, SUT_SwapTokenContractType } from "@/types/swap-market.types";
 import { defaults } from "@/constants/defaults";
 import { useGlobalStore } from "@/store/global-store";
 
@@ -90,101 +90,152 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
       }));
 
 
-      if (setDataSavedInStore) {
-        if (roomKey === 'openRoom' && layoutType === "receiver" && swap && swapRoomViewType === 'propose') {
+      if (setDataSavedInStore && swap) {
 
-          if ((swap.metadata.init.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
-            const erc20Token = swap.metadata.init.tokens[0];
-            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+        const allInitSwapTokens: SUI_SwapToken[] = swap.metadata.init.tokens;
+        //Check for accept:  As accept side tokens are optional in new created open swap
+        const allAcceptSwapTokens: SUI_SwapToken[] = swap.metadata.accept ? swap.metadata.accept.tokens : [];
 
-            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
-          } else {
-            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-              swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-            );
-            setFilteredNftsBySwapTokens(filteredNfts);
+        let initErc20Token: SUI_SwapToken | null = null;
+        let acceptErc20Token: SUI_SwapToken | null = null;
+        let initFilteredNftSwapTokens: SUI_SwapToken[] = [];
+        let acceptFilteredNftSwapTokens: SUI_SwapToken[] = [];
+
+        // Filtering init swap tokens
+        if (allInitSwapTokens.length > 0) {
+          for (const swapToken of allInitSwapTokens) {
+
+            if (swapToken.type === 'ERC20') {
+              initErc20Token = swapToken;
+            } else {
+              initFilteredNftSwapTokens.push(swapToken);
+            }
+
           }
-
-          setTimeout(() => {
-            setDataSavedInStore(prev => ({ ...prev, receiver: true }));
-          }, 200);
         }
 
-        if (layoutType === "sender" && swap && swapRoomViewType === 'view') {
+        // Filtering accept swap tokens
+        if (allAcceptSwapTokens.length > 0) {
+          for (const swapToken of allAcceptSwapTokens) {
 
-          if ((swap.metadata.init.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
-            const erc20Token = swap.metadata.init.tokens[0];
-            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+            if (swapToken.type === 'ERC20') {
+              acceptErc20Token = swapToken;
+            } else {
+              acceptFilteredNftSwapTokens.push(swapToken);
+            }
 
-            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
-          } else {
-            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-              swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-            );
-            setFilteredNftsBySwapTokens(filteredNfts);
           }
-
-          setTimeout(() => {
-            setDataSavedInStore(prev => ({ ...prev, sender: true }));
-          }, 200);
         }
 
-        if (layoutType === "receiver" && swap && swapRoomViewType === 'view') {
-          if ((swap.metadata.accept.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
-            const erc20Token = swap.metadata.accept.tokens[0];
-            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+        // Setting data for in store for sender side
+        if (allInitSwapTokens.length > 0) {
 
-            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
-          } else {
-            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-              swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-            );
-            setFilteredNftsBySwapTokens(filteredNfts);
+          // Propose Room: type open swap --> receiver
+          if (roomKey === 'openRoom' && layoutType === "receiver" && swapRoomViewType === 'propose') {
+
+            if (initErc20Token) {
+              const foundCurrency = getCurrencyChainByAddress(initErc20Token.address);
+              setAddedAmount(String(initErc20Token.value?.amount!), JSON.stringify(foundCurrency));
+            }
+
+            if (initFilteredNftSwapTokens.length > 0) {
+              const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+                initFilteredNftSwapTokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+              );
+              setFilteredNftsBySwapTokens(filteredNfts);
+            }
+
+            setTimeout(() => {
+              setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+            }, 200);
           }
 
-          setTimeout(() => {
-            setDataSavedInStore(prev => ({ ...prev, receiver: true }));
-          }, 200);
+          // View Room: --> sender
+          if (layoutType === "sender" && swapRoomViewType === 'view') {
+
+            if (initErc20Token) {
+              const foundCurrency = getCurrencyChainByAddress(initErc20Token.address);
+              setAddedAmount(String(initErc20Token.value?.amount!), JSON.stringify(foundCurrency));
+            }
+
+            if (initFilteredNftSwapTokens.length > 0) {
+              const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+                initFilteredNftSwapTokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+              );
+              setFilteredNftsBySwapTokens(filteredNfts);
+            }
+
+            setTimeout(() => {
+              setDataSavedInStore(prev => ({ ...prev, sender: true }));
+            }, 200);
+          }
+
+          // Counter Room: --> sender
+          if (layoutType === "sender" && swapRoomViewType === 'counter') {
+
+            if (initErc20Token) {
+              const foundCurrency = getCurrencyChainByAddress(initErc20Token.address);
+              setAddedAmount(String(initErc20Token.value?.amount!), JSON.stringify(foundCurrency));
+            }
+
+            if (initFilteredNftSwapTokens.length > 0) {
+              const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+                initFilteredNftSwapTokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+              );
+              setSelectedNftsForSwap([...filteredNfts]);
+            }
+
+            setNftsDataset(resNfts);
+            setTimeout(() => {
+              setDataSavedInStore(prev => ({ ...prev, sender: true }));
+            }, 200);
+          }
+
         }
 
-        if (layoutType === "sender" && swap && swapRoomViewType === 'counter') {
+        // Setting data for in store for receiver side
+        if (allAcceptSwapTokens.length > 0) {
 
-          if ((swap.metadata.init.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
-            const erc20Token = swap.metadata.init.tokens[0];
-            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+          // View Room: --> receiver
+          if (layoutType === "receiver" && swapRoomViewType === 'view') {
 
-            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
-          } else {
-            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-              swap.metadata.init.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-            );
-            setSelectedNftsForSwap([...filteredNfts]);
+            if (acceptErc20Token) {
+              const foundCurrency = getCurrencyChainByAddress(acceptErc20Token.address);
+              setAddedAmount(String(acceptErc20Token.value?.amount!), JSON.stringify(foundCurrency));
+            }
+
+            if (acceptFilteredNftSwapTokens.length > 0) {
+              const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+                acceptFilteredNftSwapTokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+              );
+              setFilteredNftsBySwapTokens(filteredNfts);
+            }
+
+            setTimeout(() => {
+              setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+            }, 200);
           }
 
-          setNftsDataset(resNfts);
-          setTimeout(() => {
-            setDataSavedInStore(prev => ({ ...prev, sender: true }));
-          }, 200);
-        }
+          // Counter Room: --> receiver
+          if (layoutType === "receiver" && swapRoomViewType === 'counter') {
 
-        if (layoutType === "receiver" && swap && swapRoomViewType === 'counter') {
+            if (acceptErc20Token) {
+              const foundCurrency = getCurrencyChainByAddress(acceptErc20Token.address);
+              setAddedAmount(String(acceptErc20Token.value?.amount!), JSON.stringify(foundCurrency));
+            }
 
-          if ((swap.metadata.accept.tokens[0].type as SUT_SwapTokenContractType) === 'ERC20') {
-            const erc20Token = swap.metadata.accept.tokens[0];
-            const foundCurrency = getCurrencyChainByAddress(erc20Token.address);
+            if (acceptFilteredNftSwapTokens) {
+              const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
+                acceptFilteredNftSwapTokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
+              );
+              setSelectedNftsForSwap([...filteredNfts]);
+            }
 
-            setAddedAmount(String(erc20Token.value?.amount!), JSON.stringify(foundCurrency));
-          } else {
-            const filteredNfts: SUI_NFTItem[] = resNfts.filter(nft =>
-              swap.metadata.accept.tokens.some(token => (token.id === nft.tokenId && token.address === nft.contract.address))
-            );
-            setSelectedNftsForSwap([...filteredNfts]);
+            setNftsDataset(resNfts);
+            setTimeout(() => {
+              setDataSavedInStore(prev => ({ ...prev, receiver: true }));
+            }, 200);
           }
-
-          setNftsDataset(resNfts);
-          setTimeout(() => {
-            setDataSavedInStore(prev => ({ ...prev, receiver: true }));
-          }, 200);
         }
 
       }
