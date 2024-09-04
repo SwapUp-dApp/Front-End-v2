@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { SUE_SWAP_MODE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
-import { getAvailableCurrenciesApi, getSwapDetailsApi } from "@/service/api";
+import { getAvailableCurrenciesApi, getSwapDetailsByTradeOrOpenTradeIdApi } from "@/service/api";
 import { useCounterSwapOffer } from "@/service/queries/swap-market.query";
 import { useGlobalStore } from "@/store/global-store";
 import { useSwapMarketStore } from "@/store/swap-market";
@@ -71,7 +71,7 @@ const CounterOfferSwapRoom = () => {
         queryFn: async () => {
           try {
             if (tradeId) {
-              const response = await getSwapDetailsApi(tradeId!);
+              const response = await getSwapDetailsByTradeOrOpenTradeIdApi(tradeId!);
               const initSwapData: SUI_OpenSwap = response.data.data as SUI_OpenSwap;
 
               const counterSwap: SUI_OpenSwap = {

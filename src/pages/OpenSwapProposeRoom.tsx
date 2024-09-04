@@ -17,7 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useProfileStore } from "@/store/profile";
 import { useQueries } from "@tanstack/react-query";
-import { getAvailableCurrenciesApi, getOpenSwapByOpenTradeIdApi } from "@/service/api";
+import { getAvailableCurrenciesApi, getSwapDetailsByTradeOrOpenTradeIdApi } from "@/service/api";
 import { useGlobalStore } from "@/store/global-store";
 
 const OpenSwapProposeRoom = () => {
@@ -66,11 +66,11 @@ const OpenSwapProposeRoom = () => {
         retry: false
       },
       {
-        queryKey: [`getOpenSwapByOpenTradeIdApi`],
+        queryKey: [`getSwapDetailsByTradeOrOpenTradeIdApi`],
         queryFn: async () => {
           try {
             if (tradeId && openTradeId) {
-              const response = await getOpenSwapByOpenTradeIdApi(openTradeId);
+              const response = await getSwapDetailsByTradeOrOpenTradeIdApi(openTradeId);
               await state.setValuesOnProposeOpenSwapRoom(tradeId, response.data.data as SUI_OpenSwap, profile);
               return response.data.data;
             }

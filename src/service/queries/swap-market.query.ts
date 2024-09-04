@@ -4,18 +4,12 @@ import { SUI_OpenSwap, SUI_Swap, SUP_CreateOpenSwap, SUP_CompleteSwap, SUP_Cance
 import {
   createOpenSwapOfferApi,
   createPrivateSwapOfferApi,
-  getPendingSwapListApi,
   getNftsForWalletApi,
-  getMyOpenSwapListApi,
-  getOpenSwapByOpenTradeIdApi,
-  getOpenSwapPendingListApi,
-  getSwapHistoryListApi,
   getPendingSwapsForWalletApi,
-  getPrivateSwapPendingListApi,
   getSwapHistoryForWalletApi,
   completeOpenSwapOfferApi,
   proposeSwapApi,
-  getSwapDetailsApi,
+  getSwapDetailsByTradeOrOpenTradeIdApi,
   completePrivateSwapOfferApi,
   rejectSwapOfferApi,
   cancelSwapOfferApi,
@@ -168,10 +162,10 @@ export const useCompletePrivateSwapOffer = () => {
 };
 export const useGetSwapDetails = (tradeId: string) => {
   return useQuery({
-    queryKey: ['useGetSwapDetails', tradeId],
+    queryKey: ['getSwapDetailsByTradeOrOpenTradeIdApi', tradeId],
     queryFn: async () => {
       try {
-        const response = await getSwapDetailsApi(tradeId);
+        const response = await getSwapDetailsByTradeOrOpenTradeIdApi(tradeId);
         return response;
       } catch (error) {
         throw error;
@@ -217,21 +211,6 @@ export const useProposeOpenSwapOffer = () => {
     },
     onSuccess: (data) => {
       console.log("Swap offer proposed successfully:", data);
-    },
-  });
-};
-
-
-export const useOpenSwapByOpenTradId = (openTradeId: string) => {
-  return useQuery({
-    queryKey: ['getOpenSwapByOpenTradeIdApi', openTradeId],
-    queryFn: async () => {
-      try {
-        const response = await getOpenSwapByOpenTradeIdApi(openTradeId);
-        return response;
-      } catch (error) {
-        throw error;
-      }
     },
   });
 };

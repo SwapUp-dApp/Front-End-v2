@@ -47,7 +47,15 @@ const OpenSwapCreationRoom = () => {
 
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
   const [wallet, profile] = useProfileStore(state => [state.profile.wallet, state.profile]);
-  const [filteredAvailableCurrencies, setAvailableCurrencies, availableCollections, setAvailableCollections] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies, state.availableCollections, state.setAvailableCollections]);
+
+  const [filteredAvailableCurrencies, setAvailableCurrencies, availableCollections, setAvailableCollections, setStartRecentSwapSharingProcess, setRecentAcceptedSwap] = useGlobalStore(state => [
+    state.filteredAvailableCurrencies,
+    state.setAvailableCurrencies,
+    state.availableCollections,
+    state.setAvailableCollections,
+    state.setStartRecentSwapSharingProcess,
+    state.setRecentAcceptedSwap
+  ]);
 
   const { expiration_date, preferred_asset } = state.swap.swap_preferences;
   const navigate = useNavigate();
@@ -193,8 +201,10 @@ const OpenSwapCreationRoom = () => {
         );
 
         setSwapCreation(prev => ({ ...prev, created: true }));
-        state.resetOpenSwapCreationRoom();
+        setRecentAcceptedSwap(createdSwap);
+        setStartRecentSwapSharingProcess(true);
 
+        state.resetOpenSwapCreationRoom();
         setTimeout(() => {
           navigate('/swap-up/swap-market');
         }, 3000);
