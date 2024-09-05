@@ -73,7 +73,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
         imageProps: {
           tradeId: getLastCharacters(recentAcceptedSwap?.trade_id!, 6),
           initTokens: recentAcceptedSwap?.metadata.init.tokens!,
-          acceptTokens: recentAcceptedSwap?.metadata.accept.tokens!,
+          acceptTokens: recentAcceptedSwap?.metadata.accept.tokens || [],
           title: twitterPostContent.imageTitle
         },
         appLink: twitterPostContent.appLink,
