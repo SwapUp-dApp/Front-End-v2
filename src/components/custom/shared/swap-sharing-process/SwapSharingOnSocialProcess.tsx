@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import SwapSharingCompletionOnSocialDialog from './SwapSharingCompletionOnSocialDialog';
 
-import { getSwapDetailsApi, getTwitterClientAccessTokenFromCodeApi, postSwapOnTwitterOnBehalfOfCurrentUserApi } from "@/service/api";
+import { getSwapDetailsByTradeOrOpenTradeIdApi, getTwitterClientAccessTokenFromCodeApi, postSwapOnTwitterOnBehalfOfCurrentUserApi } from "@/service/api";
 import { SUI_CreateTweetOnBehalfOfUserReqParams, SUI_TwitterAuthCodeToAccessTokenReqParams, SUI_TwitterAccessToken, SUI_TwitterUserInformation } from "@/types/third-party.types";
 import { useProfileStore } from "@/store/profile";
 import { getUserTwitterAccessApi } from "@/service/api/user.service";
@@ -39,6 +39,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
   // Twitter sharing dialogs & data state end here
 
   const [recentAcceptedSwap, setRecentAcceptedSwap] = useGlobalStore(state => [state.recentAcceptedSwap, state.setRecentAcceptedSwap]);
+  const [wallet] = useProfileStore(state => [state.profile.wallet.address]);
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -47,8 +48,6 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
   const twitterAuthCode = URLSearchParams.get('code');
   const twitterAuthError = URLSearchParams.get('error');
 
-  const swap = useGlobalStore(state => state.recentAcceptedSwap);
-  const [wallet] = useProfileStore(state => [state.profile.wallet.address]);
 
   const baseUrl = getCurrentBaseUrl();
   const fallbackUrl = `${baseUrl}/swap-up/swap-market/open`;
@@ -74,7 +73,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
         imageProps: {
           tradeId: getLastCharacters(recentAcceptedSwap?.trade_id!, 6),
           initTokens: recentAcceptedSwap?.metadata.init.tokens!,
-          acceptTokens: recentAcceptedSwap?.metadata.accept.tokens!,
+          acceptTokens: recentAcceptedSwap?.metadata.accept.tokens || [],
           title: twitterPostContent.imageTitle
         },
         appLink: twitterPostContent.appLink,
@@ -100,7 +99,12 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
 
   const handleShareSwapPostOnSocialPlatform = async (platformActionType: SUT_SwapSharingActionType) => {
 
-    const postTitle: string = `Check out my recent ${swap?.swap_mode === SUE_SWAP_MODE.OPEN ? "open" : "private"} Swap `;
+    const postTitle: string = `Check out my recent ${recentAcceptedSwap?.swap_mode === SUE_SWAP_MODE.OPEN ? "open" : "private"} Swap `;
+    const currentTradeId = (recentAcceptedSwap?.trade_id ? recentAcceptedSwap?.trade_id : (recentAcceptedSwap as SUI_OpenSwap).open_trade_id);
+
+    if (currentTradeId) {
+      console.log("Current trade id ==> ", currentTradeId);
+    }
 
     switch (platformActionType) {
 
@@ -109,7 +113,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
 
         // Setting Loading state
         setIsTwitterPostProcessStarted(true);
-        handleTwitterSharingProcessLocalstorageState("SET", recentAcceptedSwap?.trade_id);
+        handleTwitterSharingProcessLocalstorageState("SET", currentTradeId);
 
         // Checking if the users twitter access already exist in DB or not
         try {
@@ -184,7 +188,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
         break;
 
       case 'WARPCAST_POST':
-        const frameUrl = warpcastFrameUrl + swap?.trade_id;
+        const frameUrl = warpcastFrameUrl + currentTradeId;
         const warpcastPostUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(postTitle)}&embeds[]=${frameUrl}`;
         window.open(warpcastPostUrl, "_blank");
         break;
@@ -196,7 +200,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
     try {
       setIsLoadingSwapData(true);
 
-      const response = await getSwapDetailsApi(tradeId);
+      const response = await getSwapDetailsByTradeOrOpenTradeIdApi(tradeId);
       setRecentAcceptedSwap(response.data.data as SUI_OpenSwap | SUI_Swap);
 
     } catch (error: any) {
