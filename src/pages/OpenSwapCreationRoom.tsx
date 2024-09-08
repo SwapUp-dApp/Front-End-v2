@@ -159,15 +159,15 @@ const OpenSwapCreationRoom = () => {
         throw new Error("Failed to create swap.");
       }
 
-      const approval = await getWalletProxy().getUserApproval(createdSwap, true);
-      if (!approval) {
-        throw new Error("User approval not granted.");
-      }
+      // const approval = await getWalletProxy().getUserApproval(createdSwap, true);
+      // if (!approval) {
+      //   throw new Error("User approval not granted.");
+      // }
 
-      const blockchainRes = await getWalletProxy().createAndUpdateSwap(createdSwap!, "CREATE");
-      if (!blockchainRes) {
-        throw new Error("Blockchain error creating swap.");
-      }
+      // const blockchainRes = await getWalletProxy().createAndUpdateSwap(createdSwap!, "CREATE");
+      // if (!blockchainRes) {
+      //   throw new Error("Blockchain error creating swap.");
+      // }
 
       const swapPayload: SUP_CreateOpenSwap = {
         init_address: createdSwap.init_address,

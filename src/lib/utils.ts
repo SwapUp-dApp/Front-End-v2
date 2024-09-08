@@ -56,7 +56,7 @@ export const getShortenWalletAddress = (address: string) => {
 };
 
 export const getLastCharacters = (value: string, lastCharacters: number) => {
-  return value.slice(value.length - lastCharacters);
+  return (value || []).length ? value.slice(value.length - lastCharacters) : "######";
 };
 
 

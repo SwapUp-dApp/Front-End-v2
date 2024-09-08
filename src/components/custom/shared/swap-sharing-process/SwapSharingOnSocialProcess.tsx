@@ -67,13 +67,13 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
     }
   };
 
-  const handlePostTweet = async () => {
+  const handlePostTweet = async (currentTradeId: string) => {
     try {
       const twitterPostPayload: SUI_CreateTweetOnBehalfOfUserReqParams = {
         imageProps: {
-          tradeId: getLastCharacters(recentAcceptedSwap?.trade_id!, 6),
+          tradeId: getLastCharacters(currentTradeId, 6),
           initTokens: recentAcceptedSwap?.metadata.init.tokens!,
-          acceptTokens: recentAcceptedSwap?.metadata.accept.tokens || [],
+          acceptTokens: recentAcceptedSwap?.metadata.accept ? recentAcceptedSwap?.metadata.accept.tokens : [],
           title: twitterPostContent.imageTitle
         },
         appLink: twitterPostContent.appLink,
@@ -100,17 +100,16 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
   const handleShareSwapPostOnSocialPlatform = async (platformActionType: SUT_SwapSharingActionType) => {
 
     const postTitle: string = `Check out my recent ${recentAcceptedSwap?.swap_mode === SUE_SWAP_MODE.OPEN ? "open" : "private"} Swap `;
-    const currentTradeId = (recentAcceptedSwap?.trade_id ? recentAcceptedSwap?.trade_id : (recentAcceptedSwap as SUI_OpenSwap).open_trade_id);
+    let currentTradeId = '';
 
-    if (currentTradeId) {
-      console.log("Current trade id ==> ", currentTradeId);
+    if (recentAcceptedSwap) {
+      currentTradeId = (recentAcceptedSwap.trade_id ? recentAcceptedSwap.trade_id : (recentAcceptedSwap as SUI_OpenSwap).open_trade_id);
     }
 
     switch (platformActionType) {
 
       case 'TWITTER_ACCESS_EXIST':
         let isUserTwitterAccessAlreadyExist: boolean = false;
-
         // Setting Loading state
         setIsTwitterPostProcessStarted(true);
         handleTwitterSharingProcessLocalstorageState("SET", currentTradeId);
@@ -155,7 +154,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
       case 'TWITTER_POST':
         try {
           setIsLoadingFinalTwitterPost(true);
-          const postRes = await handlePostTweet();
+          const postRes = await handlePostTweet(currentTradeId);
 
           if (postRes) {
             showNotificationToast(

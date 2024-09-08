@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SUT_SwapSharingActionType } from "./SwapSharingOnSocialProcess";
 
 import { cn, getDefaultNftImageOnError, getLastCharacters, handleTwitterSharingProcessLocalstorageState } from "@/lib/utils";
-import { SUI_SwapToken, SUT_SwapTokenContractType } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_SwapToken, SUT_SwapTokenContractType } from "@/types/swap-market.types";
 import { useGlobalStore } from "@/store/global-store";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
@@ -96,7 +96,12 @@ const TwitterPostFinalDialog = ({ open, setOpen, handleShareSwapPostOnSocialPlat
                 <img src="/swapup.png" alt="swapup" className="h-10" />
 
                 <span className="font-semibold" >
-                  Trade ID: <span className="font-normal">{getLastCharacters(recentAcceptedSwap?.trade_id, 6)}</span>
+                  Trade ID: {' '}
+                  <span className="font-normal">{
+                    getLastCharacters((recentAcceptedSwap.trade_id ? recentAcceptedSwap.trade_id : (recentAcceptedSwap as SUI_OpenSwap).open_trade_id),
+                      6
+                    )}
+                  </span>
                 </span>
               </h2>
 
@@ -122,7 +127,7 @@ const TwitterPostFinalDialog = ({ open, setOpen, handleShareSwapPostOnSocialPlat
                 </svg>
 
                 <div className="flex items-center gap-3" >
-                  {swapTokensMapper(recentAcceptedSwap.metadata.accept.tokens, 3)}
+                  {recentAcceptedSwap.metadata.accept ? swapTokensMapper(recentAcceptedSwap.metadata.accept.tokens, 3) : "Waiting for proposals!"}
                 </div>
               </div>
 
