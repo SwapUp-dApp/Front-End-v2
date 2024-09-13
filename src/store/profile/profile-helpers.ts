@@ -8,13 +8,13 @@ import { SUT_GridViewType } from "@/types/swap-market-store.types";
 export const getInitialProfile = (userType: "sender" | "receiver") => {
     const initialState: IProfile = {
         ensAddress: userType === "sender" ? 'sender.swapup.eth' : 'receiver.swapup.eth',
-        avatar: '/assets/images/member11.jpg',
-        coverImage: '/assets/images/cover.png',
+        avatar: '',
+        coverImage: '',
         isPremium: false,
         joinDate: "2023-09-15T00:00:00Z",
         details: {
             title: userType,
-            description: "Passionate about blockchain technology and decentralized finance. Enthusiastic trader with a keen interest in exploring the vast world of digital assets. Constantly seeking new opportunities and insights in the ever-evolving crypto space. Let's swap ideas and assets!"
+            description: "",
         },
         wallet: {
             address: '',
@@ -38,6 +38,13 @@ export const setProfileDetailsHelper = (state: IProfileStore, details: IProfileD
             ...state.profile,
             details
         }
+    };
+};
+
+export const setUserProfileHelper = (state: IProfileStore, userProfile: IProfile): IProfileStore => {
+    return {
+        ...state,
+        profile: userProfile
     };
 };
 
@@ -86,6 +93,7 @@ export const setProfileCoverImageHelper = (state: IProfileStore, coverImage: str
         }
     };
 };
+
 export const toggleGridViewHelper = (state: IProfileStore, value: SUT_GridViewType): IProfileStore => {
     return {
         ...state,

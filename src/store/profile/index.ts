@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { IProfileAssetsFilters, IProfileStore, SUT_SubdomainTabType, SUT_VisibilityToggleType } from "@/types/profile-store.types";
-import { getInitialProfile, resetAllFiltersHelper, resetSubnameMintingProcess, setActiveTabHelper, setAvailableSubnamesHelper, setCollectionOwnedHelper, setDistributionOfTokensPerChainHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, setTransactionHashHelper, setWalletTokenBreakdownDataHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
-import { IProfileDetails, IWallet, SUI_CollectionOwnedItem, SUI_SubnameItem, SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from '@/types/profile.types';
+import { getInitialProfile, resetAllFiltersHelper, resetSubnameMintingProcess, setActiveTabHelper, setAvailableSubnamesHelper, setCollectionOwnedHelper, setDistributionOfTokensPerChainHelper, setFilteredNftsByFiltersHelper, setNavigateCreateSubdomainStepHelper, setNftsDatasetHelper, setProfileAvatarHelper, setProfileCoverImageHelper, setProfileDetailsHelper, setProfileWalletHelper, setSubnameValueHelper, setTransactionHashHelper, setUserProfileHelper, setWalletTokenBreakdownDataHelper, toggleGridViewHelper, toggleVisibilityHelper } from './profile-helpers';
+import { IProfile, IProfileDetails, IWallet, SUI_CollectionOwnedItem, SUI_SubnameItem, SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from '@/types/profile.types';
 import { SUT_GridViewType } from '@/types/swap-market-store.types';
 import { SUI_NFTItem } from '@/types/global.types';
 import { Environment } from '@/config';
@@ -12,6 +12,7 @@ const initialState: IProfileStore = {
   setProfileAvatar: () => { },
   setProfileDetails: () => { },
   setProfileCoverImage: () => { },
+  setUserProfile: () => { },
   assetTab: {
     activeGridView: 'detailed',
     visibility: "all",
@@ -68,6 +69,7 @@ export const useProfileStore = create<IProfileStore>((set, get) => ({
   setProfileAvatar: (avatar: string) => set(state => setProfileAvatarHelper(state, avatar)),
   setProfileDetails: (details: IProfileDetails) => set((state) => setProfileDetailsHelper(state, details)),
   setProfileCoverImage: (coverImage: string) => set((state) => setProfileCoverImageHelper(state, coverImage)),
+  setUserProfile: (userProfile: IProfile) => set((state) => setUserProfileHelper(state, userProfile)),
   assetTab: {
     ...initialState.assetTab,
     toggleVisibility: (value: SUT_VisibilityToggleType) => set(state => toggleVisibilityHelper(state, value)),

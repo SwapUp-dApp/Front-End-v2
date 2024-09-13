@@ -29,6 +29,8 @@ import { getPrivateSwapPendingListApi } from '@/service/api';
 import { defaults } from '@/constants/defaults';
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from '@/constants/enums';
 import { useGlobalStore } from '@/store/global-store';
+import { updatedUserProfilePointsApi } from '@/service/api/user.service';
+import { SUI_UpdateProfilePointsPayload } from '@/types/profile.types';
 
 
 const PrivateMarketTabContent = () => {
@@ -95,10 +97,17 @@ const PrivateMarketTabContent = () => {
         timestamp: triggerTransfer?.timeStamp || "",
       };
 
+      const pointsApiPayload: SUI_UpdateProfilePointsPayload = {
+        pointsToAdd: defaults.pointSystem.completePrivateTrade,
+        walletId: swap.accept_address,
+        counterPartyWalletId: swap.init_address
+      };
+
       //calling actual api 
       const offerResult = await completePrivateSwapOffer(payload);
+      const pointsUpdateResult = await updatedUserProfilePointsApi(pointsApiPayload);
 
-      if (offerResult) {
+      if (offerResult && pointsUpdateResult) {
         toast.custom(
           (id) => (
             <ToastLookCard

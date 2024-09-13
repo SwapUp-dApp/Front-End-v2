@@ -29,6 +29,9 @@ import { useMySwapStore } from '@/store/my-swaps';
 import { useQuery } from '@tanstack/react-query';
 import { getPendingSwapListApi } from '@/service/api';
 import { useGlobalStore } from '@/store/global-store';
+import { updatedUserProfilePointsApi } from '@/service/api/user.service';
+import { defaults } from '@/constants/defaults';
+import { SUI_UpdateProfilePointsPayload } from '@/types/profile.types';
 
 
 const PendingSwapsTabContent = () => {
@@ -87,16 +90,26 @@ const PendingSwapsTabContent = () => {
       };
 
       let offerResult;
-      // calling actual api;
+      let pointsUpdateResult;
+      //calling actual api 
+
+      const pointsApiPayload: SUI_UpdateProfilePointsPayload = {
+        pointsToAdd: swap.swap_mode === SUE_SWAP_MODE.OPEN ? defaults.pointSystem.completeOpenTrade : defaults.pointSystem.completePrivateTrade,
+        walletId: swap.accept_address,
+        counterPartyWalletId: swap.init_address
+      };
+
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
         offerResult = await completeOpenSwapOffer(payload);
+        pointsUpdateResult = await updatedUserProfilePointsApi(pointsApiPayload);
       }
 
       if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
         offerResult = await completePrivateSwapOffer(payload);
+        pointsUpdateResult = await updatedUserProfilePointsApi(pointsApiPayload);
       }
 
-      if (offerResult) {
+      if (offerResult && pointsUpdateResult) {
         toast.custom(
           (id) => (
             <ToastLookCard

@@ -1,4 +1,6 @@
 import { SUI_NavigationObject, SUI_TabItem } from "@/types/global.types";
+import { SUI_ProfileOverviewTab } from "@/types/profile-store.types";
+import { SUT_AvailablePointsType, SUT_ProfileTagsVariantType } from "@/types/profile.types";
 
 interface IDefaultVariables {
   swapMarket: SUI_NavigationObject;
@@ -9,12 +11,27 @@ interface IDefaultVariables {
     profileCover: string;
     route: string;
   };
+  userSettings: {
+    newUser: {
+      tags: SUT_ProfileTagsVariantType[];
+      points: SUT_AvailablePointsType;
+    };
+  };
+  pointSystem: {
+    createOpenTrade: SUT_AvailablePointsType;
+    completePrivateTrade: SUT_AvailablePointsType;
+    completeOpenTrade: SUT_AvailablePointsType;
+    mintSubname: SUT_AvailablePointsType;
+    socialPost: SUT_AvailablePointsType;
+  };
 }
 
 const swapMarketBaseRoute = "/swap-up/swap-market";
 const mySwapsBaseRoute = "/swap-up/my-swaps";
 const profileBaseRoute = "/swap-up/profile";
 
+const defaultTagForNewUser: SUT_ProfileTagsVariantType = 'normie';
+const availableUserTags: SUT_ProfileTagsVariantType[] = ['normie', 'trader', 'premium', 'community-member', 'collector'];
 
 export const defaults: IDefaultVariables = {
 
@@ -78,5 +95,18 @@ export const defaults: IDefaultVariables = {
     nftImageUrl: '/assets/nfts/default.svg',
     profileCover: '/assets/images/cover-fallback.png',
     route: `${swapMarketBaseRoute}`
+  },
+  userSettings: {
+    newUser: {
+      points: 0,
+      tags: ['normie']
+    }
+  },
+  pointSystem: {
+    createOpenTrade: 500,
+    completeOpenTrade: 2000,
+    completePrivateTrade: 2000,
+    mintSubname: 20000,
+    socialPost: 500
   }
 };

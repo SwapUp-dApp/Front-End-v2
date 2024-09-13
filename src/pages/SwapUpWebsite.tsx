@@ -132,8 +132,9 @@ const SwapUpPage = () => {
 							</div>
 						</div>
 
-						<div className="w-full mt-12 mb-20 flex flex-col lg:flex-row justify-between">
-							<div>
+						<div className="w-full mt-12 mb-20 flex flex-col lg:flex-row justify-between lg:justify-start">
+
+							<div className="w-full ">
 								<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-center mt-12 lg:text-left">
 									We are{" "}
 									<span className="px-3 py-1 rounded-full bg-su_brand_week text-su_primary_bg inline-block">
@@ -145,14 +146,17 @@ const SwapUpPage = () => {
 									for peer-to-peer transactions.
 								</p>
 							</div>
-							<div className="flex justify-center items-center mt-4">
-								<div className="flex flex-col  max-w-[680px] mt-10 h-auto justify-between space-x-4 lg:flex-row md:mt-0">
+
+							<div className="flex justify-center items-center mt-4  w-full">
+								<div className=" flex flex-col max-w-[680px] mt-10 h-auto justify-between space-x-16 lg:flex-row md:mt-0">
+
 									<div className="text-center max-w-[194px]">
 										<p className="font-Poppins text-5xl font-semibold">7500</p>
 										<p className="font-Urbanist text-xs mt-4">
 											Smart contract calls
 										</p>
 									</div>
+
 									<div className="hidden md:block">
 										<VerticalDivider />
 									</div>
@@ -161,12 +165,9 @@ const SwapUpPage = () => {
 										<HorizontalDivider />
 									</div>
 
-
-
 									<div className="h-px w-40 mt-4 mb-4 block lg:hidden">
 										<HorizontalDivider />
 									</div>
-
 
 									<div className="h-px w-40 mt-4 mb-4 block lg:hidden">
 										<HorizontalDivider />
@@ -178,8 +179,10 @@ const SwapUpPage = () => {
 											Members
 										</p>
 									</div>
+
 								</div>
 							</div>
+
 						</div>
 					</div>
 				</div>
@@ -333,57 +336,18 @@ const SwapUpPage = () => {
 					</div>
 
 					<ScrollArea className="w-full mb-20 py-6">
-						<div className="w-full flex justify-start overflow-x-auto space-x-5">
+						<div className="w-full flex justify-start space-x-5">
 							<Testimonial
 								rating={5}
 								text="Swapup has been an integral part of one of the main holder perks of Stone Nomads NFT, the ability to “swap up” your Stone Nomads for higher ranked Stone Nomads from the vault. The process is smooth, secure and minimizes gas fees. Swapup is a trusted partner in a trustless ecosystem and we’re looking forward to seeing what features are added to the Swapup dapp as the Stone Nomads wander the blockchain!"
 								author="StoneNomads NFT Project"
 								containerClasses="w-[340px]"
 							/>
-							<div>
+
+							{/* <div>
 								<VerticalDivider />
-							</div>
-							<Testimonial
-								rating={5}
-								text="I've been relying on this platform for several months now, and
-								it has truly been a game-changer. Its seamless operation and
-								attentive customer service have simplified my transactions and
-								saved me valuable time."
-								author="Emily J."
-								containerClasses="w-[340px]"
-							/>
-							<div>
-								<VerticalDivider />
-							</div>
+							</div> */}
 
-							<Testimonial
-								rating={5}
-								text="Using this platform has been a revelation for me. I've relied on it for months now, and it continues to exceed my expectations. From its smooth functionality to the exceptional customer support, it truly sets the standard in its industry."
-								author="Donald M."
-								containerClasses="w-[340px]"
-							/>
-
-							<div>
-								<VerticalDivider />
-							</div>
-
-							<Testimonial
-								rating={5}
-								text="For the past several months, I've been utilizing this platform, and it has truly transformed the way I handle transactions. Its intuitive design and impeccable customer service have made it an indispensable tool in my daily routine."
-								author="Max S."
-								containerClasses="w-[340px]"
-							/>
-
-							<div>
-								<VerticalDivider />
-							</div>
-
-							<Testimonial
-								rating={5}
-								text="I can't speak highly enough of this platform. It has revolutionized the way I conduct transactions, and I've been a loyal user for months. The seamless experience and unparalleled customer service have set it apart from its competitors."
-								author="Rudy K."
-								containerClasses="w-[340px]"
-							/>
 						</div>
 						<ScrollBar orientation="horizontal" className=" h-2" />
 					</ScrollArea>

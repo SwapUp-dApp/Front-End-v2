@@ -1,29 +1,35 @@
-import { cn, generateRandomKey } from "@/lib/utils";
+import { generateRandomKey } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
 import { Form, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
 
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useProfileStore } from "@/store/profile";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
 import CustomAvatar from "../shared/CustomAvatar";
 import { Input } from "@/components/ui/input";
 import { Schema_ProfileEditAvatarForm } from "@/schema";
+import { SUI_DeleteProfilePicturePayload, SUI_UploadProfilePicturePayload } from "@/types/profile.types";
+import { deleteProfilePictureApi, uploadProfilePictureApi } from "@/service/api/user.service";
+import { showNotificationToast } from "@/lib/helpers";
 
 interface IProp {
-  children?: any;
-  className?: string;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 
-const EditProfileImageDialog = ({ children, className }: IProp) => {
+const EditProfileImageDialog = ({ open, setOpen }: IProp) => {
   const [profile, setProfileAvatar] = useProfileStore(state => [state.profile, state.setProfileAvatar]);
   const [currentAvatar, setCurrentAvatar] = useState(profile.avatar);
   const [formKey, setFormKey] = useState(generateRandomKey(6));
+
+  const [isUpLoading, setIsUpLoading] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
 
   const form = useForm<z.infer<typeof Schema_ProfileEditAvatarForm>>({
     resolver: zodResolver(Schema_ProfileEditAvatarForm),
@@ -34,19 +40,46 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
 
   const { errors } = form.formState;
 
-  const onSubmit = (values: z.infer<typeof Schema_ProfileEditAvatarForm>) => {
+  const onSubmit = async (values: z.infer<typeof Schema_ProfileEditAvatarForm>) => {
     const { profileImage } = values;
 
-    if (profileImage) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataURL = reader.result as string;
-        setProfileAvatar(dataURL);
-      };
-      reader.readAsDataURL(profileImage);
-    }
+    try {
+      setIsUpLoading(true);
 
-    setFormKey(generateRandomKey(6));
+      if (profileImage) {
+        const payload: SUI_UploadProfilePicturePayload = {
+          file: profileImage,
+          pictureType: 'profile-avatar',
+          walletId: profile.wallet.address
+        };
+
+        const response = await uploadProfilePictureApi(payload);
+        // console.log("Image Upload res: ", response);
+
+        if (response.data.url) {
+          showNotificationToast(
+            'success',
+            "Image updated successfully!",
+            'Your profile picture is updated.'
+          );
+
+          setProfileAvatar(response.data.url);
+
+          // Closing dialog
+          setOpen(false);
+        }
+      }
+
+    } catch (error: any) {
+      showNotificationToast(
+        'error',
+        "Error while updating picture",
+        error.message
+      );
+
+    } finally {
+      setIsUpLoading(false);
+    }
   };
 
   const handleSelectedImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,24 +102,58 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
     };
   };
 
-  const handleRemoveProfileImage = () => {
-    setProfileAvatar('');
-    setCurrentAvatar('');
-    form.reset();
-    setFormKey(generateRandomKey(6));
+  const handleRemoveProfileImage = async () => {
+
+    try {
+      setIsRemoving(true);
+
+      const payload: SUI_DeleteProfilePicturePayload = {
+        pictureType: 'profile-avatar',
+        walletId: profile.wallet.address
+      };
+
+      const deleteResult = await deleteProfilePictureApi(payload);
+      console.log("Deleted image res: ", deleteResult);
+
+      if (deleteResult.data) {
+
+        showNotificationToast(
+          'success',
+          "Image deleted successfully!",
+          'Your profile picture is deleted.'
+        );
+
+        setProfileAvatar('');
+        setCurrentAvatar('');
+
+        setFormKey(generateRandomKey(6));
+
+        setOpen(false);
+      }
+
+    } catch (error: any) {
+      showNotificationToast(
+        'error',
+        "Error while deleting picture",
+        error.message
+      );
+    } finally {
+      setIsRemoving(false);
+    }
   };
 
-  return (
-    <Dialog>
-      <DialogTrigger
-        className={cn(
-          "",
-          className
-        )}
-      >
-        {children}
-      </DialogTrigger>
+  useEffect(() => {
+    if (!open) {
+      // Reset the form and clear the avatar when the dialog is closed
+      form.reset({
+        profileImage: undefined,
+      });
 
+    }
+  }, [open, form]);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-[400px] p-4 px-6" >
         <div className="space-y-3" >
           {/* header */}
@@ -141,12 +208,17 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
                   className="px-[20px] py-2"
                   disabled={!currentAvatar}
                   onClick={handleRemoveProfileImage}
+                  isLoading={isRemoving}
+                  type="button"
                 >
                   Remove
                 </CustomOutlineButton>
 
                 <div className="relative" >
-                  <CustomOutlineButton className="px-[20px] py-2">
+                  <CustomOutlineButton
+                    className="px-[20px] py-2"
+                    type="button"
+                  >
                     Replace
                   </CustomOutlineButton>
 
@@ -164,7 +236,8 @@ const EditProfileImageDialog = ({ children, className }: IProp) => {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={!form.watch('profileImage') && !errors.profileImage?.message}
+                disabled={(!form.watch('profileImage') && !errors.profileImage?.message)}
+                isLoading={isUpLoading}
               >
                 Apply Changes
               </Button>

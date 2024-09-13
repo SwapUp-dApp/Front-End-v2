@@ -6,15 +6,18 @@ import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
 import RoomHeader from "@/components/custom/swap-market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import { Button } from "@/components/ui/button";
+import { defaults } from "@/constants/defaults";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import { isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { getAvailableCurrenciesApi, getSwapDetailsByTradeOrOpenTradeIdApi } from "@/service/api";
+import { updatedUserProfilePointsApi } from "@/service/api/user.service";
 import { useCancelSwapOffer, useCompleteOpenSwapOffer, useCompletePrivateSwapOffer, useGetSwapDetails, useRejectSwapOffer } from "@/service/queries/swap-market.query";
 import { useGlobalStore } from "@/store/global-store";
 import { useProfileStore } from "@/store/profile";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
+import { SUI_UpdateProfilePointsPayload } from "@/types/profile.types";
 import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CancelSwap, SUP_CompleteSwap } from "@/types/swap-market.types";
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -170,17 +173,26 @@ const ViewSwapRoom = () => {
         timestamp: triggerTransfer.timeStamp,
       };
 
+      const pointsApiPayload: SUI_UpdateProfilePointsPayload = {
+        pointsToAdd: swap.swap_mode === SUE_SWAP_MODE.OPEN ? defaults.pointSystem.completeOpenTrade : defaults.pointSystem.completePrivateTrade,
+        walletId: swap.accept_address,
+        counterPartyWalletId: swap.init_address
+      };
+
       let offerResult;
+      let pointsUpdateResult;
       //calling actual api 
       if (swap.swap_mode === SUE_SWAP_MODE.OPEN) {
         offerResult = await completeOpenSwapOffer(payload);
+        pointsUpdateResult = await updatedUserProfilePointsApi(pointsApiPayload);
       }
 
       if (swap.swap_mode === SUE_SWAP_MODE.PRIVATE) {
         offerResult = await completePrivateSwapOffer(payload);
+        pointsUpdateResult = await updatedUserProfilePointsApi(pointsApiPayload);
       }
 
-      if (offerResult) {
+      if (offerResult && pointsUpdateResult) {
         toast.custom(
           (id) => (
             <ToastLookCard
