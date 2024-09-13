@@ -77,5 +77,6 @@ export interface IProfileStore {
   setProfileAvatar: (avatar: string) => void;
   setProfileCoverImage: (coverImage: string) => void;
   setProfileDetails: (details: IProfileDetails) => void;
+  setUserProfile: (userProfile: IProfile) => void;
 }
 

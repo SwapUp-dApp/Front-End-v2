@@ -10,7 +10,7 @@ import CustomIconButton from "../shared/CustomIconButton";
 import EditProfileImageDialog from "./EditProfileImageDialog";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
 import EditProfileInfoDialog from "./EditProfileInfoDialog";
-import { IProfileDetails } from "@/types/profile.types";
+import { IProfileDetails, SUI_DeleteProfilePicturePayload } from "@/types/profile.types";
 import { Link, useLocation } from "react-router-dom";
 import ProfileTagTile from "../tiles/ProfileTagTile";
 import { useProfileStore } from "@/store/profile";
@@ -21,6 +21,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
+import { deleteProfilePictureApi } from "@/service/api/user.service";
+import { showNotificationToast } from "@/lib/helpers";
 
 
 interface IProp {
@@ -38,6 +40,11 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
   const [currentEditCover, setCurrentEditCover] = useState(profile.coverImage);
   const [editCoverFormKey, setEditCoverFormKey] = useState(generateRandomKey(6));
 
+  const [openEditProfilePictureDialog, setOpenEditProfilePictureDialog] = useState(false);
+  const [openEditProfileCoverDialog, setOpenEditProfileCoverDialog] = useState(false);
+
+  const [isRemovingCover, setIsRemovingCover] = useState(false);
+
 
   const form = useForm<z.infer<typeof Schema_ProfileEditCoverImageForm>>({
     resolver: zodResolver(Schema_ProfileEditCoverImageForm),
@@ -46,11 +53,42 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
     },
   });
 
-  const handleRemoveProfileCoverImage = () => {
-    setProfileCoverImage('');
-    setCurrentEditCover('');
-    form.reset();
-    setEditCoverFormKey(generateRandomKey(6));
+  const handleRemoveProfileCoverImage = async () => {
+    try {
+      setIsRemovingCover(true);
+
+      const payload: SUI_DeleteProfilePicturePayload = {
+        pictureType: 'profile-cover',
+        walletId: profile.wallet.address
+      };
+
+      const deleteResult = await deleteProfilePictureApi(payload);
+      console.log("Deleted image res: ", deleteResult);
+
+      if (deleteResult.data) {
+
+        showNotificationToast(
+          'success',
+          "Image deleted successfully!",
+          'Your profile picture is deleted.'
+        );
+
+        setProfileCoverImage('');
+        setCurrentEditCover('');
+        setEditCoverFormKey(generateRandomKey(6));
+
+        setOpenEditProfileCoverDialog(false);
+      }
+
+    } catch (error: any) {
+      showNotificationToast(
+        'error',
+        "Error while deleting picture",
+        error.message
+      );
+    } finally {
+      setIsRemovingCover(false);
+    }
   };
 
   return (
@@ -92,33 +130,33 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
               <CustomOutlineButton
                 className="px-[20px] py-2 "
                 onClick={handleRemoveProfileCoverImage}
+                type="button"
+                isLoading={isRemovingCover}
               >
                 Remove
               </CustomOutlineButton>
 
-              <EditProfileCoverImageDialog
-                handleRemoveProfileCoverImage={handleRemoveProfileCoverImage}
-                form={form}
-                editCoverFormKey={editCoverFormKey}
-                currentEditCover={currentEditCover}
-                setEditCoverFormKey={setEditCoverFormKey}
-                setCurrentEditCover={setCurrentEditCover}
+              <CustomOutlineButton
+                className="px-[20px] py-2"
+                onClick={() => setOpenEditProfileCoverDialog(true)}
+                type="button"
               >
-                <CustomOutlineButton className="px-[20px] py-2 ">Replace</CustomOutlineButton>
-              </EditProfileCoverImageDialog>
+                Replace
+              </CustomOutlineButton>
             </div>
           </div>
 
-          <div className="absolute -bottom-8 lg:-bottom-12 p-1 rounded-full bg-su_primary_bg" >
-            <EditProfileImageDialog>
-              <CustomAvatar
-                className=""
-                imageSrc={profile.avatar}
-                fallbackName={profile.details?.title || ''}
-                sizeClasses="w-16 h-16 lg:w-20 lg:h-20"
-                textSizeClasses="text-1.5xl lg:text-2.5xl"
-              />
-            </EditProfileImageDialog>
+          <div
+            className="absolute -bottom-8 lg:-bottom-12 p-1 rounded-full bg-su_primary_bg"
+            onClick={() => { setOpenEditProfilePictureDialog(true); }}
+          >
+            <CustomAvatar
+              className=""
+              imageSrc={profile.avatar}
+              fallbackName={profile.details?.title || ''}
+              sizeClasses="w-16 h-16 lg:w-20 lg:h-20"
+              textSizeClasses="text-1.5xl lg:text-2.5xl"
+            />
           </div>
         </div>
 
@@ -134,7 +172,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
             <p className="text-sm hidden lg:inline-block text-su_ternary" >Joined {moment.utc(profile.joinDate).format("MMM, YYYY")}</p>
           </div>
 
-          {/* action / social icons */}
+          {/* Action / Social icons */}
           <span className="flex items-center gap-2">
             <EditProfileInfoDialog>
               <CustomIconButton title="edit-profile-image" >
@@ -160,22 +198,21 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
           <p className="text-sm" >Joined {moment.utc(profile.joinDate).format("MMM, YYYY")}</p>
         </div>
 
-        {/* Tiles */}
+        {/*Profile Tags section */}
         <div className="flex items-center flex-wrap gap-2 ">
-
-          <ProfileTagTile variant="normie" />
-          <ProfileTagTile variant="premium" />
-          <ProfileTagTile variant="trader" />
-          <ProfileTagTile variant="collector" />
-          <ProfileTagTile variant="community-member" />
+          {
+            profile.details?.tags?.map(tag => (
+              <ProfileTagTile key={tag} variant={tag} />
+            ))
+          }
 
           <SwapParameterTile
             title="Total Points Earned: "
-            value={'150'}
+            value={profile.details?.points || 0}
           />
         </div>
 
-        {/* Description */}
+        {/*Profile Description Section*/}
         <p className="dark:text-su_ternary flex items-center gap-2 !line-clamp-5 lg:!line-clamp-3">
           {profile.details?.description}
         </p>
@@ -202,10 +239,24 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
         </div>
 
       </div>
+
+      <EditProfileImageDialog
+        open={openEditProfilePictureDialog}
+        setOpen={setOpenEditProfilePictureDialog}
+      />
+
+      <EditProfileCoverImageDialog
+        handleRemoveProfileCoverImage={handleRemoveProfileCoverImage}
+        form={form}
+        editCoverFormKey={editCoverFormKey}
+        currentEditCover={currentEditCover}
+        setEditCoverFormKey={setEditCoverFormKey}
+        setCurrentEditCover={setCurrentEditCover}
+        open={openEditProfileCoverDialog}
+        setOpen={setOpenEditProfileCoverDialog}
+        isRemovingCover={isRemovingCover}
+      />
     </div >
-
-
-
   );
 };
 

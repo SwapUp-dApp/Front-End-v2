@@ -1,17 +1,16 @@
 import { cn } from '@/lib/utils';
+import { SUT_ProfileTagsVariantType } from '@/types/profile.types';
 import { ReactElement } from 'react';
-
-type variantType = "normie" | "premium" | "trader" | "collector" | "community-member";
 
 interface IProp {
   className?: string;
-  variant?: variantType;
+  variant?: SUT_ProfileTagsVariantType;
   title?: string;
   showIcon?: boolean;
 }
 
 interface IVariantItem {
-  key: variantType;
+  key: SUT_ProfileTagsVariantType;
   title: string;
   icon: ReactElement;
 }

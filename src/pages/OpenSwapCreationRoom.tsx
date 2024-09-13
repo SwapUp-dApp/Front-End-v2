@@ -34,6 +34,9 @@ import { useGlobalStore } from "@/store/global-store";
 import { SUI_CollectionItem, SUI_CurrencyChainItem } from "@/types/global.types";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import { getWalletProxy } from "@/lib/walletProxy";
+import { updatedUserProfilePointsApi } from "@/service/api/user.service";
+import { defaults } from "@/constants/defaults";
+import { SUI_UpdateProfilePointsPayload } from "@/types/profile.types";
 
 interface ISwapCreation {
   isLoading: boolean;
@@ -181,9 +184,15 @@ const OpenSwapCreationRoom = () => {
         }
       };
 
-      const offerResult = await createOpenSwapOffer(swapPayload);
+      const pointsApiPayload: SUI_UpdateProfilePointsPayload = {
+        pointsToAdd: defaults.pointSystem.createOpenTrade,
+        walletId: profile.wallet.address
+      };
 
-      if (offerResult) {
+      const offerResult = await createOpenSwapOffer(swapPayload);
+      const pointsUpdateResult = await updatedUserProfilePointsApi(pointsApiPayload);
+
+      if (offerResult && pointsUpdateResult) {
         toast.custom(
           (id) => (
             <ToastLookCard
