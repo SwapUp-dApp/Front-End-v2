@@ -11,7 +11,9 @@ import { Textarea } from "@/components/ui/textarea";
 import CustomIconButton from "../shared/CustomIconButton";
 import { generateRandomKey } from "@/lib/utils";
 import { useProfileStore } from "@/store/profile";
-import { IProfileDetails } from "@/types/profile.types";
+import { IProfileDetails, SUI_UpdateProfileDetailsPayload } from "@/types/profile.types";
+import { updatedUserProfileDetailsApi } from "@/service/api/user.service";
+import { showNotificationToast } from "@/lib/helpers";
 
 
 interface IProp {
@@ -22,7 +24,9 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
   const [formKey, setFormKey] = useState(generateRandomKey(6));
   const [isOpen, setIsOpen] = useState(false);
 
-  const [setProfileDetails, profileDetails] = useProfileStore(state => [state.setProfileDetails, state.profile.details]);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const [setProfileDetails, profileDetails, wallet] = useProfileStore(state => [state.setProfileDetails, state.profile.details, state.profile.wallet]);
 
   const form = useForm<z.infer<typeof Schema_ProfileInfoForm>>({
     resolver: zodResolver(Schema_ProfileInfoForm),
@@ -34,7 +38,8 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
     }
   });
 
-  const onSubmit = (data: z.infer<typeof Schema_ProfileInfoForm>) => {
+  const onSubmit = async (data: z.infer<typeof Schema_ProfileInfoForm>) => {
+
     const details: IProfileDetails = {
       title: data.title,
       description: data.description ? data.description : '',
@@ -42,9 +47,44 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
       warpcast: data.warpcastLink
     };
 
-    setProfileDetails(details);
-    setIsOpen(false);
-    setFormKey(generateRandomKey(6));
+    const payload: SUI_UpdateProfileDetailsPayload = {
+      walletId: wallet.address,
+      title: details.title,
+      description: details.description,
+      social_links: {
+        twitter: details.twitter ? details.twitter : '',
+        warpcast: details.twitter ? details.twitter : ''
+      }
+    };
+
+    try {
+      setIsUpdating(true);
+      const updatedRes = await updatedUserProfileDetailsApi(payload);
+
+      if (updatedRes) {
+
+        showNotificationToast(
+          'success',
+          "Profile updated successfully!",
+          'Your profile details are updated.'
+        );
+
+        setProfileDetails(details);
+        setIsOpen(false);
+        setFormKey(generateRandomKey(6));
+      }
+
+    } catch (error: any) {
+
+      showNotificationToast(
+        'error',
+        "Error while updating profile details",
+        error.message
+      );
+
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleRemoveSocialLink = (linkKey: "warpcastLink" | "twitterLink") => {
@@ -197,7 +237,7 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
                     </div>
                   </div>
 
-                  <Button variant={"default"} type="submit" className="w-full" >Save changes</Button>
+                  <Button variant={"default"} isLoading={isUpdating} type="submit" className="w-full" >Save changes</Button>
                 </form>
               </Form>
             </div>

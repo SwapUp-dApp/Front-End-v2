@@ -1,5 +1,11 @@
 import { SUI_CurrencyChainItem } from "./global.types";
 
+
+export type SUT_ProfileTagsVariantType = "normie" | "premium" | "trader" | "collector" | "community-member";
+export type SUT_AvailablePointsType = 500 | 2000 | 20000 | 0;
+export type SUT_BlobStorageImageType = "profile-avatar" | "profile-cover";
+
+
 export interface INetwork {
     id: string;
     name: string;
@@ -18,6 +24,8 @@ export interface IProfileDetails {
     description: string;
     twitter?: string;
     warpcast?: string;
+    tags?: SUT_ProfileTagsVariantType[];
+    points?: number;
 };
 
 export interface IProfile {
@@ -120,4 +128,35 @@ export interface SUI_CheckSubnameAvailabilityParams {
     owner?: string;
     currentPage?: number;
     pageSize?: number;
+}
+
+export interface SUI_UploadProfilePicturePayload {
+    file: File;
+    pictureType: SUT_BlobStorageImageType;
+    walletId: string;
+}
+
+export interface SUI_DeleteProfilePicturePayload extends Pick<SUI_UploadProfilePicturePayload, 'pictureType' | 'walletId'> { }
+
+export interface SUI_CreateNewUserPayload {
+    points: SUT_AvailablePointsType;
+    tags: SUT_ProfileTagsVariantType[];
+    title: string,
+    description: string;
+}
+
+export interface SUI_UpdateProfilePointsPayload {
+    walletId: string;
+    counterPartyWalletId?: string;
+    pointsToAdd: SUT_AvailablePointsType;
+}
+
+export interface SUI_UpdateProfileDetailsPayload {
+    walletId: string;
+    title: string;
+    description: string;
+    social_links: {
+        warpcast: string,
+        twitter: string;
+    };
 }

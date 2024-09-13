@@ -11,10 +11,12 @@ import CustomOutlineButton from "../shared/CustomOutlineButton";
 import { Input } from "@/components/ui/input";
 import { Schema_ProfileEditCoverImageForm } from "@/schema";
 import { defaults } from "@/constants/defaults";
+import { useEffect, useState } from "react";
+import { SUI_UploadProfilePicturePayload } from "@/types/profile.types";
+import { uploadProfilePictureApi } from "@/service/api/user.service";
+import { showNotificationToast } from "@/lib/helpers";
 
 interface IProp {
-  children?: any;
-  className?: string;
   handleRemoveProfileCoverImage: () => void;
   form: UseFormReturn<{
     coverImage?: File | undefined;
@@ -23,27 +25,58 @@ interface IProp {
   currentEditCover: string;
   setEditCoverFormKey: React.Dispatch<React.SetStateAction<string>>;
   setCurrentEditCover: React.Dispatch<React.SetStateAction<string>>;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isRemovingCover: boolean;
 }
 
 
-const EditProfileCoverImageDialog = ({ children, className, currentEditCover, editCoverFormKey, form, handleRemoveProfileCoverImage, setCurrentEditCover, setEditCoverFormKey }: IProp) => {
-  const setProfileCoverImage = useProfileStore(state => state.setProfileCoverImage);
+const EditProfileCoverImageDialog = ({ currentEditCover, editCoverFormKey, form, handleRemoveProfileCoverImage, setCurrentEditCover, setEditCoverFormKey, open, setOpen, isRemovingCover }: IProp) => {
+
+  const [setProfileCoverImage, profile] = useProfileStore(state => [state.setProfileCoverImage, state.profile]);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
 
   const { errors } = form.formState;
 
-  const onSubmit = (values: z.infer<typeof Schema_ProfileEditCoverImageForm>) => {
+  const onSubmit = async (values: z.infer<typeof Schema_ProfileEditCoverImageForm>) => {
     const { coverImage } = values;
 
-    if (coverImage) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataURL = reader.result as string;
-        setProfileCoverImage(dataURL);
-      };
-      reader.readAsDataURL(coverImage);
-    }
+    try {
+      setIsUploadingCover(true);
 
-    setEditCoverFormKey(generateRandomKey(6));
+      if (coverImage) {
+        const payload: SUI_UploadProfilePicturePayload = {
+          file: coverImage,
+          pictureType: 'profile-cover',
+          walletId: profile.wallet.address
+        };
+
+        const response = await uploadProfilePictureApi(payload);
+        // console.log("Image Upload res: ", response);
+
+        if (response.data.url) {
+          showNotificationToast(
+            'success',
+            "Cover updated successfully!",
+            'Your profile cover image is updated.'
+          );
+
+          setProfileCoverImage(response.data.url);
+          // Closing dialog
+          setOpen(false);
+        }
+      }
+
+    } catch (error: any) {
+      showNotificationToast(
+        'error',
+        "Error while updating cover",
+        error.message
+      );
+
+    } finally {
+      setIsUploadingCover(false);
+    }
   };
 
   const handleSelectedImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,16 +90,18 @@ const EditProfileCoverImageDialog = ({ children, className, currentEditCover, ed
     img.src = URL.createObjectURL(file);
 
     img.onload = async () => {
-      const aspectRatio = getAspectRatio(img.width, img.height);
-      const desiredAspectRatio = getAspectRatio(1226, 156);
+      // Aspect ratio validation
 
-      if (Math.abs(aspectRatio - desiredAspectRatio) > 0.01) {
-        form.setError("coverImage", {
-          type: "manual",
-          message: "The image aspect ratio must be approximately 7.86:1",
-        });
-        return;
-      }
+      // const aspectRatio = getAspectRatio(img.width, img.height);
+      // const desiredAspectRatio = getAspectRatio(1226, 156);
+
+      // if (Math.abs(aspectRatio - desiredAspectRatio) > 0.01) {
+      //   form.setError("coverImage", {
+      //     type: "manual",
+      //     message: "The image aspect ratio must be approximately 7.86:1",
+      //   });
+      //   return;
+      // }
 
       form.setValue("coverImage", file);
       const isValid = await form.trigger();
@@ -80,17 +115,18 @@ const EditProfileCoverImageDialog = ({ children, className, currentEditCover, ed
     };
   };
 
-  return (
-    <Dialog>
-      <DialogTrigger
-        className={cn(
-          "",
-          className
-        )}
-      >
-        {children}
-      </DialogTrigger>
+  useEffect(() => {
+    if (!open) {
+      // Reset the form and clear the cover when the dialog is closed
+      form.reset({
+        coverImage: undefined,
+      });
+      setEditCoverFormKey(generateRandomKey(6));
+    }
+  }, [open, form]);
 
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="w-[400px] p-4 px-6" >
         <div className="space-y-3" >
           {/* header */}
@@ -142,13 +178,18 @@ const EditProfileCoverImageDialog = ({ children, className, currentEditCover, ed
                 <CustomOutlineButton
                   className="px-[20px] py-2"
                   disabled={!currentEditCover}
+                  isLoading={isRemovingCover}
                   onClick={handleRemoveProfileCoverImage}
+                  type="button"
                 >
                   Remove
                 </CustomOutlineButton>
 
                 <div className="relative" >
-                  <CustomOutlineButton className="px-[20px] py-2">
+                  <CustomOutlineButton
+                    className="px-[20px] py-2"
+                    type="button"
+                  >
                     Replace
                   </CustomOutlineButton>
 
@@ -161,12 +202,17 @@ const EditProfileCoverImageDialog = ({ children, className, currentEditCover, ed
                 className="text-su_secondary text-sm font-semibold cursor-pointer"
               >
                 Image requirements: .jpeg, jpg, .png or .gif file.
+
+                <span className="block text-center" >
+                  <span className="text-su_primary" >Note: </span>  Aspect ratio around 7.86:1
+                </span>
               </FormLabel>
 
               <Button
                 type="submit"
                 className="w-full"
                 disabled={!form.watch('coverImage') && !errors.coverImage?.message}
+                isLoading={isUploadingCover}
               >
                 Apply Changes
               </Button>

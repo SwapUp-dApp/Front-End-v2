@@ -6,7 +6,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useProfileStore } from "@/store/profile";
 import { defaults } from "@/constants/defaults";
 import { useActiveAccount, useActiveWalletChain } from "thirdweb/react";
-import { IWallet } from "@/types/profile.types";
+import { IProfile, IWallet, SUI_CreateNewUserPayload } from "@/types/profile.types";
 import { getInitialProfile } from "@/store/profile/profile-helpers";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { generateRandomKey, handleTwitterSharingProcessLocalstorageState, isValidWalletAddress } from "@/lib/utils";
@@ -24,7 +24,7 @@ const MainLayout = () => {
   const activeAccount = useActiveAccount();
   const activeChain = useActiveWalletChain();
 
-  const [setProfileWallet, wallet] = useProfileStore(state => [state.setProfileWallet, state.profile.wallet]);
+  const [setProfileWallet, wallet, setUserProfile] = useProfileStore(state => [state.setProfileWallet, state.profile.wallet, state.setUserProfile]);
   const [startRecentSwapSharingProcess, setStartRecentSwapSharingProcess] = useGlobalStore(state => [state.startRecentSwapSharingProcess, state.setStartRecentSwapSharingProcess]);
 
   const walletConnectionExistsInLocalStorage = localStorage.getItem("thirdweb:active-wallet-id");
@@ -52,9 +52,38 @@ const MainLayout = () => {
       if (isValidWalletAddress(connectedWallet.address)) {
 
         try {
-          const newCreatedUser = await createUserByWalletIdApi(connectedWallet.address);
-          if (newCreatedUser) {
-            console.log(newCreatedUser.data.message);
+          const payload: SUI_CreateNewUserPayload = {
+            points: defaults.userSettings.newUser.points,
+            tags: defaults.userSettings.newUser.tags,
+            title: '',
+            description: ''
+          };
+
+          const userResponse = await createUserByWalletIdApi(connectedWallet.address, payload);
+
+          if (userResponse) {
+            const { createdAt, description, title, images, tags, social_links, points } = userResponse.data.data;
+            const latestProfile = useProfileStore.getState().profile;
+
+            const userProfileDetails: IProfile = {
+              ...latestProfile,
+              avatar: images.avatar,
+              coverImage: images.coverImage,
+              joinDate: createdAt,
+              details: {
+                ...latestProfile.details,
+                title: title,
+                description: description,
+                points: points,
+                tags: tags,
+                twitter: social_links.twitter,
+                warpcast: social_links.warpcast
+              }
+            };
+
+            setUserProfile(userProfileDetails);
+
+            // console.log("user details: ", userProfileDetails);
           }
 
         } catch (error: any) {

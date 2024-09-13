@@ -10,7 +10,7 @@ interface IProp {
 const LeaderboardCard = ({ users }: IProp) => {
   return (
     <>
-      <Card className="h-[100px] border-none bg-card dark:bg-su_secondary_bg p-3" >
+      <Card className="min-h-[100px] border-none bg-card dark:bg-su_secondary_bg p-3" >
         <CardContent className={`p-0 flex flex-col gap-3`}>
           <div className="flex items-start justify-between">
             <div className="flex gap-2 items-center">
@@ -25,42 +25,42 @@ const LeaderboardCard = ({ users }: IProp) => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-1.5" >
+          <div className="flex flex-col gap-1.5 2xl:gap-4" >
             <div className="flex items-center gap-6 2xl:gap-8 mx-auto">
               <div className="flex items-center gap-2">
-                <img className="w-6 h-6" src="/assets/svgs/goldBadge.svg" alt="1st" />
-                <span className="text-xs font-semibold" >1,600</span>
+                <img className="w-6 h-6 2xl:w-8 2xl:h-8" src="/assets/svgs/goldBadge.svg" alt="1st" />
+                <span className="text-xs 2xl:text-sm font-semibold" >1,600</span>
               </div>
               <div className="flex items-center gap-2">
-                <img className="w-6 h-6" src="/assets/svgs/silverBadge.svg" alt="1st" />
-                <span className="text-xs font-semibold" >1,300</span>
+                <img className="w-6 h-6 2xl:w-8 2xl:h-8" src="/assets/svgs/silverBadge.svg" alt="1st" />
+                <span className="text-xs 2xl:text-sm font-semibold" >1,300</span>
               </div>
               <div className="flex items-center gap-2">
-                <img className="w-6 h-6" src="/assets/svgs/bronzeBadge.svg" alt="1st" />
-                <span className="text-xs font-semibold" >1,100</span>
+                <img className="w-6 h-6 2xl:w-8 2xl:h-8" src="/assets/svgs/bronzeBadge.svg" alt="1st" />
+                <span className="text-xs 2xl:text-sm font-semibold" >1,100</span>
               </div>
               <div className="flex items-center gap-2">
-                <img className="w-6 h-6" src="/assets/svgs/fourthPlaceBadge.svg" alt="1st" />
-                <span className="text-xs font-semibold" >800</span>
+                <img className="w-6 h-6 2xl:w-8 2xl:h-8" src="/assets/svgs/fourthPlaceBadge.svg" alt="1st" />
+                <span className="text-xs 2xl:text-sm font-semibold" >800</span>
               </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-3">
+            <div className="grid grid-cols-4 gap-3 2xl:gap-4 mx-auto">
               {
                 users.map((user, index) => {
                   if (index < 4)
                     return (
-                      <div className="flex items-center justify-between" key={user.id}>
-                        <div className="w-[25%] border">
-                          <Avatar className="relative w-4 h-4 mx-auto">
-                            <AvatarImage className="w-4 h-4 rounded-full" src={user.image} alt="@shadcn" />
-                            <AvatarFallback className="text-[8px] rounded-full font-semibold dark:bg-su_enable_bg w-4 h-4 flex justify-center items-center">
+                      <div className="flex items-center gap-2 3xl:gap-3" key={user.id}>
+                        <div className="">
+                          <Avatar className="relative w-4 h-4 2xl:w-6 2xl:h-6 3xl:w-8 3xl:h-8 mx-auto">
+                            <AvatarImage className="w-4 h-4 2xl:w-6 2xl:h-6 3xl:w-8 3xl:h-8 rounded-full" src={user.image} alt="@shadcn" />
+                            <AvatarFallback className="text-[8px] rounded-full font-semibold dark:bg-su_enable_bg w-4 h-4 2xl:w-6 2xl:h-6 3xl:w-8 3xl:h-8 flex justify-center items-center">
                               {getNameInitials(user.title)}
                             </AvatarFallback>
                           </Avatar>
                         </div>
 
-                        <p className="w-[72%] text-2xs dark:text-su_secondary line-clamp-1 " >{getShortenWalletAddress("0xaE30Cb8B6348e0aB7995F1E2d3E85718B75eF074")}</p>
+                        <p className="text-2xs 2xl:text-xs 3xl:text-sm dark:text-su_secondary line-clamp-1" >{getShortenWalletAddress("0xaE30Cb8B6348e0aB7995F1E2d3E85718B75eF074")}</p>
                       </div>
                     );
 
