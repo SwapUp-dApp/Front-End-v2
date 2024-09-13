@@ -1,25 +1,90 @@
 import ProfileHeader from "@/components/custom/profile/ProfileHeader";
 import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
+import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 import { defaults } from "@/constants/defaults";
+import { showNotificationToast } from "@/lib/helpers";
 import { getActiveTabFromPathname } from "@/lib/utils";
+import { getUserByWalletIdApi } from "@/service/api";
+import { useProfileStore } from "@/store/profile";
+import { useSwapMarketStore } from "@/store/swap-market";
+import { IProfile } from "@/types/profile.types";
+import { useQuery } from "@tanstack/react-query";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
+  const [wallet, setUserProfile] = useProfileStore(state => [state.profile.wallet, state.setUserProfile]);
+
   const handleResetData = () => {
     // resetRoom('privateMarket', 'privateRoom');
   };
 
+  const { isLoading } = useQuery({
+    queryKey: [`getUserByWalletIdApi`],
+    queryFn: async () => {
+      try {
+        if (wallet.address && wallet.isConnected) {
+          const userResponse = await getUserByWalletIdApi(wallet.address);
+
+          if (userResponse) {
+            const { createdAt, description, title, images, tags, social_links, points } = userResponse.data.data;
+            const latestProfile = useProfileStore.getState().profile;
+
+            const userProfileDetails: IProfile = {
+              ...latestProfile,
+              avatar: images.avatar,
+              coverImage: images.coverImage,
+              joinDate: createdAt,
+              details: {
+                ...latestProfile.details,
+                title: title,
+                description: description,
+                points: points,
+                tags: tags,
+                twitter: social_links.twitter,
+                warpcast: social_links.warpcast
+              }
+            };
+
+            setUserProfile(userProfileDetails);
+
+            // console.log("user details: ", userProfileDetails);
+          }
+          return userResponse.data.data;
+        }
+        return null;
+
+      } catch (error: any) {
+        showNotificationToast(
+          'error',
+          "unable to get user profile",
+          error.message
+        );
+
+        throw error;
+      }
+    },
+    retry: false
+  });
+
   return (
     <>
       <section className="flex flex-col gap-4" >
-        <ProfileHeader
-          resetData={handleResetData}
-          existDescription="By leaving profile, your changes will not be saved"
-          existTitle="Are you sure you want to exit your Profile page?"
+        <LoadingDataset
+          isLoading={isLoading}
+          title="Loading user profile"
+          description="User profile data is being loaded..."
         />
+
+        {!isLoading &&
+          <ProfileHeader
+            resetData={handleResetData}
+            existDescription="By leaving profile, your changes will not be saved"
+            existTitle="Are you sure you want to exit your Profile page?"
+          />
+        }
 
         <CustomTabContainer >
           {

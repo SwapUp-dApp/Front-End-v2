@@ -6,7 +6,7 @@ export const createUserByWalletIdApi = (walletId: string, payload: SUI_CreateNew
   API.post(`/api/user/create/${walletId}`, payload);
 
 export const getUserByWalletIdApi = (walletId: string): Promise<AxiosResponse> =>
-  API.post(`/api/user/${walletId}`);
+  API.get(`/api/user/${walletId}`);
 
 export const getUsersListApi = (): Promise<AxiosResponse> =>
   API.post(`/api/user/list`);
