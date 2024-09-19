@@ -20,7 +20,7 @@ const ChainTile = ({ title, imageSrc, className, showChainTitleOnMobileScreen = 
       <img src={imageSrc} alt="" className="w-4 h-4 rounded-full" />
       <span
         className={cn(
-          `${showChainTitleOnMobileScreen ? '' : 'hidden'} line-clamp-1`,
+          `${showChainTitleOnMobileScreen ? '' : '  !hidden'} line-clamp-1`,
           titleClassName
         )}
       >

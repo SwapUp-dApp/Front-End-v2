@@ -19,7 +19,6 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useQuery } from '@tanstack/react-query';
 import { getOpenSwapPendingListApi } from '@/service/api';
 import CreatedOpenSwapsCard from './CreatedOpenSwapsCard';
-import AvailableOpenSwapCard from './AvailableOpenSwapCard';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Schema_OpenMarketFiltersForm } from '@/schema';
@@ -27,6 +26,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { IOpenMarketSwapFilters } from '@/types/swap-market-store.types';
 import { useState } from 'react';
 import OpenMarketAppliedFiltersBar from './OpenMarketAppliedFiltersBar';
+import OpenSwapListMobileCard from './OpenSwapListMobileCard';
 
 const OpenMarketTabContent = () => {
   const wallet = useProfileStore(state => state.profile.wallet);
@@ -204,7 +204,7 @@ const OpenMarketTabContent = () => {
         <ScrollBar orientation='horizontal' className='h-2' />
       </ScrollArea>
 
-      {/* Filter Data and Title */}
+      {/* Available title and search bar */}
       <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between" >
 
         <div className="flex items-center gap-4" >
@@ -392,7 +392,7 @@ const OpenMarketTabContent = () => {
       {/*Mobile: Available open swaps datalist */}
       <div className='flex flex-col gap-3 lg:hidden' >
         {filteredAvailableOpenSwaps?.map((swap, index) => (
-          <AvailableOpenSwapCard key={index} swap={swap} handleNavigation={handleNavigateToProposeRoom} />
+          <OpenSwapListMobileCard key={index} swap={swap} handleNavigation={handleNavigateToProposeRoom} />
         ))}
 
         {

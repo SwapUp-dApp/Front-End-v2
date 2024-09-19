@@ -4,10 +4,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { toast } from 'sonner';
 import FilterButton from '../../shared/FilterButton';
 
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@radix-ui/react-dropdown-menu";
 import EmptyDataset from '../../shared/EmptyDataset';
-import { cn, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
-import { SUI_Swap, SUI_SwapToken, SUP_CancelSwap, SUP_CompleteSwap, SUT_SwapTokenContractType, } from '@/types/swap-market.types';
+import { generateRandomKey, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { SUI_Swap, SUP_CancelSwap, SUP_CompleteSwap, } from '@/types/swap-market.types';
 import { useCancelSwapOffer, useCompletePrivateSwapOffer, useRejectSwapOffer, } from '@/service/queries/swap-market.query';
 import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
@@ -25,27 +24,41 @@ import { mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import PrivateMarketSwapFilterDrawer from './PrivateMarketSwapFilterDrawer';
 import { useQuery } from '@tanstack/react-query';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { getPrivateSwapPendingListApi } from '@/service/api';
 import { defaults } from '@/constants/defaults';
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from '@/constants/enums';
 import { useGlobalStore } from '@/store/global-store';
 import { updatedUserProfilePointsApi } from '@/service/api/user.service';
 import { SUI_UpdateProfilePointsPayload } from '@/types/profile.types';
+import SwapListMobileCard from '../../shared/SwapListMobileCard';
+import { IPrivateMarketSwapFilters } from '@/types/swap-market-store.types';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Schema_PrivateMarketFiltersForm } from '@/schema';
+import { zodResolver } from '@hookform/resolvers/zod';
+import PrivateMarketAppliedFiltersBar from './PrivateMarketAppliedFiltersBar';
 
 
 const PrivateMarketTabContent = () => {
   const navigate = useNavigate();
+
   const {
     setPrivateSwapsData,
     availablePrivateSwaps,
     filteredAvailablePrivateSwaps,
     setPrivateMarketAvailableSwapsBySearch,
     availablePrivateSwapsFiltersApplied,
-    availablePrivateSwapsSearchApplied
+    availablePrivateSwapsSearchApplied,
+    resetAllPrivateMarketFilters,
+    setPrivateMarketAvailableSwapsByFilters,
+    privateMarketSwapsFilters
   } = useSwapMarketStore(state => state.privateMarket);
 
   const [setStartRecentSwapSharingProcess, setRecentAcceptedSwap] = useGlobalStore(state => [state.setStartRecentSwapSharingProcess, state.setRecentAcceptedSwap]);
   const wallet = useProfileStore(state => state.profile.wallet);
+
+  const [formKey, setFormKey] = useState(generateRandomKey(6));
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
   const [swapRejection, setSwapRejection] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -324,227 +337,339 @@ const PrivateMarketTabContent = () => {
     retry: false
   });
 
+  // Private party filters logic
+  const privatePartyForm = useForm<z.infer<typeof Schema_PrivateMarketFiltersForm>>({
+    resolver: zodResolver(Schema_PrivateMarketFiltersForm),
+    defaultValues: {
+      offersFromCurrentChain: false,
+      swapRequestStatus: 'all',
+      dateRangeFrom: undefined,
+      dateRangeTo: undefined
+    }
+  });
+
+  const getFiltersObjectByFormData = () => {
+    const { offersFromCurrentChain, dateRangeFrom, dateRangeTo, swapRequestStatus } = privatePartyForm.getValues();
+
+    const newFilters: IPrivateMarketSwapFilters = {
+      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
+      swapRequestStatus,
+      dateRangeFrom: dateRangeFrom ? moment.utc(dateRangeFrom).format() : undefined,
+      dateRangeTo: dateRangeTo ? moment.utc(dateRangeTo).format() : undefined
+    };
+
+    return (newFilters);
+  };
+
+  const handleResetAppliedFilters = (resetType: 'all' | 'date' | 'status' | 'current-chain') => {
+
+    switch (resetType) {
+      case 'all':
+        resetAllPrivateMarketFilters();
+        privatePartyForm.reset();
+        break;
+
+      case 'current-chain':
+        privatePartyForm.setValue('offersFromCurrentChain', undefined);
+        setPrivateMarketAvailableSwapsByFilters(getFiltersObjectByFormData(), wallet.address);
+        break;
+
+      case 'date':
+        privatePartyForm.setValue('dateRangeFrom', undefined);
+        privatePartyForm.setValue('dateRangeTo', undefined);
+        setPrivateMarketAvailableSwapsByFilters(getFiltersObjectByFormData(), wallet.address);
+        break;
+
+      case 'status':
+        privatePartyForm.setValue("swapRequestStatus", 'all');
+        setPrivateMarketAvailableSwapsByFilters(getFiltersObjectByFormData(), wallet.address);
+        break;
+
+      default:
+        break;
+    }
+
+    setFormKey(generateRandomKey(6));
+  };
 
   return (
     <div className="space-y-4">
 
-      {/* Filter Data and Title */}
-      <div className="flex items-center justify-between" >
-        <div className="flex items-center justify-between gap-4" >
+      {/* Available title and search bar */}
+      <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between" >
+
+        <div className="flex items-center gap-4" >
           <h2 className="text-1.5xl font-medium" >Available rooms</h2>
           <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(filteredAvailablePrivateSwaps || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
             {(filteredAvailablePrivateSwaps || []).length}
           </span>
         </div>
 
-        <Input
-          className="w-1/3 bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
-          placeholder="Search by NFT, trade ID, wallet, etc..."
-          onChange={handlePrivateSwapFilterData}
-          icon={
-            <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
-            </svg>
-          }
-        />
+        <div className='w-full lg:w-1/3 flex items-center justify-between gap-2' >
+          <Input
+            className="w-full bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
+            placeholder="Search by NFT, trade ID, wallet, etc..."
+            onChange={handlePrivateSwapFilterData}
+            icon={
+              <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
+              </svg>
+            }
+          />
+
+          <div className='lg:hidden' >
+            <PrivateMarketSwapFilterDrawer
+              privatePartyForm={privatePartyForm}
+              formKey={formKey}
+              setFormKey={setFormKey}
+              handleResetAppliedFilters={handleResetAppliedFilters}
+            >
+              <FilterButton className='rounded-md' filterApplied={availablePrivateSwapsFiltersApplied} />
+            </PrivateMarketSwapFilterDrawer>
+          </div>
+        </div>
       </div>
 
-      <ScrollArea className='min-w-full' >
-        <Table className="min-w-full">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="align-top font-semibold min-w-[200px]">Assets</TableHead>
-              <TableHead className="align-top font-semibold min-w-[150px]" >Unique trade ID</TableHead>
-              <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Status</TableHead>
-              <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Counter-party wallet</TableHead>
-              <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Trading chain</TableHead>
-              <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Creation date</TableHead>
-              <TableHead className="min-w-[100px] pr-2 relative" >
-                <PrivateMarketSwapFilterDrawer>
-                  <div className="absolute top-2 left-2">
-                    <FilterButton showTitleOnMobile filterApplied={availablePrivateSwapsFiltersApplied} />
-                  </div>
-                </PrivateMarketSwapFilterDrawer>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
+      {/*Mobile: Filler applied to open market data */}
+      {availablePrivateSwapsFiltersApplied &&
+        <PrivateMarketAppliedFiltersBar
+          className={`lg:hidden`}
+          handleResetAppliedFilters={handleResetAppliedFilters}
+          filters={privateMarketSwapsFilters}
+        />
+      }
 
-          <TableBody className="divide-y">
-            {
-              filteredAvailablePrivateSwaps?.map((swap) => {
-                const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
+      {/*Desktop: Available open swaps datalist */}
+      <div className='hidden lg:block' >
+        <ScrollArea className='min-w-full' >
+          <Table className="min-w-full">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="align-top font-semibold min-w-[200px]">Assets</TableHead>
+                <TableHead className="align-top font-semibold min-w-[150px]" >Unique trade ID</TableHead>
+                <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Status</TableHead>
+                <TableHead className="align-top font-semibold px-4 line-clamp-1 h-1" >Counter-party wallet</TableHead>
+                <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Trading chain</TableHead>
+                <TableHead className="align-top font-semibold px-4 min-w-[130px]" >Creation date</TableHead>
+                <TableHead className="min-w-[100px] pr-2 relative" >
+                  <PrivateMarketSwapFilterDrawer
+                    privatePartyForm={privatePartyForm}
+                    formKey={formKey}
+                    setFormKey={setFormKey}
+                    handleResetAppliedFilters={handleResetAppliedFilters}
+                  >
+                    <div className="absolute top-2 left-2">
+                      <FilterButton showTitleOnMobile filterApplied={availablePrivateSwapsFiltersApplied} />
+                    </div>
+                  </PrivateMarketSwapFilterDrawer>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
 
-                return (
-                  <TableRow key={swap.trade_id}>
-                    <TableCell className="text-xs font-medium flex items-center gap-2">
-                      <div className="flex items-center gap-1" >
-                        {mapSwapTokensHelper(swap.metadata.init.tokens, 3)}
-                      </div>
+            {/* For Filters Applied */}
+            {availablePrivateSwapsFiltersApplied &&
+              <TableRow>
+                <TableCell colSpan={7} >
+                  <PrivateMarketAppliedFiltersBar
+                    handleResetAppliedFilters={handleResetAppliedFilters}
+                    filters={privateMarketSwapsFilters}
+                  />
+                </TableCell>
+              </TableRow>
+            }
 
-                      <svg className="w-4" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7.72844 0L12 4.15863H0.238525V3.0368H9.21836L6.91377 0.793135L7.72844 0ZM11.7615 5.84137V6.9632H2.78164L5.08623 9.20687L4.27156 10L0 5.84137H11.7615Z" fill="#868691" />
-                      </svg>
+            <TableBody className="divide-y">
+              {
+                filteredAvailablePrivateSwaps?.map((swap) => {
+                  const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
 
-                      <div className="flex items-center gap-1" >
-                        {mapSwapTokensHelper(swap.metadata.accept.tokens, 3)}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-xs font-medium">#{getLastCharacters(swap.trade_id, 7)}</TableCell>
-                    <TableCell className="text-xs font-medium px-4">
-                      <div className="w-auto flex justify-start" >{
-                        swap.init_address === wallet.address ?
-                          <span className="flex items-center justify-center gap-2 py-2 px-3  rounded-full bg-su_enable_bg capitalize" >
-                            <svg className="w-4" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M12 3.17647V7.94118C12 8.52353 11.46 9 10.8 9H1.2C0.54 9 -2.88495e-08 8.52353 0 7.94118L2.36042e-07 3.17647C2.64891e-07 2.59412 0.54 2.11765 1.2 2.11765H2.4V3.17647L1.2 3.17647L1.2 7.94118H10.8V3.17647H9.6V2.11765H10.8C11.46 2.11765 12 2.59412 12 3.17647Z" fill="white" />
-                              <path d="M3.846 3.39353L3 2.64706L6 0L9 2.64706L8.154 3.39353L6.6 2.02765L6.6 7.14706H5.4L5.4 2.02765L3.846 3.39353Z" fill="white" />
-                            </svg>
+                  return (
+                    <TableRow key={swap.trade_id}>
+                      <TableCell className="text-xs font-medium flex items-center gap-2">
+                        <div className="flex items-center gap-1" >
+                          {mapSwapTokensHelper(swap.metadata.init.tokens, 3)}
+                        </div>
 
-                            Sent
-                          </span>
-                          :
-                          <span className="flex items-center justify-center gap-2 p-2 rounded-full bg-su_enable_bg capitalize" >
-                            <svg className="w-4" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M12 3.17647V7.94118C12 8.52353 11.46 9 10.8 9H1.2C0.54 9 -2.88495e-08 8.52353 0 7.94118L2.36042e-07 3.17647C2.64891e-07 2.59412 0.54 2.11765 1.2 2.11765H2.4V3.17647L1.2 3.17647L1.2 7.94118H10.8V3.17647H9.6V2.11765H10.8C11.46 2.11765 12 2.59412 12 3.17647Z" fill="white" />
-                              <path d="M3.846 3.75353L3 4.5L6 7.14706L9 4.5L8.154 3.75353L6.6 5.11941L6.6 4.62827e-08L5.4 0L5.4 5.11941L3.846 3.75353Z" fill="white" />
-                            </svg>
+                        <svg className="w-4" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M7.72844 0L12 4.15863H0.238525V3.0368H9.21836L6.91377 0.793135L7.72844 0ZM11.7615 5.84137V6.9632H2.78164L5.08623 9.20687L4.27156 10L0 5.84137H11.7615Z" fill="#868691" />
+                        </svg>
 
-                            Received
-                          </span>
-
-                      }</div>
-                    </TableCell>
-                    <TableCell className="text-xs font-medium px-4">
-                      {
-                        swap.init_address === wallet.address ?
-                          <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.accept_address)}</div>
-                          :
-                          <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.init_address)}</div>
-                      }
-                    </TableCell>
-                    <TableCell className="text-xs font-medium px-4 flex justify-start">
-                      <span
-                        className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
-                      // onClick={async () => { await handleSwapAccept(swap); }}
-                      >
-                        <img
-                          className='w-4 h-4'
-                          src={currentChain.iconUrl}
-                          alt=""
-                        />
-
-                        {currentChain.name}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-xs font-medium px-4">{moment.utc(swap.created_at).format('MMM DD, YYYY')}</TableCell>
-
-                    <TableCell className="text-xs font-medium flex pr-8 justify-end">
-                      {
-                        (swapCancel.isLoading || swapRejection.isLoading || swapAcceptance.isLoading) ?
-                          <svg className="animate-spin duration-700 w-3.5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M8 0C3.58236 0 0 3.58236 0 8C0 12.4176 3.58236 16 8 16V14.0004C6.81346 14.0002 5.65362 13.6483 4.66712 12.989C3.68061 12.3296 2.91176 11.3926 2.45777 10.2964C2.00377 9.20014 1.88503 7.99389 2.11655 6.83016C2.34807 5.66643 2.91946 4.59748 3.75847 3.75847C4.59748 2.91946 5.66643 2.34807 6.83016 2.11655C7.99389 1.88503 9.20014 2.00377 10.2964 2.45777C11.3926 2.91176 12.3296 3.68061 12.989 4.66712C13.6483 5.65362 14.0002 6.81346 14.0004 8H16C16 3.58236 12.4176 0 8 0Z" fill="white" />
-                          </svg>
-                          :
-                          <HoverCard openDelay={100}>
-                            <HoverCardTrigger className="px-3 py-1.5 rounded-xs hover:bg-su_enable_bg cursor-pointer" >
-                              <svg
-                                className="w-1 cursor-pointer" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2.00039 12.8C2.42474 12.8 2.8317 12.9686 3.13176 13.2686C3.43182 13.5687 3.60039 13.9757 3.60039 14.4C3.60039 14.8243 3.43182 15.2313 3.13176 15.5314C2.8317 15.8314 2.42474 16 2.00039 16C1.57604 16 1.16908 15.8314 0.86902 15.5314C0.568961 15.2313 0.400391 14.8243 0.400391 14.4C0.400391 13.9757 0.568961 13.5687 0.86902 13.2686C1.16908 12.9686 1.57604 12.8 2.00039 12.8ZM2.00039 6.4C2.42474 6.4 2.8317 6.56857 3.13176 6.86863C3.43182 7.16869 3.60039 7.57565 3.60039 8C3.60039 8.42435 3.43182 8.83131 3.13176 9.13137C2.8317 9.43143 2.42474 9.6 2.00039 9.6C1.57604 9.6 1.16908 9.43143 0.86902 9.13137C0.568961 8.83131 0.400391 8.42435 0.400391 8C0.400391 7.57565 0.568961 7.16869 0.86902 6.86863C1.16908 6.56857 1.57604 6.4 2.00039 6.4ZM2.00039 0C2.42474 0 2.8317 0.168571 3.13176 0.468629C3.43182 0.768687 3.60039 1.17565 3.60039 1.6C3.60039 2.02435 3.43182 2.43131 3.13176 2.73137C2.8317 3.03143 2.42474 3.2 2.00039 3.2C1.57604 3.2 1.16908 3.03143 0.86902 2.73137C0.568961 2.43131 0.400391 2.02435 0.400391 1.6C0.400391 1.17565 0.568961 0.768687 0.86902 0.468629C1.16908 0.168571 1.57604 0 2.00039 0Z" fill="#B6B6BD" />
+                        <div className="flex items-center gap-1" >
+                          {mapSwapTokensHelper(swap.metadata.accept.tokens, 3)}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-xs font-medium">#{getLastCharacters(swap.trade_id, 7)}</TableCell>
+                      <TableCell className="text-xs font-medium px-4">
+                        <div className="w-auto flex justify-start" >{
+                          swap.init_address === wallet.address ?
+                            <span className="flex items-center justify-center gap-2 py-2 px-3  rounded-full bg-su_enable_bg capitalize" >
+                              <svg className="w-4" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 3.17647V7.94118C12 8.52353 11.46 9 10.8 9H1.2C0.54 9 -2.88495e-08 8.52353 0 7.94118L2.36042e-07 3.17647C2.64891e-07 2.59412 0.54 2.11765 1.2 2.11765H2.4V3.17647L1.2 3.17647L1.2 7.94118H10.8V3.17647H9.6V2.11765H10.8C11.46 2.11765 12 2.59412 12 3.17647Z" fill="white" />
+                                <path d="M3.846 3.39353L3 2.64706L6 0L9 2.64706L8.154 3.39353L6.6 2.02765L6.6 7.14706H5.4L5.4 2.02765L3.846 3.39353Z" fill="white" />
                               </svg>
-                            </HoverCardTrigger>
 
-                            <HoverCardContent
-                              align='start'
-                              className="w-52 px-2 py-3 bg-card dark:bg-su_secondary_bg rounded-xs mr-10"
-                            >
-                              <button
-                                onClick={() => { navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`); }}
-                                className="action-hover-card-item"
-                              >
-                                <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
+                              Sent
+                            </span>
+                            :
+                            <span className="flex items-center justify-center gap-2 p-2 rounded-full bg-su_enable_bg capitalize" >
+                              <svg className="w-4" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 3.17647V7.94118C12 8.52353 11.46 9 10.8 9H1.2C0.54 9 -2.88495e-08 8.52353 0 7.94118L2.36042e-07 3.17647C2.64891e-07 2.59412 0.54 2.11765 1.2 2.11765H2.4V3.17647L1.2 3.17647L1.2 7.94118H10.8V3.17647H9.6V2.11765H10.8C11.46 2.11765 12 2.59412 12 3.17647Z" fill="white" />
+                                <path d="M3.846 3.75353L3 4.5L6 7.14706L9 4.5L8.154 3.75353L6.6 5.11941L6.6 4.62827e-08L5.4 0L5.4 5.11941L3.846 3.75353Z" fill="white" />
+                              </svg>
+
+                              Received
+                            </span>
+
+                        }</div>
+                      </TableCell>
+                      <TableCell className="text-xs font-medium px-4">
+                        {
+                          swap.init_address === wallet.address ?
+                            <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.accept_address)}</div>
+                            :
+                            <div className="w-auto flex justify-start" >{getShortenWalletAddress(swap.init_address)}</div>
+                        }
+                      </TableCell>
+                      <TableCell className="text-xs font-medium px-4 flex justify-start">
+                        <span
+                          className="w-auto flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-su_enable_bg capitalize"
+                        // onClick={async () => { await handleSwapAccept(swap); }}
+                        >
+                          <img
+                            className='w-4 h-4'
+                            src={currentChain.iconUrl}
+                            alt=""
+                          />
+
+                          {currentChain.name}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-xs font-medium px-4">{moment.utc(swap.created_at).format('MMM DD, YYYY')}</TableCell>
+
+                      <TableCell className="text-xs font-medium flex pr-8 justify-end">
+                        {
+                          (swapCancel.isLoading || swapRejection.isLoading || swapAcceptance.isLoading) ?
+                            <svg className="animate-spin duration-700 w-3.5" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M8 0C3.58236 0 0 3.58236 0 8C0 12.4176 3.58236 16 8 16V14.0004C6.81346 14.0002 5.65362 13.6483 4.66712 12.989C3.68061 12.3296 2.91176 11.3926 2.45777 10.2964C2.00377 9.20014 1.88503 7.99389 2.11655 6.83016C2.34807 5.66643 2.91946 4.59748 3.75847 3.75847C4.59748 2.91946 5.66643 2.34807 6.83016 2.11655C7.99389 1.88503 9.20014 2.00377 10.2964 2.45777C11.3926 2.91176 12.3296 3.68061 12.989 4.66712C13.6483 5.65362 14.0002 6.81346 14.0004 8H16C16 3.58236 12.4176 0 8 0Z" fill="white" />
+                            </svg>
+                            :
+                            <HoverCard openDelay={100}>
+                              <HoverCardTrigger className="px-3 py-1.5 rounded-xs hover:bg-su_enable_bg cursor-pointer" >
+                                <svg
+                                  className="w-1 cursor-pointer" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M2.00039 12.8C2.42474 12.8 2.8317 12.9686 3.13176 13.2686C3.43182 13.5687 3.60039 13.9757 3.60039 14.4C3.60039 14.8243 3.43182 15.2313 3.13176 15.5314C2.8317 15.8314 2.42474 16 2.00039 16C1.57604 16 1.16908 15.8314 0.86902 15.5314C0.568961 15.2313 0.400391 14.8243 0.400391 14.4C0.400391 13.9757 0.568961 13.5687 0.86902 13.2686C1.16908 12.9686 1.57604 12.8 2.00039 12.8ZM2.00039 6.4C2.42474 6.4 2.8317 6.56857 3.13176 6.86863C3.43182 7.16869 3.60039 7.57565 3.60039 8C3.60039 8.42435 3.43182 8.83131 3.13176 9.13137C2.8317 9.43143 2.42474 9.6 2.00039 9.6C1.57604 9.6 1.16908 9.43143 0.86902 9.13137C0.568961 8.83131 0.400391 8.42435 0.400391 8C0.400391 7.57565 0.568961 7.16869 0.86902 6.86863C1.16908 6.56857 1.57604 6.4 2.00039 6.4ZM2.00039 0C2.42474 0 2.8317 0.168571 3.13176 0.468629C3.43182 0.768687 3.60039 1.17565 3.60039 1.6C3.60039 2.02435 3.43182 2.43131 3.13176 2.73137C2.8317 3.03143 2.42474 3.2 2.00039 3.2C1.57604 3.2 1.16908 3.03143 0.86902 2.73137C0.568961 2.43131 0.400391 2.02435 0.400391 1.6C0.400391 1.17565 0.568961 0.768687 0.86902 0.468629C1.16908 0.168571 1.57604 0 2.00039 0Z" fill="#B6B6BD" />
                                 </svg>
+                              </HoverCardTrigger>
 
-                                View Offer
-                              </button>
-
-                              {
-                                swap.init_address === wallet.address &&
+                              <HoverCardContent
+                                align='start'
+                                className="w-52 px-2 py-3 bg-card dark:bg-su_secondary_bg rounded-xs mr-10"
+                              >
                                 <button
-                                  onClick={async () => { await handleSwapCancel(swap); }}
+                                  onClick={() => { navigate(`/swap-up/swap-market/view-swap/${swap.trade_id}/?swapMode=${swap.swap_mode}`); }}
                                   className="action-hover-card-item"
                                 >
                                   <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
+                                    <path d="M10 8.3C9.42135 8.3 8.86639 8.53178 8.45722 8.94436C8.04805 9.35695 7.81818 9.91652 7.81818 10.5C7.81818 11.0835 8.04805 11.6431 8.45722 12.0556C8.86639 12.4682 9.42135 12.7 10 12.7C10.5787 12.7 11.1336 12.4682 11.5428 12.0556C11.9519 11.6431 12.1818 11.0835 12.1818 10.5C12.1818 9.91652 11.9519 9.35695 11.5428 8.94436C11.1336 8.53178 10.5787 8.3 10 8.3ZM10 14.1667C9.03558 14.1667 8.11065 13.7804 7.4287 13.0927C6.74675 12.4051 6.36364 11.4725 6.36364 10.5C6.36364 9.52754 6.74675 8.59491 7.4287 7.90728C8.11065 7.21964 9.03558 6.83333 10 6.83333C10.9644 6.83333 11.8893 7.21964 12.5713 7.90728C13.2532 8.59491 13.6364 9.52754 13.6364 10.5C13.6364 11.4725 13.2532 12.4051 12.5713 13.0927C11.8893 13.7804 10.9644 14.1667 10 14.1667ZM10 5C6.36364 5 3.25818 7.28067 2 10.5C3.25818 13.7193 6.36364 16 10 16C13.6364 16 16.7418 13.7193 18 10.5C16.7418 7.28067 13.6364 5 10 5Z" fill="#B6B6BD" />
                                   </svg>
 
-                                  Close
+                                  View Offer
                                 </button>
-                              }
 
-                              {
-                                (swap.init_address !== wallet.address && swap.offer_type === SUE_SWAP_OFFER_TYPE.PRIMARY) &&
-
-                                <button
-                                  onClick={() => { navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`); }}
-                                  className="action-hover-card-item"
-                                >
-                                  <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17.381 10.9091C17.8667 10.9091 18.2714 11.0727 18.5143 11.4C18.8381 11.7273 19 12.1364 19 12.5455L12.5238 15L6.85714 13.3636V6H8.39524L14.3048 8.20909C14.7095 8.37273 14.9524 8.7 14.9524 9.10909C14.9524 9.35455 14.8714 9.6 14.7095 9.76364C14.5476 9.92727 14.3048 10.0909 13.981 10.0909H11.7143L10.3381 9.51818L10.0952 10.2545L11.7143 10.9091H17.381ZM2 6H5.2381V15H2V6Z" fill="#868691" />
-                                  </svg>
-
-                                  Counter Offer
-                                </button>
-                              }
-
-                              {
-                                swap.init_address !== wallet.address &&
-                                <div className='flex flex-col gap-1'>
+                                {
+                                  swap.init_address === wallet.address &&
                                   <button
-                                    onClick={async () => { await handleSwapAccept(swap); }}
-                                    className="action-hover-card-item"
-                                  >
-                                    <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                      <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM8.22222 14.4444L3.77778 10L5.03111 8.74667L8.22222 11.9289L14.9689 5.18222L16.2222 6.44444L8.22222 14.4444Z" fill="#75FFC1" />
-                                    </svg>
-
-                                    Accept
-                                  </button>
-
-                                  <button
-                                    onClick={async () => { await handleSwapReject(swap); }}
+                                    onClick={async () => { await handleSwapCancel(swap); }}
                                     className="action-hover-card-item"
                                   >
                                     <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                       <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
                                     </svg>
 
-                                    Reject
+                                    Close
                                   </button>
-                                </div>
-                              }
-                            </HoverCardContent>
-                          </HoverCard>
-                      }
+                                }
 
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            }
-          </TableBody>
-        </Table>
+                                {
+                                  (swap.init_address !== wallet.address && swap.offer_type === SUE_SWAP_OFFER_TYPE.PRIMARY) &&
+
+                                  <button
+                                    onClick={() => { navigate(`/swap-up/swap-market/counter-offer/${swap.trade_id}/?swapMode=${swap.swap_mode}`); }}
+                                    className="action-hover-card-item"
+                                  >
+                                    <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M17.381 10.9091C17.8667 10.9091 18.2714 11.0727 18.5143 11.4C18.8381 11.7273 19 12.1364 19 12.5455L12.5238 15L6.85714 13.3636V6H8.39524L14.3048 8.20909C14.7095 8.37273 14.9524 8.7 14.9524 9.10909C14.9524 9.35455 14.8714 9.6 14.7095 9.76364C14.5476 9.92727 14.3048 10.0909 13.981 10.0909H11.7143L10.3381 9.51818L10.0952 10.2545L11.7143 10.9091H17.381ZM2 6H5.2381V15H2V6Z" fill="#868691" />
+                                    </svg>
+
+                                    Counter Offer
+                                  </button>
+                                }
+
+                                {
+                                  swap.init_address !== wallet.address &&
+                                  <div className='flex flex-col gap-1'>
+                                    <button
+                                      onClick={async () => { await handleSwapAccept(swap); }}
+                                      className="action-hover-card-item"
+                                    >
+                                      <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM8.22222 14.4444L3.77778 10L5.03111 8.74667L8.22222 11.9289L14.9689 5.18222L16.2222 6.44444L8.22222 14.4444Z" fill="#75FFC1" />
+                                      </svg>
+
+                                      Accept
+                                    </button>
+
+                                    <button
+                                      onClick={async () => { await handleSwapReject(swap); }}
+                                      className="action-hover-card-item"
+                                    >
+                                      <svg className="w-12 h-6 cursor-pointer" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16.2222 2H3.77778C3.30628 2 2.8541 2.1873 2.5207 2.5207C2.1873 2.8541 2 3.30628 2 3.77778V16.2222C2 16.6937 2.1873 17.1459 2.5207 17.4793C2.8541 17.8127 3.30628 18 3.77778 18H16.2222C16.6937 18 17.1459 17.8127 17.4793 17.4793C17.8127 17.1459 18 16.6937 18 16.2222V3.77778C18 3.30628 17.8127 2.8541 17.4793 2.5207C17.1459 2.1873 16.6937 2 16.2222 2ZM13.2 14.4444L10 11.2444L6.8 14.4444L5.55556 13.2L8.75556 10L5.55556 6.8L6.8 5.55556L10 8.75556L13.2 5.55556L14.4444 6.8L11.2444 10L14.4444 13.2L13.2 14.4444Z" fill="#FF7585" />
+                                      </svg>
+
+                                      Reject
+                                    </button>
+                                  </div>
+                                }
+                              </HoverCardContent>
+                            </HoverCard>
+                        }
+
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              }
+            </TableBody>
+          </Table>
+
+          {
+            (((filteredAvailablePrivateSwaps || []).length === 0) && (availablePrivateSwapsSearchApplied || availablePrivateSwapsFiltersApplied)) &&
+            <EmptyDataset
+              title="No Results Found"
+              description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
+              showBackgroundPicture={false}
+            />
+          }
+          <ScrollBar orientation='horizontal' className='h-2' />
+        </ScrollArea>
+      </div>
+
+      {/*Mobile: Available open swaps datalist */}
+      <div className='flex flex-col gap-3 lg:hidden' >
+        {filteredAvailablePrivateSwaps?.map((swap, index) => (
+          <SwapListMobileCard key={index} swap={swap} swapCardType='private-party' />
+        ))}
 
         {
           (((filteredAvailablePrivateSwaps || []).length === 0) && (availablePrivateSwapsSearchApplied || availablePrivateSwapsFiltersApplied)) &&
           <EmptyDataset
             title="No Results Found"
-            description="We couldn't find any results matching your search query. <br/>  Please try again with a different keyword or refine your search criteria."
+            description="We couldn't find any results matching your search query. Please try again with a different keyword or refine your search criteria."
             showBackgroundPicture={false}
           />
         }
-        <ScrollBar orientation='horizontal' className='h-2' />
-      </ScrollArea>
-
+      </div>
 
       <LoadingDataset
         isLoading={isLoading}

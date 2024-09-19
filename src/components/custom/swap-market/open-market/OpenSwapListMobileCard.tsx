@@ -13,7 +13,7 @@ interface IProp {
   handleNavigation: (swap: SUI_OpenSwap) => void;
 }
 
-const AvailableOpenSwapCard = ({ swap, handleNavigation }: IProp) => {
+const OpenSwapListMobileCard = ({ swap, handleNavigation }: IProp) => {
 
   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
   return (
@@ -146,4 +146,4 @@ const AvailableOpenSwapCard = ({ swap, handleNavigation }: IProp) => {
   );
 };
 
-export default AvailableOpenSwapCard;
+export default OpenSwapListMobileCard;
