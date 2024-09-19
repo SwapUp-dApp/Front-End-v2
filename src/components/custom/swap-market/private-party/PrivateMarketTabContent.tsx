@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { getWalletProxy } from '@/lib/walletProxy';
 import { SUI_SwapCreation } from '@/types/global.types';
 import { useProfileStore } from '@/store/profile';
-import { showWalletConnectionToast } from '@/lib/helpers';
+import { mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import PrivateMarketSwapFilterDrawer from './PrivateMarketSwapFilterDrawer';
 import { useQuery } from '@tanstack/react-query';
@@ -324,33 +324,6 @@ const PrivateMarketTabContent = () => {
     retry: false
   });
 
-  const swapTokensMapper = (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number) => {
-    return (
-      swapTokens.map((swapToken, index) => {
-        if (index < showMaxNumberOfTokensToShow)
-          return (
-            <div className="relative w-8 h-8" key={swapToken.id}>
-              <img
-                className={cn(
-                  "w-full h-full object-cover ",
-                  (swapToken.type as SUT_SwapTokenContractType) === "ERC20" ? "" : "rounded-xs border-[1.5px] border-white/20"
-                )}
-                src={swapToken.image_url}
-                alt="nft"
-                onError={getDefaultNftImageOnError}
-              />
-
-              {
-                ((index === showMaxNumberOfTokensToShow - 1) && swapTokens.length > showMaxNumberOfTokensToShow) ?
-                  <div className="absolute w-full h-full rounded-xs bg-black/50 top-0 flex justify-center items-center font-semibold" >
-                    +{swapTokens.length - showMaxNumberOfTokensToShow}
-                  </div> : ''
-              }
-            </div>
-          );
-      })
-    );
-  };
 
   return (
     <div className="space-y-4">
@@ -405,7 +378,7 @@ const PrivateMarketTabContent = () => {
                   <TableRow key={swap.trade_id}>
                     <TableCell className="text-xs font-medium flex items-center gap-2">
                       <div className="flex items-center gap-1" >
-                        {swapTokensMapper(swap.metadata.init.tokens, 3)}
+                        {mapSwapTokensHelper(swap.metadata.init.tokens, 3)}
                       </div>
 
                       <svg className="w-4" viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -413,7 +386,7 @@ const PrivateMarketTabContent = () => {
                       </svg>
 
                       <div className="flex items-center gap-1" >
-                        {swapTokensMapper(swap.metadata.accept.tokens, 3)}
+                        {mapSwapTokensHelper(swap.metadata.accept.tokens, 3)}
                       </div>
                     </TableCell>
                     <TableCell className="text-xs font-medium">#{getLastCharacters(swap.trade_id, 7)}</TableCell>

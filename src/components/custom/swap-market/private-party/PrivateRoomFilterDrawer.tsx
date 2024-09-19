@@ -177,12 +177,8 @@ const PrivateRoomFilterDrawer = ({ children, setFilteredNftsByFilters, removeAll
                 </form>
               </Form>
             </div>
-
-
           </div>
-
         </DrawerContent>
-
       </Drawer >
     </>
   );

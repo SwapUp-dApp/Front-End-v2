@@ -61,7 +61,7 @@ module.exports = {
         su_pie_chart_7: "var(--pie-chart-7)",
         su_pie_chart_8: "var(--pie-chart-8)",
         su_pie_chart_9: "var(--pie-chart-9)",
-      
+
 
         su_primary_bg: "rgba(13, 13, 35, 1)",
         su_primary_black: "rgba(13, 13, 35, 0.8)",
@@ -110,12 +110,13 @@ module.exports = {
         )}, ${theme("colors.su_blue")})`
       }),
       borderRadius: {
-        lg: "var(--radius)",
+        lg: "20px",
         md: "16px",
         sm: "12px",
         xs: "8px"
       },
       fontSize: {
+        '1.5xs': '11px',
         '2xs': '10px',
         '3xs': '8px',
         '4xs': '6px',
