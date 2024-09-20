@@ -146,8 +146,8 @@
     @apply p-2 bg-su_primary_bg absolute left-0 -top-9 rounded-tr-sm font-semibold w-full text-sm
   }
 
-  .action-hover-card-item{
-    @apply w-full flex items-center gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg
+  .action-popover-action-item{
+    @apply w-full flex items-center gap-1.5 lg:gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg text-xs font-semibold
   }
   /* Debug Classes End for dev */
 }

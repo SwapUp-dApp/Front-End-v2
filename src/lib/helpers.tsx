@@ -1,6 +1,8 @@
 import { toast } from "sonner";
 import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import { SUT_ToastVariantType } from "@/types/global.types";
+import { SUI_SwapToken, SUT_SwapTokenContractType } from "@/types/swap-market.types";
+import { cn, getDefaultNftImageOnError } from "./utils";
 
 export const showWalletConnectionToast = (variant: SUT_ToastVariantType = "error", title?: string, description?: string) => {
   toast.custom(
@@ -50,5 +52,37 @@ export const showNotificationToast = (variant: SUT_ToastVariantType = "error", t
       className: 'w-full !bg-transparent',
       position: "bottom-left",
     }
+  );
+};
+
+export const mapSwapTokensHelper = (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number) => {
+  return (
+    swapTokens.map((swapToken, index) => {
+      if (index < showMaxNumberOfTokensToShow)
+        return (
+          <div
+            key={swapToken.id}
+            className={cn(
+              "w-8 h-8 relative border-[1.5px] border-white/20 overflow-hidden",
+              (swapToken.type as SUT_SwapTokenContractType) === "ERC20" ? "rounded-full" : "rounded-xs"
+            )
+            }
+          >
+            <img
+              className={"w-full h-full object-cover"}
+              src={swapToken.image_url}
+              alt="nft"
+              onError={getDefaultNftImageOnError}
+            />
+
+            {
+              ((index === showMaxNumberOfTokensToShow - 1) && swapTokens.length > showMaxNumberOfTokensToShow) ?
+                <div className="absolute w-full h-full rounded-xs bg-black/50 top-0 flex justify-center items-center font-semibold" >
+                  +{swapTokens.length - showMaxNumberOfTokensToShow}
+                </div> : ''
+            }
+          </div>
+        );
+    })
   );
 };

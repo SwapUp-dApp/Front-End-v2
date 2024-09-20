@@ -1,7 +1,7 @@
 import { Input } from '@/components/ui/input';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import PrivateMarketSwapFilterDrawer from '../../swap-market/private-party/PrivateMarketSwapFilterDrawer';
+
 import FilterButton from '../../shared/FilterButton';
 import EmptyDataset from '../../shared/EmptyDataset';
 import LoadingDataset from '../../shared/LoadingDataset';
@@ -97,11 +97,10 @@ const CollectionDetailsSection = () => {
               <TableHead className="align-top font-semibold min-w-[100px]" >Volume</TableHead>
               <TableHead className="align-top font-semibold min-w-[130px]" >Open approval</TableHead>
               <TableHead className="min-w-[100px] pr-2 relative" >
-                <PrivateMarketSwapFilterDrawer>
-                  <div className="absolute top-2 left-2">
-                    <FilterButton showTitleOnMobile />
-                  </div>
-                </PrivateMarketSwapFilterDrawer>
+
+                <div className="absolute top-2 left-2">
+                  <FilterButton showTitleOnMobile />
+                </div>
               </TableHead>
             </TableRow>
           </TableHeader>

@@ -20,7 +20,7 @@ const ConnectWalletButton = () => {
           Connection
         </span>
         :
-        <span className="flex items-center gap-3" >
+        <span className="flex flex-col lg:flex-row lg:items-center text-xs gap-2 lg:gap-3 lg:text-sm" >
           <label>{wallet.network.name}</label>
           <ThirdWebWalletConnect />
         </span>

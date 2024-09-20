@@ -1,16 +1,22 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { getNameInitials } from "@/lib/utils";
+import { cn, getNameInitials } from "@/lib/utils";
 import { IMember } from '@/constants/data';
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 
 interface IProp {
   cardType?: "member" | "trader";
   users: IMember[];
+  className?: string;
 }
 
-const NewMembersCard = ({ cardType = 'member', users }: IProp) => {
+const NewMembersCard = ({ cardType = 'member', users, className }: IProp) => {
   return (
-    <Card className="min-h-[100px] border-none bg-card dark:bg-su_secondary_bg p-3" >
+    <Card
+      className={cn(
+        "min-h-[100px] border-none bg-card dark:bg-su_secondary_bg p-3",
+        className
+      )}
+    >
       <CardContent className={`p-0 flex flex-col ${cardType === 'member' ? 'gap-2' : 'gap-6'}`}>
         <div className="flex items-start justify-between">
           <div className="flex gap-2 items-center">
