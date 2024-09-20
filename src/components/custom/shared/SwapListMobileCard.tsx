@@ -2,23 +2,41 @@ import React from 'react';
 import { SUI_OpenSwap, SUI_Swap } from '@/types/swap-market.types';
 import { cn, getLastCharacters } from '@/lib/utils';
 import { chainsDataset } from '@/constants/data';
-import { mapSwapTokensHelper } from '@/lib/helpers';
+import { mapSwapTokensHelper, showNotificationToast } from '@/lib/helpers';
 import moment from 'moment';
-import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
+
 import CopyTile from '../tiles/CopyTile';
 import ChainTile from '../tiles/ChainTile';
 import BadgeTile from '../tiles/BadgeTile';
 import { useProfileStore } from '@/store/profile';
 import { SUE_SWAP_MODE, SUE_SWAP_MODE_TO_STRING, SUE_SWAP_OFFER_TYPE_TO_STRING, SUE_SWAP_STATUS, SUE_SWAP_STATUS_TO_STRING } from '@/constants/enums';
+import SwapListItemActionPopover from './SwapListItemActionPopover';
+import SwapHistoryDetailsDialog from '../my-swaps/SwapHistoryDetailsDialog';
+import { SUI_SwapCreation } from '@/types/global.types';
 
 interface IProp {
   swap: SUI_OpenSwap | SUI_Swap;
+  handleSwapAccept?: (swap: SUI_Swap | SUI_OpenSwap) => Promise<void>;
+  handleSwapCancel?: (swap: SUI_Swap | SUI_OpenSwap) => Promise<void>;
+  handleSwapReject?: (swap: SUI_Swap | SUI_OpenSwap) => Promise<void>;
+  swapCancel: SUI_SwapCreation;
+  swapRejection: SUI_SwapCreation;
+  swapAcceptance: SUI_SwapCreation;
   swapCardType: 'private-party' | 'pending' | 'history';
 }
 
-const SwapListMobileCard = ({ swap, swapCardType = "pending" }: IProp) => {
+const SwapListMobileCard = ({ swap, swapCardType = "private-party", handleSwapAccept, handleSwapCancel, handleSwapReject, swapAcceptance, swapCancel, swapRejection }: IProp) => {
+
   const [wallet] = useProfileStore(state => [state.profile.wallet]);
   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
+
+  const handleIfAnyActionPropMissing = async (swap: SUI_OpenSwap | SUI_Swap) => {
+    showNotificationToast(
+      'error',
+      `Action props missing!`,
+      'Mobile card component action props missing!'
+    );
+  };
 
   return (
     <section className='bg-su_secondary_bg rounded-lg space-y-5 py-3' >
@@ -73,29 +91,32 @@ const SwapListMobileCard = ({ swap, swapCardType = "pending" }: IProp) => {
           </div>
 
 
-          <Popover>
-            <PopoverTrigger className='px-3 py-1.5 rounded-xs hover:bg-su_enable_bg cursor-pointer' >
-              <svg
-                className="w-1 cursor-pointer" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2.00039 12.8C2.42474 12.8 2.8317 12.9686 3.13176 13.2686C3.43182 13.5687 3.60039 13.9757 3.60039 14.4C3.60039 14.8243 3.43182 15.2313 3.13176 15.5314C2.8317 15.8314 2.42474 16 2.00039 16C1.57604 16 1.16908 15.8314 0.86902 15.5314C0.568961 15.2313 0.400391 14.8243 0.400391 14.4C0.400391 13.9757 0.568961 13.5687 0.86902 13.2686C1.16908 12.9686 1.57604 12.8 2.00039 12.8ZM2.00039 6.4C2.42474 6.4 2.8317 6.56857 3.13176 6.86863C3.43182 7.16869 3.60039 7.57565 3.60039 8C3.60039 8.42435 3.43182 8.83131 3.13176 9.13137C2.8317 9.43143 2.42474 9.6 2.00039 9.6C1.57604 9.6 1.16908 9.43143 0.86902 9.13137C0.568961 8.83131 0.400391 8.42435 0.400391 8C0.400391 7.57565 0.568961 7.16869 0.86902 6.86863C1.16908 6.56857 1.57604 6.4 2.00039 6.4ZM2.00039 0C2.42474 0 2.8317 0.168571 3.13176 0.468629C3.43182 0.768687 3.60039 1.17565 3.60039 1.6C3.60039 2.02435 3.43182 2.43131 3.13176 2.73137C2.8317 3.03143 2.42474 3.2 2.00039 3.2C1.57604 3.2 1.16908 3.03143 0.86902 2.73137C0.568961 2.43131 0.400391 2.02435 0.400391 1.6C0.400391 1.17565 0.568961 0.768687 0.86902 0.468629C1.16908 0.168571 1.57604 0 2.00039 0Z" fill="#B6B6BD" />
-              </svg>
-            </PopoverTrigger>
-            <PopoverContent
-              align='start'
-              className="w-60 p-3 bg-card rounded-md mr-10"
-            >
-              <button
-                // onClick={() => { handleNavigation(swap); }}
-                className="action-hover-card-item"
-              >
-                <svg className='w-8' viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z" fill="white" />
+          {swapCardType !== 'history' &&
+            (
+              (swapCancel.isLoading || swapRejection.isLoading || swapAcceptance.isLoading) ?
+                <svg className="animate-spin duration-700 w-3.5 mr-2" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 0C3.58236 0 0 3.58236 0 8C0 12.4176 3.58236 16 8 16V14.0004C6.81346 14.0002 5.65362 13.6483 4.66712 12.989C3.68061 12.3296 2.91176 11.3926 2.45777 10.2964C2.00377 9.20014 1.88503 7.99389 2.11655 6.83016C2.34807 5.66643 2.91946 4.59748 3.75847 3.75847C4.59748 2.91946 5.66643 2.34807 6.83016 2.11655C7.99389 1.88503 9.20014 2.00377 10.2964 2.45777C11.3926 2.91176 12.3296 3.68061 12.989 4.66712C13.6483 5.65362 14.0002 6.81346 14.0004 8H16C16 3.58236 12.4176 0 8 0Z" fill="white" />
                 </svg>
+                :
+                <SwapListItemActionPopover
+                  swap={swap}
+                  handleSwapAccept={handleSwapAccept ? handleSwapAccept : handleIfAnyActionPropMissing}
+                  handleSwapCancel={handleSwapCancel ? handleSwapCancel : handleIfAnyActionPropMissing}
+                  handleSwapReject={handleSwapReject ? handleSwapReject : handleIfAnyActionPropMissing}
+                  swapCancel={swapCancel}
+                  swapRejection={swapRejection}
+                  swapAcceptance={swapAcceptance}
+                />
+            )
+          }
 
-                Propose offer
-              </button>
-            </PopoverContent>
-          </Popover>
+          {swapCardType === 'history' &&
+            <SwapHistoryDetailsDialog swap={swap as SUI_OpenSwap}>
+              <svg className='w-4 mr-2' viewBox="0 0 16 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 3.3C7.42135 3.3 6.86639 3.53178 6.45722 3.94436C6.04805 4.35695 5.81818 4.91652 5.81818 5.5C5.81818 6.08348 6.04805 6.64306 6.45722 7.05564C6.86639 7.46822 7.42135 7.7 8 7.7C8.57865 7.7 9.13361 7.46822 9.54278 7.05564C9.95195 6.64306 10.1818 6.08348 10.1818 5.5C10.1818 4.91652 9.95195 4.35695 9.54278 3.94436C9.13361 3.53178 8.57865 3.3 8 3.3ZM8 9.16667C7.03558 9.16667 6.11065 8.78036 5.4287 8.09272C4.74675 7.40509 4.36364 6.47246 4.36364 5.5C4.36364 4.52754 4.74675 3.59491 5.4287 2.90728C6.11065 2.21964 7.03558 1.83333 8 1.83333C8.96442 1.83333 9.88935 2.21964 10.5713 2.90728C11.2532 3.59491 11.6364 4.52754 11.6364 5.5C11.6364 6.47246 11.2532 7.40509 10.5713 8.09272C9.88935 8.78036 8.96442 9.16667 8 9.16667ZM8 0C4.36364 0 1.25818 2.28067 0 5.5C1.25818 8.71933 4.36364 11 8 11C11.6364 11 14.7418 8.71933 16 5.5C14.7418 2.28067 11.6364 0 8 0Z" fill="#B6B6BD" />
+              </svg>
+            </SwapHistoryDetailsDialog>
+          }
 
         </div>
 

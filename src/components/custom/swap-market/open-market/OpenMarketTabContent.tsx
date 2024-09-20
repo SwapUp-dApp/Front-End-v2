@@ -398,7 +398,11 @@ const OpenMarketTabContent = () => {
       {/*Mobile: Available open swaps datalist */}
       <div className='flex flex-col gap-3 lg:hidden' >
         {filteredAvailableOpenSwaps?.map((swap, index) => (
-          <OpenSwapListMobileCard key={index} swap={swap} handleNavigation={handleNavigateToProposeRoom} />
+          <OpenSwapListMobileCard
+            key={index}
+            swap={swap}
+            handleNavigation={handleNavigateToProposeRoom}
+          />
         ))}
 
         {

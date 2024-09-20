@@ -31,10 +31,13 @@ import { IHistoryFilters } from '@/types/my-swaps-store.types';
 import { Schema_HistoryMySwapsFiltersForm } from '@/schema';
 import { Input } from '@/components/ui/input';
 import HistorySwapAppliedFiltersBar from './HistorySwapAppliedFiltersBar';
+import { SUI_SwapCreation } from '@/types/global.types';
 
 
 const SwapHistoryTabContent = () => {
   const navigate = useNavigate();
+
+  const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
 
   const {
     setMySwapsData,
@@ -349,7 +352,15 @@ const SwapHistoryTabContent = () => {
       {/*Mobile: Available open swaps datalist */}
       <div className='flex flex-col gap-3 lg:hidden' >
         {filteredHistorySwaps?.map((swap, index) => (
-          <SwapListMobileCard key={index} swap={swap} swapCardType='history' />
+          <SwapListMobileCard
+            key={index}
+            swap={swap}
+            swapCardType='history'
+            // just to avoid error could be improved later
+            swapCancel={swapAcceptance}
+            swapRejection={swapAcceptance}
+            swapAcceptance={swapAcceptance}
+          />
         ))}
 
         {

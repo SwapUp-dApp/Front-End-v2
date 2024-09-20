@@ -4,18 +4,30 @@ import CopyTile from '../../tiles/CopyTile';
 import { getLastCharacters } from '@/lib/utils';
 import { chainsDataset } from '@/constants/data';
 import ChainTile from '../../tiles/ChainTile';
-import { mapSwapTokensHelper } from '@/lib/helpers';
+import { mapSwapTokensHelper, showNotificationToast } from '@/lib/helpers';
 import moment from 'moment';
 import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
+import OpenMarketListItemActionPopover from './OpenMarketListItemActionPopover';
 
 interface IProp {
   swap: SUI_OpenSwap;
   handleNavigation: (swap: SUI_OpenSwap) => void;
+  cardType?: "available" | "created";
+  handleSwapCancel?: (swap: SUI_OpenSwap) => Promise<void>;
 }
 
-const OpenSwapListMobileCard = ({ swap, handleNavigation }: IProp) => {
+const OpenSwapListMobileCard = ({ swap, handleNavigation, cardType = "available", handleSwapCancel }: IProp) => {
 
   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
+
+  const handleIfAnyActionPropMissing = async (swap: SUI_OpenSwap) => {
+    showNotificationToast(
+      'error',
+      `Action props missing!`,
+      'Mobile card component action props missing!'
+    );
+  };
+
   return (
     <section className='bg-su_secondary_bg rounded-lg space-y-4 py-4' >
       <aside className='flex flex-col gap-3 px-4'>
@@ -38,20 +50,21 @@ const OpenSwapListMobileCard = ({ swap, handleNavigation }: IProp) => {
           </div>
 
 
-          <Popover>
+          {/* <Popover>
             <PopoverTrigger className='px-3 py-1.5 rounded-xs hover:bg-su_enable_bg cursor-pointer' >
               <svg
                 className="w-1 cursor-pointer" viewBox="0 0 4 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2.00039 12.8C2.42474 12.8 2.8317 12.9686 3.13176 13.2686C3.43182 13.5687 3.60039 13.9757 3.60039 14.4C3.60039 14.8243 3.43182 15.2313 3.13176 15.5314C2.8317 15.8314 2.42474 16 2.00039 16C1.57604 16 1.16908 15.8314 0.86902 15.5314C0.568961 15.2313 0.400391 14.8243 0.400391 14.4C0.400391 13.9757 0.568961 13.5687 0.86902 13.2686C1.16908 12.9686 1.57604 12.8 2.00039 12.8ZM2.00039 6.4C2.42474 6.4 2.8317 6.56857 3.13176 6.86863C3.43182 7.16869 3.60039 7.57565 3.60039 8C3.60039 8.42435 3.43182 8.83131 3.13176 9.13137C2.8317 9.43143 2.42474 9.6 2.00039 9.6C1.57604 9.6 1.16908 9.43143 0.86902 9.13137C0.568961 8.83131 0.400391 8.42435 0.400391 8C0.400391 7.57565 0.568961 7.16869 0.86902 6.86863C1.16908 6.56857 1.57604 6.4 2.00039 6.4ZM2.00039 0C2.42474 0 2.8317 0.168571 3.13176 0.468629C3.43182 0.768687 3.60039 1.17565 3.60039 1.6C3.60039 2.02435 3.43182 2.43131 3.13176 2.73137C2.8317 3.03143 2.42474 3.2 2.00039 3.2C1.57604 3.2 1.16908 3.03143 0.86902 2.73137C0.568961 2.43131 0.400391 2.02435 0.400391 1.6C0.400391 1.17565 0.568961 0.768687 0.86902 0.468629C1.16908 0.168571 1.57604 0 2.00039 0Z" fill="#B6B6BD" />
               </svg>
             </PopoverTrigger>
+
             <PopoverContent
               align='start'
-              className="w-52 px-2 py-3 bg-card rounded-sm mr-10"
+              className="max-w-52 px-2 pr-4 lg:pr-0 lg:px-3 py-3 bg-card dark:bg-su_least_bg lg:dark:bg-su_secondary_bg rounded-sm mr-10"
             >
               <button
                 onClick={() => { handleNavigation(swap); }}
-                className="action-hover-card-item"
+                className="action-popover-action-item"
               >
                 <svg className='w-8' viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z" fill="white" />
@@ -60,7 +73,15 @@ const OpenSwapListMobileCard = ({ swap, handleNavigation }: IProp) => {
                 Propose offer
               </button>
             </PopoverContent>
-          </Popover>
+          </Popover> */}
+
+
+          <OpenMarketListItemActionPopover
+            cardType={cardType}
+            handleSwapCancel={handleSwapCancel ? handleSwapCancel : handleIfAnyActionPropMissing}
+            swap={swap}
+            handleNavigation={handleNavigation}
+          />
 
         </div>
 
