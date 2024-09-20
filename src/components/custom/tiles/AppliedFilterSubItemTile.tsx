@@ -15,7 +15,7 @@ const AppliedFilterSubItemTile = ({ className, children, hideActionButton, handl
       )}
       {...props}
     >
-      <span className="">{children}</span>
+      <span className={""}>{children}</span>
 
       {!hideActionButton &&
 

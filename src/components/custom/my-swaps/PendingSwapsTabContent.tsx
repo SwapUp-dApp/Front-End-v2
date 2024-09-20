@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import FilterButton from '@/components/custom/shared/FilterButton';
-import { cn, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
+import { cn, generateRandomKey, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '@/components/custom/shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken, SUI_Swap, SUP_CompleteSwap, SUP_CancelSwap, SUT_SwapTokenContractType } from '@/types/swap-market.types';
 import { useCancelSwapOffer, useCompletePrivateSwapOffer, useRejectSwapOffer } from '@/service/queries/swap-market.query';
@@ -33,6 +33,13 @@ import { updatedUserProfilePointsApi } from '@/service/api/user.service';
 import { defaults } from '@/constants/defaults';
 import { SUI_UpdateProfilePointsPayload } from '@/types/profile.types';
 import SwapListMobileCard from '../shared/SwapListMobileCard';
+import { Schema_PendingMySwapsFiltersForm } from '@/schema';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { IPendingFilters } from '@/types/my-swaps-store.types';
+import PendingSwapsAppliedFiltersBar from './PendingSwapsAppliedFiltersBar';
+import { Input } from '@/components/ui/input';
 
 
 const PendingSwapsTabContent = () => {
@@ -40,8 +47,19 @@ const PendingSwapsTabContent = () => {
 
   const wallet = useProfileStore(state => state.profile.wallet);
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
-  const [pendingSwapsSearchApplied, pendingSwapsFiltersApplied] = useMySwapStore(state => [state.pendingSwapsFiltersApplied, state.pendingSwapsSearchApplied]);
-  const [setMySwapsData, filteredPendingSwaps, pendingSwaps] = useMySwapStore(state => [state.setMySwapsData, state.filteredPendingSwaps, state.pendingSwaps]);
+
+  const {
+    setMySwapsData,
+    filteredPendingSwaps,
+    pendingSwaps,
+    pendingSwapsFiltersApplied,
+    pendingFilters,
+    setFilteredPendingSwapByFilters,
+    pendingSwapsSearchApplied,
+    resetAllFilters,
+    setFilteredMySwapsBySearch
+  } = useMySwapStore(state => state);
+
   const [setStartRecentSwapSharingProcess, setRecentAcceptedSwap] = useGlobalStore(state => [state.setStartRecentSwapSharingProcess, state.setRecentAcceptedSwap]);
 
   const [swapAcceptance, setSwapAcceptance] = useState<SUI_SwapCreation>({ created: false, isLoading: false });
@@ -337,8 +355,118 @@ const PendingSwapsTabContent = () => {
     retry: false,
   });
 
+  // Applied filters logic
+  const [formKey, setFormKey] = useState(generateRandomKey(6));
+
+  const pendingSwapsForm = useForm<z.infer<typeof Schema_PendingMySwapsFiltersForm>>({
+    resolver: zodResolver(Schema_PendingMySwapsFiltersForm),
+    defaultValues: {
+      requestedDate: undefined,
+      offersFromCurrentChain: false,
+      swapMode: pendingFilters.swapMode || 'all',
+      swapRequestStatus: pendingFilters.swapRequestStatus || 'all'
+    }
+  });
+
+  const getPendingFiltersObjectByFormData = () => {
+    const { offersFromCurrentChain, requestedDate, swapMode, swapRequestStatus } = pendingSwapsForm.getValues();
+
+    const pendingFilters: IPendingFilters = {
+      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
+      requestedDate: requestedDate ? moment.utc(requestedDate).format() : '',
+      swapMode: swapMode ? swapMode : 'all',
+      swapRequestStatus: swapRequestStatus ? swapRequestStatus : 'all'
+    };
+
+    return pendingFilters;
+  };
+
+  const handleResetAppliedFilters = (resetType: 'all' | 'swap-mode' | 'request-status' | 'current-chain' | "request-date") => {
+
+    switch (resetType) {
+      case 'all':
+        pendingSwapsForm.reset();
+        resetAllFilters('pending');
+        break;
+
+      case 'current-chain':
+        pendingSwapsForm.setValue('offersFromCurrentChain', undefined);
+        setFilteredPendingSwapByFilters(getPendingFiltersObjectByFormData(), wallet.address);
+        break;
+
+      case 'swap-mode':
+        pendingSwapsForm.setValue('swapMode', 'all');
+        setFilteredPendingSwapByFilters(getPendingFiltersObjectByFormData(), wallet.address);
+        break;
+
+      case 'request-status':
+        pendingSwapsForm.setValue('swapRequestStatus', 'all');
+        setFilteredPendingSwapByFilters(getPendingFiltersObjectByFormData(), wallet.address);
+        break;
+
+      case 'request-date':
+        pendingSwapsForm.setValue('requestedDate', undefined);
+        setFilteredPendingSwapByFilters(getPendingFiltersObjectByFormData(), wallet.address);
+        break;
+
+      default:
+        break;
+    }
+
+    setFormKey(generateRandomKey(6));
+  };
+
+  const handleSwapsDataBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = event.target.value;
+    setFilteredMySwapsBySearch(searchValue, 'pending', wallet.address);
+  };
+
   return (
     <div className="space-y-4">
+
+      {/* Available title and search bar for mobile */}
+      <div className="lg:hidden flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between" >
+
+        <div className="flex items-center gap-4" >
+          <h2 className="text-1.5xl font-medium" >Available rooms</h2>
+          <span className={`bg-text font-semibold rounded-full py-0.5 px-3 text-xs ${(filteredPendingSwaps || []).length > 0 ? 'bg-white text-su_primary_bg' : 'bg-muted'}`}>
+            {(filteredPendingSwaps || []).length}
+          </span>
+        </div>
+
+        <div className='w-full lg:w-1/3 flex items-center justify-between gap-2' >
+          <Input
+            className="w-full bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
+            placeholder="Search by NFT, trade ID, wallet, etc..."
+            onChange={handleSwapsDataBySearch}
+            icon={
+              <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
+              </svg>
+            }
+          />
+
+          <div className='lg:hidden' >
+            <PendingSwapsFilterDrawer
+              handleResetAppliedFilters={handleResetAppliedFilters}
+              pendingSwapsForm={pendingSwapsForm}
+              setFormKey={setFormKey}
+              formKey={formKey}
+            >
+              <FilterButton className='rounded-md' filterApplied={pendingSwapsFiltersApplied} />
+            </PendingSwapsFilterDrawer>
+          </div>
+        </div>
+      </div>
+
+      {/*Mobile: Filler applied to open market data */}
+      {pendingSwapsFiltersApplied &&
+        <PendingSwapsAppliedFiltersBar
+          className={`lg:hidden`}
+          handleResetAppliedFilters={handleResetAppliedFilters}
+          filters={pendingFilters}
+        />
+      }
 
       {/*Desktop: Available open swaps datalist */}
       <div className='hidden lg:block' >
@@ -356,11 +484,30 @@ const PendingSwapsTabContent = () => {
                 <TableHead className="align-top font-semibold px-4 min-w-[150px]" >Type</TableHead>
                 <TableHead className="min-w-[130px] pr-2 relative" >
                   <div className="absolute top-2 left-4">
-                    <PendingSwapsFilterDrawer> <FilterButton showTitleOnMobile filterApplied={pendingSwapsFiltersApplied} /> </PendingSwapsFilterDrawer>
+                    <PendingSwapsFilterDrawer
+                      handleResetAppliedFilters={handleResetAppliedFilters}
+                      pendingSwapsForm={pendingSwapsForm}
+                      setFormKey={setFormKey}
+                      formKey={formKey}
+                    >
+                      <FilterButton showTitleOnMobile filterApplied={pendingSwapsFiltersApplied} />
+                    </PendingSwapsFilterDrawer>
                   </div>
                 </TableHead>
               </TableRow>
             </TableHeader>
+
+            {/* For Filters Applied */}
+            {pendingSwapsFiltersApplied &&
+              <TableRow>
+                <TableCell colSpan={9} >
+                  <PendingSwapsAppliedFiltersBar
+                    handleResetAppliedFilters={handleResetAppliedFilters}
+                    filters={pendingFilters}
+                  />
+                </TableCell>
+              </TableRow>
+            }
 
             <TableBody className="divide-y">
               {
