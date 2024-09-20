@@ -56,6 +56,7 @@ const OpenMarketAppliedFiltersBar = ({ handleResetAppliedFilters, filters, class
                 className={cn(
                   filters.preferredAsset === 'nft' ? 'uppercase' : 'capitalize'
                 )}
+                hideActionButton={filters.preferredAsset === "any"}
               >
                 {filters.preferredAsset}
               </AppliedFilterSubItemTile>

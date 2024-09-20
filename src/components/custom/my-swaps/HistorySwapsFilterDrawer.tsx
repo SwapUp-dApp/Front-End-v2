@@ -3,11 +3,11 @@ import moment from "moment";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn, generateRandomKey } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, UseFormReturn, } from "react-hook-form";
+
+import { UseFormReturn, } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Schema_HistoryMySwapsFiltersForm } from "@/schema";
@@ -34,7 +34,7 @@ interface IProp {
 const HistorySwapsFilterDrawer = ({ children, formKey, setFormKey, handleResetAppliedFilters, historySwapsForm }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const [historyFilters, resetAllFilters, setFilteredHistorySwapByFilters] = useMySwapStore(state => [state.historyFilters, state.resetAllFilters, state.setFilteredHistorySwapByFilters]);
+  const [setFilteredHistorySwapByFilters] = useMySwapStore(state => [state.setFilteredHistorySwapByFilters]);
 
   const swapModeFilterFormData: SUT_FiltersSwapModeType[] = ["all", 'open-market', 'private-party'];
   const swapStatusFilterFormData: SUT_HistoryFiltersStatusType[] = ["all", "completed", "declined", "canceled"];

@@ -9,7 +9,7 @@ import { Schema_OpenMarketFiltersForm, } from "@/schema";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { SUI_SelectedCurrencyItem } from "@/types/global.types";
+import { SUI_SelectedCollectionItem, SUI_SelectedCurrencyItem } from "@/types/global.types";
 import { SUT_PreferredAssetType } from "@/types/swap-market.types";
 import Combobox from "../../shared/Combobox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,19 +27,16 @@ interface IProp {
   setFormKey: React.Dispatch<React.SetStateAction<string>>;
   openMarketForm: any;
   handleResetAppliedFilters: (resetType: "all" | "currency" | "nft" | "current-chain" | "offered-rarity-rank") => void;
+  availableCollections: SUI_SelectedCollectionItem[];
+  filters: IOpenMarketSwapFilters;
+  setOpenMarketSwapsByFilters: (filters: IOpenMarketSwapFilters) => void;
 }
 
 const currenciesDataset: SUI_SelectedCurrencyItem[] = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
 const preferredAssetsData: SUT_PreferredAssetType[] = ["any", "nft", "currency"];
 
-const OpenMarketSwapFilterDrawer = ({ children, formKey, handleResetAppliedFilters, openMarketForm, setFormKey }: IProp) => {
+const OpenMarketSwapFilterDrawer = ({ children, formKey, handleResetAppliedFilters, openMarketForm, setFormKey, availableCollections, filters, setOpenMarketSwapsByFilters }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const [openMarketSwapsFilters, setOpenMarketAvailableSwapsByFilters, availableOpenSwapCollections] = useSwapMarketStore(state => [
-    state.openMarket.openMarketSwapsFilters,
-    state.openMarket.setOpenMarketAvailableSwapsByFilters,
-    state.openMarket.availableOpenSwapCollections
-  ]);
 
   const { errors } = openMarketForm.formState;
 
@@ -50,14 +47,14 @@ const OpenMarketSwapFilterDrawer = ({ children, formKey, handleResetAppliedFilte
       offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
       offeredRarityRank: offeredRarityRank ? JSON.parse(offeredRarityRank) : undefined,
       preferredAsset,
-      amountRangeFrom: amountRangeFrom ? Number(amountRangeFrom) : openMarketSwapsFilters.amountRangeFrom,
-      amountRangeTo: amountRangeTo ? Number(amountRangeTo) : openMarketSwapsFilters.amountRangeTo,
+      amountRangeFrom: amountRangeFrom ? Number(amountRangeFrom) : filters.amountRangeFrom,
+      amountRangeTo: amountRangeTo ? Number(amountRangeTo) : filters.amountRangeTo,
       collection,
       currencies,
       rarityRank: rarityRank ? JSON.parse(rarityRank) : undefined
     };
 
-    setOpenMarketAvailableSwapsByFilters(newFilters);
+    setOpenMarketSwapsByFilters(newFilters);
     setFormKey(generateRandomKey(6));
     setIsOpen(false);
   };
@@ -229,7 +226,7 @@ const OpenMarketSwapFilterDrawer = ({ children, formKey, handleResetAppliedFilte
                             <FormItem>
                               <FormLabel className="text-su_secondary text-sm font-normal">Preferred collection:</FormLabel>
                               <Combobox
-                                items={availableOpenSwapCollections}
+                                items={availableCollections}
                                 onChange={field.onChange}
                                 value={field.value}
                                 title="collection"

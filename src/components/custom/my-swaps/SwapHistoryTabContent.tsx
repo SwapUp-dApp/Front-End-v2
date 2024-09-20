@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import FilterButton from '@/components/custom/shared/FilterButton';
 import { cn, generateRandomKey, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '@/components/custom/shared/EmptyDataset';
-import { SUI_OpenSwap, SUI_SwapToken, SUT_SwapTokenContractType } from '@/types/swap-market.types';
+import { SUI_OpenSwap } from '@/types/swap-market.types';
 import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';

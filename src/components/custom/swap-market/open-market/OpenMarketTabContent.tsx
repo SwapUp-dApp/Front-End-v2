@@ -42,7 +42,8 @@ const OpenMarketTabContent = () => {
     availableOpenSwapsSearchApplied,
     openMarketSwapsFilters,
     setOpenMarketAvailableSwapsByFilters,
-    resetAllOpenMarketFilters
+    resetAllOpenMarketFilters,
+    availableOpenSwapCollections
   } = useSwapMarketStore(state => state.openMarket);
 
   const handleFilterAvailableSwapsBySearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +94,6 @@ const OpenMarketTabContent = () => {
   };
 
   // Open market filters logic
-
   const [formKey, setFormKey] = useState(generateRandomKey(6));
 
   const openMarketForm = useForm<z.infer<typeof Schema_OpenMarketFiltersForm>>({
@@ -232,6 +232,9 @@ const OpenMarketTabContent = () => {
               setFormKey={setFormKey}
               openMarketForm={openMarketForm}
               handleResetAppliedFilters={handleResetAppliedFilters}
+              availableCollections={availableOpenSwapCollections}
+              filters={openMarketSwapsFilters}
+              setOpenMarketSwapsByFilters={setOpenMarketAvailableSwapsByFilters}
             >
               <FilterButton className='rounded-md' filterApplied={availableOpenSwapsFiltersApplied} />
             </OpenMarketSwapFilterDrawer>
@@ -268,8 +271,11 @@ const OpenMarketTabContent = () => {
                     <OpenMarketSwapFilterDrawer
                       formKey={formKey}
                       setFormKey={setFormKey}
-                      handleResetAppliedFilters={handleResetAppliedFilters}
                       openMarketForm={openMarketForm}
+                      handleResetAppliedFilters={handleResetAppliedFilters}
+                      availableCollections={availableOpenSwapCollections}
+                      filters={openMarketSwapsFilters}
+                      setOpenMarketSwapsByFilters={setOpenMarketAvailableSwapsByFilters}
                     >
                       <FilterButton showTitleOnMobile filterApplied={availableOpenSwapsFiltersApplied} />
                     </OpenMarketSwapFilterDrawer>
