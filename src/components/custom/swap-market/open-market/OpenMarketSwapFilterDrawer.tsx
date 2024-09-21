@@ -2,8 +2,6 @@ import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn, generateRandomKey } from "@/lib/utils";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Schema_OpenMarketFiltersForm, } from "@/schema";
@@ -11,7 +9,7 @@ import { Schema_OpenMarketFiltersForm, } from "@/schema";
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { SUI_SelectedCurrencyItem } from "@/types/global.types";
+import { SUI_SelectedCollectionItem, SUI_SelectedCurrencyItem } from "@/types/global.types";
 import { SUT_PreferredAssetType } from "@/types/swap-market.types";
 import Combobox from "../../shared/Combobox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -25,54 +23,22 @@ import { IOpenMarketSwapFilters } from "@/types/swap-market-store.types";
 
 interface IProp {
   children: any;
+  formKey: string;
+  setFormKey: React.Dispatch<React.SetStateAction<string>>;
+  openMarketForm: any;
+  handleResetAppliedFilters: (resetType: "all" | "currency" | "nft" | "current-chain" | "offered-rarity-rank") => void;
+  availableCollections: SUI_SelectedCollectionItem[];
+  filters: IOpenMarketSwapFilters;
+  setOpenMarketSwapsByFilters: (filters: IOpenMarketSwapFilters) => void;
 }
 
 const currenciesDataset: SUI_SelectedCurrencyItem[] = chainsDataset.map(coin => ({ uuid: coin.uuid, name: coin.name, iconUrl: coin.iconUrl }));
 const preferredAssetsData: SUT_PreferredAssetType[] = ["any", "nft", "currency"];
 
-const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
+const OpenMarketSwapFilterDrawer = ({ children, formKey, handleResetAppliedFilters, openMarketForm, setFormKey, availableCollections, filters, setOpenMarketSwapsByFilters }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formKey, setFormKey] = useState(generateRandomKey(6));
 
-  const [openMarketSwapsFilters, setOpenMarketAvailableSwapsByFilters, resetAllOpenMarketFilters, availableOpenSwapCollections] = useSwapMarketStore(state => [
-    state.openMarket.openMarketSwapsFilters,
-    state.openMarket.setOpenMarketAvailableSwapsByFilters,
-    state.openMarket.resetAllOpenMarketFilters,
-    state.openMarket.availableOpenSwapCollections
-  ]);
-
-  const form = useForm<z.infer<typeof Schema_OpenMarketFiltersForm>>({
-    resolver: zodResolver(Schema_OpenMarketFiltersForm),
-    defaultValues: {
-      offersFromCurrentChain: false,
-      preferredAsset: 'any',
-      amountRangeFrom: '',
-      amountRangeTo: '',
-      currencies: undefined,
-      offeredRarityRank: '',
-      collection: '',
-      rarityRank: ''
-    }
-  });
-
-  const { errors } = form.formState;
-
-  const getFiltersObject = () => {
-    const { offersFromCurrentChain, preferredAsset, amountRangeFrom, amountRangeTo, collection, currencies, offeredRarityRank, rarityRank } = form.getValues();
-
-    const newFilters: IOpenMarketSwapFilters = {
-      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
-      offeredRarityRank: offeredRarityRank ? JSON.parse(offeredRarityRank) : undefined,
-      preferredAsset,
-      amountRangeFrom: amountRangeFrom ? Number(amountRangeFrom) : openMarketSwapsFilters.amountRangeFrom,
-      amountRangeTo: amountRangeTo ? Number(amountRangeTo) : openMarketSwapsFilters.amountRangeTo,
-      collection,
-      currencies,
-      rarityRank: rarityRank ? JSON.parse(rarityRank) : undefined
-    };
-
-    return (newFilters);
-  };
+  const { errors } = openMarketForm.formState;
 
   const onSubmit = async (data: z.infer<typeof Schema_OpenMarketFiltersForm>) => {
     const { offersFromCurrentChain, preferredAsset, amountRangeFrom, amountRangeTo, collection, currencies, offeredRarityRank, rarityRank } = data;
@@ -81,35 +47,16 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
       offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
       offeredRarityRank: offeredRarityRank ? JSON.parse(offeredRarityRank) : undefined,
       preferredAsset,
-      amountRangeFrom: amountRangeFrom ? Number(amountRangeFrom) : openMarketSwapsFilters.amountRangeFrom,
-      amountRangeTo: amountRangeTo ? Number(amountRangeTo) : openMarketSwapsFilters.amountRangeTo,
+      amountRangeFrom: amountRangeFrom ? Number(amountRangeFrom) : filters.amountRangeFrom,
+      amountRangeTo: amountRangeTo ? Number(amountRangeTo) : filters.amountRangeTo,
       collection,
       currencies,
       rarityRank: rarityRank ? JSON.parse(rarityRank) : undefined
     };
 
-    setOpenMarketAvailableSwapsByFilters(newFilters);
+    setOpenMarketSwapsByFilters(newFilters);
     setFormKey(generateRandomKey(6));
     setIsOpen(false);
-  };
-
-  const handleResetOfferedRarityRank = () => {
-    form.setValue("offeredRarityRank", '');
-    setOpenMarketAvailableSwapsByFilters(getFiltersObject());
-
-    setFormKey(generateRandomKey(6));
-  };
-
-  const handleResetPreferredAssets = () => {
-    form.setValue('preferredAsset', 'any');
-    setOpenMarketAvailableSwapsByFilters(getFiltersObject());
-    setFormKey(generateRandomKey(6));
-  };
-
-  const handleResetAll = () => {
-    resetAllOpenMarketFilters();
-    form.reset();
-    setFormKey(generateRandomKey(6));
   };
 
   return (
@@ -142,13 +89,13 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
           </DrawerTitle>
 
           <div className="h-full">
-            <Form {...form} key={formKey} >
-              <form className="h-full pb-4 " onSubmit={form.handleSubmit(onSubmit)}>
+            <Form {...openMarketForm} key={formKey} >
+              <form className="h-full pb-4 " onSubmit={openMarketForm.handleSubmit(onSubmit)}>
 
                 <ScrollArea className="h-3/4" >
                   <div className="space-y-4 mr-3 mt-3 mb-4 ml-1">
                     <FormField
-                      control={form.control}
+                      control={openMarketForm.control}
                       name="offersFromCurrentChain"
                       render={({ field }) => (
                         <FormItem className="flex items-center gap-2" >
@@ -167,7 +114,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                     />
 
                     <FormField
-                      control={form.control}
+                      control={openMarketForm.control}
                       name="offeredRarityRank"
                       render={({ field }) => (
                         <FormItem>
@@ -175,7 +122,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                             NFT Rarity Rank:
 
                             <button
-                              onClick={handleResetOfferedRarityRank}
+                              onClick={() => handleResetAppliedFilters('offered-rarity-rank')}
                               className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
                             >
                               <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -226,7 +173,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
 
                     {/* PreferredAssets */}
                     <FormField
-                      control={form.control}
+                      control={openMarketForm.control}
                       name="preferredAsset"
                       render={({ field }) => (
                         <FormItem>
@@ -234,7 +181,10 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                             Preferred asset:
 
                             <button
-                              onClick={handleResetPreferredAssets}
+                              onClick={() => {
+                                handleResetAppliedFilters('currency');
+                                handleResetAppliedFilters('nft');
+                              }}
                               className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
                             >
                               <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -267,16 +217,16 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
 
                     {/* Swap parameters depending on preferred assets */}
                     {
-                      form.watch("preferredAsset") === "nft" &&
+                      openMarketForm.watch("preferredAsset") === "nft" &&
                       <div className="space-y-3" >
                         <FormField
-                          control={form.control}
+                          control={openMarketForm.control}
                           name="collection"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-su_secondary text-sm font-normal">Preferred collection:</FormLabel>
                               <Combobox
-                                items={availableOpenSwapCollections}
+                                items={availableCollections}
                                 onChange={field.onChange}
                                 value={field.value}
                                 title="collection"
@@ -288,7 +238,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                         />
 
                         <FormField
-                          control={form.control}
+                          control={openMarketForm.control}
                           name="rarityRank"
                           render={({ field }) => (
                             <FormItem>
@@ -327,7 +277,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                     }
 
                     {
-                      form.watch("preferredAsset") === "currency" &&
+                      openMarketForm.watch("preferredAsset") === "currency" &&
 
                       <div className="space-y-3" >
 
@@ -336,7 +286,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                           <FormLabel className="text-su_secondary text-sm font-normal">Amount:</FormLabel>
                           <div className="flex items-center justify-between gap-2" >
                             <FormField
-                              control={form.control}
+                              control={openMarketForm.control}
                               name="amountRangeFrom"
                               render={({ field }) => (
                                 <FormItem>
@@ -361,7 +311,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                             )} ></span>
 
                             <FormField
-                              control={form.control}
+                              control={openMarketForm.control}
                               name="amountRangeTo"
                               render={({ field }) => (
                                 <FormItem>
@@ -392,7 +342,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
                         </div>
 
                         <FormField
-                          control={form.control}
+                          control={openMarketForm.control}
                           name="currencies"
                           render={({ field }) => (
                             <FormItem>
@@ -417,7 +367,7 @@ const OpenMarketSwapFilterDrawer = ({ children, }: IProp) => {
 
                 <div className="h-1/4 pt-6" >
                   <span className="w-full grid grid-cols-2 gap-4 " >
-                    <CustomOutlineButton onClick={handleResetAll} >
+                    <CustomOutlineButton onClick={() => handleResetAppliedFilters('all')} >
                       Clear filters
                     </CustomOutlineButton>
                     <Button variant={"default"} type="submit" >Apply filters</Button>

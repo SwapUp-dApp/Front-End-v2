@@ -1,69 +1,44 @@
 import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn, generateRandomKey } from "@/lib/utils";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, } from "react-hook-form";
-import { z } from "zod";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Schema_PrivateMarketFiltersForm, } from "@/schema";
 
 import { Drawer, DrawerClose, DrawerContent, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import CustomOutlineButton from "../../shared/CustomOutlineButton";
-import { SUI_SelectedCurrencyItem } from "@/types/global.types";
-import { SUT_PreferredAssetType } from "@/types/swap-market.types";
 
-import { chainsDataset } from "@/constants/data";
-import { useSwapMarketStore } from "@/store/swap-market";
 import { IPrivateMarketSwapFilters } from "@/types/swap-market-store.types";
-import moment from "moment";
 import { SUT_RequestStatusType } from "@/types/my-swaps-store.types";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useProfileStore } from "@/store/profile";
+import { useSwapMarketStore } from "@/store/swap-market";
+import { z } from "zod";
+import moment from "moment";
 
 interface IProp {
   children: any;
+  formKey: string;
+  setFormKey: React.Dispatch<React.SetStateAction<string>>;
+  handleResetAppliedFilters: (resetType: "all" | "date" | "status" | "current-chain") => void;
+  privatePartyForm: any;
 }
 
-const PrivateMarketSwapFilterDrawer = ({ children, }: IProp) => {
+const PrivateMarketSwapFilterDrawer = ({ children, handleResetAppliedFilters, privatePartyForm, formKey, setFormKey }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formKey, setFormKey] = useState(generateRandomKey(6));
 
   const walletAddress = useProfileStore(state => state.profile.wallet.address);
-  const [privateMarketSwapsFilters, setPrivateMarketAvailableSwapsByFilters, resetAllPrivateMarketFilters] = useSwapMarketStore(state => [
-    state.privateMarket.privateMarketSwapsFilters,
-    state.privateMarket.setPrivateMarketAvailableSwapsByFilters,
-    state.privateMarket.resetAllPrivateMarketFilters,
 
+  const [setPrivateMarketAvailableSwapsByFilters] = useSwapMarketStore(state => [
+    state.privateMarket.setPrivateMarketAvailableSwapsByFilters,
   ]);
 
-  const form = useForm<z.infer<typeof Schema_PrivateMarketFiltersForm>>({
-    resolver: zodResolver(Schema_PrivateMarketFiltersForm),
-    defaultValues: {
-      offersFromCurrentChain: false,
-      swapRequestStatus: 'all',
-      dateRangeFrom: undefined,
-      dateRangeTo: undefined
-    }
-  });
 
-  const { errors } = form.formState;
-
-  const getFiltersObject = () => {
-    const { offersFromCurrentChain, dateRangeFrom, dateRangeTo, swapRequestStatus } = form.getValues();
-
-    const newFilters: IPrivateMarketSwapFilters = {
-      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
-      swapRequestStatus,
-      dateRangeFrom: dateRangeFrom ? moment.utc(dateRangeFrom).format() : undefined,
-      dateRangeTo: dateRangeTo ? moment.utc(dateRangeTo).format() : undefined
-    };
-
-    return (newFilters);
-  };
+  const { errors } = privatePartyForm.formState;
 
   const onSubmit = async (data: z.infer<typeof Schema_PrivateMarketFiltersForm>) => {
     const { offersFromCurrentChain, dateRangeFrom, dateRangeTo, swapRequestStatus } = data;
@@ -80,30 +55,9 @@ const PrivateMarketSwapFilterDrawer = ({ children, }: IProp) => {
     setIsOpen(false);
   };
 
-  const handleResetStatusFilters = () => {
-    form.setValue("swapRequestStatus", 'all');
-    setPrivateMarketAvailableSwapsByFilters(getFiltersObject(), walletAddress);
-
-    setFormKey(generateRandomKey(6));
-  };
-
-  const handleResetDateFilters = () => {
-    form.setValue('dateRangeFrom', undefined);
-    form.setValue('dateRangeTo', undefined);
-    setPrivateMarketAvailableSwapsByFilters(getFiltersObject(), walletAddress);
-    setFormKey(generateRandomKey(6));
-  };
-
-  const handleResetAll = () => {
-    resetAllPrivateMarketFilters();
-    form.reset();
-    setFormKey(generateRandomKey(6));
-  };
-
   const swapStatusFilterFormData: SUT_RequestStatusType[] = ["all", 'sent', 'received'];
 
   return (
-
     <Drawer open={isOpen} direction="right" onClose={() => setIsOpen(false)}  >
       <DrawerTrigger onClick={() => setIsOpen(true)}>
         {children}
@@ -132,13 +86,13 @@ const PrivateMarketSwapFilterDrawer = ({ children, }: IProp) => {
           </DrawerTitle>
 
           <div className="h-full">
-            <Form {...form} key={formKey} >
-              <form className="h-full pb-4 flex flex-col justify-between" onSubmit={form.handleSubmit(onSubmit)}>
+            <Form {...privatePartyForm} key={formKey} >
+              <form className="h-full pb-4 flex flex-col justify-between" onSubmit={privatePartyForm.handleSubmit(onSubmit)}>
 
 
                 <div className="space-y-4 mr-3 mt-3 mb-4 ml-1">
                   <FormField
-                    control={form.control}
+                    control={privatePartyForm.control}
                     name="offersFromCurrentChain"
                     render={({ field }) => (
                       <FormItem className="flex items-center gap-2" >
@@ -158,7 +112,7 @@ const PrivateMarketSwapFilterDrawer = ({ children, }: IProp) => {
 
                   {/* Swap Status */}
                   <FormField
-                    control={form.control}
+                    control={privatePartyForm.control}
                     name="swapRequestStatus"
                     render={({ field }) => (
                       <FormItem>
@@ -166,7 +120,7 @@ const PrivateMarketSwapFilterDrawer = ({ children, }: IProp) => {
                           Status:
 
                           <button
-                            onClick={handleResetStatusFilters}
+                            onClick={() => handleResetAppliedFilters('status')}
                             className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
                           >
                             <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -202,7 +156,7 @@ const PrivateMarketSwapFilterDrawer = ({ children, }: IProp) => {
                       Date:
 
                       <button
-                        onClick={handleResetDateFilters}
+                        onClick={() => handleResetAppliedFilters('date')}
                         className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
                       >
                         <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -215,7 +169,7 @@ const PrivateMarketSwapFilterDrawer = ({ children, }: IProp) => {
 
                     <div className="flex items-center justify-between gap-2" >
                       <FormField
-                        control={form.control}
+                        control={privatePartyForm.control}
                         name="dateRangeFrom"
                         render={({ field }) => (
                           <FormItem>
@@ -263,7 +217,7 @@ const PrivateMarketSwapFilterDrawer = ({ children, }: IProp) => {
                       )} ></span>
 
                       <FormField
-                        control={form.control}
+                        control={privatePartyForm.control}
                         name="dateRangeTo"
                         render={({ field }) => (
                           <FormItem>
@@ -318,7 +272,7 @@ const PrivateMarketSwapFilterDrawer = ({ children, }: IProp) => {
 
 
                 <span className="w-full grid grid-cols-2 gap-4 " >
-                  <CustomOutlineButton onClick={handleResetAll} >
+                  <CustomOutlineButton onClick={() => handleResetAppliedFilters('all')} >
                     Clear filters
                   </CustomOutlineButton>
                   <Button variant={"default"} type="submit" >Apply filters</Button>

@@ -1,4 +1,3 @@
-// import LeaderboardCard from "@/components/custom/swap-market/LeaderboardCard";
 import NewMembersCard from "@/components/custom/swap-market/NewMembersCard";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import CreatePrivateSwapDialog from "@/components/custom/swap-market/private-party/CreatePrivateSwapDialog";
@@ -11,6 +10,7 @@ import { showWalletConnectionToast } from "@/lib/helpers";
 import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
 import { defaults } from "@/constants/defaults";
 import LeaderboardCard from "@/components/custom/swap-market/LeaderboardCard";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const SwapMarketPage = () => {
   const navigate = useNavigate();
@@ -72,11 +72,15 @@ const SwapMarketPage = () => {
           </DropdownMenu>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3" >
-          <NewMembersCard users={membersData} />
-          <NewMembersCard cardType="trader" users={tradersData} />
-          <LeaderboardCard users={membersData} />
-        </div>
+        <ScrollArea className='w-full' >
+          <div className="w-full flex items-center lg:grid lg:grid-cols-3 gap-3" >
+            <NewMembersCard users={membersData} className="min-w-[343px]" />
+            <NewMembersCard cardType="trader" users={tradersData} className="min-w-[343px]" />
+            <LeaderboardCard users={membersData} className="min-w-[343px]" />
+          </div>
+
+          <ScrollBar orientation='horizontal' className='h-2' />
+        </ScrollArea>
 
         <CustomTabContainer >
           {

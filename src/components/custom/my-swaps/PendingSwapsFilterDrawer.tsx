@@ -3,11 +3,11 @@ import moment from "moment";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn, generateRandomKey } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, } from "react-hook-form";
+
+import { UseFormReturn, } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Schema_PendingMySwapsFiltersForm } from "@/schema";
@@ -23,40 +23,25 @@ import { useProfileStore } from "@/store/profile";
 
 interface IProp {
   children: any;
+  formKey: string;
+  setFormKey: React.Dispatch<React.SetStateAction<string>>;
+  handleResetAppliedFilters: (resetType: "all" | "swap-mode" | "request-status" | "current-chain" | "request-date") => void;
+  pendingSwapsForm: UseFormReturn<{
+    swapRequestStatus: "received" | "all" | "sent";
+    swapMode: "all" | "open-market" | "private-party";
+    offersFromCurrentChain?: boolean | undefined;
+    requestedDate?: Date | undefined;
+  }, any, undefined>;
 }
 
-const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
+const PendingSwapsFilterDrawer = ({ children, formKey, setFormKey, handleResetAppliedFilters, pendingSwapsForm }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formKey, setFormKey] = useState(generateRandomKey(6));
 
   const walletAddress = useProfileStore(state => state.profile.wallet.address);
-  const [pendingFilters, resetAllFilters, setFilteredPendingSwapByFilters] = useMySwapStore(state => [state.pendingFilters, state.resetAllFilters, state.setFilteredPendingSwapByFilters]);
+  const [setFilteredPendingSwapByFilters] = useMySwapStore(state => [state.setFilteredPendingSwapByFilters]);
 
   const swapModeFilterFormData: SUT_FiltersSwapModeType[] = ["all", 'open-market', 'private-party'];
   const swapStatusFilterFormData: SUT_RequestStatusType[] = ["all", 'sent', 'received'];
-
-  const form = useForm<z.infer<typeof Schema_PendingMySwapsFiltersForm>>({
-    resolver: zodResolver(Schema_PendingMySwapsFiltersForm),
-    defaultValues: {
-      requestedDate: undefined,
-      offersFromCurrentChain: false,
-      swapMode: pendingFilters.swapMode || 'all',
-      swapRequestStatus: pendingFilters.swapRequestStatus || 'all'
-    }
-  });
-
-  const getPendingFiltersObject = () => {
-    const { offersFromCurrentChain, requestedDate, swapMode, swapRequestStatus } = form.getValues();
-
-    const pendingFilters: IPendingFilters = {
-      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
-      requestedDate: requestedDate ? moment.utc(requestedDate).format() : '',
-      swapMode: swapMode ? swapMode : 'all',
-      swapRequestStatus: swapRequestStatus ? swapRequestStatus : 'all'
-    };
-
-    return pendingFilters;
-  };
 
   const onSubmit = async (data: z.infer<typeof Schema_PendingMySwapsFiltersForm>) => {
 
@@ -72,26 +57,6 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
     setFilteredPendingSwapByFilters(pendingFilters, walletAddress);
     setIsOpen(false);
   };
-
-  const handleResetMode = () => {
-    form.setValue('swapMode', 'all');
-    setFilteredPendingSwapByFilters(getPendingFiltersObject(), walletAddress);
-
-    setFormKey(generateRandomKey(6));
-  };
-
-  const handleResetStatus = () => {
-    form.setValue('swapRequestStatus', 'all');
-    setFilteredPendingSwapByFilters(getPendingFiltersObject(), walletAddress);
-    setFormKey(generateRandomKey(6));
-  };
-
-  const handleResetAll = () => {
-    form.reset();
-    resetAllFilters('pending');
-    setFormKey(generateRandomKey(6));
-  };
-
 
   return (
 
@@ -123,12 +88,12 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
           </DrawerTitle>
 
           <div className="h-full space-y-2">
-            <Form {...form} key={formKey} >
-              <form className="flex flex-col justify-between h-full pb-4" onSubmit={form.handleSubmit(onSubmit)}>
+            <Form {...pendingSwapsForm} key={formKey} >
+              <form className="flex flex-col justify-between h-full pb-4" onSubmit={pendingSwapsForm.handleSubmit(onSubmit)}>
 
                 <div className="space-y-3" >
                   <FormField
-                    control={form.control}
+                    control={pendingSwapsForm.control}
                     name="offersFromCurrentChain"
                     render={({ field }) => (
                       <FormItem className="flex items-center gap-2" >
@@ -148,7 +113,7 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
 
                   {/* Swap Status */}
                   <FormField
-                    control={form.control}
+                    control={pendingSwapsForm.control}
                     name="swapRequestStatus"
                     render={({ field }) => (
                       <FormItem>
@@ -156,7 +121,7 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
                           Status:
 
                           <button
-                            onClick={handleResetStatus}
+                            onClick={() => handleResetAppliedFilters('request-status')}
                             className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
                           >
                             <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -189,7 +154,7 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
 
                   {/* Swap Mode */}
                   <FormField
-                    control={form.control}
+                    control={pendingSwapsForm.control}
                     name="swapMode"
                     render={({ field }) => (
                       <FormItem>
@@ -197,7 +162,7 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
                           Swap mode:
 
                           <button
-                            onClick={handleResetMode}
+                            onClick={() => handleResetAppliedFilters('swap-mode')}
                             className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
                           >
                             <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -231,7 +196,7 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
 
                   {/* Requested Data */}
                   <FormField
-                    control={form.control}
+                    control={pendingSwapsForm.control}
                     name="requestedDate"
                     render={({ field }) => (
                       <FormItem>
@@ -274,12 +239,11 @@ const PendingSwapsFilterDrawer = ({ children, }: IProp) => {
                 </div>
 
                 <span className="w-full grid grid-cols-2 gap-4" >
-                  <CustomOutlineButton onClick={handleResetAll} >
+                  <CustomOutlineButton onClick={() => handleResetAppliedFilters('all')} >
                     Clear filters
                   </CustomOutlineButton>
                   <Button variant={"default"} type="submit" >Apply filters</Button>
                 </span>
-
 
               </form>
             </Form>

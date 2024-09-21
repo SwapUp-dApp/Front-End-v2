@@ -268,7 +268,6 @@ const CounterOfferSwapRoom = () => {
 
   }, [state.sender.nftsSelectedForSwap.length, state.receiver.nftsSelectedForSwap.length, state.sender.addedAmount, state.receiver.addedAmount]);
 
-
   return (
     <div className="space-y-4" >
       <RoomHeader

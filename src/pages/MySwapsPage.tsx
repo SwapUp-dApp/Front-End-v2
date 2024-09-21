@@ -26,7 +26,7 @@ const MySwapsPage = () => {
         <div className="flex items-center justify-between" >
           <h2 className="text-2xl font-semibold" >My Swaps</h2>
           <Input
-            className="w-1/3 bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
+            className="hidden lg:flex w-1/3 bg-su_enable_bg text-su_secondary !p-3.5 mr-1"
             placeholder="Search by asset name or wallet address..."
             onChange={handleSwapsDataBySearch}
             icon={

@@ -3,11 +3,11 @@ import moment from "moment";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn, generateRandomKey } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, } from "react-hook-form";
+
+import { UseFormReturn, } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Schema_HistoryMySwapsFiltersForm } from "@/schema";
@@ -20,39 +20,24 @@ import CustomOutlineButton from "../shared/CustomOutlineButton";
 
 interface IProp {
   children: any;
+  formKey: string;
+  setFormKey: React.Dispatch<React.SetStateAction<string>>;
+  handleResetAppliedFilters: (resetType: "all" | "swap-mode" | "swap-status" | "current-chain" | "request-date") => void;
+  historySwapsForm: UseFormReturn<{
+    swapStatus: "all" | "completed" | "declined" | "canceled";
+    swapMode: "all" | "open-market" | "private-party";
+    offersFromCurrentChain?: boolean | undefined;
+    requestedDate?: Date | undefined;
+  }, any, undefined>;
 }
 
-const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
+const HistorySwapsFilterDrawer = ({ children, formKey, setFormKey, handleResetAppliedFilters, historySwapsForm }: IProp) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [formKey, setFormKey] = useState(generateRandomKey(6));
 
-  const [historyFilters, resetAllFilters, setFilteredHistorySwapByFilters] = useMySwapStore(state => [state.historyFilters, state.resetAllFilters, state.setFilteredHistorySwapByFilters]);
+  const [setFilteredHistorySwapByFilters] = useMySwapStore(state => [state.setFilteredHistorySwapByFilters]);
 
   const swapModeFilterFormData: SUT_FiltersSwapModeType[] = ["all", 'open-market', 'private-party'];
   const swapStatusFilterFormData: SUT_HistoryFiltersStatusType[] = ["all", "completed", "declined", "canceled"];
-
-  const form = useForm<z.infer<typeof Schema_HistoryMySwapsFiltersForm>>({
-    resolver: zodResolver(Schema_HistoryMySwapsFiltersForm),
-    defaultValues: {
-      requestedDate: undefined,
-      offersFromCurrentChain: false,
-      swapMode: historyFilters.swapMode || 'all',
-      swapStatus: historyFilters.swapStatus || 'all'
-    }
-  });
-
-  const getHistoryFiltersObject = () => {
-    const { offersFromCurrentChain, requestedDate, swapMode, swapStatus } = form.getValues();
-
-    const newHistoryFilters: IHistoryFilters = {
-      offersFromCurrentChain: offersFromCurrentChain ? offersFromCurrentChain : false,
-      requestedDate: requestedDate ? moment.utc(requestedDate).format() : '',
-      swapMode: swapMode ? swapMode : 'all',
-      swapStatus: swapStatus ? swapStatus : 'all'
-    };
-
-    return newHistoryFilters;
-  };
 
   const onSubmit = async (data: z.infer<typeof Schema_HistoryMySwapsFiltersForm>) => {
     const { requestedDate, swapMode, swapStatus, offersFromCurrentChain } = data;
@@ -67,26 +52,6 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
     setFilteredHistorySwapByFilters(newHistoryFilters);
     setIsOpen(false);
   };
-
-
-  const handleResetMode = () => {
-    form.setValue('swapMode', 'all');
-    setFilteredHistorySwapByFilters(getHistoryFiltersObject());
-    setFormKey(generateRandomKey(6));
-  };
-
-  const handleResetStatus = () => {
-    form.setValue('swapStatus', 'all');
-    setFilteredHistorySwapByFilters(getHistoryFiltersObject());
-    setFormKey(generateRandomKey(6));
-  };
-
-  const handleResetAll = () => {
-    form.reset();
-    resetAllFilters('history');
-    setFormKey(generateRandomKey(6));
-  };
-
 
   return (
     <>
@@ -118,11 +83,11 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
             </DrawerTitle>
 
             <div className="h-full space-y-2">
-              <Form {...form} key={formKey} >
-                <form className="h-full flex flex-col justify-between pb-4" onSubmit={form.handleSubmit(onSubmit)}>
+              <Form {...historySwapsForm} key={formKey} >
+                <form className="h-full flex flex-col justify-between pb-4" onSubmit={historySwapsForm.handleSubmit(onSubmit)}>
                   <div className="space-y-3" >
                     <FormField
-                      control={form.control}
+                      control={historySwapsForm.control}
                       name="offersFromCurrentChain"
                       render={({ field }) => (
                         <FormItem className="flex items-center gap-2" >
@@ -142,14 +107,18 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
 
                     {/* Swap Status */}
                     <FormField
-                      control={form.control}
+                      control={historySwapsForm.control}
                       name="swapStatus"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-su_secondary text-sm font-normal flex items-center justify-between">
                             Status:
 
-                            <button onClick={handleResetStatus} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                            <button
+                              onClick={() => handleResetAppliedFilters('swap-status')}
+                              type="reset"
+                              className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
+                            >
                               <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M6 12C4.46667 12 3.13067 11.4918 1.992 10.4753C0.853333 9.45889 0.200444 8.18933 0.0333333 6.66667H1.4C1.55556 7.82222 2.06956 8.77778 2.942 9.53333C3.81444 10.2889 4.83378 10.6667 6 10.6667C7.3 10.6667 8.40289 10.214 9.30867 9.30867C10.2144 8.40333 10.6671 7.30045 10.6667 6C10.6662 4.69956 10.2136 3.59689 9.30867 2.692C8.40378 1.78711 7.30089 1.33422 6 1.33333C5.23333 1.33333 4.51667 1.51111 3.85 1.86667C3.18333 2.22222 2.62222 2.71111 2.16667 3.33333H4V4.66667H0V0.666667H1.33333V2.23333C1.9 1.52222 2.59178 0.972222 3.40867 0.583333C4.22556 0.194444 5.08933 0 6 0C6.83333 0 7.614 0.158445 8.342 0.475333C9.07 0.792222 9.70333 1.21978 10.242 1.758C10.7807 2.29622 11.2084 2.92956 11.5253 3.658C11.8422 4.38645 12.0004 5.16711 12 6C11.9996 6.83289 11.8413 7.61356 11.5253 8.342C11.2093 9.07045 10.7816 9.70378 10.242 10.242C9.70244 10.7802 9.06911 11.208 8.342 11.5253C7.61489 11.8427 6.83422 12.0009 6 12Z" fill="#B6B6BD" />
                               </svg>
@@ -180,14 +149,18 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
 
                     {/* Swap Mode */}
                     <FormField
-                      control={form.control}
+                      control={historySwapsForm.control}
                       name="swapMode"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-su_secondary text-sm font-normal flex items-center justify-between">
                             Swap mode:
 
-                            <button onClick={handleResetMode} type="reset" className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg" >
+                            <button
+                              onClick={() => handleResetAppliedFilters('swap-mode')}
+                              type="reset"
+                              className="flex items-center gap-2 py-1 px-2 rounded-sm hover:bg-su_active_bg"
+                            >
                               <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M6 12C4.46667 12 3.13067 11.4918 1.992 10.4753C0.853333 9.45889 0.200444 8.18933 0.0333333 6.66667H1.4C1.55556 7.82222 2.06956 8.77778 2.942 9.53333C3.81444 10.2889 4.83378 10.6667 6 10.6667C7.3 10.6667 8.40289 10.214 9.30867 9.30867C10.2144 8.40333 10.6671 7.30045 10.6667 6C10.6662 4.69956 10.2136 3.59689 9.30867 2.692C8.40378 1.78711 7.30089 1.33422 6 1.33333C5.23333 1.33333 4.51667 1.51111 3.85 1.86667C3.18333 2.22222 2.62222 2.71111 2.16667 3.33333H4V4.66667H0V0.666667H1.33333V2.23333C1.9 1.52222 2.59178 0.972222 3.40867 0.583333C4.22556 0.194444 5.08933 0 6 0C6.83333 0 7.614 0.158445 8.342 0.475333C9.07 0.792222 9.70333 1.21978 10.242 1.758C10.7807 2.29622 11.2084 2.92956 11.5253 3.658C11.8422 4.38645 12.0004 5.16711 12 6C11.9996 6.83289 11.8413 7.61356 11.5253 8.342C11.2093 9.07045 10.7816 9.70378 10.242 10.242C9.70244 10.7802 9.06911 11.208 8.342 11.5253C7.61489 11.8427 6.83422 12.0009 6 12Z" fill="#B6B6BD" />
                               </svg>
@@ -218,7 +191,7 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
 
                     {/* Requested Data */}
                     <FormField
-                      control={form.control}
+                      control={historySwapsForm.control}
                       name="requestedDate"
                       render={({ field }) => (
                         <FormItem>
@@ -261,7 +234,9 @@ const HistorySwapsFilterDrawer = ({ children, }: IProp) => {
                   </div>
 
                   <div className="w-full grid grid-cols-2 gap-4" >
-                    <CustomOutlineButton onClick={handleResetAll} >
+                    <CustomOutlineButton
+                      onClick={() => handleResetAppliedFilters('all')}
+                    >
                       Clear filters
                     </CustomOutlineButton>
                     <Button variant={"default"} type="submit" >Apply filters</Button>
