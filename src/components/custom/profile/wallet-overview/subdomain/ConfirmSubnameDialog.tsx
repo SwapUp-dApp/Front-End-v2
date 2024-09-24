@@ -1,12 +1,22 @@
 import CustomAvatar from '@/components/custom/shared/CustomAvatar';
 import CustomOutlineButton from '@/components/custom/shared/CustomOutlineButton';
-import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
+import { Environment } from '@/config';
+import { thirdwebCustomDarkTheme } from '@/constants/defaults';
+import { showNotificationToast } from '@/lib/helpers';
 import { handleMintNewOffchainSubname } from '@/lib/minting';
+import { currentChain, thirdWebClient } from '@/lib/thirdWebClient';
+import { getWalletProxy } from '@/lib/walletProxy';
+import { getAvailableCurrenciesApi } from '@/service/api';
+import { useGlobalStore } from '@/store/global-store';
 import { useProfileStore } from '@/store/profile';
+import { SUI_CurrencyChainItem } from '@/types/global.types';
+import { ethers } from 'ethers';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import { PreparedTransaction } from 'thirdweb';
+import { useSendTransaction } from 'thirdweb/react';
+
 
 interface IProp {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -16,6 +26,16 @@ interface IProp {
 
 const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp) => {
   const [isLoading, setIsLoading] = useState(false);
+
+  const { mutateAsync: sendTransaction } = useSendTransaction({
+    payModal: {
+      buyWithFiat: {
+        testMode: true
+      },
+      buyWithCrypto: { testMode: true },
+      theme: thirdwebCustomDarkTheme
+    },
+  });
 
   const [name, action, subname, setTransactionHash, avatar, isPremium, title, wallet] = useProfileStore(state => [
     state.overviewTab.subdomainSection.createNewSubdomain.name,
@@ -28,26 +48,66 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
     state.profile.wallet
   ]);
 
+
+  const [availableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.availableCurrencies, state.setAvailableCurrencies]);
+
+  const refetchCurrenciesDataset = async () => {
+    try {
+      const response = await getAvailableCurrenciesApi();
+      setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const handleOpenWallet = async () => {
     try {
       setIsLoading(true);
+
+      let allCurrencies = availableCurrencies;
+
+      if (!availableCurrencies || availableCurrencies.length === 0) {
+        await refetchCurrenciesDataset();
+        allCurrencies = useGlobalStore.getState().availableCurrencies;
+      }
+
+      const foundCurrency = allCurrencies.find(currency => currency.symbol.toLowerCase() === 'eth');
+
+      let transaction;
+
+      if (foundCurrency) {
+        const { NEW_SUBNAME_CHARGES, SWAPUP_TREASURY_WALLET } = Environment;
+
+        const chargesByCurrentRate = NEW_SUBNAME_CHARGES / Number(foundCurrency.price);
+
+        transaction = {
+          chain: currentChain,
+          to: SWAPUP_TREASURY_WALLET,
+          value: ethers.parseEther(`${chargesByCurrentRate}`),
+          client: thirdWebClient
+        } as PreparedTransaction;
+      }
+
+      if (!transaction) {
+        throw new Error("Unable to create transaction.");
+      }
+
+      // Send the transaction and wait for the receipt
+      const txResult = await sendTransaction(transaction!);
+
+      // Wait for the transaction to be mined
+      const { provider } = await getWalletProxy().getEthersProviderAndSigner();
+      const receipt = await provider.waitForTransaction(txResult.transactionHash, null, txResult.maxBlocksWaitTime);
+
+      console.log("Receipt: ", receipt);
+
       const createdFullName = await handleMintNewOffchainSubname(subname, wallet.address as `0x${string}`);
 
       if (createdFullName) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Subname created Successfully"
-              description={`Your fullname is: \n ${createdFullName}`}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        showNotificationToast(
+          "success",
+          "Subname created Successfully",
+          `Your fullname is: \n ${createdFullName}`
         );
 
         setTransactionHash(createdFullName);
@@ -55,20 +115,10 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      showNotificationToast(
+        "error",
+        "Request failed!",
+        `${error.message}`
       );
     } finally {
       setIsLoading(false);
@@ -135,6 +185,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
           </div>
         </div>
 
+
         <div className="w-full grid grid-cols-2 gap-4 py-2" >
           <CustomOutlineButton
             containerClasses="w-full h-full"
@@ -142,6 +193,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
           >
             Back
           </CustomOutlineButton>
+
           <Button
             onClick={handleOpenWallet}
             isLoading={isLoading}
@@ -154,4 +206,4 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
   );
 };
 
-export default ConfirmSubnameDialog;
+export default ConfirmSubnameDialog;  

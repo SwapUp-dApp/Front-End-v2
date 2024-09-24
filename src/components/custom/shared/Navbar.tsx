@@ -1,11 +1,12 @@
 import { DrawerTrigger, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose, Drawer } from "@/components/ui/drawer";
 import { navItemsData } from "@/constants/navigation";
 import { getIsActiveNav, } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import ConnectWalletButton from "./ConnectWalletButton";
+
 import { useProfileStore } from "@/store/profile";
 import { showWalletConnectionToast } from "@/lib/helpers";
+import ThirdWebWalletConnect from "./ThirdWebWalletConnect";
 
 
 const Navbar = () => {
@@ -58,7 +59,8 @@ const Navbar = () => {
               <path d="M7 16C7.53043 16 8.03914 15.7893 8.41421 15.4142C8.78929 15.0392 9 14.5305 9 14.0001H5C5 14.5305 5.21071 15.0392 5.58579 15.4142C5.96086 15.7893 6.46957 16 7 16ZM7.995 1.09981C8.00896 0.960776 7.99362 0.820356 7.94997 0.687611C7.90632 0.554865 7.83533 0.432741 7.74158 0.329115C7.64783 0.225489 7.5334 0.142662 7.40567 0.0859748C7.27794 0.0292879 7.13975 0 7 0C6.86026 0 6.72206 0.0292879 6.59433 0.0859748C6.4666 0.142662 6.35217 0.225489 6.25842 0.329115C6.16467 0.432741 6.09368 0.554865 6.05003 0.687611C6.00638 0.820356 5.99104 0.960776 6.005 1.09981C4.87455 1.32935 3.85823 1.94268 3.12831 2.83585C2.39839 3.72902 1.99977 4.84708 2 6.00055C2 7.09849 1.5 12.0002 0 13.0002H14C12.5 12.0002 12 7.09849 12 6.00055C12 3.58068 10.28 1.56079 7.995 1.09981Z" fill="white" />
             </svg>
           </span>
-          <ConnectWalletButton />
+
+          <ThirdWebWalletConnect />
         </div>
       </div>
 
@@ -102,7 +104,7 @@ const Navbar = () => {
 
               <div className="p-6 h-full flex flex-col justify-between" >
                 <div className="space-y-16" >
-                  <ConnectWalletButton />
+                  <ThirdWebWalletConnect />
 
                   <ol className="flex flex-col gap-8" >
                     {

@@ -4,8 +4,7 @@ import CreateNewSubnameDialog from './CreateNewSubnameDialog';
 import { useProfileStore } from '@/store/profile';
 import ConfirmSubnameDialog from './ConfirmSubnameDialog';
 import TransactionSubnameDialog from './TransactionSubnameDialog';
-import ToastLookCard from '@/components/custom/shared/ToastLookCard';
-import { toast } from 'sonner';
+import { showNotificationToast } from '@/lib/helpers';
 
 interface IProp {
   startCreateSubdomainProcess: boolean;
@@ -37,20 +36,10 @@ const CreateNewSubdomainProcess = ({ setStartCreateSubdomainProcess, startCreate
         setOpenTransactionDataDialog(false);
         resetSwapCreation();
         setStartCreateSubdomainProcess(false);
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Subname created successfully"
-              description={"You have successfully created you subname."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        showNotificationToast(
+          'success',
+          'Subname created successfully.',
+          'You have successfully created you subname.'
         );
 
         break;

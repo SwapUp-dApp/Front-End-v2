@@ -36,6 +36,7 @@ const MainLayout = () => {
 
     if (activeAccount && activeChain) {
       getWalletProxy().setConnectedWalletAccount(activeAccount);
+
       connectedWallet.address = activeAccount.address;
       connectedWallet.isConnected = true;
       connectedWallet.network = {
