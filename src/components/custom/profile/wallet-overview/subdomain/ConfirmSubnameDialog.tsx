@@ -29,11 +29,9 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
 
   const { mutateAsync: sendTransaction } = useSendTransaction({
     payModal: {
-      buyWithFiat: {
-        testMode: true
-      },
+      buyWithFiat: { testMode: true },
       buyWithCrypto: { testMode: true },
-      theme: thirdwebCustomDarkTheme
+      theme: thirdwebCustomDarkTheme,
     },
   });
 
