@@ -13,7 +13,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import PostFromPreviousTwitterAccountConfirmationDialog from './PostFromPreviousTwitterAccountConfirmationDialog';
 import TwitterPostFinalDialog from './TwitterPostFinalDialog';
 import { getCurrentBaseUrl, getLastCharacters, handleTwitterSharingProcessLocalstorageState } from '@/lib/utils';
-import { showNotificationToast } from '@/lib/helpers';
+import { handleShowNotificationToast } from '@/lib/helpers';
 import { SUI_OpenSwap, SUI_Swap } from '@/types/swap-market.types';
 import { twitterPostContent, warpcastFrameUrl } from '@/constants/params';
 
@@ -157,7 +157,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
           const postRes = await handlePostTweet(currentTradeId);
 
           if (postRes) {
-            showNotificationToast(
+            handleShowNotificationToast(
               'success',
               "Twitter post created successfully 🎉",
               `Here is you tweet id ${postRes.data.data.id}`
@@ -167,7 +167,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
             setOpenFinalTwitterPostDialog(false);
           }
         } catch (error: any) {
-          showNotificationToast(
+          handleShowNotificationToast(
             'error',
             "Failed to create twitter post!",
             `${error.message}`
@@ -204,7 +204,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
 
     } catch (error: any) {
 
-      showNotificationToast(
+      handleShowNotificationToast(
         'error',
         "Failed to get swap data!",
         `${error.message}`
@@ -225,7 +225,7 @@ const SwapSharingOnSocialProcess = ({ startRecentSwapSharingProcess, setStartRec
     if (twitterAuthError) {
       setIsTwitterPostProcessStarted(false);
       handleTwitterSharingProcessLocalstorageState('SET-FALSE');
-      showNotificationToast("error", "Access denied!", "Twitter post access denied, Try again authorizing SwapUp to create twitter post!");
+      handleShowNotificationToast("error", "Access denied!", "Twitter post access denied, Try again authorizing SwapUp to create twitter post!");
     }
 
   }, [twitterAuthCode, wallet, twitterAuthError]);

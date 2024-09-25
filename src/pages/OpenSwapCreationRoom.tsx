@@ -1,23 +1,18 @@
 import { useEffect, useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@/components/ui/dialog";
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import CopyTile from "@/components/custom/tiles/CopyTile";
-
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 import StaySafeDialog from "@/components/custom/swap-market/StaySafeDialog";
 import AvoidingFeeDialog from "@/components/custom/shared/AvoidingFeeDialog";
-
 import { useSwapMarketStore } from "@/store/swap-market";
 import OpenMarketRoomFooter from "@/components/custom/swap-market/open-market/OpenMarketRoomFooter";
 import RoomHeader from "@/components/custom/swap-market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import SwapParametersCard from "@/components/custom/swap-market/open-market/SwapParametersCard";
 import { useNavigate, useParams } from "react-router-dom";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-import { toast } from "sonner";
 import { getLastCharacters, isValidTradeId } from "@/lib/utils";
 import SwapDialogSideCard from "@/components/custom/swap-market/SwapDialogSideCard";
 import SwapParameterTile from "@/components/custom/tiles/SwapParameterTile";
@@ -37,6 +32,7 @@ import { getWalletProxy } from "@/lib/walletProxy";
 import { updatedUserProfilePointsApi } from "@/service/api/user.service";
 import { defaults } from "@/constants/defaults";
 import { SUI_UpdateProfilePointsPayload } from "@/types/profile.types";
+import { handleShowNotificationToast } from "@/lib/helpers";
 
 interface ISwapCreation {
   isLoading: boolean;
@@ -76,20 +72,10 @@ const OpenSwapCreationRoom = () => {
             setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
             return response.data.data.coins;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -106,20 +92,10 @@ const OpenSwapCreationRoom = () => {
             setAvailableCollections(response.data.collections as SUI_CollectionItem[]);
             return response.data.collections;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -136,20 +112,11 @@ const OpenSwapCreationRoom = () => {
 
   const handleResetData = () => {
     state.resetOpenSwapCreationRoom();
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="info"
-          title="Open market room reset!"
-          description={"Room data deleted."}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
+
+    handleShowNotificationToast(
+      "info",
+      `Open market room reset!`,
+      `Room data cleared.`
     );
   };
 
@@ -193,20 +160,10 @@ const OpenSwapCreationRoom = () => {
       const pointsUpdateResult = await updatedUserProfilePointsApi(pointsApiPayload);
 
       if (offerResult && pointsUpdateResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Offer Created Successfully!"
-              description={"Your open offer is successfully created."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Offer created successfully!`,
+          `Your open offer is successfully created.`
         );
 
         setSwapCreation(prev => ({ ...prev, created: true }));
@@ -220,20 +177,10 @@ const OpenSwapCreationRoom = () => {
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
     } finally {
       setSwapCreation(prev => ({ ...prev, isLoading: false }));
@@ -241,22 +188,11 @@ const OpenSwapCreationRoom = () => {
   };
 
   if (openTradeId && !isValidTradeId(openTradeId)) {
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="warning"
-          title="Trade id is required!"
-          description={"A valid trade id is required fo this page!"}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 5000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
+    handleShowNotificationToast(
+      "warning",
+      `Trade id is required!`,
+      `A valid trade id is required fo this page!`
     );
-
     setTimeout(() => {
       navigate(-1);
     }, 300);

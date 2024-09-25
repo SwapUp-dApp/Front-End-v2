@@ -7,8 +7,6 @@ import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate, useParams } from "react-router-dom";
 import { isValidTradeId, isValidWalletAddress } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-import { toast } from "sonner";
 import { useCreatePrivateSwapOffer } from "@/service/queries/swap-market.query";
 import { SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
 import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
@@ -18,7 +16,7 @@ import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 import { useQuery } from "@tanstack/react-query";
 import { getAvailableCurrenciesApi } from "@/service/api";
 import { useGlobalStore } from "@/store/global-store";
-import EmptyDataset from "@/components/custom/shared/EmptyDataset";
+import { handleShowNotificationToast } from "@/lib/helpers";
 
 const PrivateRoom = () => {
 
@@ -42,20 +40,10 @@ const PrivateRoom = () => {
         setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
         return response.data.data.coins;
       } catch (error: any) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
 
         throw error;
@@ -97,21 +85,12 @@ const PrivateRoom = () => {
 
       const offerResult = await createSwapOffer(updatedSwap!);
       if (offerResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Offer Sent Successfully"
-              description={"You will receive a notification upon your counterparty's response."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Offer sent successfully`,
+          `You will receive a notification upon your counterparty's response.`
         );
+
         setSwapCreation(prev => ({ ...prev, created: true }));
         state.resetPrivateRoom();
         setTimeout(() => {
@@ -120,23 +99,11 @@ const PrivateRoom = () => {
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapCreation(prev => ({ ...prev, isLoading: false }));
     }
@@ -144,20 +111,11 @@ const PrivateRoom = () => {
 
   const handleResetData = () => {
     state.resetPrivateRoom();
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="info"
-          title="Private party room reset!"
-          description={"Room data deleted for both parties."}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
+
+    handleShowNotificationToast(
+      "info",
+      `Private party room reset!`,
+      `Room data deleted for both parties.`
     );
   };
 

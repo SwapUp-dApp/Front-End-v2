@@ -7,8 +7,6 @@ import { ScrollArea } from '@radix-ui/react-scroll-area';
 import { ScrollBar } from '@/components/ui/scroll-area';
 import LoadingDataset from '../../shared/LoadingDataset';
 import EmptyDataset from '../../shared/EmptyDataset';
-import ToastLookCard from '../../shared/ToastLookCard';
-import { toast } from 'sonner';
 import { getNftsForWalletApi } from '@/service/api';
 import { SUI_NFTItem } from '@/types/global.types';
 import { useQuery } from '@tanstack/react-query';
@@ -22,6 +20,7 @@ import { Schema_ProfileAssetFiltersForm } from '@/schema';
 import { z } from 'zod';
 import { generateRandomKey } from '@/lib/utils';
 import { IProfileAssetsFilters } from '@/types/profile-store.types';
+import { handleShowNotificationToast } from '@/lib/helpers';
 
 const ProfileAssetsTabContent = () => {
   const [filterFormKey, setFilterFormKey] = useState(generateRandomKey(6));
@@ -97,20 +96,10 @@ const ProfileAssetsTabContent = () => {
 
       } catch (error: any) {
         // await setNftsDataset([]);
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
 
         throw error;

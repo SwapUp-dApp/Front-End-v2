@@ -1,13 +1,13 @@
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
 import RoomHeader from "@/components/custom/swap-market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import { Button } from "@/components/ui/button";
 import { defaults } from "@/constants/defaults";
 import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from "@/constants/enums";
+import { handleShowNotificationToast } from "@/lib/helpers";
 import { isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { getAvailableCurrenciesApi, getSwapDetailsByTradeOrOpenTradeIdApi } from "@/service/api";
@@ -22,7 +22,6 @@ import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CancelSwap, SUP_Comple
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
 
 const ViewSwapRoom = () => {
   const [dataSavedInStore, setDataSavedInStore] = useState({ sender: false, receiver: false });
@@ -54,20 +53,10 @@ const ViewSwapRoom = () => {
             setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
             return response.data.data.coins;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -87,20 +76,10 @@ const ViewSwapRoom = () => {
             }
             return null;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -117,20 +96,10 @@ const ViewSwapRoom = () => {
   const handleResetData = async () => {
     state.resetViewSwapRoom();
 
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="info"
-          title="View room reset!"
-          description={"View room data deleted for both parties."}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
+    handleShowNotificationToast(
+      "info",
+      `View room reset!`,
+      `View room data deleted for both parties.`
     );
   };
 
@@ -193,21 +162,12 @@ const ViewSwapRoom = () => {
       }
 
       if (offerResult && pointsUpdateResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title={`${swap.swap_mode === SUE_SWAP_MODE.OPEN ? "Open" : "Private"} Swap Completed Successfully`}
-              description={"You will receive a notification on metamask about the transaction."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `${swap.swap_mode === SUE_SWAP_MODE.OPEN ? "Open" : "Private"} Swap Completed Successfully`,
+          `You will receive a notification on metamask about the transaction.`
         );
+
         setSwapAcceptance(prev => ({ ...prev, created: true }));
         setRecentAcceptedSwap(swap);
         setStartRecentSwapSharingProcess(true);
@@ -215,20 +175,10 @@ const ViewSwapRoom = () => {
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
     } finally {
       setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
@@ -258,24 +208,15 @@ const ViewSwapRoom = () => {
       if (swap.id) {
         await getWalletProxy().createAndUpdateSwap(swap, "REJECT");
         const offerResult = await rejectSwapOffer(Number(swap.id));
-        if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Rejected Successfully"
-                description={"You have successfully rejected the swap offer"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
-          );
-          setSwapRejection(prev => ({ ...prev, created: true }));
 
+        if (offerResult) {
+          handleShowNotificationToast(
+            "success",
+            `Swap rejected successfully`,
+            `You have successfully rejected the swap offer`
+          );
+
+          setSwapRejection(prev => ({ ...prev, created: true }));
           setTimeout(() => {
             navigate(-1);
           }, 500);
@@ -284,20 +225,10 @@ const ViewSwapRoom = () => {
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
 
     } finally {
@@ -335,40 +266,21 @@ const ViewSwapRoom = () => {
       const offerResult = await cancelSwapOffer(payload);
 
       if (offerResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Swap Closed Successfully"
-              description={"You have successfully closed the swap"}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Swap closed successfully`,
+          `You have successfully closed the swap`
         );
+
         setSwapCancel(prev => ({ ...prev, created: true }));
         navigate("/swap-up/my-swaps/history");
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
 
     } finally {

@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from 'sonner';
+
 import FilterButton from '../../shared/FilterButton';
 
 import EmptyDataset from '../../shared/EmptyDataset';
 import { generateRandomKey, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import { SUI_OpenSwap, SUI_Swap, SUP_CancelSwap, SUP_CompleteSwap, } from '@/types/swap-market.types';
 import { useCancelSwapOffer, useCompletePrivateSwapOffer, useRejectSwapOffer, } from '@/service/queries/swap-market.query';
-import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
 import LoadingDataset from '../../shared/LoadingDataset';
@@ -19,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { getWalletProxy } from '@/lib/walletProxy';
 import { SUI_SwapCreation } from '@/types/global.types';
 import { useProfileStore } from '@/store/profile';
-import { mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
+import { handleShowNotificationToast, mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import PrivateMarketSwapFilterDrawer from './PrivateMarketSwapFilterDrawer';
 import { useQuery } from '@tanstack/react-query';
@@ -121,20 +120,10 @@ const PrivateMarketTabContent = () => {
       const pointsUpdateResult = await updatedUserProfilePointsApi(pointsApiPayload);
 
       if (offerResult && pointsUpdateResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Private Swap Completed Successfully"
-              description={"You will receive a notification on metamask about the transaction."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Private Swap Completed Successfully`,
+          `You will receive a notification on metamask about the transaction.`
         );
         setSwapAcceptance(prev => ({ ...prev, created: true }));
         setStartRecentSwapSharingProcess(true);
@@ -142,23 +131,11 @@ const PrivateMarketTabContent = () => {
         navigate(`${defaults.profile.baseRoute}/assets`);
       }
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
     }
@@ -192,45 +169,21 @@ const PrivateMarketTabContent = () => {
       const offerResult = await cancelSwapOffer(payload);
 
       if (offerResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Swap Closed Successfully"
-              description={"You have successfully closed the swap"}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Swap Closed Successfully`,
+          `You have successfully closed the swap.`
         );
         setSwapCancel(prev => ({ ...prev, created: true }));
         navigate("/swap-up/my-swaps/history");
       }
 
-
-
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapCancel(prev => ({ ...prev, isLoading: false }));
     }
@@ -258,20 +211,10 @@ const PrivateMarketTabContent = () => {
         const offerResult = await rejectSwapOffer(Number(swap.id));
 
         if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Rejected Successfully"
-                description={"You have successfully rejected the swap offer"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
+          handleShowNotificationToast(
+            "success",
+            `Swap Rejected Successfully`,
+            `You have successfully rejected the swap offer.`
           );
           setSwapRejection(prev => ({ ...prev, created: true }));
           navigate("/swap-up/my-swaps/history");
@@ -280,23 +223,11 @@ const PrivateMarketTabContent = () => {
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapRejection(prev => ({ ...prev, isLoading: false }));
     }
@@ -315,20 +246,10 @@ const PrivateMarketTabContent = () => {
 
       } catch (error: any) {
         await setPrivateSwapsData([]);
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
 
         throw error;

@@ -8,11 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useProfileStore } from '@/store/profile';
 import SubnameListItem from './SubnameListItem';
 import SubdomainRecordsTabContent from './SubdomainRecordsTabContent';
-import { toast } from 'sonner';
-import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { useQuery } from '@tanstack/react-query';
 import { resolveOffChainSubnameByWalletIdApi } from '@/service/api';
 import { SUI_SubnameItem } from '@/types/profile.types';
+import { handleShowNotificationToast } from '@/lib/helpers';
 
 interface NamespaceOffChainSubnameResponseItem {
   domain: string;
@@ -61,20 +60,10 @@ const SubDomainMintingSection = () => {
 
         return null;
       } catch (error: any) {
-        // toast.custom(
-        //   (id) => (
-        //     <ToastLookCard
-        //       variant="error"
-        //       title="Request failed!"
-        //       description={error.message}
-        //       onClose={() => toast.dismiss(id)}
-        //     />
-        //   ),
-        //   {
-        //     duration: 3000,
-        //     className: 'w-full !bg-transparent',
-        //     position: "bottom-left",
-        //   }
+        // handleShowNotificationToast(
+        //   "error",
+        //   `Request failed!`,
+        //   `${error.message}`
         // );
 
         throw error;

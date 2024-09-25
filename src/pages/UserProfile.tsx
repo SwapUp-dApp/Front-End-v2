@@ -2,7 +2,7 @@ import ProfileHeader from "@/components/custom/profile/ProfileHeader";
 import CustomTabContainer from "@/components/custom/shared/CustomTabContainer";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 import { defaults } from "@/constants/defaults";
-import { showNotificationToast } from "@/lib/helpers";
+import { handleShowNotificationToast } from "@/lib/helpers";
 import { getActiveTabFromPathname } from "@/lib/utils";
 import { getUserByWalletIdApi } from "@/service/api";
 import { useProfileStore } from "@/store/profile";
@@ -57,7 +57,7 @@ const UserProfile = () => {
         return null;
 
       } catch (error: any) {
-        showNotificationToast(
+        handleShowNotificationToast(
           'error',
           "unable to get user profile",
           error.message

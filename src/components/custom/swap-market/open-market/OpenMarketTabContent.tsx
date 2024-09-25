@@ -1,19 +1,17 @@
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from 'sonner';
 import FilterButton from '../../shared/FilterButton';
 import { Button } from '@/components/ui/button';
 import EmptyDataset from '../../shared/EmptyDataset';
 import { generateRandomKey, generateRandomTradeId, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { SUI_OpenSwap } from '@/types/swap-market.types';
-import ToastLookCard from '../../shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
 import LoadingDataset from '../../shared/LoadingDataset';
 import { useSwapMarketStore } from '@/store/swap-market';
 import { useProfileStore } from '@/store/profile';
-import { mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
+import { handleShowNotificationToast, mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
 import OpenMarketSwapFilterDrawer from './OpenMarketSwapFilterDrawer';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { useQuery } from '@tanstack/react-query';
@@ -63,20 +61,10 @@ const OpenMarketTabContent = () => {
         return response.data.data;
       } catch (error: any) {
         await setOpenSwapsData([], wallet);
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
 
         throw error;

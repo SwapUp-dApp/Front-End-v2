@@ -17,11 +17,10 @@ import { useSwapMarketStore } from "@/store/swap-market";
 import LoadingDataset from "../shared/LoadingDataset";
 import { useNFTsByWallet } from "@/service/queries/swap-market.query";
 import { SUI_NFTItem } from "@/types/global.types";
-import { toast } from "sonner";
-import ToastLookCard from "../shared/ToastLookCard";
 import { SUI_SwapToken, SUT_SwapRoomViewType, SUT_SwapTokenContractType } from "@/types/swap-market.types";
 import { defaults } from "@/constants/defaults";
 import { useGlobalStore } from "@/store/global-store";
+import { handleShowNotificationToast } from "@/lib/helpers";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
@@ -248,20 +247,10 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
 
     if (isError) {
       setNftsDataset([]);
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
     }
 

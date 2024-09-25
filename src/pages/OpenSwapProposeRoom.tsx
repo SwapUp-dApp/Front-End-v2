@@ -1,6 +1,5 @@
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
 import RoomHeader from "@/components/custom/swap-market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
@@ -14,11 +13,11 @@ import { SUI_OpenSwap } from "@/types/swap-market.types";
 import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "sonner";
 import { useProfileStore } from "@/store/profile";
 import { useQueries } from "@tanstack/react-query";
 import { getAvailableCurrenciesApi, getSwapDetailsByTradeOrOpenTradeIdApi } from "@/service/api";
 import { useGlobalStore } from "@/store/global-store";
+import { handleShowNotificationToast } from "@/lib/helpers";
 
 const OpenSwapProposeRoom = () => {
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
@@ -44,20 +43,10 @@ const OpenSwapProposeRoom = () => {
             setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
             return response.data.data.coins;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -76,20 +65,10 @@ const OpenSwapProposeRoom = () => {
             }
             return null;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -135,21 +114,12 @@ const OpenSwapProposeRoom = () => {
       const offerResult = await proposeOpenSwapOffer(updatedSwap!);
 
       if (offerResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Propose swap offer sent successfully"
-              description={"You will receive a notification upon your counterparty's response."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Propose swap offer sent successfully`,
+          `You will receive a notification upon your counterparty's response.`
         );
+
         setSwapCreation(prev => ({ ...prev, created: true }));
         state.resetOpenSwapProposeRoom();
         setTimeout(() => {
@@ -158,24 +128,11 @@ const OpenSwapProposeRoom = () => {
       }
 
     } catch (error: any) {
-      console.log(error);
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapCreation(prev => ({ ...prev, isLoading: false }));
     }

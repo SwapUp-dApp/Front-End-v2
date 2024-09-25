@@ -9,8 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useProfileStore } from '@/store/profile';
 import { useEffect, useState } from 'react';
 import { handleCheckOffchainSubnameAvailability } from '@/lib/minting';
-import { toast } from 'sonner';
-import ToastLookCard from '@/components/custom/shared/ToastLookCard';
+import { handleShowNotificationToast } from '@/lib/helpers';
 
 
 interface IProp {
@@ -55,20 +54,10 @@ const CreateNewSubnameDialog = ({ open, setOpen, handleNavigationOfSteps }: IPro
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Request failed!"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 3000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
     } finally {
       setIsLoading(false);

@@ -4,7 +4,7 @@ import CreateNewSubnameDialog from './CreateNewSubnameDialog';
 import { useProfileStore } from '@/store/profile';
 import ConfirmSubnameDialog from './ConfirmSubnameDialog';
 import TransactionSubnameDialog from './TransactionSubnameDialog';
-import { showNotificationToast } from '@/lib/helpers';
+import { handleShowNotificationToast } from '@/lib/helpers';
 
 interface IProp {
   startCreateSubdomainProcess: boolean;
@@ -36,7 +36,7 @@ const CreateNewSubdomainProcess = ({ setStartCreateSubdomainProcess, startCreate
         setOpenTransactionDataDialog(false);
         resetSwapCreation();
         setStartCreateSubdomainProcess(false);
-        showNotificationToast(
+        handleShowNotificationToast(
           'success',
           'Subname created successfully.',
           'You have successfully created you subname.'
