@@ -17,6 +17,8 @@ export interface SUI_ConfigEnvironment {
   NAMESPACE_API_BASE_URL: string;
   NAMESPACE_OFFCHAIN_API_BASE_URL: string;
   TWITTER_CLIENT_ID: string;
+  SWAPUP_TREASURY_WALLET: string;
+  NEW_SUBNAME_CHARGES: number;
 }
 export interface SUI_Config {
   local: SUI_ConfigEnvironment;

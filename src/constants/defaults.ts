@@ -1,6 +1,7 @@
 import { SUI_NavigationObject, SUI_TabItem } from "@/types/global.types";
 import { SUI_ProfileOverviewTab } from "@/types/profile-store.types";
 import { SUT_AvailablePointsType, SUT_ProfileTagsVariantType } from "@/types/profile.types";
+import { darkTheme } from "thirdweb/react";
 
 interface IDefaultVariables {
   swapMarket: SUI_NavigationObject;
@@ -110,3 +111,13 @@ export const defaults: IDefaultVariables = {
     socialPost: 500
   }
 };
+
+export const thirdwebCustomDarkTheme = darkTheme({
+  fontFamily: "Urbanist, Poppins, sans-serif",
+  colors: {
+    modalBg: "rgba(13, 13, 35, 1)",
+    primaryButtonBg: "linear-gradient(to right, #9452FF, #51C0FF)",
+    primaryButtonText: "white",
+    connectedButtonBgHover: "rgba(13, 13, 35, 1)",
+  }
+});

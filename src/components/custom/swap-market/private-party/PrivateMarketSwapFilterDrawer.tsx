@@ -179,7 +179,7 @@ const PrivateMarketSwapFilterDrawer = ({ children, handleResetAppliedFilters, pr
                                   id="date"
                                   variant="ghost"
                                   className={cn(
-                                    "min-w-[160px] flex justify-between items-center text-left font-normal bg-su_enable_bg rounded-sm text-su_secondary text-sm"
+                                    "min-w-[140px] lg:min-w-[160px] flex justify-between items-center text-left font-normal bg-su_enable_bg rounded-sm text-su_secondary text-sm"
                                   )}
                                 >
                                   {field.value ?
@@ -227,7 +227,7 @@ const PrivateMarketSwapFilterDrawer = ({ children, handleResetAppliedFilters, pr
                                   id="date"
                                   variant="ghost"
                                   className={cn(
-                                    "min-w-[160px] flex justify-between items-center text-left font-normal bg-su_enable_bg rounded-sm text-su_secondary text-sm"
+                                    "min-w-[140px] lg:min-w-[160px] flex justify-between items-center text-left font-normal bg-su_enable_bg rounded-sm text-su_secondary text-sm"
                                   )}
                                 >
                                   {field.value ?
