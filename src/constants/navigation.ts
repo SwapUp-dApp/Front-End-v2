@@ -14,14 +14,14 @@ export const navItemsData: SUI_NavItem[] = [
     title: "My Swaps",
     basePath: `${defaults.mySwaps.baseRoute}`,
     path: `${defaults.mySwaps.baseRoute}/${defaults.mySwaps.defaultActiveTab}`,
-    protected: true,
+    protected: false,
   },
   {
     key: "Profile",
     title: "Profile",
     basePath: `${defaults.profile.baseRoute}`,
     path: `${defaults.profile.baseRoute}/${defaults.profile.defaultActiveTab}`,
-    protected: true,
+    protected: false,
   }
 ];
 
@@ -30,28 +30,28 @@ export const landingPageNavData: SUI_NavItem[] = [
     key: "audiences",
     title: "Audiences",
     basePath: '/',
-    path: "/",
+    path: "/#audiences",
     protected: false,
   },
   {
-    key: "teck-stack",
-    title: "Teck Stack",
+    key: "tech-stack",
+    title: "Tech Stack",
     basePath: '/',
-    path: "/",
-    protected: true,
+    path: "/#tech-stack",
+    protected: false,
   },
   {
     key: "roadmap",
     title: "Roadmap",
     basePath: '/',
-    path: "/",
-    protected: true,
+    path: "/#roadmap-section",
+    protected: false,
   },
   {
     key: "services",
     title: "Services",
     basePath: '/',
     path: "/services",
-    protected: true,
+    protected: false,
   },
 ];

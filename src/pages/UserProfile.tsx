@@ -97,7 +97,7 @@ const UserProfile = () => {
                   className={`relative flex bg-transparent ${activeTab === tab.key ? "text-su_primary" : "text-muted-foreground"} items-center gap-3 text-sm font-bold px-3 `}
                 >
                   {tab.title}
-                  <span className={`${activeTab === tab.key ? "absolute -bottom-3.5 left-0 border-b-2 border-su_primary w-full" : ""}`} ></span>
+                  <span className={`${activeTab === tab.key ? "absolute -bottom-1.5 lg:-bottom-3.5 left-0 border-b-2 border-su_primary w-full" : ""}`} ></span>
                 </button>
               );
             })

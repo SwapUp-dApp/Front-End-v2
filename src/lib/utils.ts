@@ -26,8 +26,12 @@ export const applyThemeClass = (theme: 'dark' | 'light' | 'system') => {
   );
 };
 
-export const getIsActiveNav = (path: string, pathname: string) => {
-  return pathname.toLowerCase().startsWith(path.toLowerCase());
+export const getIsActiveNav = (path: string, pathname: string, type: "swapup" | "website" = "swapup") => {
+  if (type === 'swapup') {
+    return pathname.toLowerCase().startsWith(path.toLowerCase());
+  } else {
+    return pathname.toLowerCase() === path.toLowerCase();
+  }
 };
 
 export const getActiveTabFromPathname = (pathname: string): string => {
