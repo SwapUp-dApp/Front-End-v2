@@ -110,8 +110,9 @@ const TokenDistributionPerChainChart = () => {
                       <span className='lg:hidden' >{item.network.symbol}</span>
                     </span>
 
-                    <div className={`w-9/12 flex gap-2 items-center`} >
-                      <div className='w-11/12 flex items-start gap-1' >
+                    <div className={`w-3/4 flex gap-2 items-center`} >
+
+                      <div className='w-4/5 lg:w-5/6 flex items-start gap-1' >
                         {
                           item.tradePercentage.available > 0 &&
                           <TooltipProvider>
@@ -153,7 +154,7 @@ const TokenDistributionPerChainChart = () => {
                         <Progress style={{ width: `${emptyWidth}%` }} />
                       </div>
 
-                      <span className='w-1/12 text-primary font-semibold text-sm' >{item.totalPercentage} %</span>
+                      <span className='text-primary font-semibold text-sm' >{item.totalPercentage} %</span>
                     </div>
                   </div>
                 );

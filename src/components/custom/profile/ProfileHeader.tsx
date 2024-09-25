@@ -94,12 +94,13 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
   return (
     <div className="w-full space-y-3" >
 
-      <div className="flex flex-col lg:flex-row gap-3" >
+      <div className="flex items-center gap-6 lg:gap-3" >
         <ExitPageDialog
           title={existTitle}
           description={existDescription}
           redirectPath={backClickNavigateTo ? backClickNavigateTo : defaults.fallback.route}
           resetData={resetData}
+
         >
           <span
             className="text-sm dark:text-su_secondary flex items-center gap-2 cursor-pointer py-2 px-3 hover:rounded-sm hover:bg-su_secondary_bg">
@@ -113,6 +114,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
 
         <div className="w-full flex items-center justify-between">
           <h2 className="font-semibold text-1.5xl " >Profile</h2>
+
           <div className="flex items-center gap-4">
             <Switch id="airplane-mode" />
             <Label htmlFor="airplane-mode">Private mode</Label>

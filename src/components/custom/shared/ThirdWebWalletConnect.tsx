@@ -26,9 +26,11 @@ const wallets = [
 
 interface IProp {
   className?: string;
+  hideDetails?: boolean;
+  hideAvatarButton?: boolean;
 }
 
-export default function ThirdWebWalletConnect({ className }: IProp) {
+export default function ThirdWebWalletConnect({ className, hideDetails = false, hideAvatarButton = false }: IProp) {
   const [profile] = useProfileStore(state => [state.profile]);
 
   return (
@@ -39,7 +41,7 @@ export default function ThirdWebWalletConnect({ className }: IProp) {
       )}
     >
 
-      {profile.wallet.isConnected &&
+      {(profile.wallet.isConnected && !hideDetails) &&
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 border-[1.5px] border-white/20 p-3 rounded-md" >
           <span className="flex justify-center lg:justify-start items-center gap-4 lg:gap-2" >
             <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -63,81 +65,83 @@ export default function ThirdWebWalletConnect({ className }: IProp) {
         </div>
       }
 
-      <ConnectButton
-        client={thirdWebClient}
-        wallets={wallets}
-        chain={currentChain}
-        theme={thirdwebCustomDarkTheme}
-        detailsButton={{
-          style: {
-            borderRadius: "1rem",
-            padding: ".5rem .75rem",
-          },
-          render: () => (
-            <CustomAvatar
-              imageSrc={profile.avatar}
-              fallbackName={profile.details?.title || profile.ensAddress || "SwapUp User"}
-              sizeClasses="w-20 h-20 lg:h-10 lg:w-10"
-              className="mx-auto cursor-pointer hover:scale-110 transition duration-150 ease-in-out hover:shadow-md hover:shadow-su_least_bg"
-            />
-          )
-        }}
+      {!hideAvatarButton &&
+        <ConnectButton
+          client={thirdWebClient}
+          wallets={wallets}
+          chain={currentChain}
+          theme={thirdwebCustomDarkTheme}
+          detailsButton={{
+            style: {
+              borderRadius: "1rem",
+              padding: ".5rem .75rem",
+            },
+            render: () => (
+              <CustomAvatar
+                imageSrc={profile.avatar}
+                fallbackName={profile.details?.title || profile.ensAddress || "SwapUp User"}
+                sizeClasses="w-12 h-12 lg:h-10 lg:w-10"
+                className="mx-auto cursor-pointer hover:scale-110 transition duration-150 ease-in-out hover:shadow-md hover:shadow-su_least_bg"
+              />
+            )
+          }}
 
-        connectButton={{
-          style: {
-            borderRadius: "1.5rem",
-            padding: '0',
-            border: 'none',
-            background: 'transparent',
-          },
-          label: <Button className="w-full h-full text-sm lg:text-base hover:scale-105 transition duration-300 ease-in-out" >Connect Wallet</Button>
-        }}
-      //auth={{
+          connectButton={{
+            style: {
+              borderRadius: "1.5rem",
+              padding: '0',
+              border: 'none',
+              background: 'transparent',
+            },
+            label: <Button className="w-full h-full text-sm lg:text-base hover:scale-105 transition duration-300 ease-in-out" >Connect Wallet</Button>
+          }}
+        //auth={{
 
-      //  * 	`getLoginPayload` should @return {VerifyLoginPayloadParams} object.
-      //  * 	This can be generated on the server with the generatePayload method.
-      //  */
-      // getLoginPayload: async (params: {
-      //   address: string;
-      // }): Promise<LoginPayload> => {
-      //   return get({
-      //     url: process.env.AUTH_API + "/login",
-      //     params: {
-      //       address: params.address,
-      //       chainId: chain.id.toString(),
-      //     },
-      //   });
-      // },
-      // /**
-      //  * 	`doLogin` performs any logic necessary to log the user in using the signed payload.
-      //  * 	In this case, this means sending the payload to the server for it to set a JWT cookie for the user.
-      //  */
-      // doLogin: async (params: VerifyLoginPayloadParams) => {
-      //   await post({
-      //     url: process.env.AUTH_API + "/login",
-      //     params,
-      //   });
-      // },
-      // /**
-      //  * 	`isLoggedIn` returns true or false to signal if the user is logged in.
-      //  * 	Here, this is done by calling the server to check if the user has a valid JWT cookie set.
-      //  */
-      // isLoggedIn: async () => {
-      //   return await get({
-      //     url: process.env.AUTH_API + "/isLoggedIn",
-      //   });
-      // },
-      // /**
-      //  * 	`doLogout` performs any logic necessary to log the user out.
-      //  * 	In this case, this means sending a request to the server to clear the JWT cookie.
-      //  */
-      // doLogout: async () => {
-      //   await post({
-      //     url: process.env.AUTH_API + "/logout",
-      //   });
-      //},
-      //}}
-      />
+        //  * 	`getLoginPayload` should @return {VerifyLoginPayloadParams} object.
+        //  * 	This can be generated on the server with the generatePayload method.
+        //  */
+        // getLoginPayload: async (params: {
+        //   address: string;
+        // }): Promise<LoginPayload> => {
+        //   return get({
+        //     url: process.env.AUTH_API + "/login",
+        //     params: {
+        //       address: params.address,
+        //       chainId: chain.id.toString(),
+        //     },
+        //   });
+        // },
+        // /**
+        //  * 	`doLogin` performs any logic necessary to log the user in using the signed payload.
+        //  * 	In this case, this means sending the payload to the server for it to set a JWT cookie for the user.
+        //  */
+        // doLogin: async (params: VerifyLoginPayloadParams) => {
+        //   await post({
+        //     url: process.env.AUTH_API + "/login",
+        //     params,
+        //   });
+        // },
+        // /**
+        //  * 	`isLoggedIn` returns true or false to signal if the user is logged in.
+        //  * 	Here, this is done by calling the server to check if the user has a valid JWT cookie set.
+        //  */
+        // isLoggedIn: async () => {
+        //   return await get({
+        //     url: process.env.AUTH_API + "/isLoggedIn",
+        //   });
+        // },
+        // /**
+        //  * 	`doLogout` performs any logic necessary to log the user out.
+        //  * 	In this case, this means sending a request to the server to clear the JWT cookie.
+        //  */
+        // doLogout: async () => {
+        //   await post({
+        //     url: process.env.AUTH_API + "/logout",
+        //   });
+        //},
+        //}}
+        />
+      }
     </div>
   );
 }
