@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { Environment } from '@/config';
 import { thirdwebCustomDarkTheme } from '@/constants/defaults';
-import { showNotificationToast } from '@/lib/helpers';
+import { handleShowNotificationToast } from '@/lib/helpers';
 import { handleMintNewOffchainSubname } from '@/lib/minting';
 import { currentChain, thirdWebClient } from '@/lib/thirdWebClient';
 import { getWalletProxy } from '@/lib/walletProxy';
@@ -102,7 +102,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
       const createdFullName = await handleMintNewOffchainSubname(subname, wallet.address as `0x${string}`);
 
       if (createdFullName) {
-        showNotificationToast(
+        handleShowNotificationToast(
           "success",
           "Subname created Successfully",
           `Your fullname is: \n ${createdFullName}`
@@ -113,7 +113,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
       }
 
     } catch (error: any) {
-      showNotificationToast(
+      handleShowNotificationToast(
         "error",
         "Request failed!",
         `${error.message}`

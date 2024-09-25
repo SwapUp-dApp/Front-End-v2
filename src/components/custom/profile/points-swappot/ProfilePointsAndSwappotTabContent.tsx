@@ -9,7 +9,7 @@ const ProfilePointsAndSwappotTabContent = () => {
 
         <ProfilePointsCard image="/assets/images/badge.png" title="Trades created" description="Active trade Proposals you have created" points={500} />
         <ProfilePointsCard image="/assets/images/badge.png" title="Trades completed" description="Successfully finalized trade transactions" points={2000} />
-        <ProfilePointsCard image="/assets/images/badge.png" title="Mint subname" description="Mint new subname using swapup." points={20000} />
+        <ProfilePointsCard image="/assets/images/badge.png" title="Subname minted" description="Successfully minted a new subname using Swapup." points={20000} />
         <ProfilePointsCard image="/assets/images/badge.png" title="Trades shared" description="Trades you've shared publicly" points={500} />
 
       </div>

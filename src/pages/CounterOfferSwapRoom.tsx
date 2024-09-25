@@ -1,12 +1,12 @@
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
 import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
 import RoomHeader from "@/components/custom/swap-market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
 import { Button } from "@/components/ui/button";
 import { SUE_SWAP_MODE } from "@/constants/enums";
+import { handleShowNotificationToast } from "@/lib/helpers";
 import { isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { getAvailableCurrenciesApi, getSwapDetailsByTradeOrOpenTradeIdApi } from "@/service/api";
@@ -18,7 +18,7 @@ import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CounterSwap } from "@/
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
+
 
 const CounterOfferSwapRoom = () => {
   const [dataSavedInStore, setDataSavedInStore] = useState({ sender: false, receiver: false });
@@ -45,20 +45,10 @@ const CounterOfferSwapRoom = () => {
             setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
             return response.data.data.coins;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -94,20 +84,10 @@ const CounterOfferSwapRoom = () => {
             }
             return null;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -159,21 +139,12 @@ const CounterOfferSwapRoom = () => {
       const offerResult = await createCounterSwapOffer(payload);
 
       if (offerResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Counter offer Sent Successfully"
-              description={"You will receive a notification upon your counterparty's response."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Counter offer Sent Successfully`,
+          `You will receive a notification upon your counterparty's response.`
         );
+
         setSwapCreation(prev => ({ ...prev, created: true }));
         state.resetViewSwapRoom();
         setTimeout(() => {
@@ -182,23 +153,11 @@ const CounterOfferSwapRoom = () => {
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapCreation(prev => ({ ...prev, isLoading: false }));
     }
@@ -207,20 +166,10 @@ const CounterOfferSwapRoom = () => {
   const handleResetData = async () => {
     state.resetViewSwapRoom();
 
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="info"
-          title="View room reset!"
-          description={"View room data deleted for both parties."}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
+    handleShowNotificationToast(
+      "info",
+      `View room reset!`,
+      `View room data deleted for both parties.`
     );
   };
 
@@ -234,22 +183,11 @@ const CounterOfferSwapRoom = () => {
     // Needs to review this check later on
     // if (state.swap && wallet.address) {
     //   if ((state.swap.init_address !== wallet.address) && (state.swap.accept_address !== wallet.address)) {
-    //     toast.custom(
-    //       (id) => (
-    //         <ToastLookCard
-    //           variant="error"
-    //           title="Redirecting back!"
-    //           description={"Current login user do not have access to view this swap."}
-    //           onClose={() => toast.dismiss(id)}
-    //         />
-    //       ),
-    //       {
-    //         duration: 3000,
-    //         className: 'w-full !bg-transparent',
-    //         position: "bottom-left",
-    //       }
-    //     );
-
+    // handleShowNotificationToast(
+    //   "error",
+    //   `Redirecting back!`,
+    //   `Current login user do not have access to view this swap.`
+    // );
     //     navigate(defaults.fallback.route);
     //   }
     // }

@@ -2,7 +2,7 @@ import React from 'react';
 import { SUI_OpenSwap, SUI_Swap } from '@/types/swap-market.types';
 import { cn, getLastCharacters } from '@/lib/utils';
 import { chainsDataset } from '@/constants/data';
-import { mapSwapTokensHelper, showNotificationToast } from '@/lib/helpers';
+import { mapSwapTokensHelper, handleShowNotificationToast } from '@/lib/helpers';
 import moment from 'moment';
 
 import CopyTile from '../tiles/CopyTile';
@@ -31,7 +31,7 @@ const SwapListMobileCard = ({ swap, swapCardType = "private-party", handleSwapAc
   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
 
   const handleIfAnyActionPropMissing = async (swap: SUI_OpenSwap | SUI_Swap) => {
-    showNotificationToast(
+    handleShowNotificationToast(
       'error',
       `Action props missing!`,
       'Mobile card component action props missing!'

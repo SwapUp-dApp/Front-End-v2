@@ -1,6 +1,6 @@
 import React from 'react';
 import WalletOverviewCard from '../../swap-market/WalletOverviewCard';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import TokenDistributionPerChainChart from './TokenDistributionPerChainChart';
 import TokenBreakdownChart from './TokenBreakdownChart';
 import CollectionDetailsSection from './CollectionDetailsSection';
@@ -8,11 +8,10 @@ import SubDomainMintingSection from './subdomain/SubDomainMintingSection';
 import { useQuery } from '@tanstack/react-query';
 import { getAvailableCurrenciesApi } from '@/service/api';
 import { SUI_CurrencyChainItem } from '@/types/global.types';
-import { toast } from 'sonner';
-import ToastLookCard from '../../shared/ToastLookCard';
 import { useGlobalStore } from '@/store/global-store';
 import LoadingDataset from '../../shared/LoadingDataset';
 import { useProfileStore } from '@/store/profile';
+import { handleShowNotificationToast } from '@/lib/helpers';
 
 const ProfileWalletOverviewTabContent = () => {
   const [setAvailableCurrencies] = useGlobalStore(state => [state.setAvailableCurrencies]);
@@ -26,20 +25,10 @@ const ProfileWalletOverviewTabContent = () => {
         setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
         return response.data.data.coins;
       } catch (error: any) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
 
         throw error;

@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Schema_ProfileEditAvatarForm } from "@/schema";
 import { SUI_DeleteProfilePicturePayload, SUI_UploadProfilePicturePayload } from "@/types/profile.types";
 import { deleteProfilePictureApi, uploadProfilePictureApi } from "@/service/api/user.service";
-import { showNotificationToast } from "@/lib/helpers";
+import { handleShowNotificationToast } from "@/lib/helpers";
 
 interface IProp {
   open: boolean;
@@ -57,7 +57,7 @@ const EditProfileImageDialog = ({ open, setOpen }: IProp) => {
         // console.log("Image Upload res: ", response);
 
         if (response.data.url) {
-          showNotificationToast(
+          handleShowNotificationToast(
             'success',
             "Image updated successfully!",
             'Your profile picture is updated.'
@@ -71,7 +71,7 @@ const EditProfileImageDialog = ({ open, setOpen }: IProp) => {
       }
 
     } catch (error: any) {
-      showNotificationToast(
+      handleShowNotificationToast(
         'error',
         "Error while updating picture",
         error.message
@@ -117,7 +117,7 @@ const EditProfileImageDialog = ({ open, setOpen }: IProp) => {
 
       if (deleteResult.data) {
 
-        showNotificationToast(
+        handleShowNotificationToast(
           'success',
           "Image deleted successfully!",
           'Your profile picture is deleted.'
@@ -132,7 +132,7 @@ const EditProfileImageDialog = ({ open, setOpen }: IProp) => {
       }
 
     } catch (error: any) {
-      showNotificationToast(
+      handleShowNotificationToast(
         'error',
         "Error while deleting picture",
         error.message

@@ -4,7 +4,7 @@ import CopyTile from '../../tiles/CopyTile';
 import { getLastCharacters } from '@/lib/utils';
 import { chainsDataset } from '@/constants/data';
 import ChainTile from '../../tiles/ChainTile';
-import { mapSwapTokensHelper, showNotificationToast } from '@/lib/helpers';
+import { mapSwapTokensHelper, handleShowNotificationToast } from '@/lib/helpers';
 import moment from 'moment';
 import { Popover, PopoverContent, PopoverTrigger, } from "@/components/ui/popover";
 import OpenMarketListItemActionPopover from './OpenMarketListItemActionPopover';
@@ -21,7 +21,7 @@ const OpenSwapListMobileCard = ({ swap, handleNavigation, cardType = "available"
   const currentChain = chainsDataset.find(chain => chain.uuid === swap.trading_chain) || chainsDataset[1];
 
   const handleIfAnyActionPropMissing = async (swap: SUI_OpenSwap) => {
-    showNotificationToast(
+    handleShowNotificationToast(
       'error',
       `Action props missing!`,
       'Mobile card component action props missing!'

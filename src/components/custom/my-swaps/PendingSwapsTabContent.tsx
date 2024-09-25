@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from 'sonner';
+
 import FilterButton from '@/components/custom/shared/FilterButton';
 import { cn, generateRandomKey, generateRandomTradeId, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '@/components/custom/shared/EmptyDataset';
 import { SUI_OpenSwap, SUI_SwapToken, SUI_Swap, SUP_CompleteSwap, SUP_CancelSwap } from '@/types/swap-market.types';
 import { useCancelSwapOffer, useCompletePrivateSwapOffer, useRejectSwapOffer } from '@/service/queries/swap-market.query';
-import ToastLookCard from '@/components/custom/shared/ToastLookCard';
+
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
 import LoadingDataset from '@/components/custom/shared/LoadingDataset';
@@ -22,7 +22,7 @@ import { SUE_SWAP_MODE, SUE_SWAP_OFFER_TYPE } from '@/constants/enums';
 import { useProfileStore } from '@/store/profile';
 import BadgeTile from '@/components/custom/tiles/BadgeTile';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
+import { handleShowNotificationToast, mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
 import PendingSwapsFilterDrawer from './PendingSwapsFilterDrawer';
 import { useMySwapStore } from '@/store/my-swaps';
 import { useQuery } from '@tanstack/react-query';
@@ -129,20 +129,10 @@ const PendingSwapsTabContent = () => {
       }
 
       if (offerResult && pointsUpdateResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title={`${swap.swap_mode === SUE_SWAP_MODE.OPEN ? "Open" : "Private"} Swap Completed Successfully`}
-              description={"You will receive a notification on metamask about the transaction."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `${swap.swap_mode === SUE_SWAP_MODE.OPEN ? "Open" : "Private"} Swap Completed Successfully`,
+          `You will receive a notification on metamask about the transaction.`
         );
         setSwapAcceptance(prev => ({ ...prev, created: true }));
         setStartRecentSwapSharingProcess(true);
@@ -151,22 +141,11 @@ const PendingSwapsTabContent = () => {
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
       // console.log(error);
     } finally {
       setSwapAcceptance(prev => ({ ...prev, isLoading: false }));
@@ -192,22 +171,12 @@ const PendingSwapsTabContent = () => {
 
       if (swap.id) {
         const offerResult = await rejectSwapOffer(Number(swap.id));
-        console.log(swap.id);
+        // console.log(swap.id);
         if (offerResult) {
-          toast.custom(
-            (id) => (
-              <ToastLookCard
-                variant="success"
-                title="Swap Rejected Successfully"
-                description={"You have successfully rejected the swap offer"}
-                onClose={() => toast.dismiss(id)}
-              />
-            ),
-            {
-              duration: 3000,
-              className: 'w-full !bg-transparent',
-              position: "bottom-left",
-            }
+          handleShowNotificationToast(
+            "success",
+            `Swap Rejected Successfully`,
+            `You have successfully rejected the swap offer`
           );
           setSwapRejection(prev => ({ ...prev, created: true }));
           navigate("/swap-up/my-swaps/history");
@@ -216,23 +185,11 @@ const PendingSwapsTabContent = () => {
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapRejection(prev => ({ ...prev, isLoading: false }));
     }
@@ -267,43 +224,21 @@ const PendingSwapsTabContent = () => {
       const offerResult = await cancelSwapOffer(payload);
 
       if (offerResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Swap Closed Successfully"
-              description={"You have successfully closed the swap"}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Swap Closed Successfully`,
+          `You have successfully closed the swap`
         );
         setSwapCancel(prev => ({ ...prev, created: true }));
         navigate("/swap-up/my-swaps/history");
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapCancel(prev => ({ ...prev, isLoading: false }));
     }
@@ -326,7 +261,6 @@ const PendingSwapsTabContent = () => {
             filteredResponse = response.data.data as SUI_OpenSwap[];
           }
 
-
           await setMySwapsData(filteredResponse, 'pending');
           return response.data.data;
         }
@@ -334,22 +268,11 @@ const PendingSwapsTabContent = () => {
         return null;
       } catch (error: any) {
         await setMySwapsData([], 'pending');
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
-
         throw error;
       }
     },

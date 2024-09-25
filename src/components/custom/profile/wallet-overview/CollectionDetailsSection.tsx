@@ -12,8 +12,7 @@ import { SUI_CollectionOwnedItem } from '@/types/profile.types';
 import { useQuery } from '@tanstack/react-query';
 import { getCollectionsByWalletIdApi } from '@/service/api';
 import { useProfileStore } from '@/store/profile';
-import { toast } from 'sonner';
-import ToastLookCard from '../../shared/ToastLookCard';
+import { handleShowNotificationToast } from '@/lib/helpers';
 
 
 const CollectionDetailsSection = () => {
@@ -36,20 +35,10 @@ const CollectionDetailsSection = () => {
 
         return null;
       } catch (error: any) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
 
         throw error;

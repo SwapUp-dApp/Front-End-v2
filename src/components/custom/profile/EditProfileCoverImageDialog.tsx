@@ -14,7 +14,7 @@ import { defaults } from "@/constants/defaults";
 import { useEffect, useState } from "react";
 import { SUI_UploadProfilePicturePayload } from "@/types/profile.types";
 import { uploadProfilePictureApi } from "@/service/api/user.service";
-import { showNotificationToast } from "@/lib/helpers";
+import { handleShowNotificationToast } from "@/lib/helpers";
 
 interface IProp {
   handleRemoveProfileCoverImage: () => void;
@@ -55,7 +55,7 @@ const EditProfileCoverImageDialog = ({ currentEditCover, editCoverFormKey, form,
         // console.log("Image Upload res: ", response);
 
         if (response.data.url) {
-          showNotificationToast(
+          handleShowNotificationToast(
             'success',
             "Cover updated successfully!",
             'Your profile cover image is updated.'
@@ -68,7 +68,7 @@ const EditProfileCoverImageDialog = ({ currentEditCover, editCoverFormKey, form,
       }
 
     } catch (error: any) {
-      showNotificationToast(
+      handleShowNotificationToast(
         'error',
         "Error while updating cover",
         error.message

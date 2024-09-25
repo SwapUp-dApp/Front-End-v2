@@ -37,7 +37,7 @@ export const showUnderConstructionToast = (title?: string, description?: string)
 };
 
 // To get normal swapup notification for APIs etc
-export const showNotificationToast = (variant: SUT_ToastVariantType = "error", title: string, description: string) => {
+export const handleShowNotificationToast = (variant: SUT_ToastVariantType = "error", title: string, description: string) => {
   toast.custom(
     (id) => (
       <ToastLookCard

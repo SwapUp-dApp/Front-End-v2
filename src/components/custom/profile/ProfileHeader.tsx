@@ -22,7 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { deleteProfilePictureApi } from "@/service/api/user.service";
-import { showNotificationToast } from "@/lib/helpers";
+import { handleShowNotificationToast } from "@/lib/helpers";
 
 
 interface IProp {
@@ -67,7 +67,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
 
       if (deleteResult.data) {
 
-        showNotificationToast(
+        handleShowNotificationToast(
           'success',
           "Image deleted successfully!",
           'Your profile picture is deleted.'
@@ -81,7 +81,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
       }
 
     } catch (error: any) {
-      showNotificationToast(
+      handleShowNotificationToast(
         'error',
         "Error while deleting picture",
         error.message
