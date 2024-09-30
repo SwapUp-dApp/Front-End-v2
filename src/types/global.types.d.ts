@@ -5,6 +5,7 @@ export interface SUI_NavItem {
   basePath: string;
   path: string;
   protected: boolean;
+  hash: string;
 }
 
 export interface SUI_TabItem {

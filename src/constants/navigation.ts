@@ -8,20 +8,23 @@ export const navItemsData: SUI_NavItem[] = [
     basePath: `${defaults.swapMarket.baseRoute}`,
     path: `${defaults.swapMarket.baseRoute}/${defaults.swapMarket.defaultActiveTab}`,
     protected: false,
+    hash: ''
   },
   {
     key: "my-swaps",
     title: "My Swaps",
     basePath: `${defaults.mySwaps.baseRoute}`,
     path: `${defaults.mySwaps.baseRoute}/${defaults.mySwaps.defaultActiveTab}`,
-    protected: false,
+    protected: true,
+    hash: ''
   },
   {
     key: "Profile",
     title: "Profile",
     basePath: `${defaults.profile.baseRoute}`,
     path: `${defaults.profile.baseRoute}/${defaults.profile.defaultActiveTab}`,
-    protected: false,
+    protected: true,
+    hash: ''
   }
 ];
 
@@ -30,22 +33,25 @@ export const landingPageNavData: SUI_NavItem[] = [
     key: "audiences",
     title: "Audiences",
     basePath: '/',
-    path: "/#audiences",
+    path: "/",
     protected: false,
+    hash: '#audiences'
   },
   {
     key: "tech-stack",
     title: "Tech Stack",
     basePath: '/',
-    path: "/#tech-stack",
+    path: "/",
     protected: false,
+    hash: '#tech-stack'
   },
   {
     key: "roadmap",
     title: "Roadmap",
     basePath: '/',
-    path: "/#roadmap-section",
+    path: "/",
     protected: false,
+    hash: '#roadmap-section'
   },
   {
     key: "services",
@@ -53,5 +59,6 @@ export const landingPageNavData: SUI_NavItem[] = [
     basePath: '/',
     path: "/services",
     protected: false,
+    hash: ''
   },
 ];
