@@ -143,9 +143,11 @@ const ViewSwapRoom = () => {
       };
 
       const pointsApiPayload: SUI_UpdateProfilePointsPayload = {
-        pointsToAdd: swap.swap_mode === SUE_SWAP_MODE.OPEN ? defaults.pointSystem.completeOpenTrade : defaults.pointSystem.completePrivateTrade,
+        pointsToAdd: swap.swap_mode === SUE_SWAP_MODE.OPEN ? defaults.pointSystem['completed-open-trade'] : defaults.pointSystem['completed-private-trade'],
+        keyType: swap.swap_mode === SUE_SWAP_MODE.OPEN ? 'completed-open-trade' : 'completed-private-trade',
         walletId: swap.accept_address,
-        counterPartyWalletId: swap.init_address
+        counterPartyWalletId: swap.init_address,
+        defaultPointSystem: defaults.userSettings.newUser.points
       };
 
       let offerResult;

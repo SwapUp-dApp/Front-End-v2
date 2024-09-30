@@ -210,7 +210,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
 
           <SwapParameterTile
             title="Total Points Earned: "
-            value={profile.details?.points || 0}
+            value={profile.details?.points?.total || 0}
           />
         </div>
 
