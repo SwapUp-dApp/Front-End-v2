@@ -30,7 +30,6 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
   const { mutateAsync: sendTransaction } = useSendTransaction({
     payModal: {
       buyWithFiat: { testMode: true },
-      buyWithCrypto: { testMode: true },
       theme: thirdwebCustomDarkTheme,
     },
   });
@@ -81,7 +80,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
         transaction = {
           chain: currentChain,
           to: SWAPUP_TREASURY_WALLET,
-          value: ethers.parseEther(`${chargesByCurrentRate}`),
+          value: ethers.parseEther(`${chargesByCurrentRate.toFixed(8)}`),
           client: thirdWebClient
         } as PreparedTransaction;
       }
