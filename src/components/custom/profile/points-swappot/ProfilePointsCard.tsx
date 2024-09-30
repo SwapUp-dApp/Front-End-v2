@@ -1,11 +1,11 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { SUT_AvailablePointsType } from "@/types/profile.types";
+import { SUT_AvailablePointSystemPointsType } from "@/types/profile.types";
 
 interface IProp {
   image: string;
   title: string;
   description: string;
-  points: SUT_AvailablePointsType;
+  points: number;
 }
 
 const ProfilePointsCard = ({ image, title, description, points }: IProp) => {

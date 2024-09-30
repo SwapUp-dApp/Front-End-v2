@@ -152,8 +152,11 @@ const OpenSwapCreationRoom = () => {
       };
 
       const pointsApiPayload: SUI_UpdateProfilePointsPayload = {
-        pointsToAdd: defaults.pointSystem.createOpenTrade,
-        walletId: profile.wallet.address
+
+        walletId: profile.wallet.address,
+        pointsToAdd: defaults.pointSystem['created-open-trade'],
+        keyType: 'created-open-trade',
+        defaultPointSystem: defaults.userSettings.newUser.points
       };
 
       const offerResult = await createOpenSwapOffer(swapPayload);

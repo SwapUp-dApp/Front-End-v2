@@ -51,7 +51,6 @@ const MainLayout = () => {
       await setProfileWallet(connectedWallet);
 
       if (isValidWalletAddress(connectedWallet.address)) {
-
         try {
           const payload: SUI_CreateNewUserPayload = {
             points: defaults.userSettings.newUser.points,

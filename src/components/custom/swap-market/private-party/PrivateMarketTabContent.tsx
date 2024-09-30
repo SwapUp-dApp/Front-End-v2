@@ -110,9 +110,11 @@ const PrivateMarketTabContent = () => {
       };
 
       const pointsApiPayload: SUI_UpdateProfilePointsPayload = {
-        pointsToAdd: defaults.pointSystem.completePrivateTrade,
+        pointsToAdd: defaults.pointSystem['completed-private-trade'],
         walletId: swap.accept_address,
-        counterPartyWalletId: swap.init_address
+        counterPartyWalletId: swap.init_address,
+        defaultPointSystem: defaults.userSettings.newUser.points,
+        keyType: 'completed-private-trade'
       };
 
       //calling actual api 
