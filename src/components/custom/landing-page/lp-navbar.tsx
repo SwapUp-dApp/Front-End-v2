@@ -27,7 +27,7 @@ const LpNavbar = () => {
 	}, []);
 
 	return (
-		<div className={`sticky top-0 z-[100] w-full p-4 flex justify-between lg:justify-start lg:gap-16 ${isScrolled ? 'bg-black/10' : 'bg-transparent'}`}>
+		<div className={`sticky top-0 z-10 w-full p-4 flex justify-between lg:justify-start lg:gap-16 ${isScrolled ? 'bg-black/10' : 'bg-transparent'}`}>
 			<img
 				onClick={() => navigate("/swap-up/swap-market")}
 				src="/swapup.png"
@@ -39,9 +39,9 @@ const LpNavbar = () => {
 			<div className="w-full hidden lg:flex items-center justify-between">
 				<ol className="flex gap-4 items-center">
 					{landingPageNavData.map((navItem) => (
-						<Link to={navItem.path} key={navItem.key}>
+						<Link to={navItem.path + navItem.hash} key={navItem.key}>
 							<li
-								className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path, pathname + hash, 'website') ? "active" : ""}`}
+								className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path + navItem.hash, pathname + hash, 'website') ? "active" : ""}`}
 							>
 								{navItem.title}
 							</li>
@@ -98,10 +98,10 @@ const LpNavbar = () => {
 								<ol className="flex flex-col gap-4" >
 									{
 										landingPageNavData.map(navItem => (
-											<Link to={navItem.path} key={navItem.key}>
+											<Link to={navItem.path + navItem.hash} key={navItem.key}>
 												<li
 													key={navItem.key}
-													className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path, pathname + hash, 'website') ? "active" : ""}`}
+													className={`nav-link font-semibold text-sm ${getIsActiveNav(navItem.path + navItem.hash, pathname + hash, 'website') ? "active" : ""}`}
 													onClick={() => setIsOpen(false)}
 												>
 													{navItem.title}
