@@ -1,13 +1,9 @@
-import { ChangeEvent, useEffect } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import WalletAddressTile from "../tiles/WalletAddressTile";
-import CustomAvatar from "../shared/CustomAvatar";
-import ChainTile from "../tiles/ChainTile";
 import FilterButton from "../shared/FilterButton";
 import GridToggleButton from "../shared/GridToggleButton";
 import { Input } from "@/components/ui/input";
 import NftCard from "../shared/NftCard";
-import { Separator } from "@/components/ui/separator";
 import EmptyDataset from "../shared/EmptyDataset";
 import PrivateRoomFilterDrawer from "./private-party/PrivateRoomFilterDrawer";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
@@ -21,6 +17,10 @@ import { SUI_SwapToken, SUT_SwapRoomViewType, SUT_SwapTokenContractType } from "
 import { defaults } from "@/constants/defaults";
 import { useGlobalStore } from "@/store/global-store";
 import { handleShowNotificationToast } from "@/lib/helpers";
+import RoomSelectCryptoSectionSide from "./RoomSelectCryptoSectionSide";
+import { ChevronDown } from "lucide-react";
+import RoomSelectedAssetsSection from "./RoomSelectedAssetsSection";
+import { generateRandomKey } from "@/lib/utils";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
@@ -39,7 +39,6 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
   const {
     activeGridView,
     toggleGridView,
-    profile,
     filteredNfts,
     setSelectedNftsForSwap,
     nftsSelectedForSwap,
@@ -50,12 +49,15 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
     collections,
     setNftsDataset,
     setFilteredNftsBySwapTokens,
-    setAddedAmount
+    setAddedAmount,
+    addedAmount,
+    nfts
   } = useSwapMarketStore((state) =>
     roomKey === 'privateRoom' ?
       (layoutType === "sender" ? state.privateMarket.privateRoom.sender : state.privateMarket.privateRoom.receiver)
       : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
+
 
   const [filteredAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies]);
 
@@ -257,43 +259,72 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
   }, [data, isSuccess, isError, roomKey, layoutType, setDataSavedInStore]);
 
   return (
-    <Card className="border-none flex flex-col gap-4 dark:bg-su_secondary_bg p-2 lg:p-6" >
-      <CardHeader className="flex flex-col p-0 gap-3" >
-        <div className={`flex justify-between items-center`} >
-          <div className="flex items-center gap-2 lg:gap-3">
-            <CustomAvatar imageSrc={profile.avatar} fallbackName={profile.details?.title || profile.ensAddress || ''} isPremium={profile?.isPremium} />
-            <h2 className="font-semibold text-sm lg:text-lg line-clamp-1 w-2/3 lg:w-auto">{profile.ensAddress}</h2>
-          </div>
+    <Card className="border border-su_enable_bg bg-transparent flex flex-col gap-4 p-2 lg:p-6" >
+      <CardHeader className="flex flex-col p-0 gap-4 font-semibold text-su_secondary" >
+        {/* Layout heading section */}
+        <h2 className="border-b-[1px] border-b-su_enable_bg pb-2" >
+          You {layoutType === 'sender' ? "send" : "receive"}
+        </h2>
 
-          <div className="flex items-center gap-2">
-            <WalletAddressTile walletAddress={walletAddress} />
-            <ChainTile imageSrc={profile.wallet.network.iconUrl} title={profile.wallet.network.name} />
-          </div>
-        </div>
+        {/* Selected assets section */}
+        <RoomSelectedAssetsSection
+          setSelectedNftsForSwap={setSelectedNftsForSwap}
+          nftsSelectedForSwap={nftsSelectedForSwap}
+          nfts={nfts}
+          layoutType={layoutType}
+          swapRoomViewType={swapRoomViewType}
+          setAddedAmount={setAddedAmount}
+          addedAmount={addedAmount}
+        />
 
-        <Separator className="border-t-[1px] border-su_enable_bg" />
-
-        <div className={`flex gap-4 items-center`} >
-          <Input
-            className="w-3/4 !p-3.5 bg-su_enable_bg"
-            placeholder="Search by asset name or ID"
-            onChange={(event: ChangeEvent<HTMLInputElement>) => handleSearchNfts(event.target.value)}
-            icon={
-              <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
-              </svg>
-            }
+        {/* Select crypto section */}
+        {(filteredAvailableCurrencies && filteredAvailableCurrencies.length > 0) &&
+          <RoomSelectCryptoSectionSide
+            setAddedAmount={setAddedAmount}
+            addedAmount={addedAmount}
+            availableCurrencies={filteredAvailableCurrencies}
           />
+        }
 
-          <div
-            className={`flex items-center gap-2`}
-          >
-            <GridToggleButton activeGridView={activeGridView} toggleView={toggleGridView} />
+        {/*NFT asset heading section*/}
+        <div className="flex flex-col gap-4" >
 
-            <PrivateRoomFilterDrawer setFilteredNftsByFilters={setFilteredNftsByFilters} removeAllFilters={removeAllFilters} collections={collections} >
-              <FilterButton filterApplied={filters ? true : false} />
-            </PrivateRoomFilterDrawer>
+          <div className="flex items-center justify-between" >
+            <h2>Select NFT Assets</h2>
 
+            <button className="p-3 rounded-sm flex items-center gap-2 bg-su_enable_bg" >
+              <svg className="w-3.5" viewBox="0 0 13 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0.5 6.5V4.83333H12.4998V6.5H0.5ZM0.500163 2.16667V0.5H12.5V2.16667H0.500163Z" fill="#868691" />
+              </svg>
+
+              <span className="text-su_ternary font-normal text-sm" >View Collections</span>
+
+              <ChevronDown className={`h-4 w-4 text-su_primary`} />
+            </button>
+          </div>
+
+          <div className={`flex gap-4 items-center`} >
+            <Input
+              className="w-3/4 !p-3.5 bg-su_enable_bg"
+              placeholder="Search by asset name or ID"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => handleSearchNfts(event.target.value)}
+              icon={
+                <svg className="w-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 14.6154L11.2277 9.84231C11.9968 8.78544 12.4105 7.5117 12.4092 6.20462C12.4092 2.78346 9.62577 0 6.20462 0C2.78346 0 0 2.78346 0 6.20462C0 9.62577 2.78346 12.4092 6.20462 12.4092C7.5117 12.4105 8.78544 11.9968 9.84231 11.2277L14.6154 16L16 14.6154ZM6.20462 10.4496C5.36493 10.4497 4.54407 10.2008 3.84586 9.7343C3.14765 9.26784 2.60345 8.60481 2.28208 7.82905C1.96071 7.05329 1.8766 6.19965 2.0404 5.37609C2.2042 4.55253 2.60854 3.79604 3.20229 3.20229C3.79604 2.60854 4.55253 2.2042 5.37609 2.0404C6.19965 1.8766 7.05329 1.96071 7.82905 2.28208C8.60481 2.60345 9.26784 3.14765 9.7343 3.84586C10.2008 4.54407 10.4497 5.36493 10.4496 6.20462C10.4483 7.33005 10.0006 8.40902 9.20482 9.20482C8.40902 10.0006 7.33005 10.4483 6.20462 10.4496Z" fill="#868691" />
+                </svg>
+              }
+            />
+
+            <div
+              className={`flex items-center gap-2`}
+            >
+              <GridToggleButton activeGridView={activeGridView} toggleView={toggleGridView} />
+
+              <PrivateRoomFilterDrawer setFilteredNftsByFilters={setFilteredNftsByFilters} removeAllFilters={removeAllFilters} collections={collections} >
+                <FilterButton filterApplied={filters ? true : false} />
+              </PrivateRoomFilterDrawer>
+
+            </div>
           </div>
         </div>
       </CardHeader>

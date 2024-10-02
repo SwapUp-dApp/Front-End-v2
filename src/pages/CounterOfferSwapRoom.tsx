@@ -1,7 +1,7 @@
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
-import RoomHeader from "@/components/custom/swap-market/RoomHeader";
+import CustomHeader from "@/components/custom/swap-market/CustomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
 import { Button } from "@/components/ui/button";
@@ -208,7 +208,7 @@ const CounterOfferSwapRoom = () => {
 
   return (
     <div className="space-y-4" >
-      <RoomHeader
+      <CustomHeader
         title="Counter offer"
         tardeId={state.uniqueTradeId}
         resetData={handleResetData}

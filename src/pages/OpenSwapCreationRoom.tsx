@@ -9,7 +9,7 @@ import StaySafeDialog from "@/components/custom/swap-market/StaySafeDialog";
 import AvoidingFeeDialog from "@/components/custom/shared/AvoidingFeeDialog";
 import { useSwapMarketStore } from "@/store/swap-market";
 import OpenMarketRoomFooter from "@/components/custom/swap-market/open-market/OpenMarketRoomFooter";
-import RoomHeader from "@/components/custom/swap-market/RoomHeader";
+import CustomHeader from "@/components/custom/swap-market/CustomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import SwapParametersCard from "@/components/custom/swap-market/open-market/SwapParametersCard";
 import { useNavigate, useParams } from "react-router-dom";
@@ -222,7 +222,7 @@ const OpenSwapCreationRoom = () => {
 
   return (
     <div className="flex flex-col gap-4" >
-      <RoomHeader
+      <CustomHeader
         tardeId={state.uniqueTradeId}
         resetData={handleResetData}
         title={"Create open market swap"}

@@ -103,6 +103,10 @@
     @apply bg-background dark:bg-su_primary_bg text-foreground;
   }
 
+  .su-px{
+    @apply px-6 lg:px-10
+  }
+
   .nav-link {
     @apply cursor-pointer relative after:absolute  after:content-[''] after:h-0.5 after:w-0 after:bg-gradient-primary after:-bottom-0.5 after:left-0 after:opacity-0 after:transition-all after:duration-200 after:delay-200
   }

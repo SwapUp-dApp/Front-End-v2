@@ -1,11 +1,9 @@
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { IOpenMarketSwapFilters } from '@/types/swap-market-store.types';
-import React from 'react';
 import AppliedFilterItemTile from '../../tiles/AppliedFilterItemTile';
 import AppliedFilterSubItemTile from '../../tiles/AppliedFilterSubItemTile';
 import RarityRankTile from '../../tiles/RarityRankTile';
-import { Currency } from 'lucide-react';
 import BadgeTile from '../../tiles/BadgeTile';
 
 interface IProp {

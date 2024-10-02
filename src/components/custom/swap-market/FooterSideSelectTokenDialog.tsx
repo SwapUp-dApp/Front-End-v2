@@ -130,7 +130,7 @@ const FooterSideSelectTokenDialog = ({ open, setOpen, handleSetSelectedCurrency 
                 }
               />
 
-              <div className="space-y-4 divide-y-2" >
+              <div className="space-y-4" >
                 <FormField
                   control={form.control}
                   name="preferredToken"
@@ -171,7 +171,9 @@ const FooterSideSelectTokenDialog = ({ open, setOpen, handleSetSelectedCurrency 
                   )}
                 />
 
-                <ScrollArea className="h-[200px] py-2" >
+                <div className="border-b-[1px] border-b-su_enable_bg" ></div>
+
+                <ScrollArea className="h-[200px]" >
                   <p>Popular tokens</p>
 
                   <FormField

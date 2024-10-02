@@ -52,15 +52,15 @@ export const setProfileWalletHelper = async (state: IProfileStore, connectedWall
     let connectedUserAvatar = null;
     let connectedUserEnsName = null;
 
-    if (connectedWallet.address) {
-        try {
-            const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(connectedWallet.address);
-            connectedUserAvatar = avatar;
-            connectedUserEnsName = ensName;
-        } catch (error) {
-            console.log("No ens found");
-        }
-    }
+    // if (connectedWallet.address) {
+    //     try {
+    //         const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(connectedWallet.address);
+    //         connectedUserAvatar = avatar;
+    //         connectedUserEnsName = ensName;
+    //     } catch (error) {
+    //         console.log("No ens found");
+    //     }
+    // }
 
 
     return {

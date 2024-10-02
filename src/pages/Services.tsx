@@ -963,7 +963,7 @@ const ServicesPage = () => {
 																		height="30"
 																		rx="15"
 																		stroke="url(#paint0_linear_290_8928)"
-																		stroke-width="2"
+																		strokeWidth="2"
 																	/>
 																	<path
 																		d="M17.7284 11L22 15.1586H10.2385V14.0368H19.2184L16.9138 11.7931L17.7284 11ZM21.7615 16.8414V17.9632H12.7816L15.0862 20.2069L14.2716 21L10 16.8414H21.7615Z"
@@ -978,8 +978,8 @@ const ServicesPage = () => {
 																			y2="14.9716"
 																			gradientUnits="userSpaceOnUse"
 																		>
-																			<stop stop-color="#51C0FF" />
-																			<stop offset="1" stop-color="#9452FF" />
+																			<stop stopColor="#51C0FF" />
+																			<stop offset="1" stopColor="#9452FF" />
 																		</linearGradient>
 																	</defs>
 																</svg>

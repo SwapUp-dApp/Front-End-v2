@@ -18,7 +18,7 @@ interface IProp {
   showPrivateMarketTile?: boolean;
 }
 
-const RoomHeader = ({
+const CustomHeader = ({
   backClickNavigateTo,
   tardeId,
   resetData,
@@ -153,4 +153,4 @@ const RoomHeader = ({
   );
 };
 
-export default RoomHeader;
+export default CustomHeader;

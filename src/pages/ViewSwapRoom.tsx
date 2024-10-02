@@ -2,7 +2,7 @@ import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton"
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
-import RoomHeader from "@/components/custom/swap-market/RoomHeader";
+import CustomHeader from "@/components/custom/swap-market/CustomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import { Button } from "@/components/ui/button";
 import { defaults } from "@/constants/defaults";
@@ -300,7 +300,7 @@ const ViewSwapRoom = () => {
 
   return (
     <div className="space-y-4" >
-      <RoomHeader
+      <CustomHeader
         title="Review offer"
         tardeId={state.uniqueTradeId}
         resetData={handleResetData}

@@ -25,11 +25,11 @@ export const Schema_AmountConversionForm = z.object({
     //   });
     // }
 
-    if (Number(data.amount) < 0) {
+    if (Number(data.amount) <= 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["amount"],
-        message: "Amount must be greater than 0",
+        message: "Amount must be greater than 0!",
       });
     }
   }
