@@ -1,15 +1,13 @@
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
-import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
-import CustomHeader from "@/components/custom/swap-market/CustomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
 import { Button } from "@/components/ui/button";
 import { getWalletProxy } from "@/lib/walletProxy";
-import { isValidTradeId } from "@/lib/utils";
+import { cn, isValidTradeId } from "@/lib/utils";
 import { useProposeOpenSwapOffer } from "@/service/queries/swap-market.query";
 import { useSwapMarketStore } from "@/store/swap-market";
-import { SUI_OpenSwap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_SwapPreferences } from "@/types/swap-market.types";
 import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,6 +16,9 @@ import { useQueries } from "@tanstack/react-query";
 import { getAvailableCurrenciesApi, getSwapDetailsByTradeOrOpenTradeIdApi } from "@/service/api";
 import { useGlobalStore } from "@/store/global-store";
 import { handleShowNotificationToast } from "@/lib/helpers";
+import CustomRoomHeader from "@/components/custom/swap-market/CustomRoomHeader";
+import RoomHeaderSide from "@/components/custom/swap-market/RoomHeaderSide";
+import ExitPageDialog from "@/components/custom/shared/ExitPageDialog";
 
 const OpenSwapProposeRoom = () => {
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
@@ -29,7 +30,8 @@ const OpenSwapProposeRoom = () => {
 
   const profile = useProfileStore(state => state.profile);
   const state = useSwapMarketStore(state => state.openMarket.openRoom);
-  const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
+  const [setAvailableCurrencies] = useGlobalStore(state => [state.setAvailableCurrencies]);
+  const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => state.openMarket.openRoom.swap.swap_preferences);
 
   const { mutateAsync: proposeOpenSwapOffer } = useProposeOpenSwapOffer();
 
@@ -162,29 +164,57 @@ const OpenSwapProposeRoom = () => {
 
 
   return (
-    <div className="space-y-4" >
-      <CustomHeader
-        title="Open Trade"
+    <section className="room-layout-container" >
+      {/*Room header section  */}
+      <CustomRoomHeader
+        title="Propose offer for"
         tardeId={state.uniqueTradeId}
-        resetData={handleResetData}
-        existDescription="By leaving the room, you will close it for both parties."
-        existTitle="Are you sure you want to exit the trade?"
-        swapPreferences={state.swap.swap_preferences}
-      />
+        swapPreferences={swapPreferences}
+        showOpenMarketTile
+      >
+        <RoomHeaderSide
+          layoutType="sender"
+          roomKey={'openRoom'}
+          senderWallet={state.sender.profile.wallet.address}
+        />
 
-      <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
+        <svg className="rotate-90 lg:rotate-0 mx-auto w-8 lg:w-16" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.91992" y="1.57617" width="38" height="38" rx="19" stroke="url(#paint0_linear_1_6150)" strokeWidth="2" />
+          <path d="M23.5126 12.5762L29.9199 19.23H12.2777V17.435H25.7475L22.2906 13.8452L23.5126 12.5762ZM29.5621 21.9224V23.7173H16.0924L19.5493 27.3072L18.3273 28.5762L11.9199 21.9224H29.5621Z" fill="#7586FF" />
+          <defs>
+            <linearGradient id="paint0_linear_1_6150" x1="40.9199" y1="8.17617" x2="-1.41297" y2="19.2907" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#51C0FF" />
+              <stop offset="1" stopColor="#9452FF" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <RoomHeaderSide
+          layoutType="receiver"
+          roomKey={'openRoom'}
+          counterPartyWallet={state.receiver.profile.wallet.address}
+        />
+
+      </CustomRoomHeader>
+
+      {/*Room content section  */}
+      <section
+        className={cn(
+          "room-content-section",
+          swapPreferences && "!mt-12"
+        )}
+      >
         {
-          queries[1].isSuccess && (state.sender.profile.wallet.address) ?
+          (queries[0] && queries[1]).isSuccess && (state.sender.profile.wallet.address) ?
             <RoomLayoutCard layoutType={"sender"} roomKey="openRoom" senderWallet={state.sender.profile.wallet.address} />
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
-              {
-                queries[1].isLoading &&
-                <LoadingDataset
-                  isLoading={queries[1].isLoading}
-                  title="Loading wallet address"
-                />
-              }
+
+              <LoadingDataset
+                isLoading={(queries[0] || queries[1]).isLoading || !state.sender.profile.wallet.address}
+                title="Loading wallet address"
+              />
+
               {
                 queries[1].isError &&
                 <EmptyDataset
@@ -202,7 +232,7 @@ const OpenSwapProposeRoom = () => {
             </div>
         }
 
-        {queries[1].isSuccess && (state.receiver.profile.wallet.address) ?
+        {(queries[0] && queries[1]).isSuccess && (state.receiver.profile.wallet.address) ?
           <RoomLayoutCard
             counterPartyWallet={state.receiver.profile.wallet.address}
             layoutType={"receiver"}
@@ -212,13 +242,12 @@ const OpenSwapProposeRoom = () => {
           />
           :
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
-            {
-              queries[1].isLoading &&
-              <LoadingDataset
-                isLoading={queries[1].isLoading}
-                title="Loading counter-party address"
-              />
-            }
+
+            <LoadingDataset
+              isLoading={(queries[0] || queries[1]).isLoading || !state.receiver.profile.wallet.address}
+              title="Loading counter-party address"
+            />
+
             {
               queries[1].isError &&
               <EmptyDataset
@@ -236,78 +265,39 @@ const OpenSwapProposeRoom = () => {
           </div>
         }
 
-      </div>
+      </section>
 
+      {/*Room footer section  */}
+      <footer className="room-footer" >
+        <ExitPageDialog
+          title={"Are you sure you want to exit the trade?"}
+          description={"By leaving the room, you will close it for both parties."}
+          redirectPath={null}
+          resetData={handleResetData}
+        >
+          <Button variant={'outline'} >
+            Close Room
+          </Button>
+        </ExitPageDialog>
 
-      <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
-        <h2 className="trade-summary" >Trade Offer Summary:</h2>
-        <div className="absolute -top-14 flex justify-center w-full" >
-          {/* Swap Details Dialog */}
-          <SwapDetailsDialog
-            state={state}
-            enableApproveButtonCriteria={enableApproveButtonCriteria}
-            swapCreation={swapCreation}
-            handleSwapCreation={handlePurposeOpenSwap}
-            isSwapProposeDialog={true}
+        {/* Swap Details Dialog */}
+        <SwapDetailsDialog
+          state={state}
+          enableApproveButtonCriteria={enableApproveButtonCriteria}
+          swapCreation={swapCreation}
+          handleSwapCreation={handlePurposeOpenSwap}
+          isSwapProposeDialog={true}
+        >
+          <Button
+            variant={"default"}
+            type="submit"
+            disabled={!enableApproveButtonCriteria}
           >
-            <Button
-              variant={"default"}
-              type="submit"
-              disabled={!enableApproveButtonCriteria}
-            >
-              Propose
-            </Button>
-          </SwapDetailsDialog>
-        </div >
-
-        {
-          queries[0].isSuccess ?
-            <RoomFooterSide
-              roomKey="openRoom"
-              layoutType="sender"
-              setEnableApproveButtonCriteria={setEnableApproveButtonCriteria}
-              availableCurrencies={filteredAvailableCurrencies}
-            />
-            :
-            <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
-              <LoadingDataset
-                isLoading={queries[0].isLoading}
-                title="Loading sender NFTs"
-                description=""
-              />
-
-              {queries[0].isError &&
-                <p className="text-xs md:text-sm">Unable to get currencies.</p>
-              }
-            </div>
-        }
-
-
-        {
-          queries[0].isSuccess && dataSavedInStore.receiver ?
-            <RoomFooterSide
-              showRemoveNftButton={false}
-              roomKey="openRoom"
-              layoutType="receiver"
-              setEnableApproveButtonCriteria={setEnableApproveButtonCriteria}
-              swapRoomViewType="propose"
-              availableCurrencies={filteredAvailableCurrencies}
-            />
-            :
-            <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
-              <LoadingDataset
-                isLoading={!dataSavedInStore.receiver && queries[0].isLoading}
-                title="Loading counter-party nfts"
-                description=""
-              />
-
-              {queries[0].isError &&
-                <p className="text-xs md:text-sm">Unable to get currencies.</p>
-              }
-            </div>
-        }
+            Propose
+          </Button>
+        </SwapDetailsDialog>
       </footer >
-    </div>
+    </section>
   );
 };
 

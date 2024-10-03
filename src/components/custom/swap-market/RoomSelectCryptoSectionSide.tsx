@@ -17,10 +17,11 @@ interface IProp {
   availableCurrencies: SUI_CurrencyChainItem[];
   addedAmount: IAddedAmount | undefined;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
+  className?: string;
 }
 
 
-const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAddedAmount }: IProp) => {
+const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAddedAmount, className }: IProp) => {
 
   const [openTokenSelectDialog, setOpenTokenSelectDialog] = useState(false);
 
@@ -40,6 +41,7 @@ const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAdde
 
     if (chain) {
       setAddedAmount(amount ? amount : '', chain);
+      form.reset();
     }
   };
 
@@ -54,20 +56,20 @@ const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAdde
     form.setValue('chain', selectedCurrencyValue);
   };
 
-  useEffect(() => {
-    const handleSetAddedAmount = async () => {
-      const isValidForm = await form.trigger();
-      const chainId = form.watch('chain');
-      const amount = form.watch('amount');
+  // useEffect(() => {
+  //   const handleSetAddedAmount = async () => {
+  //     const isValidForm = await form.trigger();
+  //     const chainId = form.watch('chain');
+  //     const amount = form.watch('amount');
 
-      if (chainId && isValidForm) {
-        setAddedAmount(amount ? amount : '', chainId);
-      }
-    };
+  //     if (chainId && isValidForm) {
+  //       setAddedAmount(amount ? amount : '', chainId);
+  //     }
+  //   };
 
-    handleSetAddedAmount();
+  //   handleSetAddedAmount();
 
-  }, [form.watch('chain'), form.watch('amount')]);
+  // }, [form.watch('chain'), form.watch('amount')]);
 
   useEffect(() => {
     if (!(addedAmount?.amount)) {
@@ -77,7 +79,11 @@ const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAdde
   }, [addedAmount?.amount]);
 
   return (
-    <aside className="space-y-4"  >
+    <aside className={cn(
+      "space-y-4",
+      className
+    )}
+    >
       <h2>Select Crypto Assets</h2>
 
       <div className="w-full bg-su_secondary_bg rounded-md py-4 px-3 space-y-1" >

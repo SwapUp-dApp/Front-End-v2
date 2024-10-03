@@ -1,6 +1,6 @@
 import { SUI_NFTItem } from "@/types/global.types";
 import { cn, getDefaultNftImageOnError } from "@/lib/utils";
-import { IAddedAmount, SUT_PrivateRoomLayoutType, SUT_RoomKeyType } from "@/types/swap-market-store.types";
+import { IAddedAmount, SUT_PrivateRoomLayoutType } from "@/types/swap-market-store.types";
 import { SUT_SwapRoomViewType } from "@/types/swap-market.types";
 import AppliedFilterSubItemTile from "../tiles/AppliedFilterSubItemTile";
 
@@ -11,13 +11,13 @@ interface IProp {
   nfts: SUI_NFTItem[] | undefined;
   nftsSelectedForSwap: [] | SUI_NFTItem[];
   setSelectedNftsForSwap: (selectedNfts: SUI_NFTItem[] | []) => void;
-  showRemoveNftButton?: boolean;
+  disableDeselection?: boolean;
   addedAmount: IAddedAmount | undefined;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
 }
 
 
-const RoomSelectedAssetsSection = ({ nfts, nftsSelectedForSwap, setSelectedNftsForSwap, layoutType, swapRoomViewType, showRemoveNftButton = true, addedAmount, setAddedAmount }: IProp) => {
+const RoomSelectedAssetsSection = ({ nfts, nftsSelectedForSwap, setSelectedNftsForSwap, layoutType, swapRoomViewType, disableDeselection = false, addedAmount, setAddedAmount }: IProp) => {
 
   const removeSelectedNftById = (paramId: string) => {
     const filteredNfts = nftsSelectedForSwap.filter(nft => nft.tokenId !== paramId);
@@ -54,7 +54,7 @@ const RoomSelectedAssetsSection = ({ nfts, nftsSelectedForSwap, setSelectedNftsF
 
 
               {
-                showRemoveNftButton &&
+                !disableDeselection &&
                 <div
                   className={cn(
                     "absolute cursor-pointer flex w-full h-full rounded-xs lg:rounded-sm top-0 left-0 justify-end items-start font-semibold",
@@ -87,15 +87,18 @@ const RoomSelectedAssetsSection = ({ nfts, nftsSelectedForSwap, setSelectedNftsF
   return (
     <aside className={cn(
       "space-y-4",
-      ((nftsSelectedForSwap.length === 0 && nfts?.length === 0) || !(addedAmount && addedAmount.amount)) && "hidden"
+      ((nftsSelectedForSwap.length > 0 && (nfts || []).length > 0) || (addedAmount?.amount)) ? "" : 'hidden'
     )}
     >
       <h2 className="">Selected Assets</h2>
 
       <div className="space-y-2" >
         {
-          ((nfts && nfts.length === 0) || (nftsSelectedForSwap && nftsSelectedForSwap.length === 0)) &&
-          <p className="text-xs text-su_secondary">No NFTs selected. You can choose up to 20 assets.</p>
+          (swapRoomViewType === 'view' || (swapRoomViewType === 'propose' && layoutType === "receiver"))
+            ?
+            (nfts || []).length === 0 && <p className="text-xs text-su_secondary">No NFTs selected. You can choose up to 20 assets.</p>
+            :
+            nftsSelectedForSwap.length === 0 ? <p className="text-xs text-su_secondary">No NFTs selected. You can choose up to 20 assets.</p> : <></>
         }
 
         {
@@ -156,12 +159,11 @@ const RoomSelectedAssetsSection = ({ nfts, nftsSelectedForSwap, setSelectedNftsF
 
 
         {
-          addedAmount &&
+          (addedAmount && Number(addedAmount.amount) > 0) &&
           <AppliedFilterSubItemTile
             className="max-w-max"
-            handleAction={() => {
-              handleResetAddedAmount();
-            }}
+            handleAction={() => handleResetAddedAmount()}
+            hideActionButton={disableDeselection}
           >
             <span className="flex items-center gap-2 text-xs" >
               <img className="w-3.5 h-3.5" src={addedAmount.coin.iconUrl} alt="" />
@@ -173,7 +175,6 @@ const RoomSelectedAssetsSection = ({ nfts, nftsSelectedForSwap, setSelectedNftsF
           </AppliedFilterSubItemTile>
         }
       </div>
-
 
     </aside>
   );

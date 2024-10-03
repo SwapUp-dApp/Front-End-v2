@@ -33,7 +33,7 @@ const PrivateRoom = () => {
 
   const { mutateAsync: createSwapOffer } = useCreatePrivateSwapOffer();
 
-  const { isSuccess } = useQuery({
+  const { isSuccess, isLoading } = useQuery({
     queryKey: [`getAvailableCurrenciesApi`],
     queryFn: async () => {
       try {
@@ -148,7 +148,8 @@ const PrivateRoom = () => {
   }, [counterPartyWallet, privateTradeId]);
 
   return (
-    <div className="min-h-screen w-full space-y-4 absolute top-0 left-0 su-px bg-su_primary_bg pt-60 lg:pt-36" >
+    <section className="room-layout-container" >
+      {/*Room header section  */}
       <CustomRoomHeader
         title="Private Room for"
         tardeId={state.uniqueTradeId}
@@ -178,7 +179,8 @@ const PrivateRoom = () => {
 
       </CustomRoomHeader>
 
-      <div className="grid lg:grid-cols-2 gap-4 !mb-32" >
+      {/*Room content section  */}
+      <section className="room-content-section" >
         {
           (state.sender.profile.wallet.address && isSuccess) ?
             <RoomLayoutCard
@@ -189,7 +191,7 @@ const PrivateRoom = () => {
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
               <LoadingDataset
-                isLoading={!state.sender.profile.wallet.address}
+                isLoading={!state.sender.profile.wallet.address || isLoading}
                 title="Loading wallet connected wallet information"
               />
             </div>
@@ -204,15 +206,15 @@ const PrivateRoom = () => {
           :
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
             <LoadingDataset
-              isLoading={!state.receiver.profile.wallet.address}
+              isLoading={!state.receiver.profile.wallet.address || isLoading}
               title="Loading wallet counter party wallet information"
             />
           </div>
         }
-      </div>
+      </section>
 
-
-      <footer className="absolute left-0 bottom-0 flex items-center justify-between su-px py-2.5 w-full z-50 bg-su_secondary_bg border-t border-t-su_enable_bg" >
+      {/* Room footer section */}
+      <footer className="room-footer" >
 
         <ExitPageDialog
           title={"Are you sure you want to exit the trade?"}
@@ -240,7 +242,7 @@ const PrivateRoom = () => {
           </Button>
         </SwapDetailsDialog>
       </footer >
-    </div >
+    </section>
   );
 
 };

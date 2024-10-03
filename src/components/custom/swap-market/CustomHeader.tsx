@@ -27,7 +27,8 @@ const CustomHeader = ({
   title,
   swapPreferences,
   showOpenMarketTile = false,
-  showPrivateMarketTile = false }: IProp) => {
+  showPrivateMarketTile = false
+}: IProp) => {
 
   return (
     <div className="flex flex-col gap-2 lg:flex-row lg:gap-4" >

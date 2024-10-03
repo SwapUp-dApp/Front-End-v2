@@ -44,9 +44,9 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
     data.media[0].gateway :
     defaults.fallback.nftImageUrl;
   return (
-    <div
-      className="relative"
-    >
+    <div className="relative">
+
+      {/* Card design */}
       <div
         className={cn(
           `${activeGridView === "detailed" ? "h-[196px]" : "h-[100px]"} peer bg-su_enable_bg rounded-md cursor-pointer relative ${!isChecked ? "hover:scale-105" : ""} transition duration-300 ease-in-out`,
@@ -64,6 +64,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
             onError={getDefaultNftImageOnError}
           />
 
+          {/* Hover card section */}
           <div className="group" >
             <span className={`absolute top-2 ${activeGridView === "detailed" ? "right-3" : "right-1"} w-7 h-7 flex justify-center items-center rounded-full bg-transparent hover:bg-su_active_bg`} >
               <svg className="w-1 " viewBox="0 0 4 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,17 +72,18 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
               </svg>
             </span>
 
-
-            <div className={`hidden ${!isChecked ? "group-hover:flex" : ""} absolute p-2 rounded-sm bg-white text-black flex-col gap-1 ${activeGridView === "detailed" ? "-bottom-8 left-2 text-sm" : "-bottom-6 z-10 text-3xs"} font-semibold z-50`} >
+            {/* Hover card */}
+            <div className={`hidden ${!isChecked ? "group-hover:flex" : ""} absolute p-2 rounded-sm bg-white text-black flex-col gap-1 ${activeGridView === "detailed" ? "-bottom-8 left-2 text-sm" : "-bottom-2 text-3xs"} font-semibold`} >
               <p>Top 0.1%</p>
               <div>
-                <p className="leading-tight">Rarity rank: {data.rarityRank} / 2000</p>
+                <p className="leading-tight line-clamp-1">Rarity rank: {data.rarityRank} / 2000</p>
                 <p className={`text-su_disabled font-normal leading-none ${activeGridView === "detailed" ? "text-xs" : "text-4xs"}`} >(7 items share this rank)</p>
               </div>
             </div>
           </div>
-
         </div>
+
+
         {
           activeGridView === "detailed" &&
           <div className="p-3 flex flex-col gap-2" >
@@ -114,8 +116,6 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
             </div>
           </div>
         }
-
-
       </div>
 
       {(isChecked && !disableNftSelection) &&

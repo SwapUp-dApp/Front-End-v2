@@ -13,14 +13,13 @@ import { useSwapMarketStore } from "@/store/swap-market";
 import LoadingDataset from "../shared/LoadingDataset";
 import { useNFTsByWallet } from "@/service/queries/swap-market.query";
 import { SUI_NFTItem } from "@/types/global.types";
-import { SUI_SwapToken, SUT_SwapRoomViewType, SUT_SwapTokenContractType } from "@/types/swap-market.types";
+import { SUI_SwapToken, SUT_SwapRoomViewType } from "@/types/swap-market.types";
 import { defaults } from "@/constants/defaults";
 import { useGlobalStore } from "@/store/global-store";
 import { handleShowNotificationToast } from "@/lib/helpers";
 import RoomSelectCryptoSectionSide from "./RoomSelectCryptoSectionSide";
 import { ChevronDown } from "lucide-react";
 import RoomSelectedAssetsSection from "./RoomSelectedAssetsSection";
-import { generateRandomKey } from "@/lib/utils";
 
 interface IProp {
   layoutType: SUT_PrivateRoomLayoutType;
@@ -58,14 +57,12 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
       : (layoutType === "sender" ? state.openMarket.openRoom.sender : state.openMarket.openRoom.receiver)
   );
 
+  const [disableDeselectionCriteria, setDisableDeselectionCriteria] = useState(false);
 
   const [filteredAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies]);
-
   const swap = useSwapMarketStore(state => roomKey === 'privateRoom' ? state.privateMarket.privateRoom.swap : state.openMarket.openRoom.swap);
 
-  const handleSearchNfts = (searchValue: string) => {
-    setFilteredNftsBySearch(searchValue);
-  };
+  const handleSearchNfts = (searchValue: string) => { setFilteredNftsBySearch(searchValue); };
 
 
   const walletAddress = ((layoutType === "receiver") && (counterPartyWallet)) ? counterPartyWallet : senderWallet!;
@@ -258,6 +255,16 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
 
   }, [data, isSuccess, isError, roomKey, layoutType, setDataSavedInStore]);
 
+  // To set disable criteria
+  useEffect(() => {
+    if ((swapRoomViewType === 'propose' && layoutType === 'receiver') || swapRoomViewType === 'view') {
+      setDisableDeselectionCriteria(true);
+    } else {
+      setDisableDeselectionCriteria(false);
+    }
+
+  }, [swapRoomViewType, layoutType, swapRoomViewType]);
+
   return (
     <Card className="border border-su_enable_bg bg-transparent flex flex-col gap-4 p-2 lg:p-6" >
       <CardHeader className="flex flex-col p-0 gap-4 font-semibold text-su_secondary" >
@@ -275,6 +282,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
           swapRoomViewType={swapRoomViewType}
           setAddedAmount={setAddedAmount}
           addedAmount={addedAmount}
+          disableDeselection={disableDeselectionCriteria}
         />
 
         {/* Select crypto section */}
@@ -283,6 +291,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
             setAddedAmount={setAddedAmount}
             addedAmount={addedAmount}
             availableCurrencies={filteredAvailableCurrencies}
+            className={disableDeselectionCriteria ? "hidden" : "block"}
           />
         }
 
@@ -381,9 +390,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
                 data={nft}
                 setSelectedNftsForSwap={setSelectedNftsForSwap}
                 nftsSelectedForSwap={nftsSelectedForSwap}
-                disableNftSelection={
-                  ((swapRoomViewType === 'propose' && layoutType === 'receiver') || swapRoomViewType === 'view') ? true : false
-                }
+                disableNftSelection={disableDeselectionCriteria}
               />
             ))
             :
