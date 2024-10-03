@@ -12,15 +12,15 @@ const ChainTile = ({ title, imageSrc, className, showChainTitleOnMobileScreen = 
   return (
     <div
       className={cn(
-        "flex items-center gap-2 text-sm dark:bg-su_enable_bg p-1.5 rounded-xs capitalize",
+        "flex items-center gap-2 text-xs lg:text-sm dark:bg-su_enable_bg py-1.5 px-3 rounded-xs capitalize",
         className
       )}
       {...props}
     >
-      <img src={imageSrc} alt="" className="w-4 h-4 rounded-full" />
+      <img src={imageSrc} alt="" className="w-3 h-3 lg:w-4 lg:h-4 rounded-full" />
       <span
         className={cn(
-          `${showChainTitleOnMobileScreen ? '' : '  !hidden'} line-clamp-1`,
+          `${showChainTitleOnMobileScreen ? '' : '!hidden lg:!block'} line-clamp-1`,
           titleClassName
         )}
       >

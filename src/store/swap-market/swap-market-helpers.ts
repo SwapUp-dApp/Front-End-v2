@@ -184,7 +184,7 @@ export const setAddedAmountHelper = (
         [side]: {
           ...room[side],
           addedAmount: {
-            amount: parseFloat(selectedAmount),
+            amount: selectedAmount ? parseFloat(selectedAmount) : undefined,
             coin: JSON.parse(selectedCoin)
           },
         },
@@ -234,7 +234,7 @@ export const setValuesOnViewSwapRoomHelper = async (
   const market = state[marketKey] as Record<string, any>;
   const room = market[roomKey] as Record<string, any>;
 
-  const { receiverAvatar, receiverEns, senderAvatar, senderEns } = await getBothSideEnsAndAvatarByWalletAddress(swap.init_address, swap.accept_address);
+  // const { receiverAvatar, receiverEns, senderAvatar, senderEns } = await getBothSideEnsAndAvatarByWalletAddress(swap.init_address, swap.accept_address);
 
 
   return {
@@ -250,8 +250,10 @@ export const setValuesOnViewSwapRoomHelper = async (
           addedAmount: undefined,
           profile: {
             ...room.sender.profile,
-            ensAddress: senderEns ? senderEns : '',
-            avatar: senderAvatar ? senderAvatar : room.sender.profile.avatar,
+            // ensAddress: senderEns ? senderEns : '',
+            ensAddress: '',
+            // avatar: senderAvatar ? senderAvatar : room.sender.profile.avatar,
+            avatar: room.sender.profile.avatar,
             wallet: {
               ...room.sender.profile.wallet,
               address: swap.init_address
@@ -263,8 +265,10 @@ export const setValuesOnViewSwapRoomHelper = async (
           addedAmount: undefined,
           profile: {
             ...room.receiver.profile,
-            ensAddress: receiverEns ? receiverEns : '',
-            avatar: receiverAvatar ? receiverAvatar : room.receiver.profile.avatar,
+            // ensAddress: receiverEns ? receiverEns : '',
+            ensAddress: '',
+            // avatar: receiverAvatar ? receiverAvatar : room.receiver.profile.avatar,
+            avatar: room.receiver.profile.avatar,
             wallet: {
               ...room.sender.profile.wallet,
               address: swap.accept_address
@@ -474,15 +478,15 @@ export const setValuesOnCreatingPrivateRoomHelper = async (
   let receiverEns = null;
   let receiverAvatar = null;
 
-  try {
-    if (counterPartyWalletAddress) {
-      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(counterPartyWalletAddress);
-      receiverAvatar = avatar;
-      receiverEns = ensName;
-    }
-  } catch (error) {
-    console.log("Unable to fetch ens");
-  }
+  // try {
+  //   if (counterPartyWalletAddress) {
+  //     const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(counterPartyWalletAddress);
+  //     receiverAvatar = avatar;
+  //     receiverEns = ensName;
+  //   }
+  // } catch (error) {
+  //   console.log("Unable to fetch ens");
+  // }
 
 
   return {
@@ -1138,15 +1142,15 @@ export const setValuesOnProposeOpenSwapRoomHelper = async (
   let receiverEns = null;
   let receiverAvatar = null;
 
-  if (swap.init_address) {
-    try {
-      const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.init_address);
-      receiverAvatar = avatar;
-      receiverEns = ensName;
-    } catch (error) {
-      console.log("Unable to fetch ens");
-    }
-  }
+  // if (swap.init_address) {
+  //   try {
+  //     const { avatar, ensName } = await getWalletProxy().getEnsInformationByWalletAddress(swap.init_address);
+  //     receiverAvatar = avatar;
+  //     receiverEns = ensName;
+  //   } catch (error) {
+  //     console.log("Unable to fetch ens");
+  //   }
+  // }
 
   return {
     ...state,

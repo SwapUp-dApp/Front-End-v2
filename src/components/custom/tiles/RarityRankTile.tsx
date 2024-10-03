@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 interface IProp {
   from: string | Number;
@@ -23,7 +23,7 @@ const RarityRankTile = ({ from, to, className, icon }: IProp) => {
         </svg>
       }
 
-      <>{from} - {to}</>
+      <>{from as ReactNode} - {to as ReactNode}</>
     </span>
   );
 };

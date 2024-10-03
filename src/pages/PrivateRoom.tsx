@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import RoomHeader from "@/components/custom/swap-market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import { Button } from "@/components/ui/button";
-import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate, useParams } from "react-router-dom";
 import { isValidTradeId, isValidWalletAddress } from "@/lib/utils";
@@ -17,6 +15,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getAvailableCurrenciesApi } from "@/service/api";
 import { useGlobalStore } from "@/store/global-store";
 import { handleShowNotificationToast } from "@/lib/helpers";
+import CustomRoomHeader from "@/components/custom/swap-market/CustomRoomHeader";
+import RoomHeaderSide from "@/components/custom/swap-market/RoomHeaderSide";
+import ExitPageDialog from "@/components/custom/shared/ExitPageDialog";
 
 const PrivateRoom = () => {
 
@@ -32,7 +33,7 @@ const PrivateRoom = () => {
 
   const { mutateAsync: createSwapOffer } = useCreatePrivateSwapOffer();
 
-  const { isLoading, isSuccess, isError } = useQuery({
+  const { isSuccess, isLoading } = useQuery({
     queryKey: [`getAvailableCurrenciesApi`],
     queryFn: async () => {
       try {
@@ -147,18 +148,41 @@ const PrivateRoom = () => {
   }, [counterPartyWallet, privateTradeId]);
 
   return (
-    <div className="space-y-4" >
-      <RoomHeader
-        title="Private Room"
+    <section className="room-layout-container" >
+      {/*Room header section  */}
+      <CustomRoomHeader
+        title="Private Room for"
         tardeId={state.uniqueTradeId}
-        resetData={handleResetData}
-        existDescription="By leaving the room, you will close it for both parties."
-        existTitle="Are you sure you want to exit the trade?"
-      />
+      >
+        <RoomHeaderSide
+          layoutType="sender"
+          roomKey="privateRoom"
+          senderWallet={state.sender.profile.wallet.address}
+        />
 
-      <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
+        <svg className="rotate-90 lg:rotate-0 mx-auto w-8 lg:w-16" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.91992" y="1.57617" width="38" height="38" rx="19" stroke="url(#paint0_linear_1_6150)" strokeWidth="2" />
+          <path d="M23.5126 12.5762L29.9199 19.23H12.2777V17.435H25.7475L22.2906 13.8452L23.5126 12.5762ZM29.5621 21.9224V23.7173H16.0924L19.5493 27.3072L18.3273 28.5762L11.9199 21.9224H29.5621Z" fill="#7586FF" />
+          <defs>
+            <linearGradient id="paint0_linear_1_6150" x1="40.9199" y1="8.17617" x2="-1.41297" y2="19.2907" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#51C0FF" />
+              <stop offset="1" stopColor="#9452FF" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <RoomHeaderSide
+          layoutType="receiver"
+          roomKey="privateRoom"
+          counterPartyWallet={state.receiver.profile.wallet.address}
+        />
+
+      </CustomRoomHeader>
+
+      {/*Room content section  */}
+      <section className="room-content-section" >
         {
-          state.sender.profile.wallet.address ?
+          (state.sender.profile.wallet.address && isSuccess) ?
             <RoomLayoutCard
               layoutType={"sender"}
               roomKey="privateRoom"
@@ -167,13 +191,13 @@ const PrivateRoom = () => {
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
               <LoadingDataset
-                isLoading={!state.sender.profile.wallet.address}
+                isLoading={!state.sender.profile.wallet.address || isLoading}
                 title="Loading wallet connected wallet information"
               />
             </div>
         }
 
-        {state.receiver.profile.wallet.address ?
+        {(state.receiver.profile.wallet.address && isSuccess) ?
           <RoomLayoutCard
             layoutType={"receiver"}
             counterPartyWallet={state.receiver.profile.wallet.address}
@@ -182,72 +206,43 @@ const PrivateRoom = () => {
           :
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
             <LoadingDataset
-              isLoading={!state.receiver.profile.wallet.address}
+              isLoading={!state.receiver.profile.wallet.address || isLoading}
               title="Loading wallet counter party wallet information"
             />
           </div>
         }
+      </section>
 
+      {/* Room footer section */}
+      <footer className="room-footer" >
 
-      </div>
+        <ExitPageDialog
+          title={"Are you sure you want to exit the trade?"}
+          description={"By leaving the room, you will close it for both parties."}
+          redirectPath={null}
+          resetData={handleResetData}
+        >
+          <Button variant={'outline'} >
+            Close Room
+          </Button>
+        </ExitPageDialog>
 
-
-      <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
-
-        <h2 className="trade-summary" >Trade Offer Summary:</h2>
-
-        <div className="absolute -top-14 flex justify-center w-full" >
-          {/* Swap Details Dialog */}
-          <SwapDetailsDialog
-            state={state}
-            enableApproveButtonCriteria={enableApproveButtonCriteria}
-            swapCreation={swapCreation}
-            handleSwapCreation={handleCreatePrivatePartySwap}
+        <SwapDetailsDialog
+          state={state}
+          enableApproveButtonCriteria={enableApproveButtonCriteria}
+          swapCreation={swapCreation}
+          handleSwapCreation={handleCreatePrivatePartySwap}
+        >
+          <Button
+            variant={"default"}
+            type="submit"
+            disabled={!enableApproveButtonCriteria}
           >
-            <Button
-              variant={"default"}
-              type="submit"
-              disabled={!enableApproveButtonCriteria}
-            >
-              Approve
-            </Button>
-          </SwapDetailsDialog>
-        </div >
-
-        {/* Sender Side */}
-        {
-          isSuccess ?
-            <RoomFooterSide roomKey="privateRoom" layoutType="sender" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={filteredAvailableCurrencies} />
-            :
-            <div className="flex justify-center items-center w-1/2 border border-su_disabled" >
-              <LoadingDataset
-                isLoading={isLoading}
-                title="Loading currencies data."
-              />
-              {isError &&
-                <p className="text-xs md:text-sm">Unable to get currencies.</p>
-              }
-            </div>
-        }
-
-        {/* Receiver Side */}
-
-        {
-          isSuccess ?
-            <RoomFooterSide roomKey="privateRoom" layoutType="receiver" setEnableApproveButtonCriteria={setEnableApproveButtonCriteria} availableCurrencies={filteredAvailableCurrencies} />
-            :
-            <div className="flex justify-center items-center w-1/2 border border-su_disabled" >
-              <LoadingDataset
-                isLoading={isLoading}
-                title="Loading currencies data."
-              />
-              {isError &&
-                <p className="text-xs md:text-sm">Unable to get currencies.</p>
-              }
-            </div>
-        }
+            Confirm Trade
+          </Button>
+        </SwapDetailsDialog>
       </footer >
-    </div >
+    </section>
   );
 
 };

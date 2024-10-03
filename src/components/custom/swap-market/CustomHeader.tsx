@@ -18,7 +18,7 @@ interface IProp {
   showPrivateMarketTile?: boolean;
 }
 
-const RoomHeader = ({
+const CustomHeader = ({
   backClickNavigateTo,
   tardeId,
   resetData,
@@ -27,7 +27,8 @@ const RoomHeader = ({
   title,
   swapPreferences,
   showOpenMarketTile = false,
-  showPrivateMarketTile = false }: IProp) => {
+  showPrivateMarketTile = false
+}: IProp) => {
 
   return (
     <div className="flex flex-col gap-2 lg:flex-row lg:gap-4" >
@@ -153,4 +154,4 @@ const RoomHeader = ({
   );
 };
 
-export default RoomHeader;
+export default CustomHeader;
