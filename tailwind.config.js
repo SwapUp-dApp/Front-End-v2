@@ -71,6 +71,9 @@ module.exports = {
         su_overlay_bg: "rgba(13, 13, 35, 0.8)",
         su_least_bg: "rgba(46, 46, 65, 1)",
         su_secondary_bg: "rgba(37, 37, 57, 1)",
+        su_ternary_bg: "rgba(30, 30, 46, 1)",
+        su_quaternary_bg: "rgba(60, 60, 92, 1)",
+
         su_blue: "#51C0FF",
         su_purple: "#9452FF",
         su_primary: "rgba(255, 255, 255, 1)",

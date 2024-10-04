@@ -1,10 +1,10 @@
 // components/ConnectButtonAuth.tsx
-import { ConnectButton } from "thirdweb/react";
+import { ConnectButton, useWalletBalance } from "thirdweb/react";
 import { thirdWebClient, currentChain } from "../../../lib/thirdWebClient";
 import { createWallet } from "thirdweb/wallets";
 import { useProfileStore } from "@/store/profile";
 import { cn, getShortenWalletAddress } from "@/lib/utils";
-import CustomAvatar from "./CustomAvatar";
+import CustomAvatar from "../shared/CustomAvatar";
 import { Button } from "@/components/ui/button";
 import { thirdwebCustomDarkTheme } from "@/constants/defaults";
 // import {
@@ -69,8 +69,10 @@ export default function ThirdWebWalletConnect({ className, hideDetails = false, 
         <ConnectButton
           client={thirdWebClient}
           wallets={wallets}
+          showAllWallets={false}
           chain={currentChain}
           theme={thirdwebCustomDarkTheme}
+
           detailsButton={{
             style: {
               borderRadius: "1rem",
@@ -95,6 +97,40 @@ export default function ThirdWebWalletConnect({ className, hideDetails = false, 
             },
             label: <Button className="w-full h-full text-sm lg:text-base hover:scale-105 transition duration-300 ease-in-out" >Connect Wallet</Button>
           }}
+
+          switchButton={{
+            style: {
+              borderRadius: "1.5rem",
+              padding: '0',
+              border: 'none',
+              background: 'red',
+              color: "white"
+            },
+            label: "Switch Network"
+            // label: <Button className="w-full h-full text-sm lg:text-base hover:scale-105 transition duration-300 ease-in-out" >Switch Network</Button>
+          }}
+          connectModal={{
+            showThirdwebBranding: false,
+            title: "Sign In to SwapUp",
+            welcomeScreen: {
+              img: {
+                src: "/swapup.png",
+                width: 200
+              },
+              title: "Connect your wallet to SwapUp",
+              subtitle: "Wallet connection is required to get started."
+            }
+          }}
+
+        // detailsModal={{
+        //   footer: (props: { close: () => void; }) => (
+        //     <div className={cn(
+        //       'text-xs mt-2 text-center font-semibold',)}
+        //     >
+        //       Copyright © 2024 SwapUp, All Rights Reserved.
+        //     </div>
+        //   ),
+        // }}
         //auth={{
 
         //  * 	`getLoginPayload` should @return {VerifyLoginPayloadParams} object.

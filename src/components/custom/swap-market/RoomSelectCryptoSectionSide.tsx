@@ -9,19 +9,23 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { IAddedAmount } from "@/types/swap-market-store.types";
 import { Schema_AmountConversionForm } from "@/schema";
-import FooterSideSelectTokenDialog from "./FooterSideSelectTokenDialog";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CurrencyTokenSelectDialog from "./CurrencyTokenSelectDialog";
+import { useWalletBalance } from "thirdweb/react";
+import { currentChain, thirdWebClient } from "@/lib/thirdWebClient";
+import LoadingIcon from "../shared/LoadingIcon";
 
 interface IProp {
   availableCurrencies: SUI_CurrencyChainItem[];
   addedAmount: IAddedAmount | undefined;
   setAddedAmount: (selectedAmount: string, selectedCoin: string) => void;
   className?: string;
+  walletForTotalBalance: string;
 }
 
 
-const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAddedAmount, className }: IProp) => {
+const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAddedAmount, className, walletForTotalBalance }: IProp) => {
 
   const [openTokenSelectDialog, setOpenTokenSelectDialog] = useState(false);
 
@@ -78,6 +82,12 @@ const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAdde
 
   }, [addedAmount?.amount]);
 
+  const { data, isFetching, isLoading, isPending } = useWalletBalance({
+    address: walletForTotalBalance,
+    chain: currentChain,
+    client: thirdWebClient
+  });
+
   return (
     <aside className={cn(
       "space-y-4",
@@ -131,7 +141,7 @@ const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAdde
 
               <button
                 onClick={() => setOpenTokenSelectDialog(true)}
-                className="min-w-20 rounded-full flex items-center justify-between hover:scale-105 hover:bg-su_enable_bg p-0.5 transition duration-150 ease-in-out "
+                className="min-w-max rounded-full flex items-center gap-1.5 hover:scale-105 hover:bg-su_enable_bg p-0.5 transition duration-150 ease-in-out "
               >
                 <span className="flex items-center gap-2 text-sm" >
                   <img
@@ -151,10 +161,15 @@ const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAdde
           </form>
         </Form>
 
-        <p className="text-xs flex items-center justify-between" >
-          <span>
-            0.2477567 ETH is available.
-          </span>
+        <p className="text-xs flex items-center justify-between">
+
+          {(isLoading || isFetching || isPending) &&
+            <><LoadingIcon /> loading balance...</>
+          }
+
+          {data &&
+            <>{Number(data?.displayValue).toFixed(8)} {data.symbol} is available.</>
+          }
 
           {errors.amount?.message &&
             <span className="text-su_negative" >{errors.amount.message}</span>
@@ -163,7 +178,7 @@ const RoomSelectCryptoSectionSide = ({ availableCurrencies, addedAmount, setAdde
       </div>
 
       {/* Token select dialog */}
-      <FooterSideSelectTokenDialog
+      <CurrencyTokenSelectDialog
         open={openTokenSelectDialog}
         setOpen={setOpenTokenSelectDialog}
         handleSetSelectedCurrency={handleSetSelectedCurrency}

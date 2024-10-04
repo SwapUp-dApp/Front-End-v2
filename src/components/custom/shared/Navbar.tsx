@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useProfileStore } from "@/store/profile";
 import { showWalletConnectionToast } from "@/lib/helpers";
-import ThirdWebWalletConnect from "./ThirdWebWalletConnect";
+import ThirdWebWalletConnect from "../thirdweb/ThirdWebWalletConnect";
 
 
 const Navbar = () => {

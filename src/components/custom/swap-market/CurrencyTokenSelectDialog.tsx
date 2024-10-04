@@ -21,7 +21,7 @@ interface IProp {
   handleSetSelectedCurrency: (selectedCurrencyValue: string) => void;
 }
 
-const FooterSideSelectTokenDialog = ({ open, setOpen, handleSetSelectedCurrency }: IProp) => {
+const CurrencyTokenSelectDialog = ({ open, setOpen, handleSetSelectedCurrency }: IProp) => {
 
   // This following array represents preferred currencies which will be shown in top section
   const preferredCurrenciesToBeFiltered = ["SWP", "DAI", "USDC", "USDT", "WBTC", "WETH"];
@@ -235,4 +235,4 @@ const FooterSideSelectTokenDialog = ({ open, setOpen, handleSetSelectedCurrency 
   );
 };
 
-export default FooterSideSelectTokenDialog;
+export default CurrencyTokenSelectDialog;
