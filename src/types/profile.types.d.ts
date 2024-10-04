@@ -2,9 +2,16 @@ import { SUI_CurrencyChainItem } from "./global.types";
 
 
 export type SUT_ProfileTagsVariantType = "normie" | "premium" | "trader" | "collector" | "community-member";
-export type SUT_AvailablePointsType = 500 | 2000 | 20000 | 0;
 export type SUT_BlobStorageImageType = "profile-avatar" | "profile-cover";
+export type SUT_AvailablePointSystemKeysType = 'created-open-trade' | 'completed-open-trade' | 'completed-private-trade' | 'created-social-post' | 'minted-subname' | 'total';
+export type SUT_AvailablePointSystemPointsType = 500 | 2000 | 20000 | 0;
+export type SUT_PointSystemType = { [K in SUT_AvailablePointSystemKeysType]: SUT_AvailablePointSystemPointsType; };
 
+export type SUT_PointsWithTotal = {
+    [K in Exclude<SUT_AvailablePointSystemKeysType, 'total'>]?: SUT_AvailablePointSystemPointsType;
+} & {
+    total: number;
+};
 
 export interface INetwork {
     id: string;
@@ -25,7 +32,7 @@ export interface IProfileDetails {
     twitter?: string;
     warpcast?: string;
     tags?: SUT_ProfileTagsVariantType[];
-    points?: number;
+    points?: SUT_PointsWithTotal;
 };
 
 export interface IProfile {
@@ -139,7 +146,7 @@ export interface SUI_UploadProfilePicturePayload {
 export interface SUI_DeleteProfilePicturePayload extends Pick<SUI_UploadProfilePicturePayload, 'pictureType' | 'walletId'> { }
 
 export interface SUI_CreateNewUserPayload {
-    points: SUT_AvailablePointsType;
+    points: SUT_PointSystemType,
     tags: SUT_ProfileTagsVariantType[];
     title: string,
     description: string;
@@ -148,7 +155,9 @@ export interface SUI_CreateNewUserPayload {
 export interface SUI_UpdateProfilePointsPayload {
     walletId: string;
     counterPartyWalletId?: string;
-    pointsToAdd: SUT_AvailablePointsType;
+    pointsToAdd: SUT_AvailablePointSystemPointsType;
+    keyType: SUT_AvailablePointSystemKeysType;
+    defaultPointSystem: SUT_PointSystemType;
 }
 
 export interface SUI_UpdateProfileDetailsPayload {
@@ -160,3 +169,4 @@ export interface SUI_UpdateProfileDetailsPayload {
         twitter: string;
     };
 }
+

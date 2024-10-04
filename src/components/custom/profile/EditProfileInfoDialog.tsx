@@ -13,7 +13,7 @@ import { generateRandomKey } from "@/lib/utils";
 import { useProfileStore } from "@/store/profile";
 import { IProfileDetails, SUI_UpdateProfileDetailsPayload } from "@/types/profile.types";
 import { updatedUserProfileDetailsApi } from "@/service/api/user.service";
-import { showNotificationToast } from "@/lib/helpers";
+import { handleShowNotificationToast } from "@/lib/helpers";
 
 
 interface IProp {
@@ -63,7 +63,7 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
 
       if (updatedRes) {
 
-        showNotificationToast(
+        handleShowNotificationToast(
           'success',
           "Profile updated successfully!",
           'Your profile details are updated.'
@@ -76,7 +76,7 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
 
     } catch (error: any) {
 
-      showNotificationToast(
+      handleShowNotificationToast(
         'error',
         "Error while updating profile details",
         error.message

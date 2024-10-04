@@ -36,6 +36,7 @@ const MainLayout = () => {
 
     if (activeAccount && activeChain) {
       getWalletProxy().setConnectedWalletAccount(activeAccount);
+
       connectedWallet.address = activeAccount.address;
       connectedWallet.isConnected = true;
       connectedWallet.network = {
@@ -50,7 +51,6 @@ const MainLayout = () => {
       await setProfileWallet(connectedWallet);
 
       if (isValidWalletAddress(connectedWallet.address)) {
-
         try {
           const payload: SUI_CreateNewUserPayload = {
             points: defaults.userSettings.newUser.points,
@@ -119,14 +119,14 @@ const MainLayout = () => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-between min-h-screen ">
+    <div className="flex flex-col justify-between min-h-screen relative">
       <div>
         <div className="relative w-full px-4 py-1.5 bg-gradient-primary text-xs lg:text-center">
           We are currently in the testing phase and only support sepolia base transactions.  Follow our socials for updates on our Mainnet release.
         </div>
 
         <Navbar />
-        <section className="px-6 lg:px-10 py-4" >
+        <section className="su-px py-4" >
           <Outlet key={key} />
         </section>
       </div>

@@ -73,7 +73,9 @@ const PendingSwapsAppliedFiltersBar = ({ handleResetAppliedFilters, filters, cla
           }
 
           {filters.requestedDate &&
-            <AppliedFilterItemTile label='Request date:'>
+            <AppliedFilterItemTile
+              label='Request date:'
+            >
               <AppliedFilterSubItemTile
                 handleAction={() => handleResetAppliedFilters('request-date')}
                 className='capitalize'

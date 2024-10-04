@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { useNavigate } from "react-router-dom";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-import { toast } from "sonner";
 import ExitPageDialog from "@/components/custom/shared/ExitPageDialog";
 import { generateRandomKey, generateRandomTradeId, getLastCharacters } from "@/lib/utils";
 import { SUI_OpenSwap, SUP_CancelSwap } from "@/types/swap-market.types";
@@ -11,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import FilterButton from "@/components/custom/shared/FilterButton";
-import { HoverCard, HoverCardContent, HoverCardTrigger, } from "@/components/ui/hover-card";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
 import { useCancelSwapOffer } from "@/service/queries/swap-market.query";
 import { chainsDataset } from "@/constants/data";
@@ -24,7 +21,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getMyOpenSwapListApi } from "@/service/api";
 import { useQuery } from "@tanstack/react-query";
 import { getWalletProxy } from "@/lib/walletProxy";
-import { mapSwapTokensHelper, showWalletConnectionToast } from "@/lib/helpers";
+import { handleShowNotificationToast, mapSwapTokensHelper, showWalletConnectionToast } from "@/lib/helpers";
 import OpenSwapListMobileCard from "@/components/custom/swap-market/open-market/OpenSwapListMobileCard";
 import { IOpenMarketSwapFilters } from "@/types/swap-market-store.types";
 import { useForm } from "react-hook-form";
@@ -59,20 +56,10 @@ const ManageOpenMarketSwaps = () => {
   const { mutateAsync: cancelSwapOffer } = useCancelSwapOffer();
 
   const handleResetData = () => {
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="info"
-          title="Manage Open Swap Room Closed"
-          description={"Swaps data deleted."}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
+    handleShowNotificationToast(
+      "info",
+      `Manage open swap closed`,
+      `Manage open swaps data cleared.`
     );
   };
 
@@ -107,43 +94,21 @@ const ManageOpenMarketSwaps = () => {
       const offerResult = await cancelSwapOffer(payload);
 
       if (offerResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Swap Closed Successfully"
-              description={"You have successfully closed the swap"}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Swap closed successfully`,
+          `You have successfully closed the swap`
         );
 
         navigate("/swap-up/my-swaps/history");
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapCancel(prev => ({ ...prev, isLoading: false }));
     }
@@ -162,22 +127,11 @@ const ManageOpenMarketSwaps = () => {
         return null;
       } catch (error: any) {
         await setOpenCreatedSwapsData([], wallet);
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
-
         throw error;
       }
     },

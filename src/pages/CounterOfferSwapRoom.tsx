@@ -1,24 +1,25 @@
 import EmptyDataset from "@/components/custom/shared/EmptyDataset";
 import LoadingDataset from "@/components/custom/shared/LoadingDataset";
-import ToastLookCard from "@/components/custom/shared/ToastLookCard";
-import RoomFooterSide from "@/components/custom/swap-market/RoomFooterSide";
-import RoomHeader from "@/components/custom/swap-market/RoomHeader";
 import RoomLayoutCard from "@/components/custom/swap-market/RoomLayoutCard";
 import SwapDetailsDialog from "@/components/custom/swap-market/SwapDetailsDialog";
 import { Button } from "@/components/ui/button";
 import { SUE_SWAP_MODE } from "@/constants/enums";
-import { isValidTradeId } from "@/lib/utils";
+import { handleShowNotificationToast } from "@/lib/helpers";
+import { cn, isValidTradeId } from "@/lib/utils";
 import { getWalletProxy } from "@/lib/walletProxy";
 import { getAvailableCurrenciesApi, getSwapDetailsByTradeOrOpenTradeIdApi } from "@/service/api";
 import { useCounterSwapOffer } from "@/service/queries/swap-market.query";
 import { useGlobalStore } from "@/store/global-store";
 import { useSwapMarketStore } from "@/store/swap-market";
 import { SUI_CurrencyChainItem, SUI_SwapCreation } from "@/types/global.types";
-import { SUI_OpenSwap, SUI_Swap, SUI_SwapPreferences, SUP_CounterSwap } from "@/types/swap-market.types";
+import { SUI_OpenSwap, SUI_SwapPreferences, SUP_CounterSwap } from "@/types/swap-market.types";
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { toast } from "sonner";
+import CustomRoomHeader from "@/components/custom/swap-market/CustomRoomHeader";
+import RoomHeaderSide from "@/components/custom/swap-market/RoomHeaderSide";
+import ExitPageDialog from "@/components/custom/shared/ExitPageDialog";
+
 
 const CounterOfferSwapRoom = () => {
   const [dataSavedInStore, setDataSavedInStore] = useState({ sender: false, receiver: false });
@@ -32,8 +33,8 @@ const CounterOfferSwapRoom = () => {
 
 
   const state = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom : state.privateMarket.privateRoom);
+  const [setAvailableCurrencies] = useGlobalStore(state => [state.setAvailableCurrencies]);
   const swapPreferences: SUI_SwapPreferences | null = useSwapMarketStore(state => swapMode === SUE_SWAP_MODE.OPEN ? state.openMarket.openRoom.swap.swap_preferences : null);
-  const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
 
   const queries = useQueries({
     queries: [
@@ -45,20 +46,10 @@ const CounterOfferSwapRoom = () => {
             setAvailableCurrencies(response.data.data.coins as SUI_CurrencyChainItem[]);
             return response.data.data.coins;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -94,20 +85,10 @@ const CounterOfferSwapRoom = () => {
             }
             return null;
           } catch (error: any) {
-            toast.custom(
-              (id) => (
-                <ToastLookCard
-                  variant="error"
-                  title="Request failed!"
-                  description={error.message}
-                  onClose={() => toast.dismiss(id)}
-                />
-              ),
-              {
-                duration: 3000,
-                className: 'w-full !bg-transparent',
-                position: "bottom-left",
-              }
+            handleShowNotificationToast(
+              "error",
+              `Request failed!`,
+              `${error.message}`
             );
 
             throw error;
@@ -159,21 +140,12 @@ const CounterOfferSwapRoom = () => {
       const offerResult = await createCounterSwapOffer(payload);
 
       if (offerResult) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="success"
-              title="Counter offer Sent Successfully"
-              description={"You will receive a notification upon your counterparty's response."}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "success",
+          `Counter offer Sent Successfully`,
+          `You will receive a notification upon your counterparty's response.`
         );
+
         setSwapCreation(prev => ({ ...prev, created: true }));
         state.resetViewSwapRoom();
         setTimeout(() => {
@@ -182,23 +154,11 @@ const CounterOfferSwapRoom = () => {
       }
 
     } catch (error: any) {
-      toast.custom(
-        (id) => (
-          <ToastLookCard
-            variant="error"
-            title="Error"
-            description={error.message}
-            onClose={() => toast.dismiss(id)}
-          />
-        ),
-        {
-          duration: 5000,
-          className: 'w-full !bg-transparent',
-          position: "bottom-left",
-        }
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
       );
-
-      // console.log(error);
     } finally {
       setSwapCreation(prev => ({ ...prev, isLoading: false }));
     }
@@ -207,20 +167,10 @@ const CounterOfferSwapRoom = () => {
   const handleResetData = async () => {
     state.resetViewSwapRoom();
 
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="info"
-          title="View room reset!"
-          description={"View room data deleted for both parties."}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
+    handleShowNotificationToast(
+      "info",
+      `View room reset!`,
+      `View room data deleted for both parties.`
     );
   };
 
@@ -234,22 +184,11 @@ const CounterOfferSwapRoom = () => {
     // Needs to review this check later on
     // if (state.swap && wallet.address) {
     //   if ((state.swap.init_address !== wallet.address) && (state.swap.accept_address !== wallet.address)) {
-    //     toast.custom(
-    //       (id) => (
-    //         <ToastLookCard
-    //           variant="error"
-    //           title="Redirecting back!"
-    //           description={"Current login user do not have access to view this swap."}
-    //           onClose={() => toast.dismiss(id)}
-    //         />
-    //       ),
-    //       {
-    //         duration: 3000,
-    //         className: 'w-full !bg-transparent',
-    //         position: "bottom-left",
-    //       }
-    //     );
-
+    // handleShowNotificationToast(
+    //   "error",
+    //   `Redirecting back!`,
+    //   `Current login user do not have access to view this swap.`
+    // );
     //     navigate(defaults.fallback.route);
     //   }
     // }
@@ -269,21 +208,49 @@ const CounterOfferSwapRoom = () => {
   }, [state.sender.nftsSelectedForSwap.length, state.receiver.nftsSelectedForSwap.length, state.sender.addedAmount, state.receiver.addedAmount]);
 
   return (
-    <div className="space-y-4" >
-      <RoomHeader
-        title="Counter offer"
+    <section className="room-layout-container" >
+      {/*Room header section  */}
+      <CustomRoomHeader
+        title="Counter offer for"
         tardeId={state.uniqueTradeId}
-        resetData={handleResetData}
-        existDescription="By leaving the room, you will close it for both parties."
-        existTitle="Are you sure you want to exit the trade?"
-        showOpenMarketTile={swapMode === SUE_SWAP_MODE.OPEN ? true : false}
-        showPrivateMarketTile={swapMode === SUE_SWAP_MODE.PRIVATE ? true : false}
         swapPreferences={swapPreferences}
-      />
+        showOpenMarketTile={swapMode === SUE_SWAP_MODE.OPEN ? true : false}
+      // showPrivateMarketTile={swapMode === SUE_SWAP_MODE.PRIVATE ? true : false}
+      >
+        <RoomHeaderSide
+          layoutType="sender"
+          roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
+          senderWallet={state.sender.profile.wallet.address}
+        />
 
-      <div className="grid lg:grid-cols-2 gap-4 !mb-36 lg:!mb-32" >
+        <svg className="rotate-90 lg:rotate-0 mx-auto w-8 lg:w-16" viewBox="0 0 41 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.91992" y="1.57617" width="38" height="38" rx="19" stroke="url(#paint0_linear_1_6150)" strokeWidth="2" />
+          <path d="M23.5126 12.5762L29.9199 19.23H12.2777V17.435H25.7475L22.2906 13.8452L23.5126 12.5762ZM29.5621 21.9224V23.7173H16.0924L19.5493 27.3072L18.3273 28.5762L11.9199 21.9224H29.5621Z" fill="#7586FF" />
+          <defs>
+            <linearGradient id="paint0_linear_1_6150" x1="40.9199" y1="8.17617" x2="-1.41297" y2="19.2907" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#51C0FF" />
+              <stop offset="1" stopColor="#9452FF" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <RoomHeaderSide
+          layoutType="receiver"
+          roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
+          counterPartyWallet={state.receiver.profile.wallet.address}
+        />
+
+      </CustomRoomHeader>
+
+      {/*Room content section  */}
+      <section
+        className={cn(
+          "room-content-section",
+          swapMode === SUE_SWAP_MODE.OPEN && "!mt-12"
+        )}
+      >
         {
-          queries[1].isSuccess && state.sender.profile.wallet.address ?
+          (queries[0] && queries[1]).isSuccess && state.sender.profile.wallet.address ?
             <RoomLayoutCard
               layoutType={"sender"}
               roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
@@ -294,7 +261,7 @@ const CounterOfferSwapRoom = () => {
             :
             <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
               <LoadingDataset
-                isLoading={queries[1].isLoading || !state.sender.profile.wallet.address}
+                isLoading={(queries[0] || queries[1]).isLoading || !state.sender.profile.wallet.address}
                 title="Loading wallet address"
               />
 
@@ -315,7 +282,7 @@ const CounterOfferSwapRoom = () => {
             </div>
         }
 
-        {queries[1].isSuccess && (state.receiver.profile.wallet.address) ?
+        {(queries[0] && queries[1]).isSuccess && (state.receiver.profile.wallet.address) ?
           <RoomLayoutCard
             counterPartyWallet={state.receiver.profile.wallet.address}
             layoutType={"receiver"}
@@ -327,7 +294,7 @@ const CounterOfferSwapRoom = () => {
           <div className="rounded-sm border-none w-full h-full flex items-center justify-center dark:bg-su_secondary_bg p-2 lg:p-6" >
 
             <LoadingDataset
-              isLoading={queries[1].isLoading || !state.receiver.profile.wallet.address}
+              isLoading={(queries[0] || queries[1]).isLoading || !state.receiver.profile.wallet.address}
               title="Loading counter-party address"
             />
 
@@ -348,66 +315,38 @@ const CounterOfferSwapRoom = () => {
           </div>
         }
 
-      </div>
+      </section>
+
+      {/*Room footer section  */}
+      <footer className="room-footer" >
+        <ExitPageDialog
+          title={"Are you sure you want to exit the trade?"}
+          description={"By leaving the room, you will close it for both parties."}
+          redirectPath={null}
+          resetData={handleResetData}
+        >
+          <Button variant={'outline'} >
+            Close Room
+          </Button>
+        </ExitPageDialog>
 
 
-      <footer className="bg-su_primary_bg fixed bottom-0 left-0 w-full min-h-[112px] lg:h-[104px] flex justify-between" >
-        <h2 className="trade-summary" >Trade Offer Summary:</h2>
-        <div className="absolute -top-14 flex justify-center w-full items-center gap-2" >
-          <SwapDetailsDialog
-            state={state}
-            enableApproveButtonCriteria={enableApproveButtonCriteria}
-            swapCreation={swapCreation}
-            handleSwapCreation={handleCounterSwapOffer}
+        <SwapDetailsDialog
+          state={state}
+          enableApproveButtonCriteria={enableApproveButtonCriteria}
+          swapCreation={swapCreation}
+          handleSwapCreation={handleCounterSwapOffer}
+        >
+          <Button
+            variant={"default"}
+            type="submit"
+            disabled={!enableApproveButtonCriteria}
           >
-            <Button
-              variant={"default"}
-              type="submit"
-              disabled={!enableApproveButtonCriteria}
-            >
-              Approve
-            </Button>
-          </SwapDetailsDialog>
-        </div >
-
-        {
-          dataSavedInStore.sender ?
-            <RoomFooterSide
-              roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
-              layoutType="sender"
-              swapRoomViewType="counter"
-              availableCurrencies={filteredAvailableCurrencies}
-            />
-            :
-            <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
-              <LoadingDataset
-                isLoading={!dataSavedInStore.sender}
-                title="Loading sender's selected NFTs"
-                description=""
-              />
-            </div>
-        }
-
-
-        {
-          dataSavedInStore.receiver ?
-            <RoomFooterSide
-              roomKey={swapMode === SUE_SWAP_MODE.OPEN ? 'openRoom' : 'privateRoom'}
-              layoutType="receiver"
-              swapRoomViewType="counter"
-              availableCurrencies={filteredAvailableCurrencies}
-            />
-            :
-            <div className="w-1/2 p-4 border border-su_disabled flex items-center justify-center" >
-              <LoadingDataset
-                isLoading={!dataSavedInStore.receiver}
-                title="Loading counter-party's selected NFTs"
-                description=""
-              />
-            </div>
-        }
+            Confirm Trade
+          </Button>
+        </SwapDetailsDialog>
       </footer >
-    </div>
+    </section>
   );
 };
 

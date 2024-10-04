@@ -6,10 +6,10 @@ import { SUI_TokenBreakdownChartItem } from '@/types/profile.types';
 import { useQuery } from '@tanstack/react-query';
 import { useProfileStore } from '@/store/profile';
 import { getTokenBreakdownByWalletIdApi } from '@/service/api';
-import ToastLookCard from '../../shared/ToastLookCard';
-import { toast } from 'sonner';
+
 import { useGlobalStore } from '@/store/global-store';
 import LoadingDataset from '../../shared/LoadingDataset';
+import { handleShowNotificationToast } from '@/lib/helpers';
 
 const TokenBreakdownChart = () => {
   const [availableCurrencies] = useGlobalStore(state => [state.availableCurrencies]);
@@ -58,20 +58,10 @@ const TokenBreakdownChart = () => {
 
         return null;
       } catch (error: any) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
 
         throw error;

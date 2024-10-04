@@ -8,7 +8,7 @@ import { communityCardDetails } from "@/constants/data";
 import CarousalCard from "@/components/custom/landing-page/carousal-card";
 import Testimonial from "@/components/custom/landing-page/testimonial";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton";
 import { defaults } from "@/constants/defaults";
 import {
@@ -17,24 +17,39 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useEffect } from "react";
 
 
 const SwapUpPage = () => {
 	const navigate = useNavigate();
 
+
+	const location = useLocation();
+
+	useEffect(() => {
+		// This will run whenever the location changes
+		if (location.hash) {
+			const section = document.querySelector(location.hash);
+			if (section) {
+				section.scrollIntoView({ behavior: 'smooth' });
+			}
+		}
+	}, [location]);
+
 	return (
 
-		<div>
+		<div className="relative">
+			<LpNavbar />
 
-			<div
+			<div className="relative top-0 h-full w-full">
+				<img
+					className="absolute bottom-0 h-[calc(100%_+_6rem)] w-full"
+					src="/assets/landing-page/background1.png"
+					alt=""
+				/>
 
-				className="h-auto  bg-cover bg-center w-full"
-				style={{
-					backgroundImage: "url('/assets/landing-page/background1.png')",
-				}}
-			> {/* Section 1 */}
-				<LpNavbar />
-				<div className="container mx-auto mt-16 px-2 md:px-10">
+				{/* Section 1 */}
+				<div className="relative container mx-auto px-2 md:px-10">
 					<div className="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-between mt-4">
 						<div className="max-w-[797px] md:mr-8 ">
 							<p className="text-4xl font-Poppins md:text-7xl font-semibold text-left mt-12 text-su_primary">
@@ -256,7 +271,7 @@ const SwapUpPage = () => {
 					backgroundImage: "url('/assets/landing-page/background4.png')",
 				}}
 			> {/* Section 4 */}
-				<div className="container mx-auto px-2 md:px-10">
+				<div className="container mx-auto px-2 md:px-10" id="tech-stack" >
 					<div className="flex flex-col md:flex-row items-center md:justify-center">
 						<div className="max-w-[auto] mt-12">
 							<p className="text-su_primary text-4xl font-Poppins md:text-5xl font-semibold text-start md:text-center mt-12 ">
@@ -365,7 +380,7 @@ const SwapUpPage = () => {
 			</div >
 
 			{/* Section 6 */}
-			<div className="container px-0 md:px-10 mx-auto mt-12 flex justify-center">
+			<div className="container px-0 md:px-10 mx-auto mt-12 flex justify-center" id="roadmap-section" >
 				<div className="w-full rounded-none md:rounded-3xl bg-su_primary px-2 py-6 md:px-28 md:py-16 mb-10">
 					<div className="flex justify-center max-w[850px]">
 						<div className="max-w-[850px]  mt-0 md:mt-2">

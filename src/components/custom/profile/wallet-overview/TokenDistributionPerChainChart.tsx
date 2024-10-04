@@ -5,9 +5,8 @@ import { useGlobalStore } from '@/store/global-store';
 import { useProfileStore } from '@/store/profile';
 import { SUI_TokenBreakdownChartItem, SUI_TokenDistributionPerChainChartItem } from '@/types/profile.types';
 import { useQuery } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import ToastLookCard from '../../shared/ToastLookCard';
 import LoadingDataset from '../../shared/LoadingDataset';
+import { handleShowNotificationToast } from '@/lib/helpers';
 
 const TokenDistributionPerChainChart = () => {
 
@@ -66,20 +65,10 @@ const TokenDistributionPerChainChart = () => {
 
         return null;
       } catch (error: any) {
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
 
         throw error;
@@ -110,8 +99,9 @@ const TokenDistributionPerChainChart = () => {
                       <span className='lg:hidden' >{item.network.symbol}</span>
                     </span>
 
-                    <div className={`w-9/12 flex gap-2 items-center`} >
-                      <div className='w-11/12 flex items-start gap-1' >
+                    <div className={`w-3/4 flex gap-2 items-center`} >
+
+                      <div className='w-4/5 lg:w-5/6 flex items-start gap-1' >
                         {
                           item.tradePercentage.available > 0 &&
                           <TooltipProvider>
@@ -153,7 +143,7 @@ const TokenDistributionPerChainChart = () => {
                         <Progress style={{ width: `${emptyWidth}%` }} />
                       </div>
 
-                      <span className='w-1/12 text-primary font-semibold text-sm' >{item.totalPercentage} %</span>
+                      <span className='text-primary font-semibold text-sm' >{item.totalPercentage} %</span>
                     </div>
                   </div>
                 );

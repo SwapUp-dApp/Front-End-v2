@@ -1,6 +1,6 @@
 import { SUI_NavigationObject, SUI_TabItem } from "@/types/global.types";
-import { SUI_ProfileOverviewTab } from "@/types/profile-store.types";
-import { SUT_AvailablePointsType, SUT_ProfileTagsVariantType } from "@/types/profile.types";
+import { SUT_AvailablePointSystemKeysType, SUT_AvailablePointSystemPointsType, SUT_PointSystemType, SUT_ProfileTagsVariantType } from "@/types/profile.types";
+import { darkTheme } from "thirdweb/react";
 
 interface IDefaultVariables {
   swapMarket: SUI_NavigationObject;
@@ -14,16 +14,10 @@ interface IDefaultVariables {
   userSettings: {
     newUser: {
       tags: SUT_ProfileTagsVariantType[];
-      points: SUT_AvailablePointsType;
+      points: SUT_PointSystemType;
     };
   };
-  pointSystem: {
-    createOpenTrade: SUT_AvailablePointsType;
-    completePrivateTrade: SUT_AvailablePointsType;
-    completeOpenTrade: SUT_AvailablePointsType;
-    mintSubname: SUT_AvailablePointsType;
-    socialPost: SUT_AvailablePointsType;
-  };
+  pointSystem: SUT_PointSystemType;
 }
 
 const swapMarketBaseRoute = "/swap-up/swap-market";
@@ -98,15 +92,33 @@ export const defaults: IDefaultVariables = {
   },
   userSettings: {
     newUser: {
-      points: 0,
+      points: {
+        "completed-open-trade": 0,
+        "completed-private-trade": 0,
+        "created-open-trade": 0,
+        "created-social-post": 0,
+        "minted-subname": 0,
+        "total": 0
+      },
       tags: ['normie']
     }
   },
   pointSystem: {
-    createOpenTrade: 500,
-    completeOpenTrade: 2000,
-    completePrivateTrade: 2000,
-    mintSubname: 20000,
-    socialPost: 500
+    "created-open-trade": 500,
+    "completed-open-trade": 2000,
+    "completed-private-trade": 2000,
+    "created-social-post": 500,
+    "minted-subname": 20000,
+    "total": 0
   }
 };
+
+export const thirdwebCustomDarkTheme = darkTheme({
+  fontFamily: "Urbanist, Poppins, sans-serif",
+  colors: {
+    modalBg: "rgba(13, 13, 35, 1)",
+    primaryButtonBg: "linear-gradient(to right, #9452FF, #51C0FF)",
+    primaryButtonText: "white",
+    connectedButtonBgHover: "rgba(13, 13, 35, 1)",
+  }
+});

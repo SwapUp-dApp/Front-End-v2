@@ -114,17 +114,10 @@ const SwapParametersCard = ({ setIsValidParametersForm, availableCurrencies, ava
   ]);
 
   return (
-    <div className="rounded-lg border bg-card text-card-foreground shadow-sm border-none flex flex-col gap-4 dark:bg-su_secondary_bg p-2 lg:p-6">
+    <div className="rounded-lg bg-card text-card-foreground shadow-sm border border-su_enable_bg flex flex-col gap-4 dark:bg-su_primary_bg p-2 lg:p-6">
       <h2 className="font-semibold text-sm lg:text-xl w-2/3 lg:w-auto">
         Swap parameters
       </h2>
-
-      {/* <ToastLookCard
-        variant="info"
-        title="Escrow swap ahead"
-        description="The initial proposer escrows assets in the smart contract, signaling a serious offer with limited negotiations. Changing assets later incurs extra gas fees."
-        hideCloseButton
-      /> */}
 
       <Form {...form}>
         <form className="space-y-3">

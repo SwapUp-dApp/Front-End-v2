@@ -1,10 +1,8 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { toast } from 'sonner';
 import FilterButton from '@/components/custom/shared/FilterButton';
 import { cn, generateRandomKey, generateRandomTradeId, getDefaultNftImageOnError, getLastCharacters, getShortenWalletAddress } from '@/lib/utils';
 import EmptyDataset from '@/components/custom/shared/EmptyDataset';
 import { SUI_OpenSwap } from '@/types/swap-market.types';
-import ToastLookCard from '@/components/custom/shared/ToastLookCard';
 import { chainsDataset } from '@/constants/data';
 import moment from 'moment';
 import LoadingDataset from '@/components/custom/shared/LoadingDataset';
@@ -17,7 +15,7 @@ import SwapHistoryDetailsDialog from './SwapHistoryDetailsDialog';
 import { SUE_SWAP_MODE, SUE_SWAP_STATUS, SUE_SWAP_STATUS_TO_STRING } from '@/constants/enums';
 import BadgeTile from '@/components/custom/tiles/BadgeTile';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
+import { handleShowNotificationToast, mapSwapTokensHelper, showWalletConnectionToast } from '@/lib/helpers';
 import HistorySwapsFilterDrawer from './HistorySwapsFilterDrawer';
 import { useMySwapStore } from '@/store/my-swaps';
 import { useQuery } from '@tanstack/react-query';
@@ -67,20 +65,10 @@ const SwapHistoryTabContent = () => {
         return null;
       } catch (error: any) {
         await setMySwapsData([], 'history');
-        toast.custom(
-          (id) => (
-            <ToastLookCard
-              variant="error"
-              title="Request failed!"
-              description={error.message}
-              onClose={() => toast.dismiss(id)}
-            />
-          ),
-          {
-            duration: 3000,
-            className: 'w-full !bg-transparent',
-            position: "bottom-left",
-          }
+        handleShowNotificationToast(
+          "error",
+          `Request failed!`,
+          `${error.message}`
         );
 
         throw error;

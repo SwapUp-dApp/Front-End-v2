@@ -20,6 +20,6 @@ lerna-debug.log*
 *.sln
 *.sw?
 # Env file
-.env
+# .env
 node_modules
 dist

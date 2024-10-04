@@ -22,7 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
 import { deleteProfilePictureApi } from "@/service/api/user.service";
-import { showNotificationToast } from "@/lib/helpers";
+import { handleShowNotificationToast } from "@/lib/helpers";
 
 
 interface IProp {
@@ -67,7 +67,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
 
       if (deleteResult.data) {
 
-        showNotificationToast(
+        handleShowNotificationToast(
           'success',
           "Image deleted successfully!",
           'Your profile picture is deleted.'
@@ -81,7 +81,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
       }
 
     } catch (error: any) {
-      showNotificationToast(
+      handleShowNotificationToast(
         'error',
         "Error while deleting picture",
         error.message
@@ -94,12 +94,13 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
   return (
     <div className="w-full space-y-3" >
 
-      <div className="flex flex-col lg:flex-row gap-3" >
+      <div className="flex items-center gap-6 lg:gap-3" >
         <ExitPageDialog
           title={existTitle}
           description={existDescription}
           redirectPath={backClickNavigateTo ? backClickNavigateTo : defaults.fallback.route}
           resetData={resetData}
+
         >
           <span
             className="text-sm dark:text-su_secondary flex items-center gap-2 cursor-pointer py-2 px-3 hover:rounded-sm hover:bg-su_secondary_bg">
@@ -113,6 +114,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
 
         <div className="w-full flex items-center justify-between">
           <h2 className="font-semibold text-1.5xl " >Profile</h2>
+
           <div className="flex items-center gap-4">
             <Switch id="airplane-mode" />
             <Label htmlFor="airplane-mode">Private mode</Label>
@@ -208,7 +210,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
 
           <SwapParameterTile
             title="Total Points Earned: "
-            value={profile.details?.points || 0}
+            value={profile.details?.points?.total || 0}
           />
         </div>
 

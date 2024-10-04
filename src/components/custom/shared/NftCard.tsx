@@ -44,9 +44,9 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
     data.media[0].gateway :
     defaults.fallback.nftImageUrl;
   return (
-    <div
-      className="relative"
-    >
+    <div className="relative">
+
+      {/* Card design */}
       <div
         className={cn(
           `${activeGridView === "detailed" ? "h-[196px]" : "h-[100px]"} peer bg-su_enable_bg rounded-md cursor-pointer relative ${!isChecked ? "hover:scale-105" : ""} transition duration-300 ease-in-out`,
@@ -64,6 +64,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
             onError={getDefaultNftImageOnError}
           />
 
+          {/* Hover card section */}
           <div className="group" >
             <span className={`absolute top-2 ${activeGridView === "detailed" ? "right-3" : "right-1"} w-7 h-7 flex justify-center items-center rounded-full bg-transparent hover:bg-su_active_bg`} >
               <svg className="w-1 " viewBox="0 0 4 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -71,17 +72,18 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
               </svg>
             </span>
 
-
-            <div className={`hidden ${!isChecked ? "group-hover:flex" : ""} absolute p-2 rounded-sm bg-white text-black flex-col gap-1 ${activeGridView === "detailed" ? "-bottom-8 left-2 text-sm" : "-bottom-6 z-10 text-3xs"} font-semibold z-50`} >
+            {/* Hover card */}
+            <div className={`hidden ${!isChecked ? "group-hover:flex" : ""} absolute p-2 rounded-sm bg-white text-black flex-col gap-1 ${activeGridView === "detailed" ? "-bottom-8 left-2 text-sm" : "-bottom-2 text-3xs"} font-semibold`} >
               <p>Top 0.1%</p>
               <div>
-                <p className="leading-tight">Rarity rank: {data.rarityRank} / 2000</p>
+                <p className="leading-tight line-clamp-1">Rarity rank: {data.rarityRank} / 2000</p>
                 <p className={`text-su_disabled font-normal leading-none ${activeGridView === "detailed" ? "text-xs" : "text-4xs"}`} >(7 items share this rank)</p>
               </div>
             </div>
           </div>
-
         </div>
+
+
         {
           activeGridView === "detailed" &&
           <div className="p-3 flex flex-col gap-2" >
@@ -114,8 +116,6 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
             </div>
           </div>
         }
-
-
       </div>
 
       {(isChecked && !disableNftSelection) &&
@@ -126,8 +126,8 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
           <path d="M15.4013 19.0666L20.1013 14.3666L19.168 13.4333L15.4013 17.1999L13.5013 15.2999L12.568 16.2333L15.4013 19.0666ZM16.3346 22.6666C15.4124 22.6666 14.5457 22.4915 13.7346 22.1413C12.9235 21.791 12.218 21.3161 11.618 20.7166C11.018 20.117 10.5431 19.4115 10.1933 18.5999C9.84353 17.7884 9.66841 16.9217 9.66797 15.9999C9.66753 15.0781 9.84264 14.2115 10.1933 13.3999C10.544 12.5884 11.0189 11.8828 11.618 11.2833C12.2171 10.6837 12.9226 10.2088 13.7346 9.85859C14.5466 9.50836 15.4133 9.33325 16.3346 9.33325C17.256 9.33325 18.1226 9.50836 18.9346 9.85859C19.7466 10.2088 20.4522 10.6837 21.0513 11.2833C21.6504 11.8828 22.1255 12.5884 22.4766 13.3999C22.8277 14.2115 23.0026 15.0781 23.0013 15.9999C23 16.9217 22.8249 17.7884 22.476 18.5999C22.1271 19.4115 21.6522 20.117 21.0513 20.7166C20.4504 21.3161 19.7449 21.7913 18.9346 22.1419C18.1244 22.4926 17.2577 22.6675 16.3346 22.6666Z" fill="white" />
           <defs>
             <linearGradient id="paint0_linear_1483_117220" x1="32.334" y1="6.08" x2="-1.53233" y2="14.9716" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#51C0FF" />
-              <stop offset="1" stop-color="#9452FF" />
+              <stop stopColor="#51C0FF" />
+              <stop offset="1" stopColor="#9452FF" />
             </linearGradient>
           </defs>
         </svg>

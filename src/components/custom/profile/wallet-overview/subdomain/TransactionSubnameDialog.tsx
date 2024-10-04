@@ -1,9 +1,8 @@
 import CustomAvatar from '@/components/custom/shared/CustomAvatar';
 import CustomLoadingBar from '@/components/custom/shared/CustomLoadingBar';
 import CustomOutlineButton from '@/components/custom/shared/CustomOutlineButton';
-import ToastLookCard from '@/components/custom/shared/ToastLookCard';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
+import { handleShowNotificationToast } from '@/lib/helpers';
 import { useProfileStore } from '@/store/profile';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -30,20 +29,10 @@ const TransactionSubnameDialog = ({ handleNavigationOfSteps, open, setOpen, setS
   ]);
 
   const handleSuccess = () => {
-    toast.custom(
-      (id) => (
-        <ToastLookCard
-          variant="success"
-          title="Subname created Successfully"
-          description={`Transaction: \n ${transactionHash}`}
-          onClose={() => toast.dismiss(id)}
-        />
-      ),
-      {
-        duration: 3000,
-        className: 'w-full !bg-transparent',
-        position: "bottom-left",
-      }
+    handleShowNotificationToast(
+      "success",
+      `Subname created Successfully`,
+      `Transaction: \n ${transactionHash}`
     );
 
     setOpen(false);

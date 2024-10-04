@@ -103,6 +103,10 @@
     @apply bg-background dark:bg-su_primary_bg text-foreground;
   }
 
+  .su-px{
+    @apply px-6 lg:px-10
+  }
+
   .nav-link {
     @apply cursor-pointer relative after:absolute  after:content-[''] after:h-0.5 after:w-0 after:bg-gradient-primary after:-bottom-0.5 after:left-0 after:opacity-0 after:transition-all after:duration-200 after:delay-200
   }
@@ -148,6 +152,18 @@
 
   .action-popover-action-item{
     @apply w-full flex items-center gap-1.5 lg:gap-2 py-1 px-1 rounded-sm hover:bg-su_active_bg text-xs font-semibold
+  }
+
+  .room-layout-container{
+    @apply min-h-screen w-full space-y-4 absolute top-0 left-0 su-px bg-su_primary_bg pt-60 lg:pt-36
+  }
+
+  .room-content-section{
+    @apply grid lg:grid-cols-2 gap-4 !mb-32
+  }
+
+  .room-footer{
+    @apply fixed left-0 bottom-0 flex items-center justify-between su-px py-2.5 w-full z-50 bg-su_secondary_bg border-t border-t-su_enable_bg
   }
   /* Debug Classes End for dev */
 }
