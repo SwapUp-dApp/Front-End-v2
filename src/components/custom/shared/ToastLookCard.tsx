@@ -6,7 +6,7 @@ interface IProp {
   icon?: React.ReactNode;
   title?: string;
   subtitle?: string;
-  description?: string;
+  description?: any;
   className?: string;
   hideCloseButton?: boolean;
   onClose?: () => string | number;
