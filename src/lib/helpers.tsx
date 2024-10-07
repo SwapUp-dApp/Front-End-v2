@@ -55,7 +55,7 @@ export const handleShowNotificationToast = (variant: SUT_ToastVariantType = "err
   );
 };
 
-export const mapSwapTokensHelper = (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number) => {
+export const mapSwapTokensHelper = (swapTokens: SUI_SwapToken[], showMaxNumberOfTokensToShow: number, className?: string) => {
   return (
     swapTokens.map((swapToken, index) => {
       if (index < showMaxNumberOfTokensToShow)
@@ -64,7 +64,8 @@ export const mapSwapTokensHelper = (swapTokens: SUI_SwapToken[], showMaxNumberOf
             key={swapToken.id}
             className={cn(
               "w-8 h-8 relative border-[1.5px] border-white/20 overflow-hidden",
-              (swapToken.type as SUT_SwapTokenContractType) === "ERC20" ? "rounded-full" : "rounded-xs"
+              (swapToken.type as SUT_SwapTokenContractType) === "ERC20" ? "rounded-full" : "rounded-xs",
+              className
             )
             }
           >

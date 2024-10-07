@@ -3,6 +3,7 @@ import { cn, getShortenWalletAddress } from "@/lib/utils";
 interface IProp {
   walletAddress: string;
   className?: string;
+  containerClassName?: string;
   children?: any;
   showLongWalletAddressOnLargeScreen?: boolean;
   showLongWalletAddressOnMobileScreen?: boolean;
@@ -14,11 +15,15 @@ const WalletAddressTile = ({
   children,
   showLongWalletAddressOnLargeScreen = false,
   showLongWalletAddressOnMobileScreen = false,
+  containerClassName,
   ...props
 }: IProp) => {
 
   return (
-    <div className="flex items-center justify-between xl:gap-20 dark:bg-su_enable_bg py-1.5 px-3 rounded-xs" >
+    <div className={cn(
+      "flex items-center justify-between dark:bg-su_enable_bg py-1.5 px-3 rounded-xs",
+      containerClassName
+    )} >
       <div
         className={cn(
           "flex items-center gap-1 lg:gap-2 text-xs lg:text-sm",

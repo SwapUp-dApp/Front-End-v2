@@ -10,8 +10,8 @@ import { UseFormReturn } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { SUI_CurrencyChainItem } from "@/types/global.types";
 import { Schema_AmountConversionForm } from "@/schema";
-import FooterSideSelectTokenDialog from "./FooterSideSelectTokenDialog";
 import { ChevronDown } from "lucide-react";
+import CurrencyTokenSelectDialog from "./CurrencyTokenSelectDialog";
 
 
 interface IProp {
@@ -119,7 +119,7 @@ const AddCurrencyModalDialog = ({ children, handleFormSubmit, form, availableCha
           </Form>
         </div>
 
-        <FooterSideSelectTokenDialog
+        <CurrencyTokenSelectDialog
           open={open}
           setOpen={setOpen}
           handleSetSelectedCurrency={handleSetSelectedCurrency}
