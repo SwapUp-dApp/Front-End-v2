@@ -109,6 +109,7 @@ export default function ThirdWebWalletConnect({ className, hideDetails = false, 
             label: "Switch Network"
             // label: <Button className="w-full h-full text-sm lg:text-base hover:scale-105 transition duration-300 ease-in-out" >Switch Network</Button>
           }}
+
           connectModal={{
             showThirdwebBranding: false,
             title: "Sign In to SwapUp",
