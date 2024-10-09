@@ -489,6 +489,7 @@ const OpenSwapCreationRoom = () => {
                 <ToastLookCard
                   variant='info'
                   title='Stay Safe!'
+                  hideCloseButton
                   description={
                     <div>
                       Always use best practices when completing a trade. {' '}

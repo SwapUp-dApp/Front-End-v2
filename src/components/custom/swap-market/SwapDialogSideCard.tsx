@@ -37,10 +37,14 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
   return (
     <CustomCardLayout
       title={`You ${layoutType === "sender" ? "send" : "receive"}`}
+      className={cn(
+        "",
+        className
+      )}
     >
 
       {/* Wallet info */}
-      <WalletAddressTile walletAddress={data.profile.wallet.address} className="text-2xs lg:text-xs" containerClassName="px-2 text-su_secondary gap-24">
+      <WalletAddressTile walletAddress={data.profile.wallet.address} className="text-2xs lg:text-xs" containerClassName="px-2 text-su_secondary">
         <div className="flex items-center gap-2" >
           <ChainTile imageSrc={data.profile.wallet.network.iconUrl} title={data.profile.wallet.network.name} showChainTitleOnMobileScreen className="text-2xs lg:text-xs text-su_secondary px-2" />
           {
