@@ -101,7 +101,7 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
             </div>
 
             {/* side cards*/}
-            <div className="flex flex-col lg:flex-row items-start gap-2" >
+            <div className="grid grid-cols-1 gap-2 lg:grid-cols-2" >
               <SwapDialogSideCard data={state.sender} layoutType='sender' />
               <SwapDialogSideCard data={state.receiver} useNfts={isSwapProposeDialog} layoutType='receiver' />
             </div>
@@ -155,6 +155,7 @@ const SwapDetailsDialog = ({ children, enableApproveButtonCriteria, swapCreation
             <ToastLookCard
               variant='info'
               title='Stay Safe!'
+              hideCloseButton
               description={
                 <div>
                   Always use best practices when completing a trade. {' '}
