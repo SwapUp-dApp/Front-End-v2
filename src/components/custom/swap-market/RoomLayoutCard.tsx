@@ -292,16 +292,17 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
             addedAmount={addedAmount}
             availableCurrencies={filteredAvailableCurrencies}
             className={disableDeselectionCriteria ? "hidden" : "block"}
+            walletForTotalBalance={walletAddress}
           />
         }
 
         {/*NFT asset heading section*/}
         <div className="flex flex-col gap-4" >
-
           <div className="flex items-center justify-between" >
             <h2>Select NFT Assets</h2>
 
-            <button className="p-3 rounded-sm flex items-center gap-2 bg-su_enable_bg" >
+            {/*Hidden: This view collection option is not confirmed yet... */}
+            {/* <button className="p-3 rounded-sm flex items-center gap-2 bg-su_enable_bg" >
               <svg className="w-3.5" viewBox="0 0 13 7" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M0.5 6.5V4.83333H12.4998V6.5H0.5ZM0.500163 2.16667V0.5H12.5V2.16667H0.500163Z" fill="#868691" />
               </svg>
@@ -309,7 +310,7 @@ const RoomLayoutCard = ({ layoutType, counterPartyWallet, senderWallet, roomKey,
               <span className="text-su_ternary font-normal text-sm" >View Collections</span>
 
               <ChevronDown className={`h-4 w-4 text-su_primary`} />
-            </button>
+            </button> */}
           </div>
 
           <div className={`flex gap-4 items-center`} >

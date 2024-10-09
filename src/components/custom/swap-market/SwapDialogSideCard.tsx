@@ -1,18 +1,19 @@
 import { cn, getDefaultNftImageOnError } from "@/lib/utils";
-import CustomAvatar from "../shared/CustomAvatar";
 import WalletAddressTile from "../tiles/WalletAddressTile";
 import ChainTile from "../tiles/ChainTile";
 import { IPrivateRoomsLayoutSide } from "@/types/swap-market-store.types";
 import { SUI_NFTItem } from "@/types/global.types";
+import CustomCardLayout from "../shared/CustomCardLayout";
 
 interface IProp {
   className?: string;
   data: IPrivateRoomsLayoutSide;
   showEscroTile?: boolean;
   useNfts?: boolean;
+  layoutType?: "sender" | "receiver";
 }
 
-const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = false, ...props }: IProp) => {
+const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = false, layoutType = "sender", ...props }: IProp) => {
 
   const nftsImageMapper = (nfts: SUI_NFTItem[],) => (
     nfts.map((nft) => (
@@ -34,26 +35,18 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
   };
 
   return (
-    <div
+    <CustomCardLayout
+      title={`You ${layoutType === "sender" ? "send" : "receive"}`}
       className={cn(
-        "custom-border-card space-y-2 w-full lg:w-auto",
+        "",
         className
       )}
-      {...props}
     >
-      <div className="flex items-center gap-1 lg:gap-2">
-        <CustomAvatar
-          imageSrc={data.profile.avatar}
-          fallbackName={data.profile.details?.title || data.profile.ensAddress || ''}
-          sizeClasses="w-4 h-4 lg:w-6 lg:h-6"
-          textSizeClasses="text-2xs lg:text-xs"
-        />
-        <h2 className="font-semibold text-xs lg:text-sm line-clamp-1 w-2/3 lg:w-auto">{data.profile.ensAddress}</h2>
-      </div>
 
-      <WalletAddressTile walletAddress={data.profile.wallet.address} className="text-2xs lg:text-xs">
+      {/* Wallet info */}
+      <WalletAddressTile walletAddress={data.profile.wallet.address} className="text-2xs lg:text-xs" containerClassName="px-2 text-su_secondary">
         <div className="flex items-center gap-2" >
-          <ChainTile imageSrc={data.profile.wallet.network.iconUrl} title={data.profile.wallet.network.name} showChainTitleOnMobileScreen className="text-2xs lg:text-xs" />
+          <ChainTile imageSrc={data.profile.wallet.network.iconUrl} title={data.profile.wallet.network.name} showChainTitleOnMobileScreen className="text-2xs lg:text-xs text-su_secondary px-2" />
           {
             showEscroTile &&
             <span className=" flex items-center gap-2 p-2 bg-su_enable_bg text-su_primary font-semibold text-2xs lg:text-xs rounded-xs" >
@@ -65,37 +58,57 @@ const SwapDialogSideCard = ({ className, data, showEscroTile = false, useNfts = 
         </div>
       </WalletAddressTile>
 
-      <div className="text-xs lg:text-sm text-su_secondary flex items-center justify-between" >
-        <p>Added amount:</p>
+      {/*Crypto assets  */}
+      {data.addedAmount?.amount &&
+        <div>
+          <h3 className="text-sm text-su_ternary font-normal py-2" >Cryptocurrency:</h3>
 
-        <div className="flex gap-2" >
-          {
-            data.addedAmount?.coin.iconUrl &&
-            <img
-              className="w-4"
-              src={data.addedAmount.coin.iconUrl}
-              alt=""
-            />
-          }
+          <div className="flex flex-col gap-2" >
 
-          <p className="text-su_primary" >
-            {data.addedAmount?.amount || 0}
-            {' '} {data.addedAmount?.coin.symbol} {' '}
-            <span className="text-su_secondary" >
-              / $ {data.addedAmount?.amount ? getConvertedAmount(data.addedAmount.coin.price, data.addedAmount.amount).toFixed(6) : 0}
-            </span>
-          </p>
+            {/* Crypto card item */}
+            <div className="bg-su_least_bg py-1 px-2 rounded-xs text-sm" >
+              <p className="flex items-center justify-between text-su_primary font-semibold" >
+                <span className="" >{data.addedAmount?.amount}</span>
+
+                <span className="flex items-center gap-1" >
+                  {
+                    data.addedAmount?.coin.iconUrl &&
+                    <img
+                      className="w-4"
+                      src={data.addedAmount.coin.iconUrl}
+                      alt=""
+                    />
+                  }
+
+                  {
+                    data.addedAmount?.coin.symbol
+                  }
+                </span>
+              </p>
+
+              <p className="text-su_ternary">
+                $ {data.addedAmount?.amount
+                  ? parseFloat(getConvertedAmount(data.addedAmount.coin.price, data.addedAmount.amount).toFixed(6))
+                  : 0
+                }
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      }
 
-      <div className="text-xs lg:text-sm text-su_secondary space-y-1" >
-        <p>NFT assets:</p>
+      {/*NFT assets  */}
+      {(data.nftsSelectedForSwap.length > 0 || (useNfts && (data.nfts || []).length > 0)) &&
+        <div className="text-xs lg:text-sm text-su_secondary space-y-1" >
+          <h3 className="text-sm text-su_ternary font-normal py-2" >NFT:</h3>
 
-        <div className="grid grid-cols-5 gap-2 lg:gap-3" >
-          {nftsImageMapper((useNfts && data.nfts) ? data.nfts : data.nftsSelectedForSwap)}
+          <div className="flex items-center gap-1.5 flex-wrap" >
+            {nftsImageMapper((useNfts && data.nfts) ? data.nfts : data.nftsSelectedForSwap)}
+          </div>
         </div>
-      </div>
-    </div>
+      }
+
+    </CustomCardLayout>
   );
 };
 
