@@ -66,7 +66,8 @@ const UserProfile = () => {
         throw error;
       }
     },
-    retry: false
+    retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   return (

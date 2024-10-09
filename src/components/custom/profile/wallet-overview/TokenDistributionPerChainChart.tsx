@@ -75,6 +75,7 @@ const TokenDistributionPerChainChart = () => {
       }
     },
     retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
 

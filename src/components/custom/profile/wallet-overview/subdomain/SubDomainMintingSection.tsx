@@ -70,6 +70,7 @@ const SubDomainMintingSection = () => {
       }
     },
     retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   return (

@@ -45,6 +45,7 @@ const CollectionDetailsSection = () => {
       }
     },
     retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   return (

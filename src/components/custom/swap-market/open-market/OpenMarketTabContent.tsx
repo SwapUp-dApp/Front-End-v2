@@ -70,7 +70,8 @@ const OpenMarketTabContent = () => {
         throw error;
       }
     },
-    retry: false
+    retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   const handleNavigateToProposeRoom = (swap: SUI_OpenSwap) => {

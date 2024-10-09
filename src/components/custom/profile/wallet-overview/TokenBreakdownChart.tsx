@@ -68,6 +68,7 @@ const TokenBreakdownChart = () => {
       }
     },
     retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   const pieChartData = walletTokenBreakdownData.map(item => ({

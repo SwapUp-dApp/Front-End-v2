@@ -1,5 +1,4 @@
 // components/ConnectButtonAuth.tsx
-import { ConnectButton, useWalletBalance } from "thirdweb/react";
 import { thirdWebClient, currentChain } from "../../../lib/thirdWebClient";
 import { createWallet } from "thirdweb/wallets";
 import { useProfileStore } from "@/store/profile";
@@ -7,6 +6,7 @@ import { cn, getShortenWalletAddress } from "@/lib/utils";
 import CustomAvatar from "../shared/CustomAvatar";
 import { Button } from "@/components/ui/button";
 import { thirdwebCustomDarkTheme } from "@/constants/defaults";
+import { ConnectButton } from "thirdweb/react";
 // import {
 //   LoginPayload,
 //   VerifyLoginPayloadParams,
@@ -72,6 +72,10 @@ export default function ThirdWebWalletConnect({ className, hideDetails = false, 
           showAllWallets={false}
           chain={currentChain}
           theme={thirdwebCustomDarkTheme}
+          appMetadata={{
+            name: "SwapUp",
+            logoUrl: '/swapup.png'
+          }}
 
           detailsButton={{
             style: {
@@ -112,6 +116,7 @@ export default function ThirdWebWalletConnect({ className, hideDetails = false, 
 
           connectModal={{
             showThirdwebBranding: false,
+            size: 'wide',
             title: "Sign In to SwapUp",
             welcomeScreen: {
               img: {
@@ -123,15 +128,17 @@ export default function ThirdWebWalletConnect({ className, hideDetails = false, 
             }
           }}
 
-        // detailsModal={{
-        //   footer: (props: { close: () => void; }) => (
-        //     <div className={cn(
-        //       'text-xs mt-2 text-center font-semibold',)}
-        //     >
-        //       Copyright © 2024 SwapUp, All Rights Reserved.
-        //     </div>
-        //   ),
-        // }}
+          detailsModal={{
+            // footer: (props: { close: () => void; }) => (
+            //   <div className={cn(
+            //     'text-xs mt-2 text-center font-semibold',)}
+            //   >
+            //     Copyright © 2024 SwapUp, All Rights Reserved.
+            //   </div>
+            // ), 
+            // hideBuyFunds: true,
+            connectedAccountAvatarUrl: profile.avatar,
+          }}
         //auth={{
 
         //  * 	`getLoginPayload` should @return {VerifyLoginPayloadParams} object.
