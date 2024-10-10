@@ -22,7 +22,7 @@ const UserProfile = () => {
   };
 
   const { isLoading } = useQuery({
-    queryKey: [`getUserByWalletIdApi`],
+    queryKey: [`getUserByWalletIdApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {

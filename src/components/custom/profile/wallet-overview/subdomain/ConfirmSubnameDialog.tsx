@@ -3,19 +3,18 @@ import CustomOutlineButton from '@/components/custom/shared/CustomOutlineButton'
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { Environment } from '@/config';
-import { defaults, thirdwebCustomDarkTheme } from '@/constants/defaults';
+import { thirdwebCustomDarkTheme } from '@/constants/defaults';
 import { handleShowNotificationToast } from '@/lib/helpers';
 import { handleMintNewOffchainSubname } from '@/lib/minting';
 import { currentChain, thirdWebClient } from '@/lib/thirdWebClient';
-import { getWalletProxy } from '@/lib/walletProxy';
 import { getAvailableCurrenciesApi } from '@/service/api';
 import { useGlobalStore } from '@/store/global-store';
 import { useProfileStore } from '@/store/profile';
 import { SUI_CurrencyChainItem } from '@/types/global.types';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
-import { getBuyWithCryptoHistory, NATIVE_TOKEN_ADDRESS, PreparedTransaction, ZERO_ADDRESS } from 'thirdweb';
-import { PayEmbed, PaymentInfo, useSendTransaction } from 'thirdweb/react';
+import { PayEmbed, } from 'thirdweb/react';
+import { ethereum } from "thirdweb/chains";
 
 
 interface IProp {
@@ -84,31 +83,35 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
 
 
   useEffect(() => {
-    let allCurrencies = availableCurrencies;
+    if (openPaymentSection) {
 
-    const getCurrencies = async () => {
-      await refetchCurrenciesDataset();
-      allCurrencies = useGlobalStore.getState().availableCurrencies;
-    };
+      let allCurrencies = availableCurrencies;
 
-    if (!availableCurrencies || availableCurrencies.length === 0) {
-      getCurrencies();
-    }
+      const getCurrencies = async () => {
+        await refetchCurrenciesDataset();
+        allCurrencies = useGlobalStore.getState().availableCurrencies;
+      };
 
-    if (allCurrencies) {
-      const foundCurrency = allCurrencies.find(currency => currency.symbol.toLowerCase() === 'eth');
-      if (foundCurrency) {
-        const convertedChargesInEth = Environment.NEW_SUBNAME_CHARGES / Number(foundCurrency.price);
-        const convertedChargesInWei = ethers.parseUnits(convertedChargesInEth.toString(), 'ether');
+      if (!availableCurrencies || availableCurrencies.length === 0) {
+        getCurrencies();
+      }
 
-        setChargesInEth(String(convertedChargesInEth));
-        setChargesInWei(convertedChargesInWei);
+      if (allCurrencies) {
+        const foundCurrency = allCurrencies.find(currency => currency.symbol.toLowerCase() === 'eth');
+        if (foundCurrency) {
+          const convertedChargesInEth = parseFloat((Environment.NEW_SUBNAME_CHARGES / Number(foundCurrency.price)).toFixed(18));
+          const convertedChargesInWei = ethers.parseUnits(convertedChargesInEth.toString(), 'ether');
+
+          setChargesInEth(String(convertedChargesInEth.toFixed(6)));
+          setChargesInWei(convertedChargesInWei);
+          setChargesInWei(convertedChargesInWei);
+        }
       }
     }
+  }, [availableCurrencies, openPaymentSection]);
 
-
-  }, [availableCurrencies]);
-
+  // for testing the card payment flow payment chain is set to mainnet
+  const paymentChain = ethereum;
 
   return (
     <Dialog open={open} onOpenChange={setOpen} >
@@ -200,7 +203,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
               {/* header */}
               <div className="space-y-2">
                 <div className="flex justify-between items-start">
-                  <h2 className="font-bold text-xl pt-3">Pay to your subname</h2>
+                  <h2 className="font-bold text-xl pt-3">Subname payment</h2>
 
                   <DialogClose className="p-1 rounded-xs hover:bg-su_active_bg" >
                     <svg className="w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -209,71 +212,66 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
                   </DialogClose>
                 </div>
 
-                <p className="text-base font-medium text-secondary dark:text-su_secondary">You can pay with Crypto or credit / debit card.</p>
+                <p className="text-base font-medium text-secondary dark:text-su_secondary">You can choose Crypto or Card payment.</p>
               </div>
 
               <PayEmbed
                 theme={thirdwebCustomDarkTheme}
                 client={thirdWebClient}
+
                 payOptions={{
+
                   prefillBuy: {
+                    chain: paymentChain,
                     amount: chargesInEth,
-                    chain: currentChain,
                     allowEdits: {
-                      amount: true,
-                      token: true,
+                      amount: false,
                       chain: false,
-                    },
-                    // token: {
-                    //   address: ZERO_ADDRESS,
-                    //   name: "Base Sepolia Eth",
-                    //   symbol: 'ETH',
-                    //   icon: ''
-                    // }
+                      token: true
+                    }
                   },
-                  buyWithCrypto: {
-                    testMode: true,
-                    // prefillSource: {
-                    //   chain: currentChain,
-                    //   allowEdits: {
-                    //     chain: false,
-                    //     token: true
-                    //   },
-                    // },
-                  },
+
                   buyWithFiat: {
-                    testMode: true,
+                    testMode: paymentChain.testnet,
+                    preferredProvider: 'STRIPE',
+                    prefillSource: {
+                      currency: 'USD'
+                    }
                   },
-                  paymentInfo: {
-                    amount: chargesInEth,
-                    chain: currentChain,
-                    sellerAddress: Environment.SWAPUP_TREASURY_WALLET,
-                    amountWei: chargesInWei!,
+
+                  buyWithCrypto: {
+                    testMode: paymentChain.testnet,
+                    prefillSource: {
+                      chain: paymentChain,
+                      allowEdits: {
+                        chain: true,
+                        token: true
+                      },
+                    }
                   },
+
+                  metadata: {
+                    name: "Buy SwapUp Subname"
+                  },
+
                   onPurchaseSuccess: async (tx) => {
                     console.log("payment transaction: ", tx);
                     await handleOpenWallet();
-                  }
-                }}
+                  },
 
+                  mode: 'fund_wallet',
+
+                  // paymentInfo: {
+                  //   amount: chargesInEth,
+                  //   chain: paymentChain,
+                  //   sellerAddress: Environment.SWAPUP_TREASURY_WALLET,
+                  //   amountWei: (chargesInWei ? chargesInWei.toString() : "0") as unknown as bigint,
+                  // },
+                }
+                }
               />
+
             </section>
-
-            {/* <div className="w-full grid grid-cols-2 gap-4 py-2" >
-              <CustomOutlineButton
-                containerClasses="w-full h-full"
-                onClick={() => { handleNavigationOfSteps('PREVIOUS'); }}
-              >
-                Back
-              </CustomOutlineButton>
-
-              <Button
-                onClick={handleOpenWallet}
-                isLoading={isLoading}
-              >
-                Open wallet
-              </Button>
-            </div> */}
           </div>
         }
       </DialogContent>

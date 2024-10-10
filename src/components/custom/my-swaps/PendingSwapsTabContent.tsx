@@ -248,7 +248,7 @@ const PendingSwapsTabContent = () => {
   };
 
   const { isLoading, isSuccess, isError } = useQuery({
-    queryKey: [`getPendingSwapListApi`],
+    queryKey: [`getPendingSwapListApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {

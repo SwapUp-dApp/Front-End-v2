@@ -68,7 +68,7 @@ const ProfileAssetsTabContent = () => {
   };
 
   const { isLoading, isSuccess, isError } = useQuery({
-    queryKey: [`getNftsForWalletApi`],
+    queryKey: [`getNftsForWalletApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {

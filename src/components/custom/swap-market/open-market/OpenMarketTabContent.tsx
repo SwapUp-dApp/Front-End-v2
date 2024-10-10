@@ -49,9 +49,8 @@ const OpenMarketTabContent = () => {
     setOpenMarketAvailableSwapsBySearch(value);
   };
 
-
   const { isLoading, isSuccess, isError } = useQuery({
-    queryKey: [`getOpenSwapPendingList`],
+    queryKey: [`getOpenSwapPendingList-key${wallet.address}`],
     queryFn: async () => {
       try {
         const response = await getOpenSwapPendingListApi();

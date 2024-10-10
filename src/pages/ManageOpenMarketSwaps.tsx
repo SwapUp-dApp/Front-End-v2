@@ -116,7 +116,7 @@ const ManageOpenMarketSwaps = () => {
   };
 
   const { isLoading, isSuccess, isError } = useQuery({
-    queryKey: [`getPrivateSwapPendingListApi`],
+    queryKey: [`getPrivateSwapPendingListApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {
