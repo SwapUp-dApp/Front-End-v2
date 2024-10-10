@@ -18,7 +18,7 @@ const TokenDistributionPerChainChart = () => {
   ]);
 
   const { isLoading } = useQuery({
-    queryKey: [`getDistributionOfTokenPerChain`],
+    queryKey: [`getDistributionOfTokenPerChain-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {
@@ -75,6 +75,7 @@ const TokenDistributionPerChainChart = () => {
       }
     },
     retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
 

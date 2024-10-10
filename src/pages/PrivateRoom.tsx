@@ -133,7 +133,24 @@ const PrivateRoom = () => {
   }, [state.sender.nftsSelectedForSwap, state.receiver.nftsSelectedForSwap, state.sender.addedAmount, state.receiver.addedAmount]);
 
   useEffect(() => {
+
     if ((counterPartyWallet && !isValidWalletAddress(counterPartyWallet)) || (privateTradeId && !isValidTradeId(privateTradeId))) {
+      handleShowNotificationToast(
+        'warning',
+        `Invalid ${!isValidWalletAddress(counterPartyWallet!) ? "wallet address" : "trade id"}!`,
+        ''
+      );
+
+      navigate(-1);
+    }
+
+    if (counterPartyWallet?.toLocaleLowerCase() === wallet.address.toLocaleLowerCase()) {
+      handleShowNotificationToast(
+        'warning',
+        `Wallet addresses must be different!`,
+        "Both party's wallet address cannot be same."
+      );
+
       navigate(-1);
     }
 

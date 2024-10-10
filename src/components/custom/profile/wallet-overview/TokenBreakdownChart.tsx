@@ -20,7 +20,7 @@ const TokenBreakdownChart = () => {
   ]);
 
   const { isLoading } = useQuery({
-    queryKey: [`getTokenBreakdownByWalletIdApi`],
+    queryKey: [`getTokenBreakdownByWalletIdApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {
@@ -68,6 +68,7 @@ const TokenBreakdownChart = () => {
       }
     },
     retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   const pieChartData = walletTokenBreakdownData.map(item => ({

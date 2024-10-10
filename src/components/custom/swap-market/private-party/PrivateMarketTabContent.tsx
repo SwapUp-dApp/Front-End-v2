@@ -237,7 +237,7 @@ const PrivateMarketTabContent = () => {
   };
 
   const { isLoading, isSuccess, isError } = useQuery({
-    queryKey: [`getPrivateSwapPendingListApi`],
+    queryKey: [`getPrivateSwapPendingListApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {
@@ -258,7 +258,8 @@ const PrivateMarketTabContent = () => {
         throw error;
       }
     },
-    retry: false
+    retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   // Private party filters logic

@@ -24,7 +24,7 @@ const CollectionDetailsSection = () => {
   ]);
 
   const { isLoading } = useQuery({
-    queryKey: [`getCollectionsByWalletIdApi`],
+    queryKey: [`getCollectionsByWalletIdApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {
@@ -45,6 +45,7 @@ const CollectionDetailsSection = () => {
       }
     },
     retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   return (

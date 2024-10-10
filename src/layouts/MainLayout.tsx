@@ -82,8 +82,6 @@ const MainLayout = () => {
             };
 
             setUserProfile(userProfileDetails);
-
-            // console.log("user details: ", userProfileDetails);
           }
 
         } catch (error: any) {
@@ -102,14 +100,14 @@ const MainLayout = () => {
       setKey(generateRandomKey(6));
     }
 
-    if (pathname && wallet && !wallet.isConnected && !walletConnectionExistsInLocalStorage) {
+    if (pathname && !walletConnectionExistsInLocalStorage) {
       const currentRoute = navItemsData.find(item => pathname.includes(item.basePath));
       if (currentRoute?.protected) {
         showWalletConnectionToast("warning");
         navigate(defaults.fallback.route);
       }
     }
-  }, [wallet, pathname, walletConnectionExistsInLocalStorage]);
+  }, [pathname, walletConnectionExistsInLocalStorage, wallet]);
 
   // For opening swap sharing dialog when user gets redirected after getting twitter auth code
   useEffect(() => {
@@ -121,11 +119,13 @@ const MainLayout = () => {
   return (
     <div className="flex flex-col justify-between min-h-screen relative">
       <div>
+
         <div className="relative w-full px-4 py-1.5 bg-gradient-primary text-xs lg:text-center">
           We are currently in the testing phase and only support sepolia base transactions.  Follow our socials for updates on our Mainnet release.
         </div>
 
         <Navbar />
+
         <section className="su-px py-4" >
           <Outlet key={key} />
         </section>
