@@ -15,6 +15,7 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { PayEmbed, } from 'thirdweb/react';
 import { ethereum } from "thirdweb/chains";
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 
 interface IProp {
@@ -102,7 +103,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
           const convertedChargesInEth = parseFloat((Environment.NEW_SUBNAME_CHARGES / Number(foundCurrency.price)).toFixed(18));
           const convertedChargesInWei = ethers.parseUnits(convertedChargesInEth.toString(), 'ether');
 
-          setChargesInEth(String(convertedChargesInEth.toFixed(6)));
+          setChargesInEth(String(convertedChargesInEth.toFixed(8)));
           setChargesInWei(convertedChargesInWei);
           setChargesInWei(convertedChargesInWei);
         }
@@ -111,7 +112,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
   }, [availableCurrencies, openPaymentSection]);
 
   // for testing the card payment flow payment chain is set to mainnet
-  const paymentChain = ethereum;
+  const paymentChain = currentChain;
 
   return (
     <Dialog open={open} onOpenChange={setOpen} >
@@ -197,7 +198,6 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
 
         {/* Payment section */}
         {openPaymentSection &&
-
           <div className=' space-y-4' >
             <section className="space-y-3" >
               {/* header */}
@@ -215,61 +215,76 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
                 <p className="text-base font-medium text-secondary dark:text-su_secondary">You can choose Crypto or Card payment.</p>
               </div>
 
-              <PayEmbed
-                theme={thirdwebCustomDarkTheme}
-                client={thirdWebClient}
+              <ScrollArea className="h-[415px]">
+                <PayEmbed
+                  theme={thirdwebCustomDarkTheme}
+                  client={thirdWebClient}
 
-                payOptions={{
+                  payOptions={{
+                    // This 'prefillBuy' is for 'Payment mode: fund_wallet' only
+                    // prefillBuy: {
+                    //   chain: paymentChain,
+                    //   amount: chargesInEth,
+                    //   allowEdits: {
+                    //     amount: false,
+                    //     chain: false,
+                    //     token: true
+                    //   }
+                    // },
 
-                  prefillBuy: {
-                    chain: paymentChain,
-                    amount: chargesInEth,
-                    allowEdits: {
-                      amount: false,
-                      chain: false,
-                      token: true
-                    }
-                  },
+                    buyWithFiat: {
+                      testMode: paymentChain.testnet,
+                      preferredProvider: 'STRIPE',
+                      prefillSource: {
+                        currency: 'USD'
+                      }
+                    },
 
-                  buyWithFiat: {
-                    testMode: paymentChain.testnet,
-                    preferredProvider: 'STRIPE',
-                    prefillSource: {
-                      currency: 'USD'
-                    }
-                  },
+                    buyWithCrypto: {
+                      testMode: paymentChain.testnet,
+                      prefillSource: {
+                        chain: paymentChain,
+                        allowEdits: {
+                          chain: paymentChain.testnet || false,
+                          token: true
+                        },
+                      }
+                    },
 
-                  buyWithCrypto: {
-                    testMode: paymentChain.testnet,
-                    prefillSource: {
+                    metadata: {
+                      name: "Buy Subname",
+                      image: "/swapup.png"
+                    },
+
+                    purchaseData: {
+                      subnameDetails: {
+                        buyerAddress: wallet.address,
+                        subnameLabel: subname,
+                        domain: name,
+                        message: ""
+                      }
+                    },
+
+                    onPurchaseSuccess: async (tx) => {
+                      console.log("payment transaction: ", tx);
+                      await handleOpenWallet();
+                    },
+
+                    mode: 'direct_payment',
+
+                    // This 'paymentInfo' is for 'Payment mode: direct_payment' only
+                    paymentInfo: {
+                      amount: chargesInEth,
                       chain: paymentChain,
-                      allowEdits: {
-                        chain: true,
-                        token: true
-                      },
-                    }
-                  },
+                      sellerAddress: Environment.SWAPUP_TREASURY_WALLET,
+                      amountWei: (chargesInWei ? chargesInWei.toString() : "0") as unknown as bigint,
+                    },
+                  }
+                  }
+                />
 
-                  metadata: {
-                    name: "Buy SwapUp Subname"
-                  },
-
-                  onPurchaseSuccess: async (tx) => {
-                    console.log("payment transaction: ", tx);
-                    await handleOpenWallet();
-                  },
-
-                  mode: 'fund_wallet',
-
-                  // paymentInfo: {
-                  //   amount: chargesInEth,
-                  //   chain: paymentChain,
-                  //   sellerAddress: Environment.SWAPUP_TREASURY_WALLET,
-                  //   amountWei: (chargesInWei ? chargesInWei.toString() : "0") as unknown as bigint,
-                  // },
-                }
-                }
-              />
+                <ScrollBar orientation='vertical' />
+              </ScrollArea>
 
             </section>
           </div>

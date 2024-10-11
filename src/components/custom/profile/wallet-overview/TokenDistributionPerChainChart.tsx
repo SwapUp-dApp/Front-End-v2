@@ -80,11 +80,11 @@ const TokenDistributionPerChainChart = () => {
 
 
   return (
-    <>
+    <section className='space-y-4' >
+      <h2 className='text-sm font-semibold' >Distribution of tokens per chain</h2>
+
       {distributionOfTokensPerChain.length > 0 &&
         <section className='space-y-4' >
-          <h2 className='text-sm font-semibold' >Distribution of tokens per chain</h2>
-
           <div className='flex flex-col gap-4' >
             {
               distributionOfTokensPerChain.map(item => {
@@ -175,7 +175,7 @@ const TokenDistributionPerChainChart = () => {
           />
         </div>
       }
-    </>
+    </section>
   );
 };
 
