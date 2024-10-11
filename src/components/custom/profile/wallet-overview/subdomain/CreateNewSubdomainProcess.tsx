@@ -12,8 +12,6 @@ interface IProp {
 }
 
 const CreateNewSubdomainProcess = ({ setStartCreateSubdomainProcess, startCreateSubdomainProcess }: IProp) => {
-
-
   const [openAdvantagesDialog, setOpenAdvantagesDialog] = useState(false);
   const [openEnterNameDialog, setOpenEnterNameDialog] = useState(false);
   const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);

@@ -14,3 +14,7 @@ const chainByEnvirnment = swapupAvailbleChains.find(chain => chain.id === Number
 
 export const thirdWebClient = createThirdwebClient({ clientId });
 export const currentChain = chainByEnvirnment ? chainByEnvirnment : baseSepolia;
+
+//Definition: payment chain is the on which we want to accept payments
+//Hint: It can be changed later if needed
+export const paymentChain = currentChain;

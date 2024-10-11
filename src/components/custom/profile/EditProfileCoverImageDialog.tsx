@@ -61,7 +61,7 @@ const EditProfileCoverImageDialog = ({ currentEditCover, editCoverFormKey, form,
             'Your profile cover image is updated.'
           );
 
-          setProfileCoverImage(response.data.url);
+          setProfileCoverImage(currentEditCover);
           // Closing dialog
           setOpen(false);
         }

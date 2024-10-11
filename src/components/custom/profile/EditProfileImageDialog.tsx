@@ -63,7 +63,7 @@ const EditProfileImageDialog = ({ open, setOpen }: IProp) => {
             'Your profile picture is updated.'
           );
 
-          setProfileAvatar(response.data.url);
+          setProfileAvatar(currentAvatar);
 
           // Closing dialog
           setOpen(false);
@@ -250,4 +250,4 @@ const EditProfileImageDialog = ({ open, setOpen }: IProp) => {
   );
 };
 
-export default EditProfileImageDialog;
+export default EditProfileImageDialog;;
