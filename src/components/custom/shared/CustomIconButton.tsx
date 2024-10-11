@@ -24,8 +24,6 @@ const CustomIconButton = ({ className, children, isLoading = false, ...props }: 
         :
         <>{children}</>
       }
-
-
     </button>
   );
 };

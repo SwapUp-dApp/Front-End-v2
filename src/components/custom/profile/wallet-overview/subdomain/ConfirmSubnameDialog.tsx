@@ -103,7 +103,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
           const convertedChargesInEth = parseFloat((Environment.NEW_SUBNAME_CHARGES / Number(foundCurrency.price)).toFixed(18));
           const convertedChargesInWei = ethers.parseUnits(convertedChargesInEth.toString(), 'ether');
 
-          setChargesInEth(String(convertedChargesInEth.toFixed(6)));
+          setChargesInEth(String(convertedChargesInEth.toFixed(8)));
           setChargesInWei(convertedChargesInWei);
           setChargesInWei(convertedChargesInWei);
         }
@@ -215,7 +215,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
                 <p className="text-base font-medium text-secondary dark:text-su_secondary">You can choose Crypto or Card payment.</p>
               </div>
 
-              <ScrollArea className="h-[420px]" >
+              <ScrollArea className="h-[415px]">
                 <PayEmbed
                   theme={thirdwebCustomDarkTheme}
                   client={thirdWebClient}
