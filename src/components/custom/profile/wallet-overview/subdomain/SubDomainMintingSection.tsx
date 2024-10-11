@@ -125,7 +125,7 @@ const SubDomainMintingSection = () => {
           >
             <ScrollArea className={cn(
               '',
-              filteredAvailableSubnames.length > 3 && "h-[calc(100vh_-_200px)] pr-3"
+              filteredAvailableSubnames.length > 3 && "h-[calc(100vh_-_100px)] lg:h-[calc(100vh_-_200px)] pr-3"
             )}
             >
 

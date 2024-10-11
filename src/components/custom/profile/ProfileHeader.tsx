@@ -128,7 +128,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
         {/* 👇️ local image */}
         <div className="w-full relative" >
           <div className="relative group" >
-            <img src={profile.coverImage ? profile.coverImage : defaults.fallback.profileCover} alt="profile cover" className="w-full h-40 object-cover rounded-sm" />
+            <img src={profile.coverImage ? profile.coverImage : defaults.fallback.profileCover} alt="profile cover" className="w-full h-40 object-cover rounded-sm" loading="lazy" />
 
             <div className="hidden group-hover:flex hover:flex absolute right-2 bottom-2  justify-center items-center gap-3" >
               <CustomOutlineButton

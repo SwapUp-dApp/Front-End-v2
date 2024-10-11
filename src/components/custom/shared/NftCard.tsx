@@ -62,6 +62,7 @@ const NftCard = ({ className, activeGridView, data, setSelectedNftsForSwap, nfts
             alt=''
             onClick={handleCardClick}
             onError={getDefaultNftImageOnError}
+            loading="lazy"
           />
 
           {/* Hover card section */}
