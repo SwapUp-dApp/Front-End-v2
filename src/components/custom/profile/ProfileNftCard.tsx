@@ -35,6 +35,7 @@ const ProfileNftCard = ({ className, activeGridView, data, ...props }: IProp) =>
           src={imageURL}
           alt=''
           onError={getDefaultNftImageOnError}
+          loading="lazy"
         />
 
         <span className={`absolute peer top-2 ${activeGridView === "detailed" ? "right-3" : "right-1"} w-7 h-7 flex justify-center items-center rounded-full bg-transparent hover:bg-black/30`} >

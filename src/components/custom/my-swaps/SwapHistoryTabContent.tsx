@@ -52,7 +52,7 @@ const SwapHistoryTabContent = () => {
   const wallet = useProfileStore(state => state.profile.wallet);
 
   const { isLoading, isSuccess, isError } = useQuery({
-    queryKey: [`getSwapHistoryListApi`],
+    queryKey: [`getSwapHistoryListApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {
@@ -74,7 +74,8 @@ const SwapHistoryTabContent = () => {
         throw error;
       }
     },
-    retry: false
+    retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   // Applied filters logic

@@ -12,6 +12,8 @@ import { useQuery } from '@tanstack/react-query';
 import { resolveOffChainSubnameByWalletIdApi } from '@/service/api';
 import { SUI_SubnameItem } from '@/types/profile.types';
 import { handleShowNotificationToast } from '@/lib/helpers';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 interface NamespaceOffChainSubnameResponseItem {
   domain: string;
@@ -33,7 +35,7 @@ const SubDomainMintingSection = () => {
   ]);
 
   const { isLoading, isError, isSuccess } = useQuery({
-    queryKey: [`resolveOffChainSubnameByWalletIdApi`],
+    queryKey: [`resolveOffChainSubnameByWalletIdApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {
@@ -70,6 +72,7 @@ const SubDomainMintingSection = () => {
       }
     },
     retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   return (
@@ -115,15 +118,28 @@ const SubDomainMintingSection = () => {
             ))}
           </TabsList>
 
+          {/* Subname tab section */}
           <TabsContent
             value={subdomainSectionTabs[subdomainSectionTabs.findIndex(tab => tab === 'subnames')]}
-            className='space-y-2 py-2'
+            className='py-2'
           >
-            {filteredAvailableSubnames.map((subname) => (
-              <SubnameListItem key={subname.id} subname={subname} />
-            ))}
+            <ScrollArea className={cn(
+              '',
+              filteredAvailableSubnames.length > 3 && "h-[calc(100vh_-_100px)] lg:h-[calc(100vh_-_200px)] pr-3"
+            )}
+            >
+
+              <div className='space-y-2' >
+                {filteredAvailableSubnames.map((subname) => (
+                  <SubnameListItem key={subname.id} subname={subname} />
+                ))}
+              </div>
+
+              <ScrollBar orientation='vertical' />
+            </ScrollArea>
           </TabsContent>
 
+          {/* Records tab section */}
           <TabsContent
             value={subdomainSectionTabs[subdomainSectionTabs.findIndex(tab => tab === 'records')]}
             className="grid grid-cols-1 lg:grid-cols-2 py-2"

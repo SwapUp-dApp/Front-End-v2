@@ -11,8 +11,6 @@ interface IProp {
 const WalletOverviewCard = ({ cardType, value, description }: IProp) => {
 
   return (
-
-
     <Card className="h-[90px] w-full border-none bg-card  dark:bg-su_secondary_bg p-3 " >
       <CardContent className={`p-2 flex flex-col gap-2`}>
         <div className="flex items-start justify-between">
@@ -32,10 +30,6 @@ const WalletOverviewCard = ({ cardType, value, description }: IProp) => {
 
       </CardContent>
     </Card>
-
-
-
-
   );
 };
 

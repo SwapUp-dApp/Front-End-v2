@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DrawerTrigger, Drawer, DrawerContent, DrawerTitle, DrawerClose, } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTitle, DrawerClose, } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,13 +17,12 @@ import { handleShowNotificationToast } from "@/lib/helpers";
 
 
 interface IProp {
-  children: any;
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const EditProfileInfoDialog = ({ children }: IProp) => {
+const EditProfileInfoDialog = ({ open, setOpen }: IProp) => {
   const [formKey, setFormKey] = useState(generateRandomKey(6));
-  const [isOpen, setIsOpen] = useState(false);
-
   const [isUpdating, setIsUpdating] = useState(false);
 
   const [setProfileDetails, profileDetails, wallet] = useProfileStore(state => [state.setProfileDetails, state.profile.details, state.profile.wallet]);
@@ -70,7 +69,7 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
         );
 
         setProfileDetails(details);
-        setIsOpen(false);
+        setOpen(false);
         setFormKey(generateRandomKey(6));
       }
 
@@ -93,24 +92,20 @@ const EditProfileInfoDialog = ({ children }: IProp) => {
 
   return (
     <>
-      <Drawer open={isOpen} direction="right" onClose={() => setIsOpen(false)}  >
-        <DrawerTrigger onClick={() => setIsOpen(true)}>
-          {children}
-        </DrawerTrigger>
-
+      <Drawer open={open} direction="right" onClose={() => setOpen(false)}  >
         <DrawerContent
           className="p-3 h-screen w-9/12 lg:w-1/3 right-0 bg-transparent"
         >
           <DrawerClose
             className="bg-transparent fixed top-0 left-[-30%] lg:left-[-200%] h-screen w-[25vw] lg:w-[67vw]"
-            onClose={() => setIsOpen(false)}
+            onClose={() => setOpen(false)}
           ></DrawerClose>
 
           <div className="rounded-sm h-full w-full bg-su_secondary_bg flex flex-col gap-4 p-4" >
             <DrawerTitle className="text-su_primary" >
               <div className="flex justify-between items-start">
                 <h2 className="font-semibold text-xl pt-2" >Edit profile</h2>
-                <DrawerClose className="p-1 rounded-xs hover:bg-su_active_bg" onClick={() => setIsOpen(false)} >
+                <DrawerClose className="p-1 rounded-xs hover:bg-su_active_bg" onClick={() => setOpen(false)} >
                   <svg className="w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
                   </svg>

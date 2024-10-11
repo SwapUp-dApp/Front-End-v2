@@ -23,8 +23,8 @@ const CollectionDetailsSection = () => {
     state.overviewTab.setCollectionOwned,
   ]);
 
-  const { isLoading } = useQuery({
-    queryKey: [`getCollectionsByWalletIdApi`],
+  const { isLoading, isSuccess } = useQuery({
+    queryKey: [`getCollectionsByWalletIdApi-key${wallet.address}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {
@@ -45,6 +45,7 @@ const CollectionDetailsSection = () => {
       }
     },
     retry: false,
+    enabled: (wallet.address && wallet.isConnected) ? true : false
   });
 
   return (
@@ -155,7 +156,7 @@ const CollectionDetailsSection = () => {
         }
       </div>
 
-      {collectionsOwned.length === 0 &&
+      {(isSuccess && (collectionsOwned.length === 0)) &&
         <EmptyDataset
           title="No owned collections found"
           description="Check back later!"
@@ -164,8 +165,8 @@ const CollectionDetailsSection = () => {
 
       <LoadingDataset
         isLoading={isLoading}
-        title="Loading open swaps"
-        description='Open swaps data is being loaded...'
+        title="Loading collections data"
+        description='Collections owned dataset is being loaded...'
       />
     </div >
   );

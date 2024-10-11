@@ -10,7 +10,7 @@ import CustomIconButton from "../shared/CustomIconButton";
 import EditProfileImageDialog from "./EditProfileImageDialog";
 import CustomOutlineButton from "../shared/CustomOutlineButton";
 import EditProfileInfoDialog from "./EditProfileInfoDialog";
-import { IProfileDetails, SUI_DeleteProfilePicturePayload } from "@/types/profile.types";
+import { SUI_DeleteProfilePicturePayload } from "@/types/profile.types";
 import { Link, useLocation } from "react-router-dom";
 import ProfileTagTile from "../tiles/ProfileTagTile";
 import { useProfileStore } from "@/store/profile";
@@ -42,6 +42,8 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
 
   const [openEditProfilePictureDialog, setOpenEditProfilePictureDialog] = useState(false);
   const [openEditProfileCoverDialog, setOpenEditProfileCoverDialog] = useState(false);
+
+  const [openEditProfileDetailsDialog, setOpenProfileDetailsDialog] = useState(false);
 
   const [isRemovingCover, setIsRemovingCover] = useState(false);
 
@@ -126,7 +128,7 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
         {/* 👇️ local image */}
         <div className="w-full relative" >
           <div className="relative group" >
-            <img src={profile.coverImage ? profile.coverImage : defaults.fallback.profileCover} alt="profile cover" className="w-full h-40 object-cover rounded-sm" />
+            <img src={profile.coverImage ? profile.coverImage : defaults.fallback.profileCover} alt="profile cover" className="w-full h-40 object-cover rounded-sm" loading="lazy" />
 
             <div className="hidden group-hover:flex hover:flex absolute right-2 bottom-2  justify-center items-center gap-3" >
               <CustomOutlineButton
@@ -176,13 +178,15 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
 
           {/* Action / Social icons */}
           <span className="flex items-center gap-2">
-            <EditProfileInfoDialog>
-              <CustomIconButton title="edit-profile-image" >
-                <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M0 9.64016V11.6668C0 11.8535 0.146667 12.0002 0.333333 12.0002H2.36C2.44667 12.0002 2.53333 11.9668 2.59333 11.9002L9.87333 4.62683L7.37333 2.12683L0.1 9.40017C0.0333334 9.46683 0 9.54683 0 9.64016ZM11.8067 1.7535L10.2467 0.193498C10.185 0.131695 10.1117 0.0826637 10.0311 0.0492094C9.95043 0.0157551 9.86398 -0.00146484 9.77667 -0.00146484C9.68935 -0.00146484 9.6029 0.0157551 9.52225 0.0492094C9.4416 0.0826637 9.36834 0.131695 9.30667 0.193498L8.08667 1.4135L10.5867 3.9135L11.8067 2.6935C11.8685 2.63182 11.9175 2.55856 11.951 2.47791C11.9844 2.39727 12.0016 2.31081 12.0016 2.2235C12.0016 2.13619 11.9844 2.04973 11.951 1.96908C11.9175 1.88843 11.8685 1.81517 11.8067 1.7535Z" fill="currentColor" />
-                </svg>
-              </CustomIconButton>
-            </EditProfileInfoDialog>
+
+            <CustomIconButton
+              title="edit-profile-image"
+              onClick={() => setOpenProfileDetailsDialog(true)}
+            >
+              <svg className="w-3" viewBox="0 0 12 12" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 9.64016V11.6668C0 11.8535 0.146667 12.0002 0.333333 12.0002H2.36C2.44667 12.0002 2.53333 11.9668 2.59333 11.9002L9.87333 4.62683L7.37333 2.12683L0.1 9.40017C0.0333334 9.46683 0 9.54683 0 9.64016ZM11.8067 1.7535L10.2467 0.193498C10.185 0.131695 10.1117 0.0826637 10.0311 0.0492094C9.95043 0.0157551 9.86398 -0.00146484 9.77667 -0.00146484C9.68935 -0.00146484 9.6029 0.0157551 9.52225 0.0492094C9.4416 0.0826637 9.36834 0.131695 9.30667 0.193498L8.08667 1.4135L10.5867 3.9135L11.8067 2.6935C11.8685 2.63182 11.9175 2.55856 11.951 2.47791C11.9844 2.39727 12.0016 2.31081 12.0016 2.2235C12.0016 2.13619 11.9844 2.04973 11.951 1.96908C11.9175 1.88843 11.8685 1.81517 11.8067 1.7535Z" fill="currentColor" />
+              </svg>
+            </CustomIconButton>
 
             <CustomIconButton title="share">
               <svg className="w-3" viewBox="0 0 13 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -257,6 +261,11 @@ const ProfileHeader = ({ backClickNavigateTo, resetData, existDescription, exist
         open={openEditProfileCoverDialog}
         setOpen={setOpenEditProfileCoverDialog}
         isRemovingCover={isRemovingCover}
+      />
+
+      <EditProfileInfoDialog
+        open={openEditProfileDetailsDialog}
+        setOpen={setOpenProfileDetailsDialog}
       />
     </div >
   );
