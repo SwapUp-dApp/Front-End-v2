@@ -1,4 +1,4 @@
-export type SUT_PurchaseType = "subname-purchase" | "crypto-purchase";
+export type SUT_PurchaseType = 1 | 2;
 
 export interface SUI_PurchaseData {
   purchaseType: SUT_PurchaseType;

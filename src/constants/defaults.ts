@@ -1,6 +1,6 @@
 import { paymentChain } from "@/lib/thirdWebClient";
 import { SUI_NavigationObject, SUI_TabItem } from "@/types/global.types";
-import { SUT_AvailablePointSystemKeysType, SUT_AvailablePointSystemPointsType, SUT_PointSystemType, SUT_ProfileTagsVariantType } from "@/types/profile.types";
+import { SUT_PointSystemType, SUT_ProfileTagsVariantType } from "@/types/profile.types";
 import { darkTheme, PayUIOptions, Theme } from "thirdweb/react";
 
 interface IDefaultVariables {

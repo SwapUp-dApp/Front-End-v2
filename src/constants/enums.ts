@@ -36,3 +36,13 @@ export enum SUE_SWAP_REQUEST_TO_STRING {
   true = 'sent',
   false = 'received'
 }
+
+export enum SUE_PURCHASE_TYPE {
+  CRYPTO = 1,
+  SUBNAME = 2,
+}
+
+export enum SUE_PURCHASE_TYPE_TO_STRING {
+  value1 = 'crypto',
+  value2 = 'subname',
+}
