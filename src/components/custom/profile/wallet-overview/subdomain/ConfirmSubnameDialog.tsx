@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 import { PayEmbed, } from 'thirdweb/react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { SUI_PurchaseData } from '@/types/payments.types';
+import { SUE_PURCHASE_TYPE } from '@/constants/enums';
 
 
 interface IProp {
@@ -54,7 +55,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
     }
   };
 
-  const handleOpenWallet = async () => {
+  const handleMintSubnameAfterSuccessfulPayment = async () => {
     try {
       setIsLoading(true);
 
@@ -222,7 +223,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
                     ...defaults.thirdweb.getCustomPaymentOptions(false),
 
                     purchaseData: {
-                      purchaseType: "subname-purchase",
+                      purchaseType: SUE_PURCHASE_TYPE.SUBNAME,
                       details: {
                         subname: {
                           buyerAddress: wallet.address,
@@ -235,7 +236,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
 
                     onPurchaseSuccess: async (tx) => {
                       console.log("payment transaction: ", tx);
-                      await handleOpenWallet();
+                      await handleMintSubnameAfterSuccessfulPayment();
                     },
 
                     mode: 'direct_payment',
@@ -249,6 +250,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
                     },
                   }}
                 />
+
 
                 <ScrollBar orientation='vertical' />
               </ScrollArea>

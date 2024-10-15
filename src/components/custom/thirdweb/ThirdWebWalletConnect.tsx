@@ -9,6 +9,7 @@ import { defaults } from "@/constants/defaults";
 import { ConnectButton, useActiveWalletChain, useSwitchActiveWalletChain } from "thirdweb/react";
 import { useEffect, useState } from "react";
 import { SUI_PurchaseData } from "@/types/payments.types";
+import { SUE_PURCHASE_TYPE } from "@/constants/enums";
 // import {
 //   LoginPayload,
 //   VerifyLoginPayloadParams,
@@ -176,7 +177,7 @@ export default function ThirdWebWalletConnect({ className, hideDetails = false, 
                   payOptions: {
                     ...defaults.thirdweb.getCustomPaymentOptions(),
                     purchaseData: {
-                      purchaseType: "crypto-purchase",
+                      purchaseType: SUE_PURCHASE_TYPE.CRYPTO,
                       details: {
                         crypto: {
                           message: `${profile.wallet.address} user has successfully purchased crypto on ${paymentChain.name} network chain.`
