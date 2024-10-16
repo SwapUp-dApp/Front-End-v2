@@ -231,6 +231,10 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
                           domain: name,
                           message: `${wallet.address} user has successfully purchased ${subname}.${name} on ${paymentChain.name} network chain.`
                         }
+                      },
+                      paymentTriggeredFrom: {
+                        environmentId: Environment.ENVIRONMENT_ID,
+                        environmentKey: Environment.ENVIRONMENT_KEY
                       }
                     } as SUI_PurchaseData,
 

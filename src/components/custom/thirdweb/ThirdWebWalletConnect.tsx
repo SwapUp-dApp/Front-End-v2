@@ -10,6 +10,7 @@ import { ConnectButton, useActiveWalletChain, useSwitchActiveWalletChain } from 
 import { useEffect, useState } from "react";
 import { SUI_PurchaseData } from "@/types/payments.types";
 import { SUE_PURCHASE_TYPE } from "@/constants/enums";
+import { Environment } from "@/config";
 // import {
 //   LoginPayload,
 //   VerifyLoginPayloadParams,
@@ -182,10 +183,15 @@ export default function ThirdWebWalletConnect({ className, hideDetails = false, 
                         crypto: {
                           message: `${profile.wallet.address} user has successfully purchased crypto on ${paymentChain.name} network chain.`
                         }
+                      },
+                      paymentTriggeredFrom: {
+                        environmentId: Environment.ENVIRONMENT_ID,
+                        environmentKey: Environment.ENVIRONMENT_KEY
                       }
                     } as SUI_PurchaseData,
                     mode: "fund_wallet"
                   }
+
                 }}
 
               //auth={{
