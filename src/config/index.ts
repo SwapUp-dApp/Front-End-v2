@@ -1,21 +1,23 @@
-import { SUI_Config, SUI_ConfigEnvironment, SUT_EnvironmentKey } from "./config.types";
+import { SUI_Config, SUI_ConfigEnvironment, SUT_SwapupEnvironmentId, SUT_SwapupEnvironmentKey } from "./config.types";
 
-const environmentKey: SUT_EnvironmentKey = import.meta.env.VITE_ENVIRONMENT;
+const swapupEnvironmentKey: SUT_SwapupEnvironmentKey = import.meta.env.VITE_SWAPUP_ENVIRONMENT_KEY || 'staging';
 
 const config: SUI_Config = {
   local: {
+    ENVIRONMENT_KEY: import.meta.env.VITE_LOCAL_ENVIRONMENT_KEY,
+    ENVIRONMENT_ID: Number(import.meta.env.VITE_LOCAL_ENVIRONMENT_ID) as SUT_SwapupEnvironmentId,
     API_BASE_URL: import.meta.env.VITE_LOCAL_API_BASE_URL,
     ETHERSCAN_BASE_URL: import.meta.env.VITE_LOCAL_ETHERSCAN_BASE_URL,
     OPENSEA_BASE_URL: import.meta.env.VITE_LOCAL_OPENSEA_BASE_URL,
     OPENSEA_API_BASE_URL: import.meta.env.VITE_LOCAL_OPENSEA_API_BASE_URL,
-    OPENSEA_API_KEY: import.meta.env.VITE_OPENSEA_API_KEY,
     NETWORK: import.meta.env.VITE_LOCAL_NETWORK,
     CHAIN_ID: import.meta.env.VITE_LOCAL_CHAIN_ID,
-    SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
-    THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
-    COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
-    COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
+    SWAPUP_CONTRACT: import.meta.env.VITE_LOCAL_SWAPUP_CONTRACT,
     NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_LOCAL_NAMESPACE_LISTED_ENS_NAME,
+    OPENSEA_API_KEY: import.meta.env.VITE_OPENSEA_API_KEY,
+    THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
+    COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
+    COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
     NAMESPACE_API_BASE_URL: import.meta.env.VITE_NAMESPACE_API_BASE_URL,
     NAMESPACE_API_KEY: import.meta.env.VITE_NAMESPACE_API_KEY,
     NAMESPACE_OFFCHAIN_API_BASE_URL: import.meta.env.VITE_NAMESPACE_OFFCHAIN_API_BASE_URL,
@@ -24,19 +26,21 @@ const config: SUI_Config = {
     NEW_SUBNAME_CHARGES: Number(import.meta.env.VITE_NEW_SUBNAME_CHARGES)
   },
 
-  dev: {
-    API_BASE_URL: import.meta.env.VITE_DEV_API_BASE_URL,
-    ETHERSCAN_BASE_URL: import.meta.env.VITE_DEV_ETHERSCAN_BASE_URL,
-    OPENSEA_BASE_URL: import.meta.env.VITE_DEV_OPENSEA_BASE_URL,
-    OPENSEA_API_BASE_URL: import.meta.env.VITE_DEV_OPENSEA_API_BASE_URL,
+  development: {
+    ENVIRONMENT_KEY: import.meta.env.VITE_DEVELOPMENT_ENVIRONMENT_KEY,
+    ENVIRONMENT_ID: Number(import.meta.env.VITE_DEVELOPMENT_ENVIRONMENT_ID) as SUT_SwapupEnvironmentId,
+    API_BASE_URL: import.meta.env.VITE_DEVELOPMENT_API_BASE_URL,
+    ETHERSCAN_BASE_URL: import.meta.env.VITE_DEVELOPMENT_ETHERSCAN_BASE_URL,
+    OPENSEA_BASE_URL: import.meta.env.VITE_DEVELOPMENT_OPENSEA_BASE_URL,
+    OPENSEA_API_BASE_URL: import.meta.env.VITE_DEVELOPMENT_OPENSEA_API_BASE_URL,
+    NETWORK: import.meta.env.VITE_DEVELOPMENT_NETWORK,
+    CHAIN_ID: import.meta.env.VITE_DEVELOPMENT_CHAIN_ID,
+    SWAPUP_CONTRACT: import.meta.env.VITE_DEVELOPMENT_SWAPUP_CONTRACT,
+    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_DEVELOPMENT_NAMESPACE_LISTED_ENS_NAME,
     OPENSEA_API_KEY: import.meta.env.VITE_OPENSEA_API_KEY,
-    NETWORK: import.meta.env.VITE_DEV_NETWORK,
-    CHAIN_ID: import.meta.env.VITE_DEV_CHAIN_ID,
-    SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
     COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
     COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
-    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_DEV_NAMESPACE_LISTED_ENS_NAME,
     NAMESPACE_API_BASE_URL: import.meta.env.VITE_NAMESPACE_API_BASE_URL,
     NAMESPACE_API_KEY: import.meta.env.VITE_NAMESPACE_API_KEY,
     NAMESPACE_OFFCHAIN_API_BASE_URL: import.meta.env.VITE_NAMESPACE_OFFCHAIN_API_BASE_URL,
@@ -45,19 +49,21 @@ const config: SUI_Config = {
     NEW_SUBNAME_CHARGES: Number(import.meta.env.VITE_NEW_SUBNAME_CHARGES)
   },
 
-  qa: {
-    API_BASE_URL: import.meta.env.VITE_QA_API_BASE_URL,
-    ETHERSCAN_BASE_URL: import.meta.env.VITE_QA_ETHERSCAN_BASE_URL,
-    OPENSEA_BASE_URL: import.meta.env.VITE_QA_OPENSEA_BASE_URL,
-    OPENSEA_API_BASE_URL: import.meta.env.VITE_QA_OPENSEA_API_BASE_URL,
+  staging: {
+    ENVIRONMENT_KEY: import.meta.env.VITE_STAGING_ENVIRONMENT_KEY,
+    ENVIRONMENT_ID: Number(import.meta.env.VITE_STAGING_ENVIRONMENT_ID) as SUT_SwapupEnvironmentId,
+    API_BASE_URL: import.meta.env.VITE_STAGING_API_BASE_URL,
+    ETHERSCAN_BASE_URL: import.meta.env.VITE_STAGING_ETHERSCAN_BASE_URL,
+    OPENSEA_BASE_URL: import.meta.env.VITE_STAGING_OPENSEA_BASE_URL,
+    OPENSEA_API_BASE_URL: import.meta.env.VITE_STAGING_OPENSEA_API_BASE_URL,
+    NETWORK: import.meta.env.VITE_STAGING_NETWORK,
+    CHAIN_ID: import.meta.env.VITE_STAGING_CHAIN_ID,
+    SWAPUP_CONTRACT: import.meta.env.VITE_STAGING_SWAPUP_CONTRACT,
+    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_STAGING_NAMESPACE_LISTED_ENS_NAME,
     OPENSEA_API_KEY: import.meta.env.VITE_OPENSEA_API_KEY,
-    NETWORK: import.meta.env.VITE_QA_NETWORK,
-    CHAIN_ID: import.meta.env.VITE_QA_CHAIN_ID,
-    SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
     COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
     COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
-    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_QA_NAMESPACE_LISTED_ENS_NAME,
     NAMESPACE_API_BASE_URL: import.meta.env.VITE_NAMESPACE_API_BASE_URL,
     NAMESPACE_API_KEY: import.meta.env.VITE_NAMESPACE_API_KEY,
     NAMESPACE_OFFCHAIN_API_BASE_URL: import.meta.env.VITE_NAMESPACE_OFFCHAIN_API_BASE_URL,
@@ -66,19 +72,21 @@ const config: SUI_Config = {
     NEW_SUBNAME_CHARGES: Number(import.meta.env.VITE_NEW_SUBNAME_CHARGES)
   },
 
-  prod: {
-    API_BASE_URL: import.meta.env.VITE_PROD_API_BASE_URL,
-    ETHERSCAN_BASE_URL: import.meta.env.VITE_PROD_ETHERSCAN_BASE_URL,
-    OPENSEA_BASE_URL: import.meta.env.VITE_PROD_OPENSEA_BASE_URL,
-    OPENSEA_API_BASE_URL: import.meta.env.VITE_PROD_OPENSEA_API_BASE_URL,
+  production: {
+    ENVIRONMENT_KEY: import.meta.env.VITE_PRODUCTION_ENVIRONMENT_KEY,
+    ENVIRONMENT_ID: Number(import.meta.env.VITE_PRODUCTION_ENVIRONMENT_ID) as SUT_SwapupEnvironmentId,
+    API_BASE_URL: import.meta.env.VITE_PRODUCTION_API_BASE_URL,
+    ETHERSCAN_BASE_URL: import.meta.env.VITE_PRODUCTION_ETHERSCAN_BASE_URL,
+    OPENSEA_BASE_URL: import.meta.env.VITE_PRODUCTION_OPENSEA_BASE_URL,
+    OPENSEA_API_BASE_URL: import.meta.env.VITE_PRODUCTION_OPENSEA_API_BASE_URL,
+    NETWORK: import.meta.env.VITE_PRODUCTION_NETWORK,
+    CHAIN_ID: import.meta.env.VITE_PRODUCTION_CHAIN_ID,
+    SWAPUP_CONTRACT: import.meta.env.VITE_PRODUCTION_SWAPUP_CONTRACT,
+    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_PRODUCTION_NAMESPACE_LISTED_ENS_NAME,
     OPENSEA_API_KEY: import.meta.env.VITE_OPENSEA_API_KEY,
-    NETWORK: import.meta.env.VITE_PROD_NETWORK,
-    CHAIN_ID: import.meta.env.VITE_PROD_CHAIN_ID,
-    SWAPUP_CONTRACT: import.meta.env.VITE_SWAPUP_CONTRACT,
     THIRDWEB_CLIENT_ID: import.meta.env.VITE_THIRDWEB_CLIENT_ID,
     COIN_RANKING_API_KEY: import.meta.env.VITE_COIN_RANKING_API_KEY,
     COIN_RANKING_BASE_URL: import.meta.env.VITE_COIN_RANKING_BASE_URL,
-    NAMESPACE_LISTED_ENS_NAME: import.meta.env.VITE_PROD_NAMESPACE_LISTED_ENS_NAME,
     NAMESPACE_API_BASE_URL: import.meta.env.VITE_NAMESPACE_API_BASE_URL,
     NAMESPACE_API_KEY: import.meta.env.VITE_NAMESPACE_API_KEY,
     NAMESPACE_OFFCHAIN_API_BASE_URL: import.meta.env.VITE_NAMESPACE_OFFCHAIN_API_BASE_URL,
@@ -88,4 +96,4 @@ const config: SUI_Config = {
   },
 };
 
-export const Environment: SUI_ConfigEnvironment = config[environmentKey];
+export const Environment: SUI_ConfigEnvironment = config[swapupEnvironmentKey];

@@ -1,6 +1,9 @@
-export type SUT_EnvironmentKey = "local" | "dev" | "qa" | "prod";
+export type SUT_SwapupEnvironmentKey = "local" | "development" | "staging" | "production";
+export type SUT_SwapupEnvironmentId = 1 | 2 | 3 | 4;
 
 export interface SUI_ConfigEnvironment {
+  ENVIRONMENT_KEY: string;
+  ENVIRONMENT_ID: SUT_SwapupEnvironmentId;
   API_BASE_URL: string;
   OPENSEA_BASE_URL: string;
   OPENSEA_API_BASE_URL: string;
@@ -22,7 +25,7 @@ export interface SUI_ConfigEnvironment {
 }
 export interface SUI_Config {
   local: SUI_ConfigEnvironment;
-  dev: SUI_ConfigEnvironment;
-  qa: SUI_ConfigEnvironment;
-  prod: SUI_ConfigEnvironment;
+  development: SUI_ConfigEnvironment;
+  staging: SUI_ConfigEnvironment;
+  production: SUI_ConfigEnvironment;
 }
