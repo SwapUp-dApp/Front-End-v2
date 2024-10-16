@@ -1,3 +1,5 @@
+import { SUT_SwapupEnvironmentId, SUT_SwapupEnvironmentKey } from "@/config/config.types";
+
 export type SUT_PurchaseType = 1 | 2;
 
 export interface SUI_PurchaseData {
@@ -5,6 +7,10 @@ export interface SUI_PurchaseData {
   details: {
     subname?: SUI_PurchaseSubnameInfo;
     crypto?: SUI_PurchaseCryptoInfo;
+  };
+  paymentTriggeredFrom: {
+    environmentKey: SUT_SwapupEnvironmentKey,
+    environmentId: SUT_SwapupEnvironmentId;
   };
 }
 
