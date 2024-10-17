@@ -23,7 +23,7 @@ const PrivateRoom = () => {
 
   const state = useSwapMarketStore(state => state.privateMarket.privateRoom);
   const [wallet, profile] = useProfileStore(state => [state.profile.wallet, state.profile]);
-  const [filteredAvailableCurrencies, setAvailableCurrencies] = useGlobalStore(state => [state.filteredAvailableCurrencies, state.setAvailableCurrencies]);
+  const [setAvailableCurrencies] = useGlobalStore(state => [state.setAvailableCurrencies]);
 
   const [enableApproveButtonCriteria, setEnableApproveButtonCriteria] = useState(false);
   const [swapCreation, setSwapCreation] = useState<SUI_SwapCreation>({ isLoading: false, created: false });
