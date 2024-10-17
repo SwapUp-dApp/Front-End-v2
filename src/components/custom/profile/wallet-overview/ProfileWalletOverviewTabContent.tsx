@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import WalletOverviewCard from '../../swap-market/WalletOverviewCard';
 import { Card } from '@/components/ui/card';
 import TokenDistributionPerChainChart from './TokenDistributionPerChainChart';
@@ -12,11 +12,14 @@ import { useGlobalStore } from '@/store/global-store';
 import LoadingDataset from '../../shared/LoadingDataset';
 import { useProfileStore } from '@/store/profile';
 import { handleShowNotificationToast } from '@/lib/helpers';
+import { Outlet } from 'react-router-dom';
+import { generateRandomKey } from '@/lib/utils';
 
 const ProfileWalletOverviewTabContent = () => {
-  const [setAvailableCurrencies] = useGlobalStore(state => [state.setAvailableCurrencies]);
-  const [totalWalletValue, totalNftsOwned] = useProfileStore(state => [state.overviewTab.totalWalletValue, state.overviewTab.totalNftsOwned]);
+  const [subnameMintSectionKey, setSubnameMintSectionKey] = useState(generateRandomKey(6));
 
+  const [setAvailableCurrencies] = useGlobalStore(state => [state.setAvailableCurrencies]);
+  const [totalWalletValue, totalNftsOwned, wallet] = useProfileStore(state => [state.overviewTab.totalWalletValue, state.overviewTab.totalNftsOwned, state.profile.wallet]);
   const { isLoading, isSuccess, isError } = useQuery({
     queryKey: [`getAvailableCurrenciesApi`],
     queryFn: async () => {
@@ -36,6 +39,18 @@ const ProfileWalletOverviewTabContent = () => {
     },
     retry: false
   });
+
+
+  const handleSubnameMintSectionReload = () => {
+    setSubnameMintSectionKey(generateRandomKey(6));
+  };
+
+  useEffect(() => {
+    if (wallet && wallet.isConnected) {
+      handleSubnameMintSectionReload();
+    }
+
+  }, [wallet]);
 
   return (
     <>
@@ -60,7 +75,9 @@ const ProfileWalletOverviewTabContent = () => {
           </div>
 
           <CollectionDetailsSection />
-          <SubDomainMintingSection />
+          <SubDomainMintingSection key={subnameMintSectionKey} handleSubnameMintSectionReload={handleSubnameMintSectionReload} subnameMintSectionKey={subnameMintSectionKey} />
+
+          {/* <Outlet /> */}
         </section>
       }
 

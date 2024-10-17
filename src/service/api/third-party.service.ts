@@ -103,4 +103,8 @@ export const resolveOffChainSubnameByWalletIdApi = (walletId: string): Promise<A
   return namespaceOffchainApi.get(`/v1/subname/resolution/${walletId}/60`);
 };
 
+export const deleteOffChainSubnameApi = (label: string, domain: string): Promise<AxiosResponse> => {
+  return namespaceOffchainApi.delete(`/v1/subname/${label}/${domain}`);
+};
+
 // Namespace Offchain APIs for Minting L2 subname --- Ends here

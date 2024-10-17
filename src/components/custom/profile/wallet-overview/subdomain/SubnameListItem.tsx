@@ -3,16 +3,48 @@ import CustomOutlineButton from "@/components/custom/shared/CustomOutlineButton"
 import DeleteConfirmationDialog from "@/components/custom/shared/DeleteConfirmationDialog";
 import ProfileTagTile from "@/components/custom/tiles/ProfileTagTile";
 import SwapParameterTile from "@/components/custom/tiles/SwapParameterTile";
+import { handleShowNotificationToast } from "@/lib/helpers";
+import { deleteOffChainSubnameApi } from "@/service/api";
 import { SUI_SubnameItem } from "@/types/profile.types";
 import { useState } from "react";
-import { toast } from "sonner";
 
 interface IProp {
   subname: SUI_SubnameItem;
+  handleSubnameMintSectionReload: () => void;
 }
 
-const SubnameListItem = ({ subname }: IProp) => {
+const SubnameListItem = ({ subname, handleSubnameMintSectionReload }: IProp) => {
   const [openDeleteConfirmationDialog, setOpenDeleteConfirmationDialog] = useState(false);
+  const [isDeletingSubname, setIsDeletingSubname] = useState(false);
+
+  const handleConfirmDeletionSubname = async () => {
+    try {
+      setIsDeletingSubname(true);
+
+      const deleteResponse = await deleteOffChainSubnameApi(subname.subnameLabel, subname.parent);
+
+      if ((deleteResponse.status === 201) || deleteResponse.data) {
+        handleShowNotificationToast(
+          "success",
+          `Subname deleted successfully`,
+          `${subname.fullName}`
+        );
+
+        setOpenDeleteConfirmationDialog(false);
+        handleSubnameMintSectionReload();
+      }
+
+    } catch (error: any) {
+
+      handleShowNotificationToast(
+        "error",
+        `Request failed!`,
+        `${error.message}`
+      );
+    } finally {
+      setIsDeletingSubname(false);
+    }
+  };
 
   return (
     <div className='bg-su_secondary_bg p-6 rounded-md flex flex-col gap-2 text-xs lg:text-sm'>
@@ -61,19 +93,8 @@ const SubnameListItem = ({ subname }: IProp) => {
         setOpen={setOpenDeleteConfirmationDialog}
         title={`Are you sure you want to delete ${subname.fullName} subdomain?`}
         description={"This action cannot be undone. Please proceed with caution."}
-        handleConfirm={() => {
-          toast.info("Deleting submain", {
-            position: 'bottom-left',
-            duration: 2000,
-            description: "This feature is under construction!",
-            action: {
-              label: "Close",
-              onClick: () => console.log("Close"),
-            },
-            className: '!bg-gradient-primary border-none',
-            descriptionClassName: '!text-white',
-          });
-        }}
+        handleConfirm={handleConfirmDeletionSubname}
+        isLoading={isDeletingSubname}
       />
     </div>
   );

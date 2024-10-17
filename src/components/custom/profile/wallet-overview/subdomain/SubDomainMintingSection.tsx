@@ -21,7 +21,12 @@ interface NamespaceOffChainSubnameResponseItem {
   label: string;
 }
 
-const SubDomainMintingSection = () => {
+interface IProp {
+  handleSubnameMintSectionReload: () => void;
+  subnameMintSectionKey: string;
+}
+
+const SubDomainMintingSection = ({ handleSubnameMintSectionReload, subnameMintSectionKey }: IProp) => {
 
   const [startCreateSubdomainProcess, setStartCreateSubdomainProcess] = useState(false);
 
@@ -35,7 +40,7 @@ const SubDomainMintingSection = () => {
   ]);
 
   const { isLoading, isError, isSuccess } = useQuery({
-    queryKey: [`resolveOffChainSubnameByWalletIdApi-key${wallet.address}`],
+    queryKey: [`resolveOffChainSubnameByWalletIdApi-key${wallet.address}-${subnameMintSectionKey}`],
     queryFn: async () => {
       try {
         if (wallet.address && wallet.isConnected) {
@@ -131,7 +136,7 @@ const SubDomainMintingSection = () => {
 
               <div className='space-y-2' >
                 {filteredAvailableSubnames.map((subname) => (
-                  <SubnameListItem key={subname.id} subname={subname} />
+                  <SubnameListItem key={subname.id} subname={subname} handleSubnameMintSectionReload={handleSubnameMintSectionReload} />
                 ))}
               </div>
 

@@ -7,9 +7,10 @@ interface IProp {
   open: boolean;
   title: string;
   description: string;
+  isLoading: boolean;
 }
 
-const DeleteConfirmationDialog = ({ open, setOpen, handleConfirm, title, description }: IProp) => {
+const DeleteConfirmationDialog = ({ open, setOpen, handleConfirm, title, description, isLoading }: IProp) => {
   return (
     <Dialog open={open} onOpenChange={setOpen} >
       <DialogContent className="w-[400px] p-4" >
@@ -34,6 +35,7 @@ const DeleteConfirmationDialog = ({ open, setOpen, handleConfirm, title, descrip
               containerClasses="w-full h-full"
               className='py-3'
               onClick={handleConfirm}
+              isLoading={isLoading}
             >
               Confirm
             </CustomOutlineButton>
