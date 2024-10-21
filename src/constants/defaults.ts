@@ -1,6 +1,7 @@
+import { paymentChain } from "@/lib/thirdWebClient";
 import { SUI_NavigationObject, SUI_TabItem } from "@/types/global.types";
-import { SUT_AvailablePointSystemKeysType, SUT_AvailablePointSystemPointsType, SUT_PointSystemType, SUT_ProfileTagsVariantType } from "@/types/profile.types";
-import { darkTheme } from "thirdweb/react";
+import { SUT_PointSystemType, SUT_ProfileTagsVariantType } from "@/types/profile.types";
+import { darkTheme, PayUIOptions, Theme } from "thirdweb/react";
 
 interface IDefaultVariables {
   swapMarket: SUI_NavigationObject;
@@ -18,6 +19,11 @@ interface IDefaultVariables {
     };
   };
   pointSystem: SUT_PointSystemType;
+
+  thirdweb: {
+    getCustomPaymentOptions: (fundWalletMode?: boolean) => PayUIOptions;
+    getCustomTheme: () => Theme;
+  };
 }
 
 const swapMarketBaseRoute = "/swap-up/swap-market";
@@ -110,15 +116,53 @@ export const defaults: IDefaultVariables = {
     "created-social-post": 500,
     "minted-subname": 20000,
     "total": 0
+  },
+  thirdweb: {
+    getCustomPaymentOptions: (fundWalletMode: boolean = true) => {
+
+      const paymentOptionsObj: PayUIOptions = {
+        prefillBuy: {
+          chain: paymentChain,
+          allowEdits: {
+            amount: false,
+            chain: false,
+            token: true
+          }
+        },
+
+        buyWithCrypto: {
+          testMode: paymentChain.testnet,
+          prefillSource: {
+            chain: paymentChain,
+            allowEdits: {
+              chain: paymentChain.testnet || false,
+              token: true
+            },
+          }
+        },
+
+        buyWithFiat: {
+          testMode: paymentChain.testnet,
+        },
+
+        metadata: {
+          name: `Buy ${fundWalletMode ? "Crypto" : "Subname"}`,
+          image: "/swapup.png"
+        },
+      };
+      return (fundWalletMode ? paymentOptionsObj : { prefillBuy: undefined, ...paymentOptionsObj } as PayUIOptions);
+    },
+    getCustomTheme: () => {
+      return darkTheme({
+        fontFamily: "Urbanist, Poppins, sans-serif",
+        colors: {
+          modalBg: "rgba(13, 13, 35, 1)",
+          primaryButtonBg: "linear-gradient(to right, #9452FF, #51C0FF)",
+          primaryButtonText: "white",
+          connectedButtonBgHover: "rgba(13, 13, 35, 1)",
+        }
+      });
+
+    }
   }
 };
-
-export const thirdwebCustomDarkTheme = darkTheme({
-  fontFamily: "Urbanist, Poppins, sans-serif",
-  colors: {
-    modalBg: "rgba(13, 13, 35, 1)",
-    primaryButtonBg: "linear-gradient(to right, #9452FF, #51C0FF)",
-    primaryButtonText: "white",
-    connectedButtonBgHover: "rgba(13, 13, 35, 1)",
-  }
-});

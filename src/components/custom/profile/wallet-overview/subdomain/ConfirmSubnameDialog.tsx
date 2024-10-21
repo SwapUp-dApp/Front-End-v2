@@ -3,10 +3,10 @@ import CustomOutlineButton from '@/components/custom/shared/CustomOutlineButton'
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent } from '@/components/ui/dialog';
 import { Environment } from '@/config';
-import { thirdwebCustomDarkTheme } from '@/constants/defaults';
+import { defaults } from '@/constants/defaults';
 import { handleShowNotificationToast } from '@/lib/helpers';
 import { handleMintNewOffchainSubname } from '@/lib/minting';
-import { currentChain, thirdWebClient } from '@/lib/thirdWebClient';
+import { paymentChain, thirdWebClient } from '@/lib/thirdWebClient';
 import { getAvailableCurrenciesApi } from '@/service/api';
 import { useGlobalStore } from '@/store/global-store';
 import { useProfileStore } from '@/store/profile';
@@ -14,8 +14,9 @@ import { SUI_CurrencyChainItem } from '@/types/global.types';
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { PayEmbed, } from 'thirdweb/react';
-import { ethereum } from "thirdweb/chains";
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { SUI_PurchaseData } from '@/types/payments.types';
+import { SUE_PURCHASE_TYPE } from '@/constants/enums';
 
 
 interface IProp {
@@ -54,7 +55,7 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
     }
   };
 
-  const handleOpenWallet = async () => {
+  const handleMintSubnameAfterSuccessfulPayment = async () => {
     try {
       setIsLoading(true);
 
@@ -111,8 +112,6 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
     }
   }, [availableCurrencies, openPaymentSection]);
 
-  // for testing the card payment flow payment chain is set to mainnet
-  const paymentChain = currentChain;
 
   return (
     <Dialog open={open} onOpenChange={setOpen} >
@@ -217,57 +216,31 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
 
               <ScrollArea className="h-[415px]">
                 <PayEmbed
-                  theme={thirdwebCustomDarkTheme}
+                  theme={defaults.thirdweb.getCustomTheme()}
                   client={thirdWebClient}
 
                   payOptions={{
-                    // This 'prefillBuy' is for 'Payment mode: fund_wallet' only
-                    // prefillBuy: {
-                    //   chain: paymentChain,
-                    //   amount: chargesInEth,
-                    //   allowEdits: {
-                    //     amount: false,
-                    //     chain: false,
-                    //     token: true
-                    //   }
-                    // },
-
-                    buyWithFiat: {
-                      testMode: paymentChain.testnet,
-                      preferredProvider: 'STRIPE',
-                      prefillSource: {
-                        currency: 'USD'
-                      }
-                    },
-
-                    buyWithCrypto: {
-                      testMode: paymentChain.testnet,
-                      prefillSource: {
-                        chain: paymentChain,
-                        allowEdits: {
-                          chain: paymentChain.testnet || false,
-                          token: true
-                        },
-                      }
-                    },
-
-                    metadata: {
-                      name: "Buy Subname",
-                      image: "/swapup.png"
-                    },
+                    ...defaults.thirdweb.getCustomPaymentOptions(false),
 
                     purchaseData: {
-                      subnameDetails: {
-                        buyerAddress: wallet.address,
-                        subnameLabel: subname,
-                        domain: name,
-                        message: ""
+                      purchaseType: SUE_PURCHASE_TYPE.SUBNAME,
+                      details: {
+                        subname: {
+                          buyerAddress: wallet.address,
+                          subnameLabel: subname,
+                          domain: name,
+                          message: `${wallet.address} user has successfully purchased ${subname}.${name} on ${paymentChain.name} network chain.`
+                        }
+                      },
+                      paymentTriggeredFrom: {
+                        environmentId: Environment.ENVIRONMENT_ID,
+                        environmentKey: Environment.ENVIRONMENT_KEY
                       }
-                    },
+                    } as SUI_PurchaseData,
 
                     onPurchaseSuccess: async (tx) => {
                       console.log("payment transaction: ", tx);
-                      await handleOpenWallet();
+                      await handleMintSubnameAfterSuccessfulPayment();
                     },
 
                     mode: 'direct_payment',
@@ -279,9 +252,9 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
                       sellerAddress: Environment.SWAPUP_TREASURY_WALLET,
                       amountWei: (chargesInWei ? chargesInWei.toString() : "0") as unknown as bigint,
                     },
-                  }
-                  }
+                  }}
                 />
+
 
                 <ScrollBar orientation='vertical' />
               </ScrollArea>
