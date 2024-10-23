@@ -40,9 +40,11 @@ export enum SUE_SWAP_REQUEST_TO_STRING {
 export enum SUE_PURCHASE_TYPE {
   CRYPTO = 1,
   SUBNAME = 2,
+  SUBSCRIPTION = 3
 }
 
 export enum SUE_PURCHASE_TYPE_TO_STRING {
   value1 = 'crypto',
   value2 = 'subname',
+  value3 = 'subscription',
 }

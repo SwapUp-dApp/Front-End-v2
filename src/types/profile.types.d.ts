@@ -33,6 +33,7 @@ export interface IProfileDetails {
     warpcast?: string;
     tags?: SUT_ProfileTagsVariantType[];
     points?: SUT_PointsWithTotal;
+    smartAccount?: string;
 };
 
 export interface IProfile {
@@ -170,3 +171,12 @@ export interface SUI_UpdateProfileDetailsPayload {
     };
 }
 
+export interface SUI_TransferSubscriptionTokensToTreasuryPayload {
+    userWalletAddress: string;
+    tokenAddress: string;
+    amountToTransfer: number | string;
+}
+
+export interface SUI_TransferSubscriptionTokensToUserPayload extends Pick<SUI_TransferSubscriptionTokensToTreasuryPayload, 'amountToTransfer' | 'tokenAddress'> {
+    transferToAddress: string;
+}

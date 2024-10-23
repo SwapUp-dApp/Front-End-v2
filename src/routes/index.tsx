@@ -23,6 +23,7 @@ import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import PendingSwapsTabContent from "@/components/custom/my-swaps/PendingSwapsTabContent";
 import SwapHistoryTabContent from "@/components/custom/my-swaps/SwapHistoryTabContent";
 import ServicesPage from "@/pages/Services";
+import SubscriptionTabContent from "@/components/custom/profile/subscription/SubscriptionTabContent";
 
 
 export interface SUI_RoutesType {
@@ -154,6 +155,12 @@ export const clientSideRoutes: SUI_RoutesType[] = [
             title: "Points & Swap",
             path: "points-swappot",
             element: <ProfilePointsAndSwappotTabContent />,
+          },
+          {
+            id: 'subscription-tab',
+            title: "Subscription",
+            path: "subscription",
+            element: <SubscriptionTabContent />,
           },
         ]
       },

@@ -238,9 +238,9 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
                       }
                     } as SUI_PurchaseData,
 
-                    onPurchaseSuccess: async (tx) => {
+                    onPurchaseSuccess: (tx) => {
+                      handleMintSubnameAfterSuccessfulPayment();
                       console.log("payment transaction: ", tx);
-                      await handleMintSubnameAfterSuccessfulPayment();
                     },
 
                     mode: 'direct_payment',
@@ -254,7 +254,6 @@ const ConfirmSubnameDialog = ({ handleNavigationOfSteps, open, setOpen }: IProp)
                     },
                   }}
                 />
-
 
                 <ScrollBar orientation='vertical' />
               </ScrollArea>

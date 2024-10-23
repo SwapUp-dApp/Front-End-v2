@@ -21,7 +21,7 @@ interface IDefaultVariables {
   pointSystem: SUT_PointSystemType;
 
   thirdweb: {
-    getCustomPaymentOptions: (fundWalletMode?: boolean) => PayUIOptions;
+    getCustomPaymentOptions: (fundWalletMode?: boolean, paymentTitle?: string) => PayUIOptions;
     getCustomTheme: () => Theme;
   };
 }
@@ -89,6 +89,11 @@ export const defaults: IDefaultVariables = {
         title: 'Member Benefits',
         path: `${profileBaseRoute}/points-swappot`
       },
+      {
+        key: 'subscription',
+        title: "Subscription",
+        path: `${profileBaseRoute}/subscription`
+      }
     ]
   },
   fallback: {
@@ -118,7 +123,7 @@ export const defaults: IDefaultVariables = {
     "total": 0
   },
   thirdweb: {
-    getCustomPaymentOptions: (fundWalletMode: boolean = true) => {
+    getCustomPaymentOptions: (fundWalletMode: boolean = true, paymentTitle?: string) => {
 
       const paymentOptionsObj: PayUIOptions = {
         prefillBuy: {
@@ -146,7 +151,7 @@ export const defaults: IDefaultVariables = {
         },
 
         metadata: {
-          name: `Buy ${fundWalletMode ? "Crypto" : "Subname"}`,
+          name: `Buy ${paymentTitle ? paymentTitle : (fundWalletMode ? "Crypto" : "Subname")}`,
           image: "/swapup.png"
         },
       };

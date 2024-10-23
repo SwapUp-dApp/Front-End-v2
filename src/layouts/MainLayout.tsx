@@ -62,7 +62,7 @@ const MainLayout = () => {
           const userResponse = await createUserByWalletIdApi(connectedWallet.address, payload);
 
           if (userResponse) {
-            const { createdAt, description, title, images, tags, social_links, points } = userResponse.data.data;
+            const { createdAt, description, title, images, tags, social_links, points, smartAccount } = userResponse.data.data;
             const latestProfile = useProfileStore.getState().profile;
 
             const userProfileDetails: IProfile = {
@@ -77,7 +77,8 @@ const MainLayout = () => {
                 points: points,
                 tags: tags,
                 twitter: social_links.twitter,
-                warpcast: social_links.warpcast
+                warpcast: social_links.warpcast,
+                smartAccount
               }
             };
 

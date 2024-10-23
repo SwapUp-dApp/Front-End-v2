@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import API from "../Axios";
-import { SUI_CreateNewUserPayload, SUI_DeleteProfilePicturePayload, SUI_UpdateProfileDetailsPayload, SUI_UpdateProfilePointsPayload, SUI_UploadProfilePicturePayload } from "@/types/profile.types";
+import { SUI_CreateNewUserPayload, SUI_DeleteProfilePicturePayload, SUI_TransferSubscriptionTokensToTreasuryPayload, SUI_UpdateProfileDetailsPayload, SUI_UpdateProfilePointsPayload, SUI_UploadProfilePicturePayload } from "@/types/profile.types";
 
 export const createUserByWalletIdApi = (walletId: string, payload: SUI_CreateNewUserPayload): Promise<AxiosResponse> =>
   API.post(`/api/user/create/${walletId}`, payload);
@@ -38,3 +38,6 @@ export const updatedUserProfilePointsApi = (payload: SUI_UpdateProfilePointsPayl
 
 export const updatedUserProfileDetailsApi = (payload: SUI_UpdateProfileDetailsPayload): Promise<AxiosResponse> =>
   API.patch(`/api/user/updated-profile-details/${payload.walletId}`, payload);
+
+export const transferSubscriptionTokensToTreasuryApi = (payload: SUI_TransferSubscriptionTokensToTreasuryPayload): Promise<AxiosResponse> =>
+  API.post(`/api/user/${payload.userWalletAddress}/transfer/erc20`, payload);
