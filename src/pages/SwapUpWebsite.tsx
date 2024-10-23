@@ -611,21 +611,6 @@ const SwapUpPage = () => {
 											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2 ">
 												03
 											</p>
-											<AccordionTrigger className="text-start md:text-start ">Who is the team building the application?</AccordionTrigger>
-											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
-												SwapUp is owned by solopreneur Terin Guerra who has been fortunate enough to connect with a
-												few great developers over the past few years who contribute to the development of this project.
-												The team is currently a mix of individuals from many parts of the world: USA, Dubai, Brazil, Ukraine.
-												The team has a combined 40+years of experience launching large scale IT projects for large companies.
-
-											</AccordionContent>
-										</AccordionItem>
-									</Accordion>
-									<Accordion type="single" collapsible>
-										<AccordionItem value="item-1">
-											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2 ">
-												04
-											</p>
 											<AccordionTrigger className="text-start md:text-start ">What use cases does SwapUp fulfill?</AccordionTrigger>
 											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
 												When you think SwapUp, you will think personal escrow.1
@@ -654,7 +639,7 @@ const SwapUpPage = () => {
 									<Accordion type="single" collapsible>
 										<AccordionItem value="item-1">
 											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2">
-												05
+												04
 											</p>
 											<AccordionTrigger className="text-start md:text-start ">Does SwapUp have a token?</AccordionTrigger>
 											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
@@ -669,7 +654,7 @@ const SwapUpPage = () => {
 									<Accordion type="single" collapsible>
 										<AccordionItem value="item-1">
 											<p className="text-su_primary_lighter font-Poppins text-base leading-10 mt-2">
-												06
+												05
 											</p>
 											<AccordionTrigger className="text-start md:text-start ">Where can I reach out with questions?</AccordionTrigger>
 											<AccordionContent className="text-su_primary_lighter font-Urbanist text-sm pb-2 md:pb-0  md:mt-2 mb-10">
